@@ -156,7 +156,7 @@ class ImapMailbox {
 		elseif($partStruct->encoding == 4) {
 			$data = $this->imap_qprint($data);
 		}
-		$data = trim($data);
+		//$data = trim($data); //this damages zip attachments
 
 		$params = array();
 		if(!empty($partStruct->parameters)) {
