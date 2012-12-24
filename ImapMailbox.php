@@ -163,7 +163,7 @@ class ImapMailbox {
 				$params[strtolower($param->attribute)] = $param->value;
 			}
 		}
-		if(!empty($partStruct->dparametersx)) {
+		if(!empty($partStruct->dparameters)) {
 			foreach($partStruct->dparameters as $param) {
 				$params[strtolower($param->attribute)] = $param->value;
 			}
