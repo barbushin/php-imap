@@ -209,7 +209,7 @@ class ImapMailbox {
 	 */
 	public function setFlag($sequence, $flag) {
 		$this->pingMailbox();
-		return imap_setflag_full($this->mbox, $mId, $flag, ST_UID);
+		return imap_setflag_full($this->mbox, $sequence, $flag, ST_UID);
 	}
 
 	/*
@@ -225,9 +225,9 @@ class ImapMailbox {
 	 * 
 	 * Returns TRUE on success or FALSE on failure.
 	 */
-	public function clearFlag($mId, $flag) {
+	public function clearFlag($sequence, $flag) {
 		$this->pingMailbox();
-		return imap_clearflag_full($this->mbox, $mId, $flag, ST_UID);
+		return imap_clearflag_full($this->mbox, $sequence, $flag, ST_UID);
 	}
 
 	/*
