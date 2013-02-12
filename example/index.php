@@ -11,7 +11,7 @@ $mailbox = new ImapMailbox('{imap.gmail.com:993/imap/novalidate-cert/ssl}INBOX',
 $mails = array();
 
 // Display all e-mail
-foreach($mailbox->searchMails('ALL') as $mailId) {
+foreach($mailbox->searchMailBox('ALL') as $mailId) {
 	$mail = $mailbox->getMail($mailId);
 	// $mailbox->setMailAsSeen($mail->mId);
 	// $mailbox->deleteMail($mail->mId);
