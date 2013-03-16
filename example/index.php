@@ -13,15 +13,15 @@ $mails = array();
 // Display all e-mail
 foreach($mailbox->searchMailBox('ALL') as $mailId) {
 	$mail = $mailbox->getMail($mailId);
-	// $mailbox->setMailAsSeen($mail->mId);
-	// $mailbox->deleteMail($mail->mId);
+	// $mailbox->setMailAsSeen($mail->id);
+	// $mailbox->deleteMail($mail->id);
 	$mails[] = $mail;
 }
 
 var_dump($mails);
 
 // display headers for first 100 messages
-$messageIds = array_slice($mailbox->sortMessages(), 0, 100);
-$messageIds = rtrim(implode(',', $messageIds), ',');
-$messageHeaders = $mailbox->fetchOverview($messageIds);
+$mailsIds = array_slice($mailbox->sortMessages(), 0, 100);
+$mailsIds = rtrim(implode(',', $mailsIds), ',');
+$messageHeaders = $mailbox->fetchOverview($mailsIds);
 var_dump($messageHeaders);
