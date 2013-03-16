@@ -19,9 +19,3 @@ foreach($mailbox->searchMailBox('ALL') as $mailId) {
 }
 
 var_dump($mails);
-
-// display headers for first 100 messages
-$mailsIds = array_slice($mailbox->sortMessages(), 0, 100);
-$mailsIds = rtrim(implode(',', $mailsIds), ',');
-$messageHeaders = $mailbox->fetchOverview($mailsIds);
-var_dump($messageHeaders);
