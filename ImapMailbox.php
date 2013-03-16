@@ -57,12 +57,6 @@ class ImapMailbox {
 		$imapStream = $this->getImapStream(false);
 		if($imapStream) {
 			$this->expungeDeletedMessages();
-			$errors = imap_errors();
-			if($errors) {
-				foreach($errors as $error) {
-					trigger_error($error);
-				}
-			}
 			imap_close($imapStream);
 		}
 	}
