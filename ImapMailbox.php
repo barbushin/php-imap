@@ -56,7 +56,7 @@ class ImapMailbox {
 	protected function disconnect() {
 		$imapStream = $this->getImapStream(false);
 		if($imapStream) {
-			$this->expungeDeletedMessages();
+			$this->expungeDeletedMails();
 			imap_close($imapStream);
 		}
 	}
@@ -68,8 +68,8 @@ class ImapMailbox {
 	 *	Date - current system time formatted according to RFC2822
 	 *	Driver - protocol used to access this mailbox: POP3, IMAP, NNTP
 	 *	Mailbox - the mailbox name
-	 *	Nmsgs - number of messages in the mailbox
-	 *	Recent - number of recent messages in the mailbox
+	 *	Nmsgs - number of mails in the mailbox
+	 *	Recent - number of recent mails in the mailbox
 	 *
 	 * @return stdClass
 	 */
@@ -79,35 +79,35 @@ class ImapMailbox {
 
 	/*
 	 * This function performs a search on the mailbox currently opened in the given IMAP stream.
-	 * For example, to match all unanswered messages sent by Mom, you'd use: "UNANSWERED FROM mom".
+	 * For example, to match all unanswered mails sent by Mom, you'd use: "UNANSWERED FROM mom".
 	 * Searches appear to be case insensitive. This list of criteria is from a reading of the UW
 	 * c-client source code and may be incomplete or inaccurate (see also RFC2060, section 6.4.4).
 	 *
 	 * @param string $criteria String, delimited by spaces, in which the following keywords are allowed. Any multi-word arguments (e.g. FROM "joey smith") must be quoted. Results will match all criteria entries.
-	 *		ALL - return all messages matching the rest of the criteria
-	 *		ANSWERED - match messages with the \\ANSWERED flag set
-	 *		BCC "string" - match messages with "string" in the Bcc: field
-	 *		BEFORE "date" - match messages with Date: before "date"
-	 *		BODY "string" - match messages with "string" in the body of the message
-	 *		CC "string" - match messages with "string" in the Cc: field
-	 *		DELETED - match deleted messages
-	 *		FLAGGED - match messages with the \\FLAGGED (sometimes referred to as Important or Urgent) flag set
-	 *		FROM "string" - match messages with "string" in the From: field
-	 *		KEYWORD "string" - match messages with "string" as a keyword
-	 *		NEW - match new messages
-	 *		OLD - match old messages
-	 *		ON "date" - match messages with Date: matching "date"
-	 *		RECENT - match messages with the \\RECENT flag set
-	 *		SEEN - match messages that have been read (the \\SEEN flag is set)
-	 *		SINCE "date" - match messages with Date: after "date"
-	 *		SUBJECT "string" - match messages with "string" in the Subject:
-	 *		TEXT "string" - match messages with text "string"
-	 *		TO "string" - match messages with "string" in the To:
-	 *		UNANSWERED - match messages that have not been answered
-	 *		UNDELETED - match messages that are not deleted
-	 *		UNFLAGGED - match messages that are not flagged
-	 *		UNKEYWORD "string" - match messages that do not have the keyword "string"
-	 *		UNSEEN - match messages which have not been read yet
+	 *		ALL - return all mails matching the rest of the criteria
+	 *		ANSWERED - match mails with the \\ANSWERED flag set
+	 *		BCC "string" - match mails with "string" in the Bcc: field
+	 *		BEFORE "date" - match mails with Date: before "date"
+	 *		BODY "string" - match mails with "string" in the body of the mail
+	 *		CC "string" - match mails with "string" in the Cc: field
+	 *		DELETED - match deleted mails
+	 *		FLAGGED - match mails with the \\FLAGGED (sometimes referred to as Important or Urgent) flag set
+	 *		FROM "string" - match mails with "string" in the From: field
+	 *		KEYWORD "string" - match mails with "string" as a keyword
+	 *		NEW - match new mails
+	 *		OLD - match old mails
+	 *		ON "date" - match mails with Date: matching "date"
+	 *		RECENT - match mails with the \\RECENT flag set
+	 *		SEEN - match mails that have been read (the \\SEEN flag is set)
+	 *		SINCE "date" - match mails with Date: after "date"
+	 *		SUBJECT "string" - match mails with "string" in the Subject:
+	 *		TEXT "string" - match mails with text "string"
+	 *		TO "string" - match mails with "string" in the To:
+	 *		UNANSWERED - match mails that have not been answered
+	 *		UNDELETED - match mails that are not deleted
+	 *		UNFLAGGED - match mails that are not flagged
+	 *		UNKEYWORD "string" - match mails that do not have the keyword "string"
+	 *		UNSEEN - match mails which have not been read yet
 	 *
 	 * @return array Mails ids
 	 */
@@ -117,35 +117,35 @@ class ImapMailbox {
 	}
 
 	/*
-	 * Marks messages listed in mailId for deletion.
+	 * Marks mails listed in mailId for deletion.
 	 * @return bool
 	 */
-	public function deleteMessage($mailId) {
+	public function deleteMail($mailId) {
 		return imap_delete($this->getImapStream(), $mailId, FT_UID);
 	}
 
 	/*
-	 * Deletes all the messages marked for deletion by imap_delete(), imap_mail_move(), or imap_setflag_full().
+	 * Deletes all the mails marked for deletion by imap_delete(), imap_mail_move(), or imap_setflag_full().
 	 * @return bool
 	 */
-	public function expungeDeletedMessages() {
+	public function expungeDeletedMails() {
 		return imap_expunge($this->getImapStream());
 	}
 
-	public function markMessageAsRead($mailId) {
+	public function markMailAsRead($mailId) {
 		$this->setFlag($mailId, '\\Seen');
 	}
 
-	public function markMessageAsUnread($mailId) {
+	public function markMailAsUnread($mailId) {
 		$this->clearFlag($mailId, '\\Seen');
 	}
 
-	public function markMessageAsImportant($mailId) {
+	public function markMailAsImportant($mailId) {
 		$this->setFlag($mailId, '\\Flagged');
 	}
 
 	/*
-	 * Causes a store to add the specified flag to the flags set for the messages in the specified sequence.
+	 * Causes a store to add the specified flag to the flags set for the mails in the specified sequence.
 	 *
 	 * @param array $mailsIds
 	 * @param $flag Flags which you can set are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060.
@@ -156,7 +156,7 @@ class ImapMailbox {
 	}
 
 	/*
-	 * Cause a store to delete the specified flag to the flags set for the messages in the specified sequence.
+	 * Cause a store to delete the specified flag to the flags set for the mails in the specified sequence.
 	 *
 	 * @param array $mailsIds
 	 * @param $flag Flags which you can set are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060.
@@ -169,23 +169,23 @@ class ImapMailbox {
 	/*
 	 * Fetch mail headers for listed mails ids
 	 *
-	 * Returns an array of objects describing one message header each. The object will only define a property if it exists. The possible properties are:
-	 *  subject - the messages subject
+	 * Returns an array of objects describing one mail header each. The object will only define a property if it exists. The possible properties are:
+	 *  subject - the mails subject
 	 *  from - who sent it
 	 *  to - recipient
 	 *  date - when was it sent
-	 *  message_id - Message-ID
-	 *  references - is a reference to this message id
-	 *  in_reply_to - is a reply to this message id
+	 *  message_id - Mail-ID
+	 *  references - is a reference to this mail id
+	 *  in_reply_to - is a reply to this mail id
 	 *  size - size in bytes
-	 *  uid - UID the message has in the mailbox
-	 *  msgno - message sequence number in the mailbox
-	 *  recent - this message is flagged as recent
-	 *  flagged - this message is flagged
-	 *  answered - this message is flagged as answered
-	 *  deleted - this message is flagged for deletion
-	 *  seen - this message is flagged as already read
-	 *  draft - this message is flagged as being a draft
+	 *  uid - UID the mail has in the mailbox
+	 *  msgno - mail sequence number in the mailbox
+	 *  recent - this mail is flagged as recent
+	 *  flagged - this mail is flagged
+	 *  answered - this mail is flagged as answered
+	 *  deleted - this mail is flagged for deletion
+	 *  seen - this mail is flagged as already read
+	 *  draft - this mail is flagged as being a draft
 	 *
 	 * @param array $mailsIds
 	 * @return array
@@ -195,30 +195,30 @@ class ImapMailbox {
 	}
 
 	/**
-	 * Gets messages ids sorted by some criteria
+	 * Gets mails ids sorted by some criteria
 	 *
 	 * Criteria can be one (and only one) of the following constants:
-	 *  SORTDATE - message Date
+	 *  SORTDATE - mail Date
 	 *  SORTARRIVAL - arrival date (default)
 	 *  SORTFROM - mailbox in first From address
-	 *  SORTSUBJECT - message subject
+	 *  SORTSUBJECT - mail subject
 	 *  SORTTO - mailbox in first To address
 	 *  SORTCC - mailbox in first cc address
-	 *  SORTSIZE - size of message in octets
+	 *  SORTSIZE - size of mail in octets
 	 *
 	 * @param int $criteria
 	 * @param bool $reverse
 	 * @return array Mails ids
 	 */
-	public function sortMessages($criteria = SORTARRIVAL, $reverse = true) {
+	public function sortMails($criteria = SORTARRIVAL, $reverse = true) {
 		return imap_sort($this->getImapStream(), $criteria, $reverse, SE_UID);
 	}
 
 	/**
-	 * Get messages count in mail box
+	 * Get mails count in mail box
 	 * @return int
 	 */
-	public function countMessages() {
+	public function countMails() {
 		return imap_num_msg($this->getImapStream());
 	}
 
