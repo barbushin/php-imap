@@ -83,8 +83,7 @@ class ImapMailbox {
 	 * Searches appear to be case insensitive. This list of criteria is from a reading of the UW
 	 * c-client source code and may be incomplete or inaccurate (see also RFC2060, section 6.4.4).
 	 *
-	 * criteria
-	 *	A string, delimited by spaces, in which the following keywords are allowed. Any multi-word arguments (e.g. FROM "joey smith") must be quoted. Results will match all criteria entries.
+	 * @param string $criteria String, delimited by spaces, in which the following keywords are allowed. Any multi-word arguments (e.g. FROM "joey smith") must be quoted. Results will match all criteria entries.
 	 *		ALL - return all messages matching the rest of the criteria
 	 *		ANSWERED - match messages with the \\ANSWERED flag set
 	 *		BCC "string" - match messages with "string" in the Bcc: field
@@ -121,7 +120,7 @@ class ImapMailbox {
 	 * Marks messages listed in mailId for deletion.
 	 * @return bool
 	 */
-	public function deleteMessage($mailId, $purge_deleted = false) {
+	public function deleteMessage($mailId) {
 		return imap_delete($this->getImapStream(), $mailId, FT_UID);
 	}
 
@@ -266,23 +265,12 @@ class ImapMailbox {
 			$this->initMailPart($mail, $mailStructure, 0);
 		}
 		else {
-			foreach($mailStructure->parts as $partNum => $partStruct) {
-				$this->initMailPart($mail, $partStruct, $partNum + 1);
+			foreach($mailStructure->parts as $partNum => $partStructure) {
+				$this->initMailPart($mail, $partStructure, $partNum + 1);
 			}
 		}
 
-		$mail->textHtmlOriginal = $mail->textHtml;
-
 		return $mail;
-	}
-
-	protected function quoteAttachmentFilename($filename) {
-		$replace = array(
-			'/\s/' => '_',
-			'/[^0-9a-zA-Z_\.]/' => '',
-			'/_+/' => '_', '/(^_)|(_$)/' => '',
-		);
-		return preg_replace(array_keys($replace), $replace, $filename);
 	}
 
 	protected function initMailPart(IncomingMail $mail, $partStructure, $partNum) {
@@ -318,28 +306,29 @@ class ImapMailbox {
 
 		// attachments
 		if($this->attachmentsDir) {
-			$filename = false;
 			$attachmentId = $partStructure->ifid ? trim($partStructure->id, " <>") : null;
-			if(empty($params['filename']) && empty($params['name']) && $attachmentId) {
-				$filename = $attachmentId . '.' . strtolower($partStructure->subtype);
-			}
-			elseif(!empty($params['filename']) || !empty($params['name'])) {
-				$filename = !empty($params['filename']) ? $params['filename'] : $params['name'];
-				$filename = $this->decodeMimeStr($filename);
-				$filename = $this->quoteAttachmentFilename($filename);
-			}
-			if($filename) {
-				if($this->attachmentsDir) {
-					$filePath = $this->attachmentsDir . DIRECTORY_SEPARATOR . preg_replace('~[\\\\/.]~', '', $mail->id) . '_' . $filename;
-					file_put_contents($filePath, $data);
-					$mail->attachments[$filename] = $filePath;
+			if($attachmentId) {
+				if(empty($params['fileName']) && empty($params['name'])) {
+					$fileName = $attachmentId . '.' . strtolower($partStructure->subtype);
 				}
 				else {
-					$mail->attachments[$filename] = $filename;
+					$fileName = !empty($params['fileName']) ? $params['fileName'] : $params['name'];
+					$fileName = $this->decodeMimeStr($fileName);
+					$replace = array(
+						'/\s/' => '_',
+						'/[^0-9a-zA-Z_\.]/' => '',
+						'/_+/' => '_',
+						'/(^_)|(_$)/' => '',
+					);
+					$fileName = preg_replace(array_keys($replace), $replace, $fileName);
 				}
-				if($attachmentId) {
-					$mail->attachmentsIds[$filename] = $attachmentId;
-				}
+				$attachment = new IncomingMailAttachment();
+				$attachment->id = $attachmentId;
+				$attachment->name = $fileName;
+				$attachment->filePath = $this->attachmentsDir . DIRECTORY_SEPARATOR . preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . $fileName);
+				$mail->addAttachment($attachment);
+
+				file_put_contents($attachment->filePath, $data);
 			}
 		}
 		if($partStructure->type == 0 && $data) {
@@ -354,8 +343,8 @@ class ImapMailbox {
 			$mail->textPlain .= trim($data);
 		}
 		if(!empty($partStructure->parts)) {
-			foreach($partStructure->parts as $subpartNum => $subpartStruct) {
-				$this->initMailPart($mail, $subpartStruct, $partNum . '.' . ($subpartNum + 1));
+			foreach($partStructure->parts as $subPartNum => $subPartStructure) {
+				$this->initMailPart($mail, $subPartStructure, $partNum . '.' . ($subPartNum + 1));
 			}
 		}
 	}
@@ -393,20 +382,43 @@ class IncomingMail {
 
 	public $textPlain;
 	public $textHtml;
-	public $textHtmlOriginal;
-	public $attachments = array();
-	public $attachmentsIds = array();
+	/** @var IncomingMailAttachment[] */
+	protected $attachments = array();
 
-	public function fetchMessageInternalLinks($baseUrl) {
-		if($this->textHtml) {
-			foreach($this->attachments as $filePath) {
-				$filename = basename($filePath);
-				if(isset($this->attachmentsIds[$filename])) {
-					$this->textHtml = preg_replace('/(<img[^>]*?)src=["\']?ci?d:' . preg_quote($this->attachmentsIds[$filename]) . '["\']?/is', '\\1 src="' . $baseUrl . $filename . '"', $this->textHtml);
-				}
-			}
-		}
+	public function addAttachment(IncomingMailAttachment $attachment) {
+		$this->attachments[$attachment->id] = $attachment;
 	}
+
+	/**
+	 * @return IncomingMailAttachment[]
+	 */
+	public function getAttachments() {
+		return $this->attachments;
+	}
+
+	/**
+	 * Get array of internal HTML links placeholders
+	 * @return array attachmentId => link placeholder
+	 */
+	public function getInternalLinksPlaceholders() {
+		return preg_match_all('/=["\'](ci?d:(\w+))["\']/i', $this->textHtml, $matches) ? array_combine($matches[2], $matches[1]) : array();
+	}
+
+	public function replaceInternalLinks($baseUri) {
+		$baseUri = rtrim($baseUri, '\\/') . '/';
+		$fetchedHtml = $this->textHtml;
+		foreach($this->getInternalLinksPlaceholders() as $attachmentId => $placeholder) {
+			$fetchedHtml = str_replace($placeholder, $baseUri . basename($this->attachments[$attachmentId]->filePath), $fetchedHtml);
+		}
+		return $fetchedHtml;
+	}
+}
+
+class IncomingMailAttachment {
+
+	public $id;
+	public $name;
+	public $filePath;
 }
 
 class ImapMailboxException extends Exception {
