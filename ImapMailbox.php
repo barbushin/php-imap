@@ -240,7 +240,16 @@ class ImapMailbox {
 
 		$toStrings = array();
 		foreach($head->to as $to) {
-			$toEmail = strtolower($to->mailbox . '@' . $to->host);
+			//check to see if host and to is set. For BCC's these are not set.
+			$str_host = '';
+			if(isset($to->host)){ 
+				$str_host = $to->host;
+			}
+			$str_mailbox = '';
+			if(isset($to->mailbox)){ 
+				$str_mailbox = $to->mailbox;
+			}
+			$toEmail = strtolower($str_mailbox . '@' . $str_host);
 			$toName = isset($to->personal) ? $this->decodeMimeStr($to->personal) : null;
 			$toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
 			$mail->to[$toEmail] = $toName;
