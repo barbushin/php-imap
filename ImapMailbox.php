@@ -240,10 +240,12 @@ class ImapMailbox {
 
 		$toStrings = array();
 		foreach($head->to as $to) {
-			$toEmail = strtolower($to->mailbox . '@' . $to->host);
-			$toName = isset($to->personal) ? $this->decodeMimeStr($to->personal) : null;
-			$toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
-			$mail->to[$toEmail] = $toName;
+			if(!empty($to->mailbox) && !empty($to->host)) {
+				$toEmail = strtolower($to->mailbox . '@' . $to->host);
+				$toName = isset($to->personal) ? $this->decodeMimeStr($to->personal) : null;
+				$toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
+				$mail->to[$toEmail] = $toName;
+			}
 		}
 		$mail->toString = implode(', ', $toStrings);
 
