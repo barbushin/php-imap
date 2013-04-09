@@ -307,33 +307,34 @@ class ImapMailbox {
 		}
 
 		// attachments
-		if($this->attachmentsDir) {
-			$attachmentId = $partStructure->ifid ? trim($partStructure->id, " <>") : null;
-			if($attachmentId) {
-				if(empty($params['fileName']) && empty($params['name'])) {
-					$fileName = $attachmentId . '.' . strtolower($partStructure->subtype);
-				}
-				else {
-					$fileName = !empty($params['fileName']) ? $params['fileName'] : $params['name'];
-					$fileName = $this->decodeMimeStr($fileName);
-					$replace = array(
-						'/\s/' => '_',
-						'/[^0-9a-zA-Z_\.]/' => '',
-						'/_+/' => '_',
-						'/(^_)|(_$)/' => '',
-					);
-					$fileName = preg_replace(array_keys($replace), $replace, $fileName);
-				}
-				$attachment = new IncomingMailAttachment();
-				$attachment->id = $attachmentId;
-				$attachment->name = $fileName;
+		$attachmentId = $partStructure->ifid
+			? trim($partStructure->id, " <>")
+			: (isset($params['filename']) || isset($params['name']) ? mt_rand() . mt_rand() : null);
+		if($attachmentId) {
+			if(empty($params['filename']) && empty($params['name'])) {
+				$fileName = $attachmentId . '.' . strtolower($partStructure->subtype);
+			}
+			else {
+				$fileName = !empty($params['filename']) ? $params['filename'] : $params['name'];
+				$fileName = $this->decodeMimeStr($fileName);
+				$replace = array(
+					'/\s/' => '_',
+					'/[^0-9a-zA-Z_\.]/' => '',
+					'/_+/' => '_',
+					'/(^_)|(_$)/' => '',
+				);
+				$fileName = preg_replace(array_keys($replace), $replace, $fileName);
+			}
+			$attachment = new IncomingMailAttachment();
+			$attachment->id = $attachmentId;
+			$attachment->name = $fileName;
+			if($this->attachmentsDir) {
 				$attachment->filePath = $this->attachmentsDir . DIRECTORY_SEPARATOR . preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . $fileName);
-				$mail->addAttachment($attachment);
-
 				file_put_contents($attachment->filePath, $data);
 			}
+			$mail->addAttachment($attachment);
 		}
-		if($partStructure->type == 0 && $data) {
+		elseif($partStructure->type == 0 && $data) {
 			if(strtolower($partStructure->subtype) == 'plain') {
 				$mail->textPlain .= $data;
 			}
