@@ -56,8 +56,7 @@ class ImapMailbox {
 	protected function disconnect() {
 		$imapStream = $this->getImapStream(false);
 		if($imapStream) {
-			$this->expungeDeletedMails();
-			imap_close($imapStream);
+			@imap_close($imapStream, CL_EXPUNGE);
 		}
 	}
 
