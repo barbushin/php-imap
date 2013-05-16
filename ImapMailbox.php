@@ -11,13 +11,15 @@ class ImapMailbox {
 	protected $login;
 	protected $password;
 	protected $serverEncoding;
+	protected $serverOptions;
 	protected $attachmentsDir;
 
-	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'utf-8') {
+	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'utf-8', $serverOptions = array()) {
 		$this->imapPath = $imapPath;
 		$this->login = $login;
 		$this->password = $password;
 		$this->serverEncoding = $serverEncoding;
+		$this->serverOptions = $serverOptions;
 		if($attachmentsDir) {
 			if(!is_dir($attachmentsDir)) {
 				throw new Exception('Directory "' . $attachmentsDir . '" not found');
@@ -46,7 +48,7 @@ class ImapMailbox {
 	}
 
 	protected function initImapStream() {
-		$imapStream = @imap_open($this->imapPath, $this->login, $this->password);
+		$imapStream = @imap_open($this->imapPath, $this->login, $this->password, 0, 0, $this->serverOptions);
 		if(!$imapStream) {
 			throw new ImapMailboxException('Connection error: ' . imap_last_error());
 		}
