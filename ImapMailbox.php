@@ -13,7 +13,7 @@ class ImapMailbox {
 	protected $serverEncoding;
 	protected $attachmentsDir;
 
-	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'utf-8') {
+	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8') {
 		$this->imapPath = $imapPath;
 		$this->login = $login;
 		$this->password = $password;
@@ -253,15 +253,15 @@ class ImapMailbox {
 		$mail = new IncomingMail();
 		$mail->id = $mailId;
 		$mail->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime($head->date) : time());
-		$mail->subject = $this->decodeMimeStr($head->subject);
-		$mail->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal) : null;
+		$mail->subject = $this->decodeMimeStr($head->subject, $this->serverEncoding);
+		$mail->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : null;
 		$mail->fromAddress = strtolower($head->from[0]->mailbox . '@' . $head->from[0]->host);
 
 		$toStrings = array();
 		foreach($head->to as $to) {
 			if(!empty($to->mailbox) && !empty($to->host)) {
 				$toEmail = strtolower($to->mailbox . '@' . $to->host);
-				$toName = isset($to->personal) ? $this->decodeMimeStr($to->personal) : null;
+				$toName = isset($to->personal) ? $this->decodeMimeStr($to->personal, $this->serverEncoding) : null;
 				$toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
 				$mail->to[$toEmail] = $toName;
 			}
@@ -270,13 +270,13 @@ class ImapMailbox {
 
 		if(isset($head->cc)) {
 			foreach($head->cc as $cc) {
-				$mail->cc[strtolower($cc->mailbox . '@' . $cc->host)] = isset($cc->personal) ? $this->decodeMimeStr($cc->personal) : null;
+				$mail->cc[strtolower($cc->mailbox . '@' . $cc->host)] = isset($cc->personal) ? $this->decodeMimeStr($cc->personal, $this->serverEncoding) : null;
 			}
 		}
 
 		if(isset($head->reply_to)) {
 			foreach($head->reply_to as $replyTo) {
-				$mail->replyTo[strtolower($replyTo->mailbox . '@' . $replyTo->host)] = isset($replyTo->personal) ? $this->decodeMimeStr($replyTo->personal) : null;
+				$mail->replyTo[strtolower($replyTo->mailbox . '@' . $replyTo->host)] = isset($replyTo->personal) ? $this->decodeMimeStr($replyTo->personal, $this->serverEncoding) : null;
 			}
 		}
 
@@ -335,7 +335,7 @@ class ImapMailbox {
 			}
 			else {
 				$fileName = !empty($params['filename']) ? $params['filename'] : $params['name'];
-				$fileName = $this->decodeMimeStr($fileName);
+				$fileName = $this->decodeMimeStr($fileName, $this->serverEncoding);
 				$replace = array(
 					'/\s/' => '_',
 					'/[^0-9a-zA-Z_\.]/' => '',
@@ -378,7 +378,7 @@ class ImapMailbox {
 			if($elements[$i]->charset == 'default') {
 				$elements[$i]->charset = 'iso-8859-1';
 			}
-			$newString .= iconv($elements[$i]->charset, $charset, $elements[$i]->text);
+			$newString .= iconv(strtoupper($elements[$i]->charset), $charset, $elements[$i]->text);
 		}
 		return $newString;
 	}
