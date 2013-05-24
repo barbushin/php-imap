@@ -194,6 +194,26 @@ class ImapMailbox {
 	}
 
 	/**
+     * Get information about the current mailbox.
+     *
+     * Returns an object with following properties:
+     *  Date - last change (current datetime)
+     *  Driver - driver
+     *  Mailbox - name of the mailbox
+     *  Nmsgs - number of messages
+     *  Recent - number of recent messages
+     *  Unread - number of unread messages
+     *  Deleted - number of deleted messages
+     *  Size - mailbox size
+     *
+     * @return object Object with info | FALSE on failure
+     */
+
+    public function getMailboxInfo() {
+        return imap_mailboxmsginfo($this->getImapStream());
+    }
+
+	/**
 	 * Gets mails ids sorted by some criteria
 	 *
 	 * Criteria can be one (and only one) of the following constants:
