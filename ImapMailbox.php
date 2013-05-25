@@ -326,10 +326,12 @@ class ImapMailbox {
 		}
 
 		// attachments
+        if ($partStructure->ifdisposition && (
+                $partStructure->disposition == 'attachment' // attachment
+                || ($partStructure->disposition == 'inline' && $partStructure->subtype != 'PLAIN'))) { // inline image
 		$attachmentId = $partStructure->ifid
 			? trim($partStructure->id, " <>")
 			: (isset($params['filename']) || isset($params['name']) ? mt_rand() . mt_rand() : null);
-		if($attachmentId) {
 			if(empty($params['filename']) && empty($params['name'])) {
 				$fileName = $attachmentId . '.' . strtolower($partStructure->subtype);
 			}
