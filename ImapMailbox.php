@@ -8,22 +8,22 @@
 class ImapMailbox {
 
 	protected $imapPath;
-	protected $login;
-	protected $password;
-	protected $serverEncoding;
-	protected $attachmentsDir;
 
-	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8') {
+	protected $login;
+
+    protected $password;
+
+    protected $serverEncoding;
+
+    /** @var bool */
+	protected $fetchAttachments;
+
+	public function __construct($imapPath, $login, $password, $fetchAttachments = false, $serverEncoding = 'UTF-8') {
 		$this->imapPath = $imapPath;
 		$this->login = $login;
 		$this->password = $password;
 		$this->serverEncoding = $serverEncoding;
-		if($attachmentsDir) {
-			if(!is_dir($attachmentsDir)) {
-				throw new Exception('Directory "' . $attachmentsDir . '" not found');
-			}
-			$this->attachmentsDir = rtrim(realpath($attachmentsDir), '\\/');
-		}
+        $this->fetchAttachments = $fetchAttachments;
 	}
 
 	/**
@@ -342,8 +342,8 @@ class ImapMailbox {
 			$attachment = new IncomingMailAttachment();
 			$attachment->id = $attachmentId;
 			$attachment->name = $fileName;
-			if($this->attachmentsDir) {
-				$attachment->filePath = $this->attachmentsDir . DIRECTORY_SEPARATOR . preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . $fileName);
+			if($this->fetchAttachments) {
+                $attachment->filePath = tempnam(sys_get_temp_dir(), 'attachment');
 				file_put_contents($attachment->filePath, $data);
 			}
 			$mail->addAttachment($attachment);
