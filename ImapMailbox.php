@@ -8,22 +8,22 @@
 class ImapMailbox {
 
 	protected $imapPath;
-	protected $login;
-	protected $password;
-	protected $serverEncoding;
-	protected $attachmentsDir;
 
-	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8') {
+	protected $login;
+
+    protected $password;
+
+    protected $serverEncoding;
+
+    /** @var bool */
+	protected $fetchAttachments;
+
+	public function __construct($imapPath, $login, $password, $fetchAttachments = false, $serverEncoding = 'UTF-8') {
 		$this->imapPath = $imapPath;
 		$this->login = $login;
 		$this->password = $password;
 		$this->serverEncoding = $serverEncoding;
-		if($attachmentsDir) {
-			if(!is_dir($attachmentsDir)) {
-				throw new Exception('Directory "' . $attachmentsDir . '" not found');
-			}
-			$this->attachmentsDir = rtrim(realpath($attachmentsDir), '\\/');
-		}
+        $this->fetchAttachments = $fetchAttachments;
 	}
 
 	/**
@@ -331,26 +331,19 @@ class ImapMailbox {
                 || ($partStructure->disposition == 'INLINE' && $partStructure->subtype != 'PLAIN'))) { // inline image
 		$attachmentId = $partStructure->ifid
 			? trim($partStructure->id, " <>")
-			: (isset($params['filename']) || isset($params['name']) ? mt_rand() . mt_rand() : null);
+                : mt_rand() . mt_rand();
 			if(empty($params['filename']) && empty($params['name'])) {
 				$fileName = $attachmentId . '.' . strtolower($partStructure->subtype);
 			}
 			else {
 				$fileName = !empty($params['filename']) ? $params['filename'] : $params['name'];
 				$fileName = $this->decodeMimeStr($fileName, $this->serverEncoding);
-				$replace = array(
-					'/\s/' => '_',
-					'/[^0-9a-zA-Z_\.]/' => '',
-					'/_+/' => '_',
-					'/(^_)|(_$)/' => '',
-				);
-				$fileName = preg_replace(array_keys($replace), $replace, $fileName);
 			}
 			$attachment = new IncomingMailAttachment();
 			$attachment->id = $attachmentId;
 			$attachment->name = $fileName;
-			if($this->attachmentsDir) {
-				$attachment->filePath = $this->attachmentsDir . DIRECTORY_SEPARATOR . preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . $fileName);
+			if($this->fetchAttachments) {
+                $attachment->filePath = tempnam(sys_get_temp_dir(), 'attachment');
 				file_put_contents($attachment->filePath, $data);
 			}
 			$mail->addAttachment($attachment);
