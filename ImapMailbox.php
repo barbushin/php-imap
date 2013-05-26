@@ -331,20 +331,13 @@ class ImapMailbox {
                 || ($partStructure->disposition == 'inline' && $partStructure->subtype != 'PLAIN'))) { // inline image
 		$attachmentId = $partStructure->ifid
 			? trim($partStructure->id, " <>")
-			: (isset($params['filename']) || isset($params['name']) ? mt_rand() . mt_rand() : null);
+                : mt_rand() . mt_rand();
 			if(empty($params['filename']) && empty($params['name'])) {
 				$fileName = $attachmentId . '.' . strtolower($partStructure->subtype);
 			}
 			else {
 				$fileName = !empty($params['filename']) ? $params['filename'] : $params['name'];
 				$fileName = $this->decodeMimeStr($fileName, $this->serverEncoding);
-				$replace = array(
-					'/\s/' => '_',
-					'/[^0-9a-zA-Z_\.]/' => '',
-					'/_+/' => '_',
-					'/(^_)|(_$)/' => '',
-				);
-				$fileName = preg_replace(array_keys($replace), $replace, $fileName);
 			}
 			$attachment = new IncomingMailAttachment();
 			$attachment->id = $attachmentId;
