@@ -366,7 +366,12 @@ class ImapMailbox {
 		}
 		if(!empty($partStructure->parts)) {
 			foreach($partStructure->parts as $subPartNum => $subPartStructure) {
-				$this->initMailPart($mail, $subPartStructure, $partNum . '.' . ($subPartNum + 1));
+				if($partStructure->type == 2 && $partStructure->subtype == 'RFC822') {
+					$this->initMailPart($mail, $subPartStructure, $partNum);
+				}
+				else {
+					$this->initMailPart($mail, $subPartStructure, $partNum . '.' . ($subPartNum + 1));
+				}
 			}
 		}
 	}
@@ -444,5 +449,4 @@ class IncomingMailAttachment {
 }
 
 class ImapMailboxException extends Exception {
-
 }
