@@ -194,24 +194,24 @@ class ImapMailbox {
 	}
 
 	/**
-     * Get information about the current mailbox.
-     *
-     * Returns an object with following properties:
-     *  Date - last change (current datetime)
-     *  Driver - driver
-     *  Mailbox - name of the mailbox
-     *  Nmsgs - number of messages
-     *  Recent - number of recent messages
-     *  Unread - number of unread messages
-     *  Deleted - number of deleted messages
-     *  Size - mailbox size
-     *
-     * @return object Object with info | FALSE on failure
-     */
+	 * Get information about the current mailbox.
+	 *
+	 * Returns an object with following properties:
+	 *  Date - last change (current datetime)
+	 *  Driver - driver
+	 *  Mailbox - name of the mailbox
+	 *  Nmsgs - number of messages
+	 *  Recent - number of recent messages
+	 *  Unread - number of unread messages
+	 *  Deleted - number of deleted messages
+	 *  Size - mailbox size
+	 *
+	 * @return object Object with info | FALSE on failure
+	 */
 
-    public function getMailboxInfo() {
-        return imap_mailboxmsginfo($this->getImapStream());
-    }
+	public function getMailboxInfo() {
+		return imap_mailboxmsginfo($this->getImapStream());
+	}
 
 	/**
 	 * Gets mails ids sorted by some criteria
@@ -318,11 +318,17 @@ class ImapMailbox {
 		}
 		if(!empty($partStructure->dparameters)) {
 			foreach($partStructure->dparameters as $param) {
-				$params[strtolower($param->attribute)] = $param->value;
+				$paramName = strtolower(preg_match('~^(.*?)\*~', $param->attribute, $matches) ? $matches[1] : $param->attribute);
+				if(isset($params[$paramName])) {
+					$params[$paramName] .= $param->value;
+				}
+				else {
+					$params[$paramName] = $param->value;
+				}
 			}
 		}
 		if(!empty($params['charset'])) {
-			$data = iconv($params['charset'], $this->serverEncoding, $data);
+			$data = iconv(strtoupper($params['charset']), $this->serverEncoding, $data);
 		}
 
 		// attachments
@@ -336,19 +342,20 @@ class ImapMailbox {
 			else {
 				$fileName = !empty($params['filename']) ? $params['filename'] : $params['name'];
 				$fileName = $this->decodeMimeStr($fileName, $this->serverEncoding);
+				$fileName = $this->decodeRFC2231($fileName, $this->serverEncoding);
+			}
+			$attachment = new IncomingMailAttachment();
+			$attachment->id = $attachmentId;
+			$attachment->name = $fileName;
+			if($this->attachmentsDir) {
 				$replace = array(
 					'/\s/' => '_',
 					'/[^0-9a-zA-Z_\.]/' => '',
 					'/_+/' => '_',
 					'/(^_)|(_$)/' => '',
 				);
-				$fileName = preg_replace(array_keys($replace), $replace, $fileName);
-			}
-			$attachment = new IncomingMailAttachment();
-			$attachment->id = $attachmentId;
-			$attachment->name = $fileName;
-			if($this->attachmentsDir) {
-				$attachment->filePath = $this->attachmentsDir . DIRECTORY_SEPARATOR . preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . $fileName);
+				$fileSysName = preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . preg_replace(array_keys($replace), $replace, $fileName));
+				$attachment->filePath = $this->attachmentsDir . DIRECTORY_SEPARATOR . $fileSysName;
 				file_put_contents($attachment->filePath, $data);
 			}
 			$mail->addAttachment($attachment);
@@ -376,7 +383,7 @@ class ImapMailbox {
 		}
 	}
 
-	protected function decodeMimeStr($string, $charset = 'UTF-8') {
+	protected function decodeMimeStr($string, $charset = 'utf-8') {
 		$newString = '';
 		$elements = imap_mime_header_decode($string);
 		for($i = 0; $i < count($elements); $i++) {
@@ -386,6 +393,23 @@ class ImapMailbox {
 			$newString .= iconv(strtoupper($elements[$i]->charset), $charset, $elements[$i]->text);
 		}
 		return $newString;
+	}
+
+	function isUrlEncoded($string) {
+		$string = str_replace('%20', '+', $string);
+		$decoded = urldecode($string);
+		return $decoded != $string && urlencode($decoded) == $string;
+	}
+
+	protected function decodeRFC2231($string, $charset = 'utf-8') {
+		if(preg_match("/^(.*?)'.*?'(.*?)$/", $string, $matches)) {
+			$encoding = $matches[1];
+			$data = $matches[2];
+			if($this->isUrlEncoded($data)) {
+				$string = iconv(strtoupper($encoding), $charset, urldecode($data));
+			}
+		}
+		return $string;
 	}
 
 	public function __destruct() {
@@ -449,4 +473,5 @@ class IncomingMailAttachment {
 }
 
 class ImapMailboxException extends Exception {
+
 }
