@@ -60,7 +60,7 @@ class ImapMailbox {
 		}
 	}
 
-	/*
+	/**
 	 * Get information about the current mailbox.
 	 *
 	 * Returns the information in an object with following properties:
@@ -76,7 +76,7 @@ class ImapMailbox {
 		return imap_check($this->getImapStream());
 	}
 
-	/*
+	/**
 	 * This function performs a search on the mailbox currently opened in the given IMAP stream.
 	 * For example, to match all unanswered mails sent by Mom, you'd use: "UNANSWERED FROM mom".
 	 * Searches appear to be case insensitive. This list of criteria is from a reading of the UW
@@ -115,7 +115,7 @@ class ImapMailbox {
 		return $mailsIds ? $mailsIds : array();
 	}
 
-	/*
+	/**
 	 * Marks mails listed in mailId for deletion.
 	 * @return bool
 	 */
@@ -123,7 +123,7 @@ class ImapMailbox {
 		return imap_delete($this->getImapStream(), $mailId, FT_UID);
 	}
 
-	/*
+	/**
 	 * Deletes all the mails marked for deletion by imap_delete(), imap_mail_move(), or imap_setflag_full().
 	 * @return bool
 	 */
@@ -143,7 +143,7 @@ class ImapMailbox {
 		$this->setFlag($mailId, '\\Flagged');
 	}
 
-	/*
+	/**
 	 * Causes a store to add the specified flag to the flags set for the mails in the specified sequence.
 	 *
 	 * @param array $mailsIds
@@ -154,7 +154,7 @@ class ImapMailbox {
 		return imap_setflag_full($this->getImapStream(), implode(',', $mailsIds), $flag, ST_UID);
 	}
 
-	/*
+	/**
 	 * Cause a store to delete the specified flag to the flags set for the mails in the specified sequence.
 	 *
 	 * @param array $mailsIds
@@ -165,7 +165,7 @@ class ImapMailbox {
 		return imap_clearflag_full($this->getImapStream(), implode(',', $mailsIds), $flag, ST_UID);
 	}
 
-	/*
+	/**
 	 * Fetch mail headers for listed mails ids
 	 *
 	 * Returns an array of objects describing one mail header each. The object will only define a property if it exists. The possible properties are:
