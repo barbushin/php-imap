@@ -10,13 +10,6 @@ Features:
 
 Project site:
 https://github.com/barbushin/php-imap
-http://code.google.com/p/php-imap
-
-GIT:
-https://github.com/barbushin/php-imap.git
-
-SVN:
-http://php-imap.googlecode.com/svn/trunk
 
 Recommended:
  * Google Chrome extension PHP Console - http://goo.gl/b10YF
