@@ -123,6 +123,21 @@ class ImapMailbox {
 		return imap_delete($this->getImapStream(), $mailId, FT_UID);
 	}
 
+    /**
+     * Move the mail in other folder
+     *
+     * @param $mailId
+     * @param $where - Name of the folder where to move the email
+     * @return bool
+     */
+    public function moveMail($mailId, $where)
+    {
+        if (!$r = imap_mail_move($this->getImapStream(), $mailId, $where, CP_UID)) {
+            return false;
+        }
+        return $this->expungeDeletedMails();
+    }
+
 	/**
 	 * Deletes all the mails marked for deletion by imap_delete(), imap_mail_move(), or imap_setflag_full().
 	 * @return bool
