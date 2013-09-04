@@ -123,7 +123,7 @@ class ImapMailbox {
 		return imap_delete($this->getImapStream(), $mailId, FT_UID);
 	}
 
-    public function moveMails($mailId, $mailBox) {
+    public function moveMail($mailId, $mailBox) {
         return imap_mail_move($this->getImapStream(), $mailId, $mailBox, CP_UID) && $this->expungeDeletedMails();
     }
 
