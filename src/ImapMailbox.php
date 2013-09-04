@@ -123,6 +123,10 @@ class ImapMailbox {
 		return imap_delete($this->getImapStream(), $mailId, FT_UID);
 	}
 
+    public function moveMail($mailId, $mailBox) {
+        return imap_mail_move($this->getImapStream(), $mailId, $mailBox, CP_UID) && $this->expungeDeletedMails();
+    }
+
 	/**
 	 * Deletes all the mails marked for deletion by imap_delete(), imap_mail_move(), or imap_setflag_full().
 	 * @return bool
