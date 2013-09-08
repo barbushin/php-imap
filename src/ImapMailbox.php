@@ -245,6 +245,38 @@ class ImapMailbox {
 		return imap_num_msg($this->getImapStream());
 	}
 
+    /**
+     * Retrieve the quota settings per user
+     * @return array - FALSE in the case of call failure
+     */
+    protected function getQuota() {
+        return imap_get_quotaroot($this->getImapStream(), 'INBOX');
+    }
+
+    /**
+     * Return quota limit in KB
+     * @return int - FALSE in the case of call failure
+     */
+    public function getQuotaLimit() {
+        $quota = $this->getQuota();
+        if (is_array($quota)) {
+            $quota = $quota['STORAGE']['limit'];
+        }
+        return $quota;
+    }
+
+    /**
+     * Return quota usage in KB
+     * @return int - FALSE in the case of call failure
+     */
+    public function getQuotaUsage() {
+        $quota = $this->getQuota();
+        if (is_array($quota)) {
+            $quota = $quota['STORAGE']['usage'];
+        }
+        return $quota;
+    }
+
 	/**
 	 * Get mail data
 	 *
