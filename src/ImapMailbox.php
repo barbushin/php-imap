@@ -135,16 +135,52 @@ class ImapMailbox {
 		return imap_expunge($this->getImapStream());
 	}
 
+	/**
+	 * Add the flag \Seen to a mail.
+	 * @return bool
+	 */
 	public function markMailAsRead($mailId) {
-		$this->setFlag($mailId, '\\Seen');
+		return $this->setFlag(array($mailId), '\\Seen');
 	}
 
+	/**
+	 * Remove the flag \Seen from a mail.
+	 * @return bool
+	 */
 	public function markMailAsUnread($mailId) {
-		$this->clearFlag($mailId, '\\Seen');
+		return $this->clearFlag(array($mailId), '\\Seen');
 	}
 
+	/**
+	 * Add the flag \Flagged to a mail.
+	 * @return bool
+	 */
 	public function markMailAsImportant($mailId) {
-		$this->setFlag($mailId, '\\Flagged');
+		return $this->setFlag(array($mailId), '\\Flagged');
+	}
+
+	/**
+	 * Add the flag \Seen to a mails.
+	 * @return bool
+	 */
+	public function markMailsAsRead(array $mailId) {
+		return $this->setFlag($mailId, '\\Seen');
+	}
+
+	/**
+	 * Remove the flag \Seen from some mails.
+	 * @return bool
+	 */
+	public function markMailsAsUnread(array $mailId) {
+		return $this->clearFlag($mailId, '\\Seen');
+	}
+
+	/**
+	 * Add the flag \Flagged to some mails.
+	 * @return bool
+	 */
+	public function markMailsAsImportant(array $mailId) {
+		return $this->setFlag($mailId, '\\Flagged');
 	}
 
 	/**
