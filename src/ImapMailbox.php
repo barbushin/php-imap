@@ -77,6 +77,29 @@ class ImapMailbox {
 	}
 
 	/**
+	 * Creates a new mailbox specified by mailbox.
+	 *
+	 * @return bool
+	 */
+	
+	public function createMailbox() {
+		return imap_createmailbox($this->getImapStream(), imap_utf7_encode($this->imapPath));
+	}
+
+	/**
+	 * Gets status information about the given mailbox.
+	 *
+	 * This function returns an object containing status information.
+	 * The object has the following properties: messages, recent, unseen, uidnext, and uidvalidity.
+	 *
+	 * @return stdClass | FALSE if the box doesn't exist
+	 */
+	
+	public function statusMailbox() {
+		return imap_status($this->getImapStream(), $this->imapPath, SA_ALL);
+	}
+
+	/**
 	 * This function performs a search on the mailbox currently opened in the given IMAP stream.
 	 * For example, to match all unanswered mails sent by Mom, you'd use: "UNANSWERED FROM mom".
 	 * Searches appear to be case insensitive. This list of criteria is from a reading of the UW
