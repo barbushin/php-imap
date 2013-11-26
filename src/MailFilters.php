@@ -85,12 +85,41 @@ class MailFilters {
 	* @see applyFilters(), doAction()
 	* 
 	*/
-	public function addFilter($type,$value,$action = NULL) {
+	public function addFilter($type,$value,$action) {
+	  
+	  $this->validateSubmittedFilter($type, $value, $action);
+	  	  
       $this->filters[strtolower($type)][] = array("value" => $value,
       											  "action" => $action
 												 );
     }
 	
+	
+	private function validateSubmittedFilter($type,$value,$action){
+      //Make sure the submitted type is Supported	
+	  $acceptedTypes = array("to","subject","from");
+	  if(!is_string($type) || !in_array($type, $acceptedTypes)){
+	  	throw new MailFiltersException('Cannot add filter. Invalid "type" provided: '.$type);
+	  }
+	  
+	  //Make sure the type has the right value submitted with it
+	  switch($type){
+	  	case "to":
+			if(!is_array($value)){
+	  			throw new MailFiltersException('Invalid "value" provided for : '.$type.'. Expected an Array instead');
+			}
+			break;
+		case "subject":
+			if(!is_string($value)){
+	  			throw new MailFiltersException('Invalid "value" provided for : '.$type.'. Expected string instead');
+			}
+			break;
+		case "from":
+			if(!is_array($value) && !is_string($type)){
+	  			throw new MailFiltersException('Invalid "value" provided for : '.$type.'. Expected an Array or String instead');
+			}
+	   }
+	}
 	
 	/**
 	* Clears all previously added filters (Incase you want to continue working on a message with seperate filters or something)
@@ -293,4 +322,8 @@ class MailFilters {
 	   private function bounceMessage($mailObj,$mail){
 	   		//This is still Tricky ! Need to find a way to handle this   
 	   }
+}
+
+class MailFiltersException extends Exception {
+
 }
