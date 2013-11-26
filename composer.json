@@ -1,6 +1,6 @@
 {
 	"name": "php-imap/php-imap",
-	"description": "Compact PHP library for working with date/time in different formats & timezones.",
+	"description": "PHP class to access mailbox by POP3/IMAP/NNTP using IMAP extension",
 	"keywords": ["PHP", "IMAP", "mail"],
 	"homepage": "https://github.com/barbushin/php-imap",
 	"license": "LGPL",
