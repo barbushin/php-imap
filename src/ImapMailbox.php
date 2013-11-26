@@ -369,6 +369,12 @@ class ImapMailbox {
 			}
 		}
 
+		if(isset($head->bcc)) {
+			foreach($head->bcc as $bcc) {
+				$mail->cc[strtolower($bcc->mailbox . '@' . $bcc->host)] = isset($bcc->personal) ? $this->decodeMimeStr($bcc->personal, $this->serverEncoding) : null;
+			}
+		}
+
 		if(isset($head->reply_to)) {
 			foreach($head->reply_to as $replyTo) {
 				$mail->replyTo[strtolower($replyTo->mailbox . '@' . $replyTo->host)] = isset($replyTo->personal) ? $this->decodeMimeStr($replyTo->personal, $this->serverEncoding) : null;
@@ -524,6 +530,7 @@ class IncomingMail {
 	public $to = array();
 	public $toString;
 	public $cc = array();
+	public $bcc = array();
 	public $replyTo = array();
 
 	public $textPlain;
