@@ -352,16 +352,18 @@ class ImapMailbox {
 		$mail->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : null;
 		$mail->fromAddress = strtolower($head->from[0]->mailbox . '@' . $head->from[0]->host);
 
-		$toStrings = array();
-		foreach($head->to as $to) {
-			if(!empty($to->mailbox) && !empty($to->host)) {
-				$toEmail = strtolower($to->mailbox . '@' . $to->host);
-				$toName = isset($to->personal) ? $this->decodeMimeStr($to->personal, $this->serverEncoding) : null;
-				$toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
-				$mail->to[$toEmail] = $toName;
+		if(isset($head->to)) {
+			$toStrings = array();
+			foreach($head->to as $to) {
+				if(!empty($to->mailbox) && !empty($to->host)) {
+					$toEmail = strtolower($to->mailbox . '@' . $to->host);
+					$toName = isset($to->personal) ? $this->decodeMimeStr($to->personal, $this->serverEncoding) : null;
+					$toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
+					$mail->to[$toEmail] = $toName;
+				}
 			}
+			$mail->toString = implode(', ', $toStrings);
 		}
-		$mail->toString = implode(', ', $toStrings);
 
 		if(isset($head->cc)) {
 			foreach($head->cc as $cc) {
