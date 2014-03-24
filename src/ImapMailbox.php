@@ -572,6 +572,7 @@ class IncomingMailAttachment {
 	public $name;
 	public $filePath;
 	public $raw_decoded;
+	public $mime_type;
 	public $struct_types = array(
 		'text',
 		'multipart',
