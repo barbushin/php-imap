@@ -441,9 +441,13 @@ class ImapMailbox {
 				$fileName = $this->decodeMimeStr($fileName, $this->serverEncoding);
 				$fileName = $this->decodeRFC2231($fileName, $this->serverEncoding);
 			}
+
 			$attachment = new IncomingMailAttachment();
 			$attachment->id = $attachmentId;
 			$attachment->name = $fileName;
+			$attachment->mime_type = $attachment->struct_types[$partStructure->type].'/'.$partStructure->subtype;
+			$attachment->raw_decoded = $data;
+
 			if($this->attachmentsDir) {
 				$replace = array(
 					'/\s/' => '_',
@@ -567,6 +571,17 @@ class IncomingMailAttachment {
 	public $id;
 	public $name;
 	public $filePath;
+	public $raw_decoded;
+	public $struct_types = array(
+		'text',
+		'multipart',
+		'message',
+		'application',
+		'audio',
+		'image',
+		'video',
+		'other'
+	);
 }
 
 class ImapMailboxException extends Exception {
