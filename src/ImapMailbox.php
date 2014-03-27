@@ -256,7 +256,11 @@ class ImapMailbox {
         $mails = imap_fetch_overview($this->getImapStream(), implode(',', $mailsIds), FT_UID);
 
         foreach($mails as $id => $mail)
+		{
             $mails[$id]->subject = $this->decodeMimeStr($mail->subject, $this->serverEncoding);
+            $mails[$id]->from = $this->decodeMimeStr($mail->from, $this->serverEncoding);
+            $mails[$id]->to = $this->decodeMimeStr($mail->to, $this->serverEncoding);
+		}
 
 		return $mails;
 	}
