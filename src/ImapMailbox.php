@@ -64,11 +64,11 @@ class ImapMailbox {
 	 * Get information about the current mailbox.
 	 *
 	 * Returns the information in an object with following properties:
-	 *	Date - current system time formatted according to RFC2822
-	 *	Driver - protocol used to access this mailbox: POP3, IMAP, NNTP
-	 *	Mailbox - the mailbox name
-	 *	Nmsgs - number of mails in the mailbox
-	 *	Recent - number of recent mails in the mailbox
+	 *  Date - current system time formatted according to RFC2822
+	 *  Driver - protocol used to access this mailbox: POP3, IMAP, NNTP
+	 *  Mailbox - the mailbox name
+	 *  Nmsgs - number of mails in the mailbox
+	 *  Recent - number of recent mails in the mailbox
 	 *
 	 * @return stdClass
 	 */
@@ -81,7 +81,7 @@ class ImapMailbox {
 	 *
 	 * @return bool
 	 */
-	
+
 	public function createMailbox() {
 		return imap_createmailbox($this->getImapStream(), imap_utf7_encode($this->imapPath));
 	}
@@ -94,7 +94,7 @@ class ImapMailbox {
 	 *
 	 * @return stdClass | FALSE if the box doesn't exist
 	 */
-	
+
 	public function statusMailbox() {
 		return imap_status($this->getImapStream(), $this->imapPath, SA_ALL);
 	}
@@ -106,30 +106,30 @@ class ImapMailbox {
 	 * c-client source code and may be incomplete or inaccurate (see also RFC2060, section 6.4.4).
 	 *
 	 * @param string $criteria String, delimited by spaces, in which the following keywords are allowed. Any multi-word arguments (e.g. FROM "joey smith") must be quoted. Results will match all criteria entries.
-	 *		ALL - return all mails matching the rest of the criteria
-	 *		ANSWERED - match mails with the \\ANSWERED flag set
-	 *		BCC "string" - match mails with "string" in the Bcc: field
-	 *		BEFORE "date" - match mails with Date: before "date"
-	 *		BODY "string" - match mails with "string" in the body of the mail
-	 *		CC "string" - match mails with "string" in the Cc: field
-	 *		DELETED - match deleted mails
-	 *		FLAGGED - match mails with the \\FLAGGED (sometimes referred to as Important or Urgent) flag set
-	 *		FROM "string" - match mails with "string" in the From: field
-	 *		KEYWORD "string" - match mails with "string" as a keyword
-	 *		NEW - match new mails
-	 *		OLD - match old mails
-	 *		ON "date" - match mails with Date: matching "date"
-	 *		RECENT - match mails with the \\RECENT flag set
-	 *		SEEN - match mails that have been read (the \\SEEN flag is set)
-	 *		SINCE "date" - match mails with Date: after "date"
-	 *		SUBJECT "string" - match mails with "string" in the Subject:
-	 *		TEXT "string" - match mails with text "string"
-	 *		TO "string" - match mails with "string" in the To:
-	 *		UNANSWERED - match mails that have not been answered
-	 *		UNDELETED - match mails that are not deleted
-	 *		UNFLAGGED - match mails that are not flagged
-	 *		UNKEYWORD "string" - match mails that do not have the keyword "string"
-	 *		UNSEEN - match mails which have not been read yet
+	 *    ALL - return all mails matching the rest of the criteria
+	 *    ANSWERED - match mails with the \\ANSWERED flag set
+	 *    BCC "string" - match mails with "string" in the Bcc: field
+	 *    BEFORE "date" - match mails with Date: before "date"
+	 *    BODY "string" - match mails with "string" in the body of the mail
+	 *    CC "string" - match mails with "string" in the Cc: field
+	 *    DELETED - match deleted mails
+	 *    FLAGGED - match mails with the \\FLAGGED (sometimes referred to as Important or Urgent) flag set
+	 *    FROM "string" - match mails with "string" in the From: field
+	 *    KEYWORD "string" - match mails with "string" as a keyword
+	 *    NEW - match new mails
+	 *    OLD - match old mails
+	 *    ON "date" - match mails with Date: matching "date"
+	 *    RECENT - match mails with the \\RECENT flag set
+	 *    SEEN - match mails that have been read (the \\SEEN flag is set)
+	 *    SINCE "date" - match mails with Date: after "date"
+	 *    SUBJECT "string" - match mails with "string" in the Subject:
+	 *    TEXT "string" - match mails with text "string"
+	 *    TO "string" - match mails with "string" in the To:
+	 *    UNANSWERED - match mails that have not been answered
+	 *    UNDELETED - match mails that are not deleted
+	 *    UNFLAGGED - match mails that are not flagged
+	 *    UNKEYWORD "string" - match mails that do not have the keyword "string"
+	 *    UNSEEN - match mails which have not been read yet
 	 *
 	 * @return array Mails ids
 	 */
@@ -146,9 +146,9 @@ class ImapMailbox {
 		return imap_delete($this->getImapStream(), $mailId, FT_UID);
 	}
 
-    public function moveMail($mailId, $mailBox) {
-        return imap_mail_move($this->getImapStream(), $mailId, $mailBox, CP_UID) && $this->expungeDeletedMails();
-    }
+	public function moveMail($mailId, $mailBox) {
+		return imap_mail_move($this->getImapStream(), $mailId, $mailBox, CP_UID) && $this->expungeDeletedMails();
+	}
 
 	/**
 	 * Deletes all the mails marked for deletion by imap_delete(), imap_mail_move(), or imap_setflag_full().
@@ -253,11 +253,10 @@ class ImapMailbox {
 	 * @return array
 	 */
 	public function getMailsInfo(array $mailsIds) {
-        $mails = imap_fetch_overview($this->getImapStream(), implode(',', $mailsIds), FT_UID);
-
-        foreach($mails as $id => $mail)
-            $mails[$id]->subject = $this->decodeMimeStr($mail->subject, $this->serverEncoding);
-
+		$mails = imap_fetch_overview($this->getImapStream(), implode(',', $mailsIds), FT_UID);
+		foreach($mails as $id => $mail) {
+			$mails[$id]->subject = $this->decodeMimeStr($mail->subject, $this->serverEncoding);
+		}
 		return $mails;
 	}
 
@@ -309,37 +308,37 @@ class ImapMailbox {
 		return imap_num_msg($this->getImapStream());
 	}
 
-    /**
-     * Retrieve the quota settings per user
-     * @return array - FALSE in the case of call failure
-     */
-    protected function getQuota() {
-        return imap_get_quotaroot($this->getImapStream(), 'INBOX');
-    }
+	/**
+	 * Retrieve the quota settings per user
+	 * @return array - FALSE in the case of call failure
+	 */
+	protected function getQuota() {
+		return imap_get_quotaroot($this->getImapStream(), 'INBOX');
+	}
 
-    /**
-     * Return quota limit in KB
-     * @return int - FALSE in the case of call failure
-     */
-    public function getQuotaLimit() {
-        $quota = $this->getQuota();
-        if (is_array($quota)) {
-            $quota = $quota['STORAGE']['limit'];
-        }
-        return $quota;
-    }
+	/**
+	 * Return quota limit in KB
+	 * @return int - FALSE in the case of call failure
+	 */
+	public function getQuotaLimit() {
+		$quota = $this->getQuota();
+		if(is_array($quota)) {
+			$quota = $quota['STORAGE']['limit'];
+		}
+		return $quota;
+	}
 
-    /**
-     * Return quota usage in KB
-     * @return int - FALSE in the case of call failure
-     */
-    public function getQuotaUsage() {
-        $quota = $this->getQuota();
-        if (is_array($quota)) {
-            $quota = $quota['STORAGE']['usage'];
-        }
-        return $quota;
-    }
+	/**
+	 * Return quota usage in KB
+	 * @return int - FALSE in the case of call failure
+	 */
+	public function getQuotaUsage() {
+		$quota = $this->getQuota();
+		if(is_array($quota)) {
+			$quota = $quota['STORAGE']['usage'];
+		}
+		return $quota;
+	}
 
 	/**
 	 * Get mail data
