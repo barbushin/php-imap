@@ -13,7 +13,7 @@ class ImapMailbox {
 	protected $serverEncoding;
 	protected $attachmentsDir;
 
-	const LATT_NOINFERIORS = 1; // This mailbox contains, and may not contain any "children" (there are no mailboxes below this one). Calling imap_createmailbox() will not work on this mailbox.
+	const LATT_NOINFERIORS = 1; // It is not possible for any child levels of hierarchy to exist under this name; no child levels exist now and none can be created in the future
 	const LATT_NOSELECT = 2; // This is only a container, not a mailbox - you cannot open it.
 	const LATT_MARKED = 4; // This mailbox is marked. This means that it may contain new messages since the last time it was checked. Not provided by all IMAP servers.
 	const LATT_UNMARKED = 8; // This mailbox is not marked, does not contain new messages. If either MARKED or UNMARKED is provided, you can assume the IMAP server supports this feature for this mailbox.
@@ -263,12 +263,15 @@ class ImapMailbox {
 	public function getMailsInfo(array $mailsIds) {
         $mails = imap_fetch_overview($this->getImapStream(), implode(',', $mailsIds), FT_UID);
 
-        foreach($mails as $id => $mail)
-		{
-            $mails[$id]->subject = $this->decodeMimeStr($mail->subject, $this->serverEncoding);
-            $mails[$id]->from = $this->decodeMimeStr($mail->from, $this->serverEncoding);
-            $mails[$id]->to = $this->decodeMimeStr($mail->to, $this->serverEncoding);
-		}
+        if(is_array($mails) && count($mails))
+        {
+            foreach($mails as &$mail)
+            {
+                if(isset($mails[$id]->subject)) $mails[$id]->subject = $this->decodeMimeStr($mail->subject, $this->serverEncoding);
+                if(isset($mails[$id]->from)) $mails[$id]->from = $this->decodeMimeStr($mail->from, $this->serverEncoding);
+                if(isset($mail->to)) $mail->to = $this->decodeMimeStr($mail->to, $this->serverEncoding);
+            }
+        }
 
 		return $mails;
 	}
