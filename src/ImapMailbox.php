@@ -253,7 +253,12 @@ class ImapMailbox {
 	 * @return array
 	 */
 	public function getMailsInfo(array $mailsIds) {
-		return imap_fetch_overview($this->getImapStream(), implode(',', $mailsIds), FT_UID);
+        $mails = imap_fetch_overview($this->getImapStream(), implode(',', $mailsIds), FT_UID);
+
+        foreach($mails as $id => $mail)
+            $mails[$id]->subject = $this->decodeMimeStr($mail->subject, $this->serverEncoding);
+
+		return $mails;
 	}
 
 	/**
