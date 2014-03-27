@@ -13,6 +13,14 @@ class ImapMailbox {
 	protected $serverEncoding;
 	protected $attachmentsDir;
 
+	const LATT_NOINFERIORS = 1; // This mailbox contains, and may not contain any "children" (there are no mailboxes below this one). Calling imap_createmailbox() will not work on this mailbox.
+	const LATT_NOSELECT = 2; // This is only a container, not a mailbox - you cannot open it.
+	const LATT_MARKED = 4; // This mailbox is marked. This means that it may contain new messages since the last time it was checked. Not provided by all IMAP servers.
+	const LATT_UNMARKED = 8; // This mailbox is not marked, does not contain new messages. If either MARKED or UNMARKED is provided, you can assume the IMAP server supports this feature for this mailbox.
+	const LATT_REFERRAL = 16; // This mailbox is a link to another remote mailbox (http://www.ietf.org/rfc/rfc2193.txt)
+	const LATT_HASCHILDREN = 32; // This mailbox contains children.
+	const LATT_HASNOCHILDREN = 64; // This mailbox not contain any children.
+
 	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'utf-8') {
 		$this->imapPath = $imapPath;
 		$this->login = $login;
