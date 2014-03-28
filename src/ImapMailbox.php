@@ -254,8 +254,20 @@ class ImapMailbox {
 	 */
 	public function getMailsInfo(array $mailsIds) {
 		$mails = imap_fetch_overview($this->getImapStream(), implode(',', $mailsIds), FT_UID);
-		foreach($mails as $id => $mail) {
-			$mails[$id]->subject = $this->decodeMimeStr($mail->subject, $this->serverEncoding);
+		if(is_array($mails) && count($mails))
+		{
+			foreach($mails as &$mail)
+			{
+				if(isset($mail->subject)) {
+					$mail->subject = $this->decodeMimeStr($mail->subject, $this->serverEncoding);
+				}
+				if(isset($mail->from)) { 
+					$mail->from = $this->decodeMimeStr($mail->from, $this->serverEncoding);
+				}
+				if(isset($mail->to)) { 
+					$mail->to = $this->decodeMimeStr($mail->to, $this->serverEncoding);
+				}
+			}
 		}
 		return $mails;
 	}
