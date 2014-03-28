@@ -258,9 +258,15 @@ class ImapMailbox {
 		{
 			foreach($mails as &$mail)
 			{
-				if(isset($mail->subject)) $mail->subject = $this->decodeMimeStr($mail->subject, $this->serverEncoding);
-				if(isset($mail->from)) $mail->from = $this->decodeMimeStr($mail->from, $this->serverEncoding);
-				if(isset($mail->to)) $mail->to = $this->decodeMimeStr($mail->to, $this->serverEncoding);
+				if(isset($mail->subject)) {
+					$mail->subject = $this->decodeMimeStr($mail->subject, $this->serverEncoding);
+				}
+				if(isset($mail->from)) { 
+					$mail->from = $this->decodeMimeStr($mail->from, $this->serverEncoding);
+				}
+				if(isset($mail->to)) { 
+					$mail->to = $this->decodeMimeStr($mail->to, $this->serverEncoding);
+				}
 			}
 		}
 		return $mails;
