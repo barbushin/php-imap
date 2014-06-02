@@ -139,6 +139,14 @@ class ImapMailbox {
 	}
 
 	/**
+	 * Save mail body.
+	 * @return bool
+	 */
+	public function saveMail($mailId, $filename = 'email.eml') {
+		return imap_savebody($this->getImapStream(), $filename, $mailId, "", FT_UID);
+	}
+
+	/**
 	 * Marks mails listed in mailId for deletion.
 	 * @return bool
 	 */
