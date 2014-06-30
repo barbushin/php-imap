@@ -372,7 +372,7 @@ class ImapMailbox {
 		$mail = new IncomingMail();
 		$mail->id = $mailId;
 		$mail->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime($head->date) : time());
-		$mail->subject = $this->decodeMimeStr($head->subject, $this->serverEncoding);
+		$mail->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
 		$mail->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : null;
 		$mail->fromAddress = strtolower($head->from[0]->mailbox . '@' . $head->from[0]->host);
 
