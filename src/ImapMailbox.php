@@ -99,6 +99,27 @@ class ImapMailbox {
 		return imap_status($this->getImapStream(), $this->imapPath, SA_ALL);
 	}
 
+
+	/**
+	 * Gets listing the folders
+	 *
+	 * This function returns an object containing listing the folders.
+	 * The object has the following properties: messages, recent, unseen, uidnext, and uidvalidity.
+	 *
+	 * @return array listing the folders
+	 */
+
+	public function getListingFolders() {
+		$folders = imap_list($this->getImapStream(), $this->imapPath, "*");
+		foreach ($folders as $key => $folder)
+		{
+			$folder = str_replace($this->imapPath, "", imap_utf7_decode($folder));
+			$folders[ $key  ] = $folder;
+		}
+		return $folders;
+	}
+
+
 	/**
 	 * This function performs a search on the mailbox currently opened in the given IMAP stream.
 	 * For example, to match all unanswered mails sent by Mom, you'd use: "UNANSWERED FROM mom".
@@ -269,10 +290,10 @@ class ImapMailbox {
 				if(isset($mail->subject)) {
 					$mail->subject = $this->decodeMimeStr($mail->subject, $this->serverEncoding);
 				}
-				if(isset($mail->from)) { 
+				if(isset($mail->from)) {
 					$mail->from = $this->decodeMimeStr($mail->from, $this->serverEncoding);
 				}
-				if(isset($mail->to)) { 
+				if(isset($mail->to)) {
 					$mail->to = $this->decodeMimeStr($mail->to, $this->serverEncoding);
 				}
 			}
