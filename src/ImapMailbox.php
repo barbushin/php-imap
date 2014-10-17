@@ -538,9 +538,9 @@ class ImapMailbox {
 	}
 
 	function isUrlEncoded($string) {
-		$string = str_replace('%20', '+', $string);
-		$decoded = urldecode($string);
-		return $decoded != $string && urlencode($decoded) == $string;
+		$hasInvalidChars = preg_match( '#[^%a-zA-Z0-9\-_\.\+]#', $string );
+		$hasEscapedChars = preg_match( '#%[a-zA-Z0-9]{2}#', $string );
+		return !$hasInvalidChars && $hasEscapedChars;
 	}
 
 	protected function decodeRFC2231($string, $charset = 'utf-8') {
