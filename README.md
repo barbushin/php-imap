@@ -2,13 +2,39 @@ ImapMailbox is PHP class to access mailbox by POP3/IMAP/NNTP using IMAP extensio
 
 ### Features
 
-* Connect to mailbox by POP3/IMAP/NNTP (see [http://php.net/imap_open imap_open])
-* Get mailbox status (see [http://php.net/imap_check imap_check])
+* Connect to mailbox by POP3/IMAP/NNTP (see [imap_open](http://php.net/imap_open))
+* Get mailbox status (see [imap_check](http://php.net/imap_check imap_check))
 * Receive emails (+attachments, +html body images)
-* Search emails by custom criteria (see [http://php.net/imap_search imap_search])
-* Change email status (see [http://php.net/imap_setflag_full imap_setflag_full])
+* Search emails by custom criteria (see [imap_search](http://php.net/imap_search))
+* Change email status (see [imap_setflag_full](http://php.net/imap_setflag_full))
 * Delete email
 
+### [Usage example](https://github.com/barbushin/php-imap/blob/master/example/index.php)
+```php
+<?php
+
+require_once('../src/ImapMailbox.php');
+
+// IMAP must be enabled in Google Mail Settings
+define('GMAIL_EMAIL', 'some@gmail.com');
+define('GMAIL_PASSWORD', '*********');
+define('ATTACHMENTS_DIR', dirname(__FILE__) . '/attachments');
+
+$mailbox = new ImapMailbox('{imap.gmail.com:993/imap/ssl}INBOX', GMAIL_EMAIL, GMAIL_PASSWORD, ATTACHMENTS_DIR, 'utf-8');
+$mails = array();
+
+// Get some mail
+$mailsIds = $mailbox->searchMailBox('ALL');
+if(!$mailsIds) {
+	die('Mailbox is empty');
+}
+
+$mailId = reset($mailsIds);
+$mail = $mailbox->getMail($mailId);
+
+var_dump($mail);
+var_dump($mail->getAttachments());
+```
 
 ### Recommended
 
