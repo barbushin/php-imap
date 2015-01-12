@@ -470,7 +470,7 @@ class ImapMailbox {
 			}
 		}
 		if(!empty($params['charset'])) {
-			$data = iconv(strtoupper($params['charset']), $this->serverEncoding . '//IGNORE', $data);
+			$data = mb_convert_encoding($data, $this->serverEncoding, $params['charset']);
 		}
 
 		// attachments
@@ -532,7 +532,7 @@ class ImapMailbox {
 			if($elements[$i]->charset == 'default') {
 				$elements[$i]->charset = 'iso-8859-1';
 			}
-			$newString .= iconv(strtoupper($elements[$i]->charset), $charset . '//IGNORE', $elements[$i]->text);
+			$newString .= mb_convert_encoding($elements[$i]->text, $charset, $elements[$i]->charset);
 		}
 		return $newString;
 	}
@@ -548,7 +548,7 @@ class ImapMailbox {
 			$encoding = $matches[1];
 			$data = $matches[2];
 			if($this->isUrlEncoded($data)) {
-				$string = iconv(strtoupper($encoding), $charset . '//IGNORE', urldecode($data));
+				$string = mb_convert_encoding(urldecode($data), $charset, $encoding);
 			}
 		}
 		return $string;
