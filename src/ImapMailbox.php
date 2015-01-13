@@ -470,7 +470,7 @@ class ImapMailbox {
 			}
 		}
 		if(!empty($params['charset'])) {
-			$data = mb_convert_encoding($data, $this->serverEncoding, $params['charset']);
+			$data = $this->convertStringEncoding($data, $params['charset'], $this->serverEncoding);
 		}
 
 		// attachments
@@ -532,7 +532,7 @@ class ImapMailbox {
 			if($elements[$i]->charset == 'default') {
 				$elements[$i]->charset = 'iso-8859-1';
 			}
-			$newString .= mb_convert_encoding($elements[$i]->text, $charset, $elements[$i]->charset);
+			$newString .= $this->convertStringEncoding($elements[$i]->text, $elements[$i]->charset, $charset);
 		}
 		return $newString;
 	}
@@ -548,12 +548,34 @@ class ImapMailbox {
 			$encoding = $matches[1];
 			$data = $matches[2];
 			if($this->isUrlEncoded($data)) {
-				$string = mb_convert_encoding(urldecode($data), $charset, $encoding);
+				$string = $this->convertStringEncoding(urldecode($data), $encoding, $charset);
 			}
 		}
 		return $string;
 	}
-
+	
+	/**
+	 * Converts a string from one encoding to another.
+	 * @param string $string
+	 * @param string $fromEncoding
+	 * @param string $toEncoding
+	 * @return string Converted string if conversion was successful, or the original string if not
+	 */
+	protected function convertStringEncoding($string, $fromEncoding, $toEncoding)
+	{
+		$convertedString = false;
+		if ($string && $fromEncoding !== $toEncoding) {
+			if (extension_loaded('mbstring')) {
+				$convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
+			}
+			else {
+				$convertedString = @iconv($fromEncoding, $toEncoding . '//IGNORE', $string);
+			}
+		}
+		// If conversion does not occur or is not successful, return the original string
+		return ($convertedString !== false) ? $convertedString : $string;
+	}
+	
 	public function __destruct() {
 		$this->disconnect();
 	}
