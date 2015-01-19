@@ -10,6 +10,9 @@ class ImapMailbox {
 	protected $imapPath;
 	protected $login;
 	protected $password;
+    protected $option = 0;
+    protected $nRetries = 0;
+    protected $params;
 	protected $serverEncoding;
 	protected $attachmentsDir;
 
@@ -45,8 +48,16 @@ class ImapMailbox {
 		return $imapStream;
 	}
 
+    /**
+     * Set connection parameters
+     * @param array $params
+     */
+    public function setConnectionParams(array $params = null) {
+        $this->params = $params;
+    }
+
 	protected function initImapStream() {
-		$imapStream = @imap_open($this->imapPath, $this->login, $this->password);
+		$imapStream = @imap_open($this->imapPath, $this->login, $this->password, $this->option, $this->nRetries, $this->params);
 		if(!$imapStream) {
 			throw new ImapMailboxException('Connection error: ' . imap_last_error());
 		}
