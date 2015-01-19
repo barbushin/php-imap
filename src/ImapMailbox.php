@@ -8,15 +8,18 @@
 class ImapMailbox {
 
 	protected $imapPath;
-	protected $login;
-	protected $password;
+	protected $imapLogin;
+	protected $imapPassword;
+	protected $imapOptions = 0;
+	protected $imapRetriesNum = 0;
+	protected $imapParams = array();
 	protected $serverEncoding;
 	protected $attachmentsDir;
 
 	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'utf-8') {
 		$this->imapPath = $imapPath;
-		$this->login = $login;
-		$this->password = $password;
+		$this->imapLogin = $login;
+		$this->imapPassword = $password;
 		$this->serverEncoding = $serverEncoding;
 		if($attachmentsDir) {
 			if(!is_dir($attachmentsDir)) {
@@ -24,6 +27,18 @@ class ImapMailbox {
 			}
 			$this->attachmentsDir = rtrim(realpath($attachmentsDir), '\\/');
 		}
+	}
+
+	/**
+	 * Set custom connection arguments of imap_open method. See http://php.net/imap_open
+	 * @param int $options
+	 * @param int $retriesNum
+	 * @param array $params
+	 */
+	public function setConnectionArgs($options = 0, $retriesNum = 0, array $params = null) {
+		$this->imapOptions = $options;
+		$this->imapRetriesNum = $retriesNum;
+		$this->imapParams = $params;
 	}
 
 	/**
@@ -46,7 +61,7 @@ class ImapMailbox {
 	}
 
 	protected function initImapStream() {
-		$imapStream = @imap_open($this->imapPath, $this->login, $this->password);
+		$imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
 		if(!$imapStream) {
 			throw new ImapMailboxException('Connection error: ' . imap_last_error());
 		}
