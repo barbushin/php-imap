@@ -311,6 +311,13 @@ class ImapMailbox {
 				if(isset($mail->to)) {
 					$mail->to = $this->decodeMimeStr($mail->to, $this->serverEncoding);
 				}
+				if (isset($mail->references)) {
+                    $mail->references = $this->decodeMimeStr($mail->references, $this->serverEncoding);
+                }
+                if (isset($mail->in_reply_to)) {
+                    $mail->in_reply_to = $this->decodeMimeStr($mail->in_reply_to, $this->serverEncoding);
+                }
+
 			}
 		}
 		return $mails;
