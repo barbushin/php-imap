@@ -593,11 +593,16 @@ class ImapMailbox {
 	{
 		$convertedString = false;
 		if ($string && $fromEncoding !== $toEncoding) {
-			if (extension_loaded('mbstring')) {
-				$convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
-			}
-			else {
-				$convertedString = @iconv($fromEncoding, $toEncoding . '//IGNORE', $string);
+			if($fromEncoding == 'ks_c_5601-1987') $fromEncoding = 'CP949';
+			if($fromEncoding == 'binary'){
+				$convertedString = pack('H*', base_convert($string, 2, 16));
+			}else{				
+				if (extension_loaded('mbstring')) {
+					$convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
+				}
+				else {
+					$convertedString = @iconv($fromEncoding, $toEncoding . '//IGNORE', $string);
+				}
 			}
 		}
 		// If conversion does not occur or is not successful, return the original string
