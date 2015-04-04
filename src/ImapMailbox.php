@@ -507,7 +507,7 @@ class ImapMailbox {
 			if($this->attachmentsDir) {
 				$replace = array(
 					'/\s/' => '_',
-					'/[^0-9a-zA-Z_\.]/' => '',
+					'/[^0-9a-zа-яіїє_\.]/iu' => '',
 					'/_+/' => '_',
 					'/(^_)|(_$)/' => '',
 				);
