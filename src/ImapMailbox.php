@@ -15,12 +15,14 @@ class ImapMailbox {
 	protected $imapParams = array();
 	protected $serverEncoding;
 	protected $attachmentsDir;
+	protected $attachmentsMaxSize = '';
 
-	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'utf-8') {
+	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'utf-8',$attachmentsMaxSize = '') {
 		$this->imapPath = $imapPath;
 		$this->imapLogin = $login;
 		$this->imapPassword = $password;
 		$this->serverEncoding = $serverEncoding;
+		$this->attachmentsMaxSize = $attachmentsMaxSize;
 		if($attachmentsDir) {
 			if(!is_dir($attachmentsDir)) {
 				throw new Exception('Directory "' . $attachmentsDir . '" not found');
@@ -452,21 +454,6 @@ class ImapMailbox {
 	}
 
 	protected function initMailPart(IncomingMail $mail, $partStructure, $partNum) {
-		$data = $partNum ? imap_fetchbody($this->getImapStream(), $mail->id, $partNum, FT_UID) : imap_body($this->getImapStream(), $mail->id, FT_UID);
-
-		if($partStructure->encoding == 1) {
-			$data = imap_utf8($data);
-		}
-		elseif($partStructure->encoding == 2) {
-			$data = imap_binary($data);
-		}
-		elseif($partStructure->encoding == 3) {
-			$data = imap_base64($data);
-		}
-		elseif($partStructure->encoding == 4) {
-			$data = imap_qprint($data);
-		}
-
 		$params = array();
 		if(!empty($partStructure->parameters)) {
 			foreach($partStructure->parameters as $param) {
@@ -484,14 +471,40 @@ class ImapMailbox {
 				}
 			}
 		}
-		if(!empty($params['charset'])) {
+		// check for attachments
+		$getdata = true;
+		$attachmentId = $partStructure->ifid
+			? trim($partStructure->id, " <>")
+			: (isset($params['filename']) || isset($params['name']) ? mt_rand() . mt_rand() : null);
+		if($attachmentId) {
+			$bytes = $partStructure->bytes;
+			if($this->attachmentsMaxSize === ''){				
+			}else if($bytes > $this->attachmentsMaxSize){
+				$getdata = false;
+			}
+		}
+		if($getdata){
+			$data = $partNum ? imap_fetchbody($this->getImapStream(), $mail->id, $partNum, FT_UID) : imap_body($this->getImapStream(), $mail->id, FT_UID);
+
+			if($partStructure->encoding == 1) {
+				$data = imap_utf8($data);
+			}
+			elseif($partStructure->encoding == 2) {
+				$data = imap_binary($data);
+			}
+			elseif($partStructure->encoding == 3) {
+				$data = imap_base64($data);
+			}
+			elseif($partStructure->encoding == 4) {
+				$data = imap_qprint($data);
+			}
+		}
+		
+		if(!empty($params['charset']) && $getdata) {
 			$data = $this->convertStringEncoding($data, $params['charset'], $this->serverEncoding);
 		}
 
 		// attachments
-		$attachmentId = $partStructure->ifid
-			? trim($partStructure->id, " <>")
-			: (isset($params['filename']) || isset($params['name']) ? mt_rand() . mt_rand() : null);
 		if($attachmentId) {
 			if(empty($params['filename']) && empty($params['name'])) {
 				$fileName = $attachmentId . '.' . strtolower($partStructure->subtype);
@@ -513,7 +526,7 @@ class ImapMailbox {
 				);
 				$fileSysName = preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . preg_replace(array_keys($replace), $replace, $fileName));
 				$attachment->filePath = $this->attachmentsDir . DIRECTORY_SEPARATOR . $fileSysName;
-				file_put_contents($attachment->filePath, $data);
+				if($getdata) file_put_contents($attachment->filePath, $data);
 			}
 			$mail->addAttachment($attachment);
 		}
@@ -580,11 +593,16 @@ class ImapMailbox {
 	{
 		$convertedString = false;
 		if ($string && $fromEncoding !== $toEncoding) {
-			if (extension_loaded('mbstring')) {
-				$convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
-			}
-			else {
-				$convertedString = @iconv($fromEncoding, $toEncoding . '//IGNORE', $string);
+			if($fromEncoding == 'ks_c_5601-1987') $fromEncoding = 'CP949';
+			if($fromEncoding == 'binary'){
+				$convertedString = pack('H*', base_convert($string, 2, 16));
+			}else{				
+				if (extension_loaded('mbstring')) {
+					$convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
+				}
+				else {
+					$convertedString = @iconv($fromEncoding, $toEncoding . '//IGNORE', $string);
+				}
 			}
 		}
 		// If conversion does not occur or is not successful, return the original string
