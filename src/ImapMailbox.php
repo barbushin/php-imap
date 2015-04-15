@@ -16,11 +16,11 @@ class ImapMailbox {
 	protected $serverEncoding;
 	protected $attachmentsDir;
 
-	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'utf-8') {
+	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8') {
 		$this->imapPath = $imapPath;
 		$this->imapLogin = $login;
 		$this->imapPassword = $password;
-		$this->serverEncoding = $serverEncoding;
+		$this->serverEncoding = strtoupper($serverEncoding);
 		if($attachmentsDir) {
 			if(!is_dir($attachmentsDir)) {
 				throw new Exception('Directory "' . $attachmentsDir . '" not found');
