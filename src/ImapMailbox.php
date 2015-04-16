@@ -68,6 +68,17 @@ class ImapMailbox {
 		return $imapStream;
 	}
 
+	public function reOpenImapStream($folder = null) {
+		$imapStream = $this->getImapStream(false);
+		if ($imapStream && (is_resource($imapStream) || imap_ping($imapStream))) {
+			imap_reopen($imapStream, $this->imapPath . $folder);
+		}
+		if (!$imapStream) {
+			throw new ImapMailboxException('Connection error: ' . imap_last_error());
+		}
+		return $imapStream;
+	}
+
 	protected function disconnect() {
 		$imapStream = $this->getImapStream(false);
 		if($imapStream && is_resource($imapStream)) {
@@ -311,6 +322,13 @@ class ImapMailbox {
 				if(isset($mail->to)) {
 					$mail->to = $this->decodeMimeStr($mail->to, $this->serverEncoding);
 				}
+				if (isset($mail->references)) {
+					$mail->references = $this->decodeMimeStr($mail->references, $this->serverEncoding);
+				}
+				if (isset($mail->in_reply_to)) {
+					$mail->in_reply_to = $this->decodeMimeStr($mail->in_reply_to, $this->serverEncoding);
+				}
+
 			}
 		}
 		return $mails;
