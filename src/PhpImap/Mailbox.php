@@ -1,10 +1,12 @@
-<?php
+<?php namespace PhpImap;
+
+use stdClass;
 
 /**
  * @see https://github.com/barbushin/php-imap
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
  */
-class ImapMailbox {
+class Mailbox {
 
 	protected $imapPath;
 	protected $imapLogin;
@@ -62,7 +64,7 @@ class ImapMailbox {
 	protected function initImapStream() {
 		$imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
 		if(!$imapStream) {
-			throw new ImapMailboxException('Connection error: ' . imap_last_error());
+			throw new Exception('Connection error: ' . imap_last_error());
 		}
 		return $imapStream;
 	}
@@ -106,7 +108,7 @@ class ImapMailbox {
 	 * This function returns an object containing status information.
 	 * The object has the following properties: messages, recent, unseen, uidnext, and uidvalidity.
 	 *
-	 * @return stdClass | FALSE if the box doesn't exist
+	 * @return stdClass if the box doesn't exist
 	 */
 
 	public function statusMailbox() {
@@ -253,7 +255,7 @@ class ImapMailbox {
 	 * Causes a store to add the specified flag to the flags set for the mails in the specified sequence.
 	 *
 	 * @param array $mailsIds
-	 * @param $flag Flags which you can set are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060.
+	 * @param string $flag which you can set are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060.
 	 * @return bool
 	 */
 	public function setFlag(array $mailsIds, $flag) {
@@ -264,7 +266,7 @@ class ImapMailbox {
 	 * Cause a store to delete the specified flag to the flags set for the mails in the specified sequence.
 	 *
 	 * @param array $mailsIds
-	 * @param $flag Flags which you can set are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060.
+	 * @param string $flag which you can set are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060.
 	 * @return bool
 	 */
 	public function clearFlag(array $mailsIds, $flag) {
@@ -591,6 +593,6 @@ class ImapMailbox {
 	}
 }
 
-class ImapMailboxException extends Exception {
+class Exception extends \Exception {
 
 }

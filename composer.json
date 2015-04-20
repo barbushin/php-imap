@@ -1,7 +1,11 @@
 {
 	"name": "php-imap/php-imap",
 	"description": "PHP class to access mailbox by POP3/IMAP/NNTP using IMAP extension",
-	"keywords": ["PHP", "IMAP", "mail"],
+	"keywords": [
+		"PHP",
+		"IMAP",
+		"mail"
+	],
 	"homepage": "https://github.com/barbushin/php-imap",
 	"license": "BSD 3-Clause",
 	"type": "library",
@@ -16,7 +20,9 @@
 		"php": ">=5.3.0"
 	},
 	"autoload": {
-		"classmap": ["src/"]
+		"psr-0": {
+			"PhpImap": "src/"
+		}
 	},
-	"minimum-stability": "dev"
+	"minimum-stability": "stable"
 }

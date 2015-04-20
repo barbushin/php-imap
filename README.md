@@ -9,21 +9,28 @@ ImapMailbox is PHP class to access mailbox by POP3/IMAP/NNTP using IMAP extensio
 * Change email status (see [imap_setflag_full](http://php.net/imap_setflag_full))
 * Delete email
 
+### Installation by Composer
+
+	{
+		"require": {
+			"php-imap/php-imap": "2.*"
+		}
+	}
+
+### Migration from `v1.*` to `v2.*`
+
+Just add following code in the head of your script:
+
+	use PhpImap\Mailbox as ImapMailbox;
+	use PhpImap\IncomingMail;
+	use PhpImap\IncomingMailAttachment;
+
 ### [Usage example](https://github.com/barbushin/php-imap/blob/master/example/index.php)
 ```php
-<?php
 
-require_once('../src/ImapMailbox.php');
-
-// IMAP must be enabled in Google Mail Settings
-define('GMAIL_EMAIL', 'some@gmail.com');
-define('GMAIL_PASSWORD', '*********');
-define('ATTACHMENTS_DIR', __DIR__);
-
-$mailbox = new ImapMailbox('{imap.gmail.com:993/imap/ssl}INBOX', GMAIL_EMAIL, GMAIL_PASSWORD, ATTACHMENTS_DIR);
+$mailbox = new PhpImap\Mailbox('{imap.gmail.com:993/imap/ssl}INBOX', 'some@gmail.com', '*********', __DIR__);
 $mails = array();
 
-// Get some mail
 $mailsIds = $mailbox->searchMailBox('ALL');
 if(!$mailsIds) {
 	die('Mailbox is empty');
