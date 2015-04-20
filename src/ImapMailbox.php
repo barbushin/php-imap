@@ -568,7 +568,7 @@ class ImapMailbox {
 		}
 		return $string;
 	}
-	
+
 	/**
 	 * Converts a string from one encoding to another.
 	 * @param string $string
@@ -576,21 +576,17 @@ class ImapMailbox {
 	 * @param string $toEncoding
 	 * @return string Converted string if conversion was successful, or the original string if not
 	 */
-	protected function convertStringEncoding($string, $fromEncoding, $toEncoding)
-	{
-		$convertedString = false;
-		if ($string && $fromEncoding !== $toEncoding) {
-			if (extension_loaded('mbstring')) {
-				$convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
-			}
-			else {
-				$convertedString = @iconv($fromEncoding, $toEncoding . '//IGNORE', $string);
+	protected function convertStringEncoding($string, $fromEncoding, $toEncoding) {
+		$convertedString = null;
+		if($string && $fromEncoding != $toEncoding) {
+			$convertedString = @iconv($fromEncoding, $toEncoding . '//IGNORE', $string);
+			if(!$convertedString && extension_loaded('mbstring')) {
+				$convertedString = @mb_convert_encoding($string, $toEncoding, $fromEncoding);
 			}
 		}
-		// If conversion does not occur or is not successful, return the original string
-		return ($convertedString !== false) ? $convertedString : $string;
+		return $convertedString ?: $string;
 	}
-	
+
 	public function __destruct() {
 		$this->disconnect();
 	}
