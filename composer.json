@@ -3,7 +3,7 @@
 	"description": "PHP class to access mailbox by POP3/IMAP/NNTP using IMAP extension",
 	"keywords": ["PHP", "IMAP", "mail"],
 	"homepage": "https://github.com/barbushin/php-imap",
-	"license": "LGPL",
+	"license": "BSD 3-Clause",
 	"type": "library",
 	"authors": [
 		{
