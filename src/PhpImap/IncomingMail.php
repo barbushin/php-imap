@@ -39,14 +39,17 @@ class IncomingMail {
 	 * @return array attachmentId => link placeholder
 	 */
 	public function getInternalLinksPlaceholders() {
-		return preg_match_all('/=["\'](ci?d:(\w+))["\']/i', $this->textHtml, $matches) ? array_combine($matches[2], $matches[1]) : array();
+		return preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $this->textHtml, $matches) ? array_combine($matches[2], $matches[1]) : array();
+
 	}
 
 	public function replaceInternalLinks($baseUri) {
 		$baseUri = rtrim($baseUri, '\\/') . '/';
 		$fetchedHtml = $this->textHtml;
 		foreach($this->getInternalLinksPlaceholders() as $attachmentId => $placeholder) {
-			$fetchedHtml = str_replace($placeholder, $baseUri . basename($this->attachments[$attachmentId]->filePath), $fetchedHtml);
+			if(isset($this->attachments[$attachmentId])) {
+				$fetchedHtml = str_replace($placeholder, $baseUri . basename($this->attachments[$attachmentId]->filePath), $fetchedHtml);
+			}
 		}
 		return $fetchedHtml;
 	}
