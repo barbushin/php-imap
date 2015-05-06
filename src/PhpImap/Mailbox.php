@@ -130,7 +130,7 @@ class Mailbox {
 		foreach ($folders as $key => $folder)
 		{
 			$folder = str_replace($this->imapPath, "", imap_utf7_decode($folder));
-			$folders[ $key  ] = $folder;
+			$folders[$key] = $folder;
 		}
 		return $folders;
 	}
@@ -485,14 +485,12 @@ class Mailbox {
 				}
 			}
 		}
-		if(!empty($params['charset'])) {
-			$data = $this->convertStringEncoding($data, $params['charset'], $this->serverEncoding);
-		}
 
 		// attachments
 		$attachmentId = $partStructure->ifid
 			? trim($partStructure->id, " <>")
 			: (isset($params['filename']) || isset($params['name']) ? mt_rand() . mt_rand() : null);
+
 		if($attachmentId) {
 			if(empty($params['filename']) && empty($params['name'])) {
 				$fileName = $attachmentId . '.' . strtolower($partStructure->subtype);
@@ -518,16 +516,21 @@ class Mailbox {
 			}
 			$mail->addAttachment($attachment);
 		}
-		elseif($partStructure->type == 0 && $data) {
-			if(strtolower($partStructure->subtype) == 'plain') {
-				$mail->textPlain .= $data;
+		else {
+			if(!empty($params['charset'])) {
+				$data = $this->convertStringEncoding($data, $params['charset'], $this->serverEncoding);
 			}
-			else {
-				$mail->textHtml .= $data;
+			if($partStructure->type == 0 && $data) {
+				if(strtolower($partStructure->subtype) == 'plain') {
+					$mail->textPlain .= $data;
+				}
+				else {
+					$mail->textHtml .= $data;
+				}
 			}
-		}
-		elseif($partStructure->type == 2 && $data) {
-			$mail->textPlain .= trim($data);
+			elseif($partStructure->type == 2 && $data) {
+				$mail->textPlain .= trim($data);
+			}
 		}
 		if(!empty($partStructure->parts)) {
 			foreach($partStructure->parts as $subPartNum => $subPartStructure) {
