@@ -397,13 +397,14 @@ class Mailbox {
 		return $quota;
 	}
 
-	/**
-	 * Get mail data
-	 *
-	 * @param $mailId
-	 * @return IncomingMail
-	 */
-	public function getMail($mailId) {
+    /**
+     * Get mail data
+     *
+     * @param $mailId
+     * @param bool $markAsSeen
+     * @return IncomingMail
+     */
+	public function getMail($mailId, $markAsSeen = true) {
 		$head = imap_rfc822_parse_headers(imap_fetchheader($this->getImapStream(), $mailId, FT_UID));
 
 		$mail = new IncomingMail();
@@ -441,19 +442,23 @@ class Mailbox {
 		$mailStructure = imap_fetchstructure($this->getImapStream(), $mailId, FT_UID);
 
 		if(empty($mailStructure->parts)) {
-			$this->initMailPart($mail, $mailStructure, 0);
+			$this->initMailPart($mail, $mailStructure, 0, $markAsSeen);
 		}
 		else {
 			foreach($mailStructure->parts as $partNum => $partStructure) {
-				$this->initMailPart($mail, $partStructure, $partNum + 1);
+				$this->initMailPart($mail, $partStructure, $partNum + 1, $markAsSeen);
 			}
 		}
 
 		return $mail;
 	}
 
-	protected function initMailPart(IncomingMail $mail, $partStructure, $partNum) {
-		$data = $partNum ? imap_fetchbody($this->getImapStream(), $mail->id, $partNum, FT_UID) : imap_body($this->getImapStream(), $mail->id, FT_UID);
+	protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true) {
+        $options = FT_UID;
+        if(!$markAsSeen) {
+            $options |= FT_PEEK;
+        }
+		$data = $partNum ? imap_fetchbody($this->getImapStream(), $mail->id, $partNum, $options) : imap_body($this->getImapStream(), $mail->id, $options);
 
 		if($partStructure->encoding == 1) {
 			$data = imap_utf8($data);
@@ -535,10 +540,10 @@ class Mailbox {
 		if(!empty($partStructure->parts)) {
 			foreach($partStructure->parts as $subPartNum => $subPartStructure) {
 				if($partStructure->type == 2 && $partStructure->subtype == 'RFC822') {
-					$this->initMailPart($mail, $subPartStructure, $partNum);
+					$this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
 				}
 				else {
-					$this->initMailPart($mail, $subPartStructure, $partNum . '.' . ($subPartNum + 1));
+					$this->initMailPart($mail, $subPartStructure, $partNum . '.' . ($subPartNum + 1), $markAsSeen);
 				}
 			}
 		}
