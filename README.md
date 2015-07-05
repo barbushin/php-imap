@@ -13,9 +13,13 @@ ImapMailbox is PHP class to access mailbox by POP3/IMAP/NNTP using IMAP extensio
 
 	{
 		"require": {
-			"php-imap/php-imap": "2.*"
+			"php-imap/php-imap": "~2.0"
 		}
 	}
+
+Or
+
+	$ composer require php-imap/php-imap ~2.0
 
 ### Migration from `v1.*` to `v2.*`
 
@@ -26,8 +30,8 @@ Just add following code in the head of your script:
 	use PhpImap\IncomingMailAttachment;
 
 ### [Usage example](https://github.com/barbushin/php-imap/blob/master/example/index.php)
-```php
 
+```php
 $mailbox = new PhpImap\Mailbox('{imap.gmail.com:993/imap/ssl}INBOX', 'some@gmail.com', '*********', __DIR__);
 $mails = array();
 
