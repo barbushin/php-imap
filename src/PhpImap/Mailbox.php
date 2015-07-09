@@ -470,7 +470,7 @@ class Mailbox {
 			$data = imap_base64($data);
 		}
 		elseif($partStructure->encoding == 4) {
-			$data = imap_qprint($data);
+			$data = quoted_printable_decode($data);
 		}
 
 		$params = array();
