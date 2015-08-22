@@ -439,6 +439,10 @@ class Mailbox {
 			}
 		}
 
+		if(isset($head->message_id)) {
+			$mail->messageId = $head->message_id;
+		}
+
 		$mailStructure = imap_fetchstructure($this->getImapStream(), $mailId, FT_UID);
 
 		if(empty($mailStructure->parts)) {

@@ -18,6 +18,8 @@ class IncomingMail {
 	public $cc = array();
 	public $replyTo = array();
 
+	public $messageId;
+
 	public $textPlain;
 	public $textHtml;
 	/** @var IncomingMailAttachment[] */
