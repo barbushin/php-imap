@@ -202,31 +202,7 @@ class Mailbox {
 	public function expungeDeletedMails() {
 		return imap_expunge($this->getImapStream());
 	}
-
-	/**
-	 * Add the flag \Seen to a mail.
-	 * @return bool
-	 */
-	public function markMailAsRead($mailId) {
-		return $this->setFlag(array($mailId), '\\Seen');
-	}
-
-	/**
-	 * Remove the flag \Seen from a mail.
-	 * @return bool
-	 */
-	public function markMailAsUnread($mailId) {
-		return $this->clearFlag(array($mailId), '\\Seen');
-	}
-
-	/**
-	 * Add the flag \Flagged to a mail.
-	 * @return bool
-	 */
-	public function markMailAsImportant($mailId) {
-		return $this->setFlag(array($mailId), '\\Flagged');
-	}
-
+	
 	/**
 	 * Add the flag \Seen to a mails.
 	 * @return bool
