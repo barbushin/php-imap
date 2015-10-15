@@ -29,7 +29,7 @@ Just add following code in the head of your script:
 	use PhpImap\IncomingMail;
 	use PhpImap\IncomingMailAttachment;
 
-### [Usage example](https://github.com/barbushin/php-imap/blob/master/example/index.php)
+### Usage example
 
 ```php
 $mailbox = new PhpImap\Mailbox('{imap.gmail.com:993/imap/ssl}INBOX', 'some@gmail.com', '*********', __DIR__);
