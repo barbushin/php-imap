@@ -396,6 +396,22 @@ class Mailbox {
 		}
 		return $quota;
 	}
+	
+	/**
+	 * Get raw mail data
+	 *
+	 * @param $msgId
+	 * @param bool $markAsSeen
+	 * @return mixed
+	 */
+	public function getRawMail($msgId, $markAsSeen = true){
+		$options = FT_UID;
+        	if(!$markAsSeen) {
+            		$options |= FT_PEEK;
+        	}
+        	
+		return imap_fetchbody($this->getImapStream(), $msgId, '', $options);
+	}
 
     /**
      * Get mail data
