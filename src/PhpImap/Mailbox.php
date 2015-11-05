@@ -16,6 +16,7 @@ class Mailbox {
 	protected $imapParams = array();
 	protected $serverEncoding;
 	protected $attachmentsDir;
+	protected $expungeOnDisconnect = true;
 
 	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8') {
 		$this->imapPath = $imapPath;
@@ -72,8 +73,17 @@ class Mailbox {
 	protected function disconnect() {
 		$imapStream = $this->getImapStream(false);
 		if($imapStream && is_resource($imapStream)) {
-			imap_close($imapStream, CL_EXPUNGE);
+			imap_close($imapStream, $this->expungeOnDisconnect ? CL_EXPUNGE : 0);
 		}
+	}
+
+	/**
+	 * Sets 'expunge on disconnect' parameter
+	 * @param bool $value
+	 */
+	public function setExpungeOnDisconnect($value)
+	{
+		$this->expungeOnDisconnect = $value;
 	}
 
 	/**
