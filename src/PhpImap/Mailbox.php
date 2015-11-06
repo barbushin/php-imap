@@ -79,11 +79,10 @@ class Mailbox {
 
 	/**
 	 * Sets 'expunge on disconnect' parameter
-	 * @param bool $value
+	 * @param bool $isEnabled
 	 */
-	public function setExpungeOnDisconnect($value)
-	{
-		$this->expungeOnDisconnect = $value;
+	public function setExpungeOnDisconnect($isEnabled) {
+		$this->expungeOnDisconnect = $isEnabled;
 	}
 
 	/**
