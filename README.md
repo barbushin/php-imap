@@ -32,7 +32,7 @@ Just add following code in the head of your script:
 ### Usage example
 
 ```php
-$mailbox = new PhpImap\Mailbox('{imap.gmail.com:993/imap/ssl}INBOX', 'some@gmail.com', '*********', __DIR__);
+$mailbox = new ImapMailbox('{imap.gmail.com:993/imap/ssl}INBOX', 'some@gmail.com', '*********', __DIR__);
 $mails = array();
 
 $mailsIds = $mailbox->searchMailBox('ALL');
