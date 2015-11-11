@@ -421,7 +421,10 @@ class Mailbox {
 		$mail->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime(preg_replace('/\(.*?\)/', '', $head->date)) : time());
 		$mail->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
 		$mail->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : null;
-		$mail->fromAddress = strtolower($head->from[0]->mailbox . '@' . $head->from[0]->host);
+		$mail->returnPath = strtolower($head->return_paths);
+		$mail->returnPathAdress = strtolower($head->return_pathsaddress);
+		 
+ 
 
 		if(isset($head->to)) {
 			$toStrings = array();
