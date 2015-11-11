@@ -24,7 +24,7 @@ class IncomingMail {
 	public $textHtml;
 	
 	public $returnPath;
-	public $return_pathaddress;
+	public $returnPathAddress;
 	/** @var IncomingMailAttachment[] */
 	protected $attachments = array();
 	
