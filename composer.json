@@ -1,5 +1,5 @@
 {
-	"name": "php-imap/php-imap",
+	"name": "poznet/php-imap",
 	"description": "PHP class to access mailbox by POP3/IMAP/NNTP using IMAP extension",
 	"keywords": [
 		"PHP",
@@ -14,7 +14,11 @@
 			"name": "Sergey Barbushin",
 			"homepage": "http://linkedin.com/in/barbushin",
 			"email": "barbushin@gmail.com"
-		}
+		},
+		{
+			"name": Michal Glajc",
+			 
+		},
 	],
 	"require": {
 		"php": ">=5.3.0",
