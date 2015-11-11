@@ -14,11 +14,7 @@
 			"name": "Sergey Barbushin",
 			"homepage": "http://linkedin.com/in/barbushin",
 			"email": "barbushin@gmail.com"
-		},
-		{
-			"name": Michal Glajc"
-			 
-		}
+		} 
 	],
 	"require": {
 		"php": ">=5.3.0",
