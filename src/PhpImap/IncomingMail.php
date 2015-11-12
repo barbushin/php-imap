@@ -22,8 +22,13 @@ class IncomingMail {
 
 	public $textPlain;
 	public $textHtml;
+	
+	public $returnPath;
+	public $returnPathAddress;
 	/** @var IncomingMailAttachment[] */
 	protected $attachments = array();
+	
+	
 
 	public function addAttachment(IncomingMailAttachment $attachment) {
 		$this->attachments[$attachment->id] = $attachment;

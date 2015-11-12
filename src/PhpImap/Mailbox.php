@@ -405,7 +405,17 @@ class Mailbox {
 		}
 		return $quota;
 	}
+    /**
+     * Get raw mail header
+     *
+     * @param $mailId
+     * @param bool $markAsSeen
+     * @return string
+     */
 
+        public function getRawHead($mailId, $markAsSeen = false) {
+		return  imap_fetchheader($this->getImapStream(), $mailId, FT_UID );
+        }
     /**
      * Get mail data
      *
@@ -421,7 +431,9 @@ class Mailbox {
 		$mail->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime(preg_replace('/\(.*?\)/', '', $head->date)) : time());
 		$mail->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
 		$mail->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : null;
-		$mail->fromAddress = strtolower($head->from[0]->mailbox . '@' . $head->from[0]->host);
+		$mail->returnPathAdress = strtolower($head->return_pathaddress);
+		 
+ 
 
 		if(isset($head->to)) {
 			$toStrings = array();
