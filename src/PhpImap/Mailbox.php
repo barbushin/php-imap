@@ -405,12 +405,17 @@ class Mailbox {
 		}
 		return $quota;
 	}
+    /**
+     * Get raw mail header
+     *
+     * @param $mailId
+     * @param bool $markAsSeen
+     * @return string
+     */
 
-
-public function getHead($mailId, $markAsSeen = false) {
- 
+        public function getRawHead($mailId, $markAsSeen = false) {
 		return  imap_fetchheader($this->getImapStream(), $mailId, FT_UID );
-}
+        }
     /**
      * Get mail data
      *
