@@ -408,7 +408,8 @@ class Mailbox {
 
 
 public function getHead($mailId, $markAsSeen = false) {
-		return imap_rfc822_parse_headers(imap_fetchheader($this->getImapStream(), $mailId, FT_UID));
+ 
+		return  imap_fetchheader($this->getImapStream(), $mailId, FT_UID );
 }
     /**
      * Get mail data
