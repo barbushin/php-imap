@@ -303,11 +303,11 @@ class Mailbox {
 	 *  seen - this mail is flagged as already read
 	 *  draft - this mail is flagged as being a draft
 	 *
-	 * @param array $mailsIds
+	 * @param mixed
 	 * @return array
 	 */
-	public function getMailsInfo(array $mailsIds) {
-		$mails = imap_fetch_overview($this->getImapStream(), implode(',', $mailsIds), FT_UID);
+	public function getMailsInfo($mailsIds) {
+		$mails = imap_fetch_overview($this->getImapStream(), (is_array($mailsIds) ? implode(',', $mailsIds) : $mailsIds), FT_UID);
 		if(is_array($mails) && count($mails))
 		{
 			foreach($mails as &$mail)
