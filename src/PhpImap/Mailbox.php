@@ -323,7 +323,7 @@ class Mailbox {
 				}
 			}
 		}
-		return $mails;
+		return (is_array($mailsIds) ? $mails : reset($mails));
 	}
 
 	/**
