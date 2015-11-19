@@ -522,7 +522,7 @@ class Mailbox {
 			$attachment = new IncomingMailAttachment();
 			$attachment->id = $attachmentId;
 			$attachment->name = $fileName;
-			$attachment->disposition = $partStructure->disposition;
+			$attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
 			if($this->attachmentsDir) {
 				$replace = array(
 					'/\s/' => '_',
