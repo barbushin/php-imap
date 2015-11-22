@@ -47,6 +47,7 @@ class Mailbox {
 	 * Get IMAP mailbox connection stream
 	 * @param bool $forceConnection Initialize connection if it's not initialized
 	 * @return null|resource
+	 * @throws Exception
 	 */
 	public function getImapStream($forceConnection = true) {
 		static $imapStream;
@@ -65,7 +66,9 @@ class Mailbox {
 	protected function initImapStream() {
 		$imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
 		if(!$imapStream) {
-			throw new Exception('Connection error: ' . imap_last_error());
+			$errors = imap_errors();
+			end($errors);
+			throw new Exception('Connection error: ' . current($errors));
 		}
 		return $imapStream;
 	}
@@ -377,9 +380,16 @@ class Mailbox {
 	/**
 	 * Retrieve the quota settings per user
 	 * @return array - FALSE in the case of call failure
+	 * @throws Exception
 	 */
 	protected function getQuota() {
-		return imap_get_quotaroot($this->getImapStream(), 'INBOX');
+		$quota = imap_get_quotaroot($this->getImapStream(), 'INBOX');
+		$errors = imap_errors();
+		if (!empty($errors)) {
+			end($errors);
+			throw new Exception('Get quota error: ' . current($errors));
+		}
+		return $quota;
 	}
 
 	/**
