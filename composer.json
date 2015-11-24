@@ -21,8 +21,8 @@
 		"ext-imap": "*"
 	},
 	"autoload": {
-		"psr-0": {
-			"PhpImap": "src/"
+		"psr-4": {
+			"PhpImap\\": "src/"
 		}
 	},
 	"minimum-stability": "stable"
