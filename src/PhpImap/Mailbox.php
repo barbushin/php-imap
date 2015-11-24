@@ -200,8 +200,20 @@ class Mailbox {
 		return imap_delete($this->getImapStream(), $mailId, FT_UID);
 	}
 
+	/**
+	 * Moves mails listed in mailId into new mailbox
+	 * @return bool
+	 */
 	public function moveMail($mailId, $mailBox) {
 		return imap_mail_move($this->getImapStream(), $mailId, $mailBox, CP_UID) && $this->expungeDeletedMails();
+	}
+	
+	/**
+	 * Copys mails listed in mailId into new mailbox
+	 * @return bool
+	 */
+	public function copyMail($mailId, $mailBox) {
+		return imap_mail_copy($this->getImapStream(), $mailId, $mailBox, CP_UID) && $this->expungeDeletedMails();
 	}
 
 	/**
