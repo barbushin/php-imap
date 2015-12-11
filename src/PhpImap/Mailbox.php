@@ -65,7 +65,9 @@ class Mailbox {
 	protected function initImapStream() {
 		$imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
 		if(!$imapStream) {
-			throw new Exception('Connection error: ' . imap_last_error());
+			$error = imap_last_error();
+			imap_errors();
+			throw new Exception('Connection error: ' . $error);
 		}
 		return $imapStream;
 	}
@@ -389,9 +391,16 @@ class Mailbox {
 	/**
 	 * Retrieve the quota settings per user
 	 * @return array - FALSE in the case of call failure
+	 * @throws Exception
 	 */
 	protected function getQuota() {
-		return imap_get_quotaroot($this->getImapStream(), 'INBOX');
+		$quota = imap_get_quotaroot($this->getImapStream(), 'INBOX');
+		$error = imap_last_error();
+		imap_errors();
+		if ($error) {
+			throw new Exception('Get quota error: ' . $error);
+		}
+		return $quota;
 	}
 
 	/**
