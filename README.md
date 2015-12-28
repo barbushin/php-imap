@@ -35,7 +35,7 @@ Just add following code in the head of your script:
 $mailbox = new PhpImap\Mailbox('{imap.gmail.com:993/imap/ssl}INBOX', 'some@gmail.com', '*********', __DIR__);
 $mails = array();
 
-$mailsIds = $mailbox->searchMailBox('ALL');
+$mailsIds = $mailbox->searchMailbox('ALL');
 if(!$mailsIds) {
 	die('Mailbox is empty');
 }
