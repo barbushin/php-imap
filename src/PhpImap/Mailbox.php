@@ -20,11 +20,11 @@ class Mailbox {
 	private $imapStream;
 
 	/**
-         * @param type $imapPath
-         * @param type $login
-         * @param type $password
-         * @param type $attachmentsDir
-         * @param type $serverEncoding
+         * @param string $imapPath
+         * @param string $login
+         * @param string $password
+         * @param string $attachmentsDir
+         * @param string $serverEncoding
          * @throws Exception
          */
 	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8') {
