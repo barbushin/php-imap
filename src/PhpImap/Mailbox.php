@@ -19,6 +19,14 @@ class Mailbox {
 	protected $expungeOnDisconnect = true;
 	private $imapStream;
 
+	/**
+         * @param string $imapPath
+         * @param string $login
+         * @param string $password
+         * @param string $attachmentsDir
+         * @param string $serverEncoding
+         * @throws Exception
+         */
 	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8') {
 		$this->imapPath = $imapPath;
 		$this->imapLogin = $login;
