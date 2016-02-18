@@ -157,7 +157,7 @@ class Mailbox {
 	 * This function uses imap_search() to perform a search on the mailbox currently opened in the given IMAP stream.
 	 * For example, to match all unanswered mails sent by Mom, you'd use: "UNANSWERED FROM mom".
 	 *
-	 * @param string $criteria See http://php.net/manual/en/function.imap-search.php for a complete list of available criteria
+	 * @param string $criteria See http://php.net/imap_search for a complete list of available criteria
 	 * @return array mailsIds (or empty array)
 	 */
 	public function searchMailbox($criteria = 'ALL') {
