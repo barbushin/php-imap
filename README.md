@@ -2,11 +2,11 @@ ImapMailbox is a PHP class to access mailboxes by POP3/IMAP/NNTP using PHP's nat
 
 ### Features
 
-* Connect to mailbox by POP3/IMAP/NNTP (see [imap_open](http://php.net/imap_open))
-* Get mailbox status (see [imap_check](http://php.net/imap_check))
+* Connect to mailbox by POP3/IMAP/NNTP, using [imap_open()](http://php.net/imap_open)
+* Get mailbox status, usinge [imap_check()](http://php.net/imap_check)
 * Receive emails (+attachments, +html body images)
-* Search emails by custom criteria (see [imap_search](http://php.net/imap_search))
-* Change email status (see [imap_setflag_full](http://php.net/imap_setflag_full))
+* Search emails by custom criteria, using [imap_search()](http://php.net/imap_search)
+* Change email status, using [imap_setflag_full()](http://php.net/imap_setflag_full)
 * Delete email
  
 ### Requirements
@@ -49,6 +49,7 @@ if(!$mailsIds) {
 $mail = $mailbox->getMail($mailsIds[0]);
 
 var_dump($mail);
+echo "\n\n\n\n\n";
 var_dump($mail->getAttachments());
 ```
 
