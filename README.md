@@ -32,16 +32,17 @@ Just add following code in the head of your script:
 ### Usage example
 
 ```php
+// 4. argument is the directory into which attachments are to be saved:
 $mailbox = new PhpImap\Mailbox('{imap.gmail.com:993/imap/ssl}INBOX', 'some@gmail.com', '*********', __DIR__);
-$mails = array();
 
+// Read all messaged into an array:
 $mailsIds = $mailbox->searchMailbox('ALL');
 if(!$mailsIds) {
 	die('Mailbox is empty');
 }
 
-$mailId = reset($mailsIds);
-$mail = $mailbox->getMail($mailId);
+// Get the first message and save its attachment(s) to disk:
+$mail = $mailbox->getMail($mailsIds[0]);
 
 var_dump($mail);
 var_dump($mail->getAttachments());
