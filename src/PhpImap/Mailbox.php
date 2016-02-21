@@ -158,7 +158,7 @@ class Mailbox {
 	 * For example, to match all unanswered mails sent by Mom, you'd use: "UNANSWERED FROM mom".
 	 *
 	 * @param string $criteria See http://php.net/imap_search for a complete list of available criteria
-	 * @return array mailsIds (or empty array)
+	 * @return array Indexed array with mails' id's. In case of error or no results: empty array
 	 */
 	public function searchMailbox($criteria = 'ALL') {
 		$mailsIds = imap_search($this->getImapStream(), $criteria, SE_UID, $this->serverEncoding);
