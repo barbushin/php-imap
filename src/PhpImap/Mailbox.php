@@ -531,7 +531,8 @@ class Mailbox {
 			$attachment = new IncomingMailAttachment();
 			$attachment->id = $attachmentId;
 			$attachment->name = $fileName;
-			$attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
+			$attachment->disposition = isset($partStructure->disposition) ? $partStructure->disposition : null;
+			$attachment->size = isset($params['size'] ? $params['size'] : null;
 			if($this->attachmentsDir) {
 				$replace = array(
 					'/\s/' => '_',
