@@ -528,6 +528,12 @@ class Mailbox {
 				$fileName = $this->decodeMimeStr($fileName, $this->serverEncoding);
 				$fileName = $this->decodeRFC2231($fileName, $this->serverEncoding);
 			}
+			
+			// 255 è il limite su fs ext4. 200 per poter prependere altri caratteri al nome.
+			if (strlen($fileName) > 200) {
+				$fileName = substr($fileName, -200);
+			}
+			
 			$attachment = new IncomingMailAttachment();
 			$attachment->id = $attachmentId;
 			$attachment->name = $fileName;
