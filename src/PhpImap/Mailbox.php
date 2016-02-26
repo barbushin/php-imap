@@ -146,7 +146,11 @@ class Mailbox {
 		$folders = imap_list($this->getImapStream(), $this->imapPath, "*");
 		foreach ($folders as $key => $folder)
 		{
-			$folder = str_replace($this->imapPath, "", imap_utf7_decode($folder));
+			if (function_exists('mb_convert_encoding')) {
+				$folder = str_replace($this->imapPath, "", mb_convert_encoding($folder, "UTF-8", "UTF7-IMAP"));
+			} else {
+				$folder = str_replace($this->imapPath, "", imap_utf7_decode($folder));
+			}
 			$folders[$key] = $folder;
 		}
 		return $folders;
