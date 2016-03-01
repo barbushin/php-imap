@@ -28,7 +28,7 @@ class Mailbox {
          * @throws Exception
          */
 	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8') {
-		$this->imapPath = $imapPath;
+		$this->setImapPath($imapPath);
 		$this->imapLogin = $login;
 		$this->imapPassword = $password;
 		$this->serverEncoding = strtoupper($serverEncoding);
@@ -626,6 +626,19 @@ class Mailbox {
 
 	public function __destruct() {
 		$this->disconnect();
+	}
+
+	/**
+	 * @param $imapPath
+	 * @return void
+	 */
+	protected function setImapPath($imapPath)
+	{
+		if (function_exists('mb_convert_encoding')) {
+			$this->imapPath = mb_convert_encoding($imapPath, "UTF7-IMAP", "UTF-8");
+		} else {
+			$this->imapPath = imap_utf7_encode($imapPath);
+		}
 	}
 }
 
