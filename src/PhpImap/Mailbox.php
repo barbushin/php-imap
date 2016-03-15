@@ -357,10 +357,36 @@ class Mailbox {
 	 *
 	 * @param int $criteria
 	 * @param bool $reverse
+	 * @param string $search_criteria String, delimited by spaces, in which the following keywords are allowed. Any multi-word arguments (e.g. FROM "joey smith") must be quoted. Results will match all criteria entries.
+	 *    ALL - return all mails matching the rest of the criteria
+	 *    ANSWERED - match mails with the \\ANSWERED flag set
+	 *    BCC "string" - match mails with "string" in the Bcc: field
+	 *    BEFORE "date" - match mails with Date: before "date"
+	 *    BODY "string" - match mails with "string" in the body of the mail
+	 *    CC "string" - match mails with "string" in the Cc: field
+	 *    DELETED - match deleted mails
+	 *    FLAGGED - match mails with the \\FLAGGED (sometimes referred to as Important or Urgent) flag set
+	 *    FROM "string" - match mails with "string" in the From: field
+	 *    KEYWORD "string" - match mails with "string" as a keyword
+	 *    NEW - match new mails
+	 *    OLD - match old mails
+	 *    ON "date" - match mails with Date: matching "date"
+	 *    RECENT - match mails with the \\RECENT flag set
+	 *    SEEN - match mails that have been read (the \\SEEN flag is set)
+	 *    SINCE "date" - match mails with Date: after "date"
+	 *    SUBJECT "string" - match mails with "string" in the Subject:
+	 *    TEXT "string" - match mails with text "string"
+	 *    TO "string" - match mails with "string" in the To:
+	 *    UNANSWERED - match mails that have not been answered
+	 *    UNDELETED - match mails that are not deleted
+	 *    UNFLAGGED - match mails that are not flagged
+	 *    UNKEYWORD "string" - match mails that do not have the keyword "string"
+	 *    UNSEEN - match mails which have not been read yet
 	 * @return array Mails ids
 	 */
-	public function sortMails($criteria = SORTARRIVAL, $reverse = true) {
-		return imap_sort($this->getImapStream(), $criteria, $reverse, SE_UID);
+	public function sortMails($criteria = SORTARRIVAL, $reverse = true, $search_criteria = NULL) {
+		$mailsIds = imap_sort($this->getImapStream(), $criteria, $reverse, SE_UID, $search_criteria);
+		return $mailsIds ? $mailsIds : array();
 	}
 
 	/**
