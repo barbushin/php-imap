@@ -549,7 +549,8 @@ class Mailbox {
 			? trim($partStructure->id, " <>")
 			: (isset($params['filename']) || isset($params['name']) ? mt_rand() . mt_rand() : null);
 
-		if($attachmentId) {
+		// if is really attachment
+		if((isset($params['filename']) || isset($params['name'])) && $attachmentId) {
 			if(empty($params['filename']) && empty($params['name'])) {
 				$fileName = $attachmentId . '.' . strtolower($partStructure->subtype);
 			}
