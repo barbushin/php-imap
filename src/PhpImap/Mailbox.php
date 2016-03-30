@@ -55,7 +55,7 @@ class Mailbox {
         /**
          * Set custom folder for attachments in case you want to have tree of folders for each email
          * i.e. a/1 b/1 c/1 where a,b,c - senders, i.e. john@smith.com
-         * @param folder $dir
+         * @param string $dir folder where to save attachments
          * 
          * @return void
          */
