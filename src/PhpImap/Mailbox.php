@@ -15,7 +15,7 @@ class Mailbox {
 	protected $imapRetriesNum = 0;
 	protected $imapParams = array();
 	protected $serverEncoding;
-	protected $attachmentsDir;
+	protected $attachmentsDir = null;
 	protected $expungeOnDisconnect = true;
 	private $imapStream;
 
@@ -51,7 +51,18 @@ class Mailbox {
 		$this->imapRetriesNum = $retriesNum;
 		$this->imapParams = $params;
 	}
-
+        
+        /**
+         * Set custom folder for attachments in case you want to have tree of folders for each email
+         * i.e. a/1 b/1 c/1 where a,b,c - senders, i.e. john@smith.com
+         * @param folder
+         * 
+         * @return void
+         */
+        public function setAttachmentsDir($dir) {
+                $this->attachmentsDir = $dir;
+        }
+        
 	/**
 	 * Get IMAP mailbox connection stream
 	 * @param bool $forceConnection Initialize connection if it's not initialized
@@ -322,7 +333,7 @@ class Mailbox {
 		}
 		return $mails;
 	}
-
+	
 	/**
 	 * Get information about the current mailbox.
 	 *
