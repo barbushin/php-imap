@@ -14,6 +14,7 @@ class Mailbox {
 	protected $imapOptions = 0;
 	protected $imapRetriesNum = 0;
 	protected $imapParams = array();
+	protected $outputEncoding;
 	protected $serverEncoding;
 	protected $attachmentsDir;
 	protected $expungeOnDisconnect = true;
@@ -24,13 +25,14 @@ class Mailbox {
          * @param string $login
          * @param string $password
          * @param string $attachmentsDir
-         * @param string $serverEncoding
+         * @param string $outputEncoding
          * @throws Exception
          */
-	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8') {
+	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8', $outputEncoding = 'UTF-8') {
 		$this->setImapPath($imapPath);
 		$this->imapLogin = $login;
 		$this->imapPassword = $password;
+		$this->outputEncoding = strtoupper($outputEncoding);
 		$this->serverEncoding = strtoupper($serverEncoding);
 		if($attachmentsDir) {
 			if(!is_dir($attachmentsDir)) {
@@ -432,8 +434,8 @@ class Mailbox {
 		$mail = new IncomingMail();
 		$mail->id = $mailId;
 		$mail->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime(preg_replace('/\(.*?\)/', '', $head->date)) : time());
-		$mail->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
-		$mail->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : null;
+		$mail->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->outputEncoding) : null;
+		$mail->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->outputEncoding) : null;
 		$mail->fromAddress = strtolower($head->from[0]->mailbox . '@' . $head->from[0]->host);
 
 		if(isset($head->to)) {
@@ -441,7 +443,7 @@ class Mailbox {
 			foreach($head->to as $to) {
 				if(!empty($to->mailbox) && !empty($to->host)) {
 					$toEmail = strtolower($to->mailbox . '@' . $to->host);
-					$toName = isset($to->personal) ? $this->decodeMimeStr($to->personal, $this->serverEncoding) : null;
+					$toName = isset($to->personal) ? $this->decodeMimeStr($to->personal, $this->outputEncoding) : null;
 					$toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
 					$mail->to[$toEmail] = $toName;
 				}
@@ -451,13 +453,13 @@ class Mailbox {
 
 		if(isset($head->cc)) {
 			foreach($head->cc as $cc) {
-				$mail->cc[strtolower($cc->mailbox . '@' . $cc->host)] = isset($cc->personal) ? $this->decodeMimeStr($cc->personal, $this->serverEncoding) : null;
+				$mail->cc[strtolower($cc->mailbox . '@' . $cc->host)] = isset($cc->personal) ? $this->decodeMimeStr($cc->personal, $this->outputEncoding) : null;
 			}
 		}
 
 		if(isset($head->reply_to)) {
 			foreach($head->reply_to as $replyTo) {
-				$mail->replyTo[strtolower($replyTo->mailbox . '@' . $replyTo->host)] = isset($replyTo->personal) ? $this->decodeMimeStr($replyTo->personal, $this->serverEncoding) : null;
+				$mail->replyTo[strtolower($replyTo->mailbox . '@' . $replyTo->host)] = isset($replyTo->personal) ? $this->decodeMimeStr($replyTo->personal, $this->outputEncoding) : null;
 			}
 		}
 
@@ -529,8 +531,8 @@ class Mailbox {
 			}
 			else {
 				$fileName = !empty($params['filename']) ? $params['filename'] : $params['name'];
-				$fileName = $this->decodeMimeStr($fileName, $this->serverEncoding);
-				$fileName = $this->decodeRFC2231($fileName, $this->serverEncoding);
+				$fileName = $this->decodeMimeStr($fileName, $this->outputEncoding);
+				$fileName = $this->decodeRFC2231($fileName, $this->outputEncoding);
 			}
 			$attachment = new IncomingMailAttachment();
 			$attachment->id = $attachmentId;
@@ -551,7 +553,7 @@ class Mailbox {
 		}
 		else {
 			if(!empty($params['charset'])) {
-				$data = $this->convertStringEncoding($data, $params['charset'], $this->serverEncoding);
+				$data = $this->convertStringEncoding($data, $params['charset'], $this->outputEncoding);
 			}
 			if($partStructure->type == 0 && $data) {
 				if(strtolower($partStructure->subtype) == 'plain') {
