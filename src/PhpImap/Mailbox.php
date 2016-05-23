@@ -454,6 +454,12 @@ class Mailbox {
 				$mail->cc[strtolower($cc->mailbox . '@' . $cc->host)] = isset($cc->personal) ? $this->decodeMimeStr($cc->personal, $this->serverEncoding) : null;
 			}
 		}
+		
+		if(isset($head->bcc)) {
+			foreach($head->bcc as $bcc) {
+				$mail->bcc[strtolower($bcc->mailbox . '@' . $bcc->host)] = isset($bcc->personal) ? $this->decodeMimeStr($bcc->personal, $this->serverEncoding) : null;
+			}
+		}
 
 		if(isset($head->reply_to)) {
 			foreach($head->reply_to as $replyTo) {
