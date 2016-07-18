@@ -70,6 +70,11 @@ class Mailbox {
 		return $this->imapStream;
 	}
 
+	/**
+	 * Start IMAP mailbox connection stream
+	 * @throw Exception
+	 * @return null|resource
+	 */
 	protected function initImapStream() {
 		$imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
 		if(!$imapStream) {
