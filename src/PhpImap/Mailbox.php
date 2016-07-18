@@ -192,7 +192,7 @@ class Mailbox {
 	public function moveMail($mailId, $mailBox) {
 		return imap_mail_move($this->getImapStream(), $mailId, $mailBox, CP_UID) && $this->expungeDeletedMails();
 	}
-	
+
 	/**
 	 * Copys mails listed in mailId into new mailbox
 	 * @return bool
@@ -402,7 +402,7 @@ class Mailbox {
 		}
 		return $quota;
 	}
-	
+
 	/**
 	 * Get raw mail data
 	 *
@@ -415,7 +415,7 @@ class Mailbox {
         	if(!$markAsSeen) {
             		$options |= FT_PEEK;
         	}
-        	
+
 		return imap_fetchbody($this->getImapStream(), $msgId, '', $options);
 	}
 
@@ -427,9 +427,12 @@ class Mailbox {
      * @return IncomingMail
      */
 	public function getMail($mailId, $markAsSeen = true) {
-		$head = imap_rfc822_parse_headers(imap_fetchheader($this->getImapStream(), $mailId, FT_UID));
+		$headersRaw = imap_fetchheader($this->getImapStream(), $mailId, FT_UID);
+		$head = imap_rfc822_parse_headers($headersRaw);
 
 		$mail = new IncomingMail();
+		$mail->headersRaw = $headersRaw;
+		$mail->headers = $head;
 		$mail->id = $mailId;
 		$mail->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime(preg_replace('/\(.*?\)/', '', $head->date)) : time());
 		$mail->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;

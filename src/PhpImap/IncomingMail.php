@@ -8,6 +8,8 @@ class IncomingMail {
 
 	public $id;
 	public $date;
+	public $headersRaw;
+	public $headers;
 	public $subject;
 
 	public $fromName;
