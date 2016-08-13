@@ -97,7 +97,9 @@ class Mailbox {
 	protected function initImapStream() {
 		$imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
 		if(!$imapStream) {
-			throw new Exception('Connection error: ' . imap_last_error());
+			$lastError = imap_last_error();
+			imap_errors();
+			throw new Exception('Connection error: ' . $lastError);
 		}
 		return $imapStream;
 	}
