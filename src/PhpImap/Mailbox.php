@@ -70,6 +70,19 @@ class Mailbox {
 		return $this->imapStream;
 	}
 
+	/**
+	 * Switch mailbox without opening a new connection
+	 * 
+	 * @param string $imapPath
+	 */
+	public function switchMailbox($imapPath = '') {
+		$this->imapPath = $imapPath;
+		$imapStream = @imap_reopen($this->getImapStream(), $imapPath);
+		if(!$imapStream) {
+			throw new Exception("Couldn't switch  mailbox: " . imap_last_error());
+		}
+	}
+
 	protected function initImapStream() {
 		$imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
 		if(!$imapStream) {
