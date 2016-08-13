@@ -584,6 +584,12 @@ class Mailbox {
 				);
 				$fileSysName = preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . preg_replace(array_keys($replace), $replace, $fileName));
 				$attachment->filePath = $this->attachmentsDir . DIRECTORY_SEPARATOR . $fileSysName;
+				
+				if(strlen($attachment->filePath) > 255) {
+					$ext = pathinfo($attachment->filePath, PATHINFO_EXTENSION);
+					$attachment->filePath = substr($attachment->filePath, 0, 255 -1 -strlen($ext)).".".$ext;
+				}
+				
 				file_put_contents($attachment->filePath, $data);
 			}
 			$mail->addAttachment($attachment);
