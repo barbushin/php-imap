@@ -437,6 +437,8 @@ class Mailbox {
 		$mail->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->outputEncoding) : null;
 		$mail->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->outputEncoding) : null;
 		$mail->fromAddress = strtolower($head->from[0]->mailbox . '@' . $head->from[0]->host);
+		$mail->senderName = isset($head->sender[0]->personal) ? $this->decodeMimeStr($head->sender[0]->personal, $this->outputEncoding) : null;
+		$mail->senderAddress = strtolower($head->sender[0]->mailbox . '@' . $head->sender[0]->host);
 
 		if(isset($head->to)) {
 			$toStrings = array();

@@ -13,6 +13,9 @@ class IncomingMail {
 	public $fromName;
 	public $fromAddress;
 
+    public $senderName;
+    public $senderAddress;
+
 	public $to = array();
 	public $toString;
 	public $cc = array();
