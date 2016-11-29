@@ -66,4 +66,6 @@ class IncomingMailAttachment {
 	public $name;
 	public $filePath;
 	public $disposition;
+	// The "size" parameter may or may not be present in any mail part:
+	public $size;
 }
