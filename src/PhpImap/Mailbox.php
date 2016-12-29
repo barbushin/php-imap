@@ -208,7 +208,7 @@ class Mailbox {
 	 * @return bool
 	 */
 	public function deleteMail($mailId) {
-		return imap_delete($this->getImapStream(), $mailId, FT_UID);
+		return imap_delete($this->getImapStream(), $mailId.':'.$mailId, FT_UID);
 	}
 
 	/**
