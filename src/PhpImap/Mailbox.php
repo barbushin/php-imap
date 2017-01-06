@@ -478,20 +478,47 @@ class Mailbox {
             $mail->toString = implode(', ', $toStrings);
         }
 
-        if(isset($head->cc)) {
-            foreach($head->cc as $cc) {
+        if (isset($head->cc)) {
+            foreach ($head->cc as $cc) {
+
+                if (!isset($cc->host)) {
+                    $cc->host = null;
+                }
+
+                if (!isset($cc->mailbox)) {
+                    $cc->mailbox = null;
+                }
+
                 $mail->cc[strtolower($cc->mailbox . '@' . $cc->host)] = isset($cc->personal) ? $this->decodeMimeStr($cc->personal, $this->serverEncoding) : null;
             }
         }
 
-        if(isset($head->bcc)) {
-            foreach($head->bcc as $bcc) {
+        if (isset($head->bcc)) {
+            foreach ($head->bcc as $bcc) {
+
+                if (!isset($bcc->host)) {
+                    $bcc->host = null;
+                }
+
+                if (!isset($bcc->mailbox)) {
+                    $bcc->mailbox = null;
+                }
+
                 $mail->bcc[strtolower($bcc->mailbox . '@' . $bcc->host)] = isset($bcc->personal) ? $this->decodeMimeStr($bcc->personal, $this->serverEncoding) : null;
             }
         }
 
-        if(isset($head->reply_to)) {
-            foreach($head->reply_to as $replyTo) {
+        if (isset($head->reply_to)) {
+            foreach ($head->reply_to as $replyTo) {
+
+                if (!isset($replyTo->host)) {
+                    $replyTo->host = null;
+                }
+
+                if (!isset($replyTo->mailbox)) {
+                    $replyTo->mailbox = null;
+                }
+
                 $mail->replyTo[strtolower($replyTo->mailbox . '@' . $replyTo->host)] = isset($replyTo->personal) ? $this->decodeMimeStr($replyTo->personal, $this->serverEncoding) : null;
             }
         }
