@@ -111,15 +111,20 @@ class Mailbox {
 		return imap_check($this->getImapStream());
 	}
 
-	/**
-	 * Creates a new mailbox specified by mailbox.
-	 *
-	 * @return bool
-	 */
+    /**
+     * Creates a new mailbox specified by mailbox.
+     *
+     * @param string $imapPath
+     *
+     * @return bool
+     */
 
-	public function createMailbox() {
-		return imap_createmailbox($this->getImapStream(), imap_utf7_encode($this->imapPath));
-	}
+    public function createMailbox($imapPath = null) {
+        if(!isset($imapPath)) {
+            $imapPath = $this->imapPath;
+        }
+        return imap_createmailbox($this->getImapStream(), imap_utf7_encode($imapPath));
+    }
 
 	/**
 	 * Gets status information about the given mailbox.
