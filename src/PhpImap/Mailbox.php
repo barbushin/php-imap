@@ -15,7 +15,7 @@ class Mailbox {
 	protected $imapRetriesNum = 0;
 	protected $imapParams = array();
 	protected $serverEncoding;
-	protected $attachmentsDir = null;
+	protected $sDir = null;
 	protected $expungeOnDisconnect = true;
 	private $imapStream;
 
@@ -614,7 +614,7 @@ class Mailbox {
 		}
 		if(!empty($partStructure->parts)) {
 			foreach($partStructure->parts as $subPartNum => $subPartStructure) {
-				if($partStructure->type == 2 && $partStructure->subtype == 'RFC822' && && $partStructure->disposition !== "attachment") {
+				if($partStructure->type == 2 && $partStructure->subtype == 'RFC822' && $partStructure->disposition !== "attachment") {
 					$this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
 				}
 				else {
