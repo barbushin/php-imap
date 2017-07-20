@@ -1,4 +1,9 @@
-ImapMailbox is a PHP class to access mailboxes by POP3/IMAP/NNTP using PHP's native IMAP extension.
+# PHP IMAP
+
+[![Author](http://img.shields.io/badge/author-@barbushin-blue.svg?style=flat-square)](https://www.linkedin.com/in/barbushin)
+[![GitHub release](https://img.shields.io/github/release/barbushin/php-imap.svg?maxAge=86400&style=flat-square)](https://packagist.org/packages/php-console/php-console)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
+[![Packagist](https://img.shields.io/packagist/dt/php-imap/php-imap.svg?maxAge=86400&style=flat-square)](https://packagist.org/packages/php-console/php-console)
 
 ### Features
 
