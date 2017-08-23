@@ -6,6 +6,7 @@
  */
 class IncomingMail {
 
+	/** @var $id The IMAP message ID - not the "Message-ID:"-header of the email */
 	public $id;
 	public $date;
 	public $headersRaw;
