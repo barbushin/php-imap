@@ -112,7 +112,7 @@ class Mailbox {
 		return $imapStream;
 	}
 
-	protected function disconnect() {
+	public function disconnect() {
 		$imapStream = $this->getImapStream(false);
 		if($imapStream && is_resource($imapStream)) {
 			imap_close($imapStream, $this->expungeOnDisconnect ? CL_EXPUNGE : 0);
