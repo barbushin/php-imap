@@ -698,6 +698,55 @@ class Mailbox {
 			$this->imapPath = imap_utf7_encode($imapPath);
 		}
 	}
+
+    /**
+     * Gets imappath
+     * @return string
+     */
+    public function getImapPath() {
+        return $this->imapPath;
+    }
+
+    /**
+     * Get message in MBOX format
+     * @param $mailId
+     * @return string
+     */
+    public function getMailMboxFormat($mailId) {
+        return imap_fetchheader($this->getImapStream(), $mailId, FT_UID && FT_PREFETCHTEXT) . imap_body($this->getImapStream(), $mailId, FT_UID);
+    }
+
+    /**
+     * Get folders list
+     * @param string $search
+     * @return array
+     */
+    public function getMailboxes($search = "*") {
+        $arr = [];
+        if ($t = imap_getmailboxes($this->getImapStream(), $this->imapPath, $search)) {
+            foreach ($t as $item) {
+                $arr[] = array(
+                    "fullpath" => $item->name,
+                    "attributes" => $item->attributes,
+                    "delimiter" => $item->delimiter,
+                    "shortpath" => substr($item->name,strlen($this->imapPath)-strlen("INBOX"))
+                );
+            }
+        }
+        return $arr;
+    }
+
+    /**
+     * Creates a new mailbox
+     * @param string $mailbox
+     * @return bool
+     */
+    public function createCustomMailbox($mailbox = "") {
+        if (!$mailbox) {
+            return false;
+        }
+        return imap_createmailbox($this->getImapStream(), $this->imapPath . imap_utf7_encode($mailbox));
+    }
 }
 
 class Exception extends \Exception {
