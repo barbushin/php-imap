@@ -16,7 +16,6 @@ class Mailbox {
 	protected $imapParams = array();
 	protected $serverEncoding;
 	protected $attachmentsDir = null;
-	protected $sDir = null;
 	protected $expungeOnDisconnect = true;
 	private $imapStream;
 
