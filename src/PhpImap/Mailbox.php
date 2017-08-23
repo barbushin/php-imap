@@ -356,6 +356,17 @@ class Mailbox {
 		}
 		return $mails;
 	}
+
+	/**
+	 * Get headers for all messages in the defined mailbox,
+	 * returns an array of string formatted with header info,
+	 * one element per mail message.
+	 * 
+	 * @return array
+	 */
+	public function getMailboxHeaders() {
+		return imap_headers($this->getImapStream());
+	}
 	
 	/**
 	 * Get information about the current mailbox.
