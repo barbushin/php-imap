@@ -87,8 +87,8 @@ class Mailbox {
 	 * @param string $imapPath
 	 */
 	public function switchMailbox($imapPath = '') {
-		$this->imapPath = $imapPath;
-		$imapStream = @imap_reopen($this->getImapStream(), $imapPath);
+		$this->setImapPath($imapPath);
+		$imapStream = @imap_reopen($this->getImapStream(), $this->imapPath);
 		if(!$imapStream) {
 			throw new Exception("Couldn't switch  mailbox: " . imap_last_error());
 		}
