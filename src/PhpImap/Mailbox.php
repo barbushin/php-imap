@@ -636,7 +636,7 @@ class Mailbox {
 		}
 		if(!empty($partStructure->parts)) {
 			foreach($partStructure->parts as $subPartNum => $subPartStructure) {
-				if($partStructure->type == 2 && $partStructure->subtype == 'RFC822' && $partStructure->disposition !== "attachment") {
+				if($partStructure->type == 2 && $partStructure->subtype == 'RFC822' && (!isset($partStructure->disposition) || $partStructure->disposition !== "attachment")) {
 					$this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
 				}
 				else {
