@@ -609,6 +609,7 @@ class Mailbox {
 			if(!empty($params['charset'])) {
 				$data = $this->convertStringEncoding($data, $params['charset'], $this->outputEncoding);
 			}
+            $mail->addPart($partStructure->subtype, $data);
 			if($partStructure->type == 0 && $data) {
 				if(strtolower($partStructure->subtype) == 'plain') {
 					$mail->textPlain .= $data;

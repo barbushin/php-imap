@@ -28,6 +28,8 @@ class IncomingMail {
 
 	public $textPlain;
 	public $textHtml;
+
+    public $parts = array();
 	/** @var IncomingMailAttachment[] */
 	protected $attachments = array();
 
@@ -60,6 +62,20 @@ class IncomingMail {
 			}
 		}
 		return $fetchedHtml;
+	}
+
+	public function addPart($type, $part)
+	{
+		$this->parts[strtoupper($type)][] = $part;
+	}
+
+	public function getParts($type)
+	{
+		$key = strtoupper($type);
+		if(key_exists($key, $this->parts)) {
+			return $this->parts[strtoupper($type)];
+		}
+	return array();
 	}
 }
 
