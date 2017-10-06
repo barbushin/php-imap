@@ -11,6 +11,8 @@ class Mailbox {
 	protected $imapPath;
 	protected $imapLogin;
 	protected $imapPassword;
+	protected $connectionRetry = 0;
+	protected $connectionRetryDelay = 100;
 	protected $imapOptions = 0;
 	protected $imapRetriesNum = 0;
 	protected $imapParams = array();
@@ -87,6 +89,14 @@ class Mailbox {
 		$this->attachmentsDir = $dir;
 	}
 
+	public function setConnectionRetry($maxAttempts) {
+		$this->connectionRetry = $maxAttempts;
+	}
+
+	public function setConnectionRetryDelay($milliseconds) {
+		$this->connectionRetryDelay = $milliseconds;
+	}
+
 	/**
 	 * Get IMAP mailbox connection stream
 	 * @param bool $forceConnection Initialize connection if it's not initialized
@@ -99,7 +109,7 @@ class Mailbox {
 				$this->imapStream = null;
 			}
 			if(!$this->imapStream) {
-				$this->imapStream = $this->initImapStream();
+				$this->imapStream = $this->initImapStreamWithRetry();
 			}
 		}
 		return $this->imapStream;
@@ -119,6 +129,21 @@ class Mailbox {
 		}
 	}
 
+	protected function initImapStreamWithRetry() {
+		$retry = $this->connectionRetry;
+
+		do {
+			try {
+				return $this->initImapStream();
+			}
+			catch(ConnectionException $exception) {
+			}
+		}
+		while(--$retry > 0 && (!$this->connectionRetryDelay || !usleep($this->connectionRetryDelay * 1000)));
+
+		throw $exception;
+	}
+
 	protected function initImapStream() {
 		foreach($this->timeouts as $type => $timeout) {
 			imap_timeout($type, $timeout);
@@ -127,7 +152,7 @@ class Mailbox {
 		if(!$imapStream) {
 			$lastError = imap_last_error();
 			imap_errors();
-			throw new Exception('Connection error: ' . $lastError);
+			throw new ConnectionException('Connection error: ' . $lastError);
 		}
 		return $imapStream;
 	}
@@ -171,7 +196,7 @@ class Mailbox {
 	public function createMailbox($name) {
 		return imap_createmailbox($this->getImapStream(), imap_utf7_encode($this->imapPath . '.' . $name));
 	}
-	
+
 	/**
 	 * Delete mailbox
 	 * @param $name
@@ -814,5 +839,9 @@ class Mailbox {
 }
 
 class Exception extends \Exception {
+
+}
+
+class ConnectionException extends Exception {
 
 }
