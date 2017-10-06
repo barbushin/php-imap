@@ -41,6 +41,14 @@ class Mailbox {
 		}
 	}
 
+	public function getServerEncoding() {
+		return $this->serverEncoding;
+	}
+
+	public function setServerEncoding($serverEncoding) {
+		$this->serverEncoding = $serverEncoding;
+	}
+
 	/**
 	 * @param int $timeout Timeout in seconds
 	 * @param array $types One of the following: IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT
