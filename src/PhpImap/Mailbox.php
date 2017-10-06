@@ -734,7 +734,7 @@ class Mailbox {
 	 * @return array
 	 */
 	public function getMailboxes($search = "*") {
-		$arr = [];
+		$arr = array();
 		if($t = imap_getmailboxes($this->getImapStream(), $this->imapPath, $search)) {
 			foreach($t as $item) {
 				$arr[] = array(
