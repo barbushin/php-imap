@@ -211,18 +211,17 @@ class Mailbox {
 	 * This function returns an object containing listing the folders.
 	 * The object has the following properties: messages, recent, unseen, uidnext, and uidvalidity.
 	 *
+	 * @param string $pattern
 	 * @return array listing the folders
+	 * @throws Exception
 	 */
-	public function getListingFolders() {
-		$folders = imap_list($this->getImapStream(), $this->imapPath, "*");
+	public function getListingFolders($pattern = '*') {
+		$folders = imap_list($this->getImapStream(), $this->imapPath, $pattern);
+		if($folders === false) {
+			throw new Exception("Unexpected response from IMAP server");
+		}
 		foreach($folders as $key => $folder) {
-			if(function_exists('mb_convert_encoding')) {
-				$folder = str_replace($this->imapPath, "", mb_convert_encoding($folder, "UTF-8", "UTF7-IMAP"));
-			}
-			else {
-				$folder = str_replace($this->imapPath, "", imap_utf7_decode($folder));
-			}
-			$folders[$key] = $folder;
+			$folders[$key] = imap_utf7_decode($folder);
 		}
 		return $folders;
 	}
@@ -757,17 +756,8 @@ class Mailbox {
 		$this->disconnect();
 	}
 
-	/**
-	 * @param $imapPath
-	 * @return void
-	 */
 	protected function setImapPath($imapPath) {
-		if(function_exists('mb_convert_encoding')) {
-			$this->imapPath = mb_convert_encoding($imapPath, "UTF7-IMAP", "UTF-8");
-		}
-		else {
-			$this->imapPath = imap_utf7_encode($imapPath);
-		}
+		$this->imapPath = imap_utf7_encode($imapPath);
 	}
 
 	/**
