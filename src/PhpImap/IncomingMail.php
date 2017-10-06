@@ -4,30 +4,18 @@
  * @see https://github.com/barbushin/php-imap
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
  */
-class IncomingMail {
-
-	/** @var int|string $id The IMAP message ID - not the "Message-ID:"-header of the email */
-	public $id;
-	public $date;
-	public $headersRaw;
-	public $headers;
-	public $subject;
-
-	public $fromName;
-	public $fromAddress;
-
-	public $to = array();
-	public $toString;
-	public $cc = array();
-	public $bcc = array();
-	public $replyTo = array();
-
-	public $messageId;
+class IncomingMail extends IncomingMailHeader {
 
 	public $textPlain;
 	public $textHtml;
 	/** @var IncomingMailAttachment[] */
 	protected $attachments = array();
+
+	public function setHeader(IncomingMailHeader $header) {
+		foreach(get_object_vars($header) as $property => $value) {
+			$this->$property = $value;
+		}
+	}
 
 	public function addAttachment(IncomingMailAttachment $attachment) {
 		$this->attachments[$attachment->id] = $attachment;
@@ -59,12 +47,4 @@ class IncomingMail {
 		}
 		return $fetchedHtml;
 	}
-}
-
-class IncomingMailAttachment {
-
-	public $id;
-	public $name;
-	public $filePath;
-	public $disposition;
 }

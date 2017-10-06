@@ -506,28 +506,27 @@ class Mailbox {
 	}
 
 	/**
-	 * Get mail data
+	 * Get mail header
 	 *
 	 * @param $mailId
-	 * @param bool $markAsSeen
-	 * @return IncomingMail
+	 * @return IncomingMailHeader
 	 */
-	public function getMail($mailId, $markAsSeen = true) {
+	public function getMailHeader($mailId) {
 		$headersRaw = imap_fetchheader($this->getImapStream(), $mailId, FT_UID);
 		$head = imap_rfc822_parse_headers($headersRaw);
 
-		$mail = new IncomingMail();
-		$mail->headersRaw = $headersRaw;
-		$mail->headers = $head;
-		$mail->id = $mailId;
-		$mail->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime(preg_replace('/\(.*?\)/', '', $head->date)) : time());
-		$mail->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
+		$header = new IncomingMailHeader();
+		$header->headersRaw = $headersRaw;
+		$header->headers = $head;
+		$header->id = $mailId;
+		$header->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime(preg_replace('/\(.*?\)/', '', $head->date)) : time());
+		$header->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
 		if(isset($head->from)) {
-			$mail->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : null;
-			$mail->fromAddress = strtolower($head->from[0]->mailbox . '@' . $head->from[0]->host);
+			$header->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : null;
+			$header->fromAddress = strtolower($head->from[0]->mailbox . '@' . $head->from[0]->host);
 		}
 		elseif(preg_match("/smtp.mailfrom=[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/", $headersRaw, $matches)) {
-			$mail->fromAddress = substr($matches[0], 14);
+			$header->fromAddress = substr($matches[0], 14);
 		}
 		if(isset($head->to)) {
 			$toStrings = array();
@@ -536,33 +535,47 @@ class Mailbox {
 					$toEmail = strtolower($to->mailbox . '@' . $to->host);
 					$toName = isset($to->personal) ? $this->decodeMimeStr($to->personal, $this->serverEncoding) : null;
 					$toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
-					$mail->to[$toEmail] = $toName;
+					$header->to[$toEmail] = $toName;
 				}
 			}
-			$mail->toString = implode(', ', $toStrings);
+			$header->toString = implode(', ', $toStrings);
 		}
 
 		if(isset($head->cc)) {
 			foreach($head->cc as $cc) {
-				$mail->cc[strtolower($cc->mailbox . '@' . $cc->host)] = isset($cc->personal) ? $this->decodeMimeStr($cc->personal, $this->serverEncoding) : null;
+				$header->cc[strtolower($cc->mailbox . '@' . $cc->host)] = isset($cc->personal) ? $this->decodeMimeStr($cc->personal, $this->serverEncoding) : null;
 			}
 		}
 
 		if(isset($head->bcc)) {
 			foreach($head->bcc as $bcc) {
-				$mail->bcc[strtolower($bcc->mailbox . '@' . $bcc->host)] = isset($bcc->personal) ? $this->decodeMimeStr($bcc->personal, $this->serverEncoding) : null;
+				$header->bcc[strtolower($bcc->mailbox . '@' . $bcc->host)] = isset($bcc->personal) ? $this->decodeMimeStr($bcc->personal, $this->serverEncoding) : null;
 			}
 		}
 
 		if(isset($head->reply_to)) {
 			foreach($head->reply_to as $replyTo) {
-				$mail->replyTo[strtolower($replyTo->mailbox . '@' . $replyTo->host)] = isset($replyTo->personal) ? $this->decodeMimeStr($replyTo->personal, $this->serverEncoding) : null;
+				$header->replyTo[strtolower($replyTo->mailbox . '@' . $replyTo->host)] = isset($replyTo->personal) ? $this->decodeMimeStr($replyTo->personal, $this->serverEncoding) : null;
 			}
 		}
 
 		if(isset($head->message_id)) {
-			$mail->messageId = $head->message_id;
+			$header->messageId = $head->message_id;
 		}
+
+		return $header;
+	}
+
+	/**
+	 * Get mail data
+	 *
+	 * @param $mailId
+	 * @param bool $markAsSeen
+	 * @return IncomingMail
+	 */
+	public function getMail($mailId, $markAsSeen = true) {
+		$mail = new IncomingMail();
+		$mail->setHeader($this->getMailHeader($mailId));
 
 		$mailStructure = imap_fetchstructure($this->getImapStream(), $mailId, FT_UID);
 
