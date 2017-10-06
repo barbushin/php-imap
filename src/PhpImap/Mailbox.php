@@ -567,13 +567,17 @@ class Mailbox {
 
 		if(isset($head->cc)) {
 			foreach($head->cc as $cc) {
-				$header->cc[strtolower($cc->mailbox . '@' . $cc->host)] = isset($cc->personal) ? $this->decodeMimeStr($cc->personal, $this->serverEncoding) : null;
+				if(!empty($cc->mailbox) && !empty($cc->host)) {
+					$header->cc[strtolower($cc->mailbox . '@' . $cc->host)] = isset($cc->personal) ? $this->decodeMimeStr($cc->personal, $this->serverEncoding) : null;
+				}
 			}
 		}
 
 		if(isset($head->bcc)) {
 			foreach($head->bcc as $bcc) {
-				$header->bcc[strtolower($bcc->mailbox . '@' . $bcc->host)] = isset($bcc->personal) ? $this->decodeMimeStr($bcc->personal, $this->serverEncoding) : null;
+				if(!empty($bcc->mailbox) && !empty($bcc->host)) {
+					$header->bcc[strtolower($bcc->mailbox . '@' . $bcc->host)] = isset($bcc->personal) ? $this->decodeMimeStr($bcc->personal, $this->serverEncoding) : null;
+				}
 			}
 		}
 
