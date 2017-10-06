@@ -164,14 +164,34 @@ class Mailbox {
 	}
 
 	/**
-	 * Creates a new mailbox specified by mailbox.
-	 *
+	 * Creates a new mailbox
+	 * @param $name
 	 * @return bool
 	 */
-
-	public function createMailbox() {
-		return imap_createmailbox($this->getImapStream(), imap_utf7_encode($this->imapPath));
+	public function createMailbox($name) {
+		return imap_createmailbox($this->getImapStream(), imap_utf7_encode($this->imapPath . '.' . $name));
 	}
+	
+	/**
+	 * Delete mailbox
+	 * @param $name
+	 * @return bool
+	 */
+	public function deleteMailbox($name) {
+		return imap_deletemailbox($this->getImapStream(), imap_utf7_encode($this->imapPath . '.' . $name));
+	}
+
+	/**
+	 * Rename mailbox
+	 * @param $oldName
+	 * @param $newName
+	 * @return bool
+	 */
+	public function renameMailbox($oldName, $newName) {
+		return imap_renamemailbox($this->getImapStream(), imap_utf7_encode($this->imapPath . '.' . $oldName), imap_utf7_encode($this->imapPath . '.' . $newName));
+	}
+
+
 
 	/**
 	 * Gets status information about the given mailbox.
@@ -181,7 +201,6 @@ class Mailbox {
 	 *
 	 * @return stdClass if the box doesn't exist
 	 */
-
 	public function statusMailbox() {
 		return imap_status($this->getImapStream(), $this->imapPath, SA_ALL);
 	}
@@ -194,7 +213,6 @@ class Mailbox {
 	 *
 	 * @return array listing the folders
 	 */
-
 	public function getListingFolders() {
 		$folders = imap_list($this->getImapStream(), $this->imapPath, "*");
 		foreach($folders as $key => $folder) {
