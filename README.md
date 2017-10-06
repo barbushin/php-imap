@@ -29,6 +29,10 @@
 Or
 
 	$ composer require php-imap/php-imap ~2.0
+	
+### Integration with frameworks
+
+* Symfony - https://github.com/secit-pl/imap-bundle
 
 ### Migration from `v1.*` to `v2.*`
 
