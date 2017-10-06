@@ -802,12 +802,10 @@ class Mailbox {
 	 * Creates a new mailbox
 	 * @param string $mailbox
 	 * @return bool
+	 * @deprecated
 	 */
 	public function createCustomMailbox($mailbox = "") {
-		if(!$mailbox) {
-			return false;
-		}
-		return imap_createmailbox($this->getImapStream(), $this->imapPath . imap_utf7_encode($mailbox));
+		return $this->createMailbox($mailbox);
 	}
 }
 
