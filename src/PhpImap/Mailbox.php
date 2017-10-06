@@ -92,6 +92,7 @@ class Mailbox {
 	 * Switch mailbox without opening a new connection
 	 *
 	 * @param string $imapPath
+	 * @throws Exception
 	 */
 	public function switchMailbox($imapPath = '') {
 		$this->setImapPath($imapPath);
@@ -202,6 +203,8 @@ class Mailbox {
 
 	/**
 	 * Save mail body.
+	 * @param $mailId
+	 * @param string $filename
 	 * @return bool
 	 */
 	public function saveMail($mailId, $filename = 'email.eml') {
@@ -210,6 +213,7 @@ class Mailbox {
 
 	/**
 	 * Marks mails listed in mailId for deletion.
+	 * @param $mailId
 	 * @return bool
 	 */
 	public function deleteMail($mailId) {
@@ -218,6 +222,8 @@ class Mailbox {
 
 	/**
 	 * Moves mails listed in mailId into new mailbox
+	 * @param $mailId
+	 * @param $mailBox
 	 * @return bool
 	 */
 	public function moveMail($mailId, $mailBox) {
@@ -226,6 +232,8 @@ class Mailbox {
 
 	/**
 	 * Copys mails listed in mailId into new mailbox
+	 * @param $mailId
+	 * @param $mailBox
 	 * @return bool
 	 */
 	public function copyMail($mailId, $mailBox) {
@@ -242,6 +250,7 @@ class Mailbox {
 
 	/**
 	 * Add the flag \Seen to a mail.
+	 * @param $mailId
 	 * @return bool
 	 */
 	public function markMailAsRead($mailId) {
@@ -250,6 +259,7 @@ class Mailbox {
 
 	/**
 	 * Remove the flag \Seen from a mail.
+	 * @param $mailId
 	 * @return bool
 	 */
 	public function markMailAsUnread($mailId) {
@@ -258,6 +268,7 @@ class Mailbox {
 
 	/**
 	 * Add the flag \Flagged to a mail.
+	 * @param $mailId
 	 * @return bool
 	 */
 	public function markMailAsImportant($mailId) {
@@ -266,6 +277,7 @@ class Mailbox {
 
 	/**
 	 * Add the flag \Seen to a mails.
+	 * @param array $mailId
 	 * @return bool
 	 */
 	public function markMailsAsRead(array $mailId) {
@@ -274,6 +286,7 @@ class Mailbox {
 
 	/**
 	 * Remove the flag \Seen from some mails.
+	 * @param array $mailId
 	 * @return bool
 	 */
 	public function markMailsAsUnread(array $mailId) {
@@ -282,6 +295,7 @@ class Mailbox {
 
 	/**
 	 * Add the flag \Flagged to some mails.
+	 * @param array $mailId
 	 * @return bool
 	 */
 	public function markMailsAsImportant(array $mailId) {
@@ -425,22 +439,16 @@ class Mailbox {
 	 */
 	public function getQuotaLimit() {
 		$quota = $this->getQuota();
-		if(is_array($quota)) {
-			$quota = $quota['STORAGE']['limit'];
-		}
-		return $quota;
+		return isset($quota['STORAGE']['limit']) ? $quota['STORAGE']['limit'] : false;
 	}
 
 	/**
 	 * Return quota usage in KB
-	 * @return int - FALSE in the case of call failure
+	 * @return int FALSE in the case of call failure
 	 */
 	public function getQuotaUsage() {
 		$quota = $this->getQuota();
-		if(is_array($quota)) {
-			$quota = $quota['STORAGE']['usage'];
-		}
-		return $quota;
+		return isset($quota['STORAGE']['usage']) ? $quota['STORAGE']['usage'] : false;
 	}
 
 	/**
