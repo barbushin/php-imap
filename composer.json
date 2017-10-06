@@ -1,13 +1,16 @@
 {
 	"name": "php-imap/php-imap",
-	"description": "PHP class to access mailbox by POP3/IMAP/NNTP using IMAP extension",
+	"description": "Manage mailboxes, filter/get/delete emails in PHP (supports IMAP/POP3/NNTP)",
 	"keywords": [
 		"PHP",
+		"mail",
 		"IMAP",
-		"mail"
+		"POP3",
+		"mailbox",
+		"receive emails"
 	],
 	"homepage": "https://github.com/barbushin/php-imap",
-	"license": "BSD 3-Clause",
+	"license": "MIT",
 	"type": "library",
 	"authors": [
 		{
@@ -24,6 +27,5 @@
 		"psr-4": {
 			"PhpImap\\": "src/PhpImap/"
 		}
-	},
-	"minimum-stability": "stable"
+	}
 }
