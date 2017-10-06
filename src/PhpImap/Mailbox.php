@@ -741,16 +741,20 @@ class Mailbox {
 	 * @param string $fromEncoding
 	 * @param string $toEncoding
 	 * @return string Converted string if conversion was successful, or the original string if not
+	 * @throws Exception
 	 */
 	protected function convertStringEncoding($string, $fromEncoding, $toEncoding) {
-		$convertedString = null;
-		if($string && $fromEncoding != $toEncoding) {
-			$convertedString = @iconv($fromEncoding, $toEncoding . '//IGNORE', $string);
-			if(!$convertedString && extension_loaded('mbstring')) {
-				$convertedString = @mb_convert_encoding($string, $toEncoding, $fromEncoding);
-			}
+		if(!$string || $fromEncoding == $toEncoding) {
+			return $string;
 		}
-		return $convertedString ?: $string;
+		$convertedString = function_exists('iconv') ? @iconv($fromEncoding, $toEncoding . '//IGNORE', $string) : null;
+		if(!$convertedString && extension_loaded('mbstring')) {
+			$convertedString = @mb_convert_encoding($string, $toEncoding, $fromEncoding);
+		}
+		if(!$convertedString) {
+			throw new Exception('Mime string encoding conversion failed');
+		}
+		return $convertedString;
 	}
 
 	public function __destruct() {
