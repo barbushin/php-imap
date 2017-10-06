@@ -20,15 +20,7 @@
 
 ### Installation by Composer
 
-	{
-		"require": {
-			"php-imap/php-imap": "~2.0"
-		}
-	}
-
-Or
-
-	$ composer require php-imap/php-imap ~2.0
+	$ composer require php-imap/php-imap
 	
 ### Integration with frameworks
 
