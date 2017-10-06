@@ -17,6 +17,7 @@ class Mailbox {
 	protected $serverEncoding;
 	protected $attachmentsDir = null;
 	protected $expungeOnDisconnect = true;
+	protected $timeouts = array();
 	private $imapStream;
 
 	/**
@@ -38,6 +39,14 @@ class Mailbox {
 			}
 			$this->attachmentsDir = rtrim(realpath($attachmentsDir), '\\/');
 		}
+	}
+
+	/**
+	 * @param int $timeout Timeout in seconds
+	 * @param array $types One of the following: IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT
+	 */
+	public function setTimeouts($timeout, $types = array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT)) {
+		$this->timeouts = array_fill_keys($types, $timeout);
 	}
 
 	/**
@@ -103,6 +112,9 @@ class Mailbox {
 	}
 
 	protected function initImapStream() {
+		foreach($this->timeouts as $type => $timeout) {
+			imap_timeout($type, $timeout);
+		}
 		$imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
 		if(!$imapStream) {
 			$lastError = imap_last_error();
