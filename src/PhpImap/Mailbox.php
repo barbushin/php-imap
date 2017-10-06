@@ -635,17 +635,16 @@ class Mailbox {
 			}
 		}
 
-		// attachments
-		$attachmentId = $partStructure->ifid
-			? trim($partStructure->id, " <>")
-			: (isset($params['filename']) || isset($params['name']) ? mt_rand() . mt_rand() : null);
+		$isAttachment = $partStructure->ifid || isset($params['filename']) || isset($params['name']);
 
 		// ignore contentId on body when mail isn't multipart (https://github.com/barbushin/php-imap/issues/71)
 		if(!$partNum && TYPETEXT === $partStructure->type) {
-			$attachmentId = null;
+			$isAttachment = false;
 		}
 
-		if($attachmentId) {
+		if($isAttachment) {
+			$attachmentId = mt_rand() . mt_rand();
+
 			if(empty($params['filename']) && empty($params['name'])) {
 				$fileName = $attachmentId . '.' . strtolower($partStructure->subtype);
 			}
@@ -654,8 +653,10 @@ class Mailbox {
 				$fileName = $this->decodeMimeStr($fileName, $this->serverEncoding);
 				$fileName = $this->decodeRFC2231($fileName, $this->serverEncoding);
 			}
+
 			$attachment = new IncomingMailAttachment();
 			$attachment->id = $attachmentId;
+			$attachment->contentId = $partStructure->ifid ? trim($partStructure->id, " <>") : null;
 			$attachment->name = $fileName;
 			$attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
 			if($this->attachmentsDir) {

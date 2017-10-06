@@ -7,6 +7,7 @@
 class IncomingMailAttachment {
 
 	public $id;
+	public $contentId;
 	public $name;
 	public $filePath;
 	public $disposition;

@@ -40,11 +40,16 @@ class IncomingMail extends IncomingMailHeader {
 	public function replaceInternalLinks($baseUri) {
 		$baseUri = rtrim($baseUri, '\\/') . '/';
 		$fetchedHtml = $this->textHtml;
+		$search = array();
+		$replace = array();
 		foreach($this->getInternalLinksPlaceholders() as $attachmentId => $placeholder) {
-			if(isset($this->attachments[$attachmentId])) {
-				$fetchedHtml = str_replace($placeholder, $baseUri . basename($this->attachments[$attachmentId]->filePath), $fetchedHtml);
+			foreach($this->attachments as $attachment) {
+				if($attachment->contentId == $attachmentId) {
+					$search[] = $placeholder;
+					$replace[] = $baseUri . basename($this->attachments[$attachmentId]->filePath);
+				}
 			}
 		}
-		return $fetchedHtml;
+		return str_replace($search, $replace, $fetchedHtml);
 	}
 }
