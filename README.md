@@ -7,12 +7,12 @@
 
 ### Features
 
-* Connect to mailbox by POP3/IMAP/NNTP, using [imap_open()](http://php.net/imap_open)
-* Get mailbox status, usinge [imap_check()](http://php.net/imap_check)
-* Receive emails (+attachments, +html body images)
-* Search emails by custom criteria, using [imap_search()](http://php.net/imap_search)
-* Change email status, using [imap_setflag_full()](http://php.net/imap_setflag_full)
-* Delete email, using [imap_delete()](http://php.net/imap_delete)
+* Connect to mailbox by POP3/IMAP/NNTP, using [PHP IMAP extension](http://php.net/manual/book.imap.php)
+* Get emails with attachments and inline images
+* Get emails filtered or sorted by custom criteria
+* Mark emails as seen/unseen
+* Delete emails
+* Manage mailbox folders
  
 ### Requirements
 
@@ -25,14 +25,6 @@
 ### Integration with frameworks
 
 * Symfony - https://github.com/secit-pl/imap-bundle
-
-### Migration from `v1.*` to `v2.*`
-
-Just add following code in the head of your script:
-
-	use PhpImap\Mailbox as ImapMailbox;
-	use PhpImap\IncomingMail;
-	use PhpImap\IncomingMailAttachment;
 
 ### Usage example
 
@@ -49,9 +41,9 @@ if(!$mailsIds) {
 // Get the first message and save its attachment(s) to disk:
 $mail = $mailbox->getMail($mailsIds[0]);
 
-var_dump($mail);
-echo "\n\n\n\n\n";
-var_dump($mail->getAttachments());
+print_r($mail);
+echo "\n\nAttachments:\n";
+print_r($mail->getAttachments());
 ```
 
 ### Recommended
