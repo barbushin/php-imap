@@ -505,7 +505,7 @@ class Mailbox {
 	 */
 	public function getMailHeader($mailId) {
 		$headersRaw = $this->imap('fetchheader', [$mailId, FT_UID]);
-		$head = $this->imap('rfc822_parse_headers', $headersRaw, false);
+		$head = imap_rfc822_parse_headers($headersRaw);
 
 		$header = new IncomingMailHeader();
 		$header->headersRaw = $headersRaw;
