@@ -1,31 +1,36 @@
 {
-	"name": "php-imap/php-imap",
-	"description": "Manage mailboxes, filter/get/delete emails in PHP (supports IMAP/POP3/NNTP)",
-	"keywords": [
-		"PHP",
-		"mail",
-		"IMAP",
-		"POP3",
-		"mailbox",
-		"receive emails"
-	],
-	"homepage": "https://github.com/barbushin/php-imap",
-	"license": "MIT",
-	"type": "library",
-	"authors": [
-		{
-			"name": "Sergey Barbushin",
-			"homepage": "http://linkedin.com/in/barbushin",
-			"email": "barbushin@gmail.com"
-		}
-	],
-	"require": {
-		"php": ">=5.5",
-		"ext-imap": "*"
-	},
-	"autoload": {
-		"psr-4": {
-			"PhpImap\\": "src/PhpImap/"
-		}
-	}
+    "name": "php-imap/php-imap",
+    "description": "Manage mailboxes, filter/get/delete emails in PHP (supports IMAP/POP3/NNTP)",
+    "keywords": [
+        "PHP",
+        "mail",
+        "IMAP",
+        "POP3",
+        "mailbox",
+        "receive emails"
+    ],
+    "homepage": "https://github.com/barbushin/php-imap",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Sergey Barbushin",
+            "homepage": "http://linkedin.com/in/barbushin",
+            "email": "barbushin@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5",
+        "ext-imap": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpImap\\": "src/PhpImap"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.0-dev"
+        }
+    }
 }
