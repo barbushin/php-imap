@@ -788,7 +788,7 @@ class Mailbox {
 					"fullpath" => $item->name,
 					"attributes" => $item->attributes,
 					"delimiter" => $item->delimiter,
-					"shortpath" => substr($item->name, strlen($this->imapPath) - strlen("INBOX")),
+					"shortpath" => substr($item->name, strpos($item->name, '}') + 1),
 				];
 			}
 		}
