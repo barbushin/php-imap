@@ -46,7 +46,7 @@ class IncomingMail extends IncomingMailHeader {
 			foreach($this->attachments as $attachment) {
 				if($attachment->contentId == $attachmentId) {
 					$search[] = $placeholder;
-					$replace[] = $baseUri . basename($this->attachments[$attachmentId]->filePath);
+					$replace[] = $baseUri . basename($this->attachments[$attachment->id]->filePath);
 				}
 			}
 		}
