@@ -703,14 +703,13 @@ class Mailbox {
 		}
 	}
 
-	protected function decodeMimeStr($string, $charset = 'utf-8') {
+	protected function decodeMimeStr($string, $toCharset = 'utf-8') {
 		$newString = '';
-		$elements = imap_mime_header_decode($string);
-		for($i = 0; $i < count($elements); $i++) {
-			if($elements[$i]->charset == 'default') {
-				$elements[$i]->charset = 'iso-8859-1';
+		foreach(imap_mime_header_decode($string) as $element) {
+			if(isset($element->text)) {
+				$fromCharset = !isset($element->charset) || $element->charset == 'default' ? 'iso-8859-1' : $element->charset;
+				$newString .= $this->convertStringEncoding($element->text, $fromCharset, $toCharset);
 			}
-			$newString .= $this->convertStringEncoding($elements[$i]->text, $elements[$i]->charset, $charset);
 		}
 		return $newString;
 	}
