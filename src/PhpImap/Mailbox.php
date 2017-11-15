@@ -820,14 +820,15 @@ class Mailbox {
 		imap_errors(); // flush errors
 		$result = @call_user_func_array("imap_$methodShortName", $args);
 
-		$errors = imap_errors();
-
-		if($errors) {
-			if($throwExceptionClass) {
-				throw new $throwExceptionClass("IMAP method imap_$methodShortName() failed with error: " . implode('. ', $errors));
-			}
-			else {
-				return false;
+		if(!$result) {
+			$errors = imap_errors();
+			if($errors) {
+				if($throwExceptionClass) {
+					throw new $throwExceptionClass("IMAP method imap_$methodShortName() failed with error: " . implode('. ', $errors));
+				}
+				else {
+					return false;
+				}
 			}
 		}
 
