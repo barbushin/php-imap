@@ -123,7 +123,7 @@ class Mailbox {
 	 */
 	public function switchMailbox($imapPath) {
 		$this->imapPath = $imapPath;
-		$this->imap('reopen', $this->imapPath);
+		$this->imap('reopen', $this->imapPath,false);
 	}
 
 	protected function initImapStreamWithRetry() {
