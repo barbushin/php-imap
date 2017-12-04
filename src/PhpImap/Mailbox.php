@@ -145,7 +145,7 @@ class Mailbox {
 		foreach($this->timeouts as $type => $timeout) {
 			$this->imap('timeout', [$type, $timeout], false);
 		}
-		return $this->imap('open', [$this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams], false, ConnectionException::class);
+		return $this->imap('open', [$this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams], false, ConnectionException::class,false);
 	}
 
 	public function disconnect() {
@@ -225,11 +225,13 @@ class Mailbox {
 	 * @param string $pattern
 	 * @return array listing the folders
 	 */
-	public function getListingFolders($pattern = '*') {
+	public function getListingFolders($pattern = '*', $ifImapUtf7Decode = true) {
 		$folders = $this->imap('list', [$this->imapPath, $pattern]) ?: [];
-		foreach($folders as &$folder) {
-			$folder = imap_utf7_decode($folder);
-		}
+		if($ifImapUtf7Decode){
+            foreach($folders as &$folder) {
+                $folder = imap_utf7_decode($folder);
+            }
+        }
 		return $folders;
 	}
 
@@ -804,22 +806,23 @@ class Mailbox {
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function imap($methodShortName, $args = [], $prependConnectionAsFirstArg = true, $throwExceptionClass = Exception::class) {
+	public function imap($methodShortName, $args = [], $prependConnectionAsFirstArg = true, $throwExceptionClass = Exception::class, $ifImapUtf7Encode = true) {
 		if(!is_array($args)) {
 			$args = [$args];
 		}
-		foreach($args as &$arg) {
-			if(is_string($arg)) {
-				$arg = imap_utf7_encode($arg);
-			}
-		}
+		if($ifImapUtf7Encode){
+            foreach($args as &$arg) {
+                if(is_string($arg)) {
+                    $arg = imap_utf7_encode($arg);
+                }
+            }
+        }
 		if($prependConnectionAsFirstArg) {
 			array_unshift($args, $this->getImapStream());
 		}
 
 		imap_errors(); // flush errors
 		$result = @call_user_func_array("imap_$methodShortName", $args);
-
 		if(!$result) {
 			$errors = imap_errors();
 			if($errors) {
