@@ -441,10 +441,11 @@ class Mailbox {
 	 *
 	 * @param int $criteria
 	 * @param bool $reverse
+	 * @param string $searchCriteria See http://php.net/imap_search for a complete list of available criteria
 	 * @return array Mails ids
 	 */
-	public function sortMails($criteria = SORTARRIVAL, $reverse = true) {
-		return $this->imap('sort', [$criteria, $reverse, SE_UID]);
+	public function sortMails($criteria = SORTARRIVAL, $reverse = true, $searchCriteria = 'ALL') {
+		return $this->imap('sort', [$criteria, $reverse, SE_UID, $searchCriteria]);
 	}
 
 	/**
