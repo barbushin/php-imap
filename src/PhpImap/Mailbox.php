@@ -123,7 +123,7 @@ class Mailbox {
 	 */
 	public function switchMailbox($imapPath) {
 		$this->imapPath = $imapPath;
-		$this->imap('reopen', $this->imapPath);
+		$this->imap('reopen', $this->imapPath,false);
 	}
 
 	protected function initImapStreamWithRetry() {
@@ -501,10 +501,13 @@ class Mailbox {
 	 * Get mail header
 	 *
 	 * @param $mailId
-	 * @return IncomingMailHeader
+	 * @return IncomingMailHeader|false object or error 
 	 */
 	public function getMailHeader($mailId) {
 		$headersRaw = $this->imap('fetchheader', [$mailId, FT_UID]);
+		if ($headersRaw === false) {
+			return false;
+		}
 		$head = imap_rfc822_parse_headers($headersRaw);
 
 		$header = new IncomingMailHeader();
@@ -567,11 +570,16 @@ class Mailbox {
 	 *
 	 * @param $mailId
 	 * @param bool $markAsSeen
-	 * @return IncomingMail
+	 * @return IncomingMail|false object or error
 	 */
 	public function getMail($mailId, $markAsSeen = true) {
 		$mail = new IncomingMail();
-		$mail->setHeader($this->getMailHeader($mailId));
+		
+		if (($header = $this->getMailHeader($mailId)) === false) {
+			return false;
+		} else {
+			$mail->setHeader($header);
+		}
 
 		$mailStructure = $this->imap('fetchstructure', [$mailId, FT_UID]);
 
@@ -793,41 +801,7 @@ class Mailbox {
 		}
 		return $arr;
 	}
-	/**
-	 * Get folders list
-	 * @param string $search
-	 * @return array
-	 */
-	public function getSubscribedMailboxes($search = "*") {
-		$arr = [];
-		if($t = imap_getsubscribed($this->getImapStream(), $this->imapPath, $search)) {
-			foreach($t as $item) {
-				$arr[] = [
-					"fullpath" => $item->name,
-					"attributes" => $item->attributes,
-					"delimiter" => $item->delimiter,
-					"shortpath" => substr($item->name, strpos($item->name, '}') + 1),
-				];
-			}
-		}
-		return $arr;
-	}
 
-	/**
-	 * @param $mailbox
-	 * @throws Exception
-	 */
-	public function subscribeMailbox($mailbox) {
-		$this->imap('subscribe', $this->imapPath . '.' . $mailbox);
-	}
-
-	/**
-	 * @param $mailbox
-	 * @throws Exception
-	 */
-	public function unsubscribeMailbox($mailbox) {
-		$this->imap('unsubscribe', $this->imapPath . '.' . $mailbox);
-	}
 	/**
 	 * Call IMAP extension function call wrapped with utf7 args conversion & errors handling
 	 *
