@@ -27,10 +27,5 @@
         "psr-4": {
             "PhpImap\\": "src/PhpImap"
         }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "3.0-dev"
-        }
     }
 }
