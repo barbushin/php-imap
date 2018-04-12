@@ -20,6 +20,7 @@ class Mailbox {
 	protected $attachmentsDir = null;
 	protected $expungeOnDisconnect = true;
 	protected $timeouts = [];
+	protected $attachmentsIgnore = false;
 	private $imapStream;
 
 	/**
@@ -51,6 +52,13 @@ class Mailbox {
 		$this->serverEncoding = $serverEncoding;
 	}
 
+	/**
+	 * Set $this->attachmentsIgnore param. Allow to ignore attachments when they are not required and boost performance
+	 * @param bool $attachmentsIgnore
+	 */
+	public function setAttachmentsIgnore($attachmentsIgnore) {
+		$this->attachmentsIgnore = $attachmentsIgnore;
+	}
 	/**
 	 * @param int $timeout Timeout in seconds
 	 * @param array $types One of the following: IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT
@@ -588,6 +596,14 @@ class Mailbox {
 	}
 
 	protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true) {
+		
+		if ($this->attachmentsIgnore && 
+		($partStructure->type !== TYPEMULTIPART && 
+		($partStructure->type !== TYPETEXT || !in_array(strtolower($partStructure->subtype), ['plain','html']))))
+		{ // skip all but plain and html when attachments are not required
+			return false;
+		}
+		
 		$options = FT_UID;
 		if(!$markAsSeen) {
 			$options |= FT_PEEK;
