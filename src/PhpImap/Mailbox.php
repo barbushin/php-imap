@@ -236,7 +236,7 @@ class Mailbox {
 	public function getListingFolders($pattern = '*') {
 		$folders = $this->imap('list', [$this->imapPath, $pattern]) ?: [];
 		foreach($folders as &$folder) {
-			$folder = imap_utf7_decode($folder);
+			$folder = mb_convert_encoding($folder, "UTF-8", "UTF7-IMAP");
 		}
 		return $folders;
 	}
@@ -860,7 +860,7 @@ class Mailbox {
 		}
 		foreach($args as &$arg) {
 			if(is_string($arg)) {
-				$arg = imap_utf7_encode($arg);
+				$arg = mb_convert_encoding($arg, "UTF7-IMAP", "UTF-8");
 			}
 		}
 		if($prependConnectionAsFirstArg) {
