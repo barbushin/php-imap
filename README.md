@@ -46,6 +46,7 @@ $mail = $mailbox->getMail($mailsIds[0]);
 print_r($mail);
 echo "\n\nAttachments:\n";
 print_r($mail->getAttachments());
+```
 
 Example 2:
 
@@ -95,6 +96,22 @@ $current_server_time = isset($info->Date) && $info->Date ? date('Y-m-d H:i:s', s
 
 echo $current_server_time;
 ```
+
+Example 4:
+
+```php
+$mailbox = new PhpImap\Mailbox('{imap.gmail.com:993/imap/ssl}INBOX', 'some@gmail.com', '*********', __DIR__);
+$mailbox->setAttachmentsIgnore(true); // ignore all attachments (this will increase perfomance)
+// Read all messaged into an array:
+$mailsIds = $mailbox->searchMailbox('ALL');
+if(!$mailsIds) {
+	die('Mailbox is empty');
+}
+
+// Get the first message and save its attachment(s) to disk:
+$mail = $mailbox->getMail($mailsIds[0]);
+
+print_r($mail);
 ```
 
 ### Recommended
