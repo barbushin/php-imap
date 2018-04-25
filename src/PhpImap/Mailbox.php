@@ -843,9 +843,11 @@ class Mailbox {
 		if(!is_array($args)) {
 			$args = [$args];
 		}
-		foreach($args as &$arg) {
-			if(is_string($arg)) {
-				$arg = imap_utf7_encode($arg);
+		if(in_array($methodShortName, ['open', 'reopen', 'search'])) { // duct tape https://github.com/barbushin/php-imap/issues/242
+			foreach($args as &$arg) {
+				if(is_string($arg)) {
+					$arg = imap_utf7_encode($arg);
+				}
 			}
 		}
 		if($prependConnectionAsFirstArg) {
