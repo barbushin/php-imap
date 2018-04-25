@@ -228,7 +228,7 @@ class Mailbox {
 	public function getListingFolders($pattern = '*') {
 		$folders = $this->imap('list', [$this->imapPath, $pattern]) ?: [];
 		foreach($folders as &$folder) {
-			$folder = mb_convert_encoding($folder, "UTF-8", "UTF7-IMAP");
+			$folder = mb_convert_encoding($folder, 'UTF-8', 'UTF7-IMAP');
 		}
 		return $folders;
 	}
@@ -741,7 +741,7 @@ class Mailbox {
 	 * @throws Exception
 	 */
 	protected function convertStringEncoding($string, $fromEncoding, $toEncoding) {
-		if(!$string || $fromEncoding == $toEncoding) {
+		if(!$string || $fromEncoding == $toEncoding || (strtoupper($fromEncoding) == 'UTF-8' && strtoupper($toEncoding) == 'US-ASCII')) {
 			return $string;
 		}
 		$convertedString = function_exists('iconv') ? @iconv($fromEncoding, $toEncoding . '//IGNORE', $string) : null;
