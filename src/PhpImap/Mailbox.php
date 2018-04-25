@@ -236,7 +236,7 @@ class Mailbox {
 	public function getListingFolders($pattern = '*') {
 		$folders = $this->imap('list', [$this->imapPath, $pattern]) ?: [];
 		foreach($folders as &$folder) {
-			$folder = mb_convert_encoding($folder, "UTF-8", "UTF7-IMAP");
+			$folder = mb_convert_encoding($folder, 'UTF-8', 'UTF7-IMAP');
 		}
 		return $folders;
 	}
@@ -862,7 +862,7 @@ class Mailbox {
 		if($methodShortName !== 'open') { // duct tape https://github.com/barbushin/php-imap/issues/242
 			foreach($args as &$arg) {
 				if(is_string($arg)) {
-					$arg = mb_convert_encoding($arg, "UTF7-IMAP", "UTF-8");
+					$arg = mb_convert_encoding($arg, 'UTF7-IMAP', 'UTF-8');
 				}
 			}
 		}
