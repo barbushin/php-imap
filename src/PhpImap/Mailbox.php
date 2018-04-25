@@ -757,7 +757,7 @@ class Mailbox {
 	 * @throws Exception
 	 */
 	protected function convertStringEncoding($string, $fromEncoding, $toEncoding) {
-		if(!$string || $fromEncoding == $toEncoding || (strtoupper($fromEncoding) == "UTF-8" && strtoupper($toEncoding) == "US-ASCII")) {
+		if(!$string || $fromEncoding == $toEncoding || (strtoupper($fromEncoding) == 'UTF-8' && strtoupper($toEncoding) == 'US-ASCII')) {
 			return $string;
 		}
 		$convertedString = function_exists('iconv') ? @iconv($fromEncoding, $toEncoding . '//IGNORE', $string) : null;
