@@ -28,8 +28,6 @@
 
 ### Usage example
 
-Example 1:
-
 ```php
 // 4. argument is the directory into which attachments are to be saved:
 $mailbox = new PhpImap\Mailbox('{imap.gmail.com:993/imap/ssl}INBOX', 'some@gmail.com', '*********', __DIR__);
