@@ -29,9 +29,15 @@
 ### Usage example
 
 ```php
-// 4. argument is the directory into which attachments are to be saved:
-$mailbox = new PhpImap\Mailbox('{imap.gmail.com:993/imap/ssl}INBOX', 'some@gmail.com', '*********', __DIR__);
+$mailbox = new PhpImap\Mailbox(
+	'{imap.gmail.com:993/imap/ssl}INBOX', 
+	'some@gmail.com', 
+	'*********', 
+	__DIR__ // The directory into which attachments are to be saved. Ain't saved if FALSE.
+); 
+```
 
+```php
 // Read all messaged into an array:
 $mailsIds = $mailbox->searchMailbox('ALL');
 if(!$mailsIds) {
@@ -45,6 +51,23 @@ print_r($mail);
 echo "\n\nAttachments:\n";
 print_r($mail->getAttachments());
 ```
+
+Method imap() allows to call any imap function in a context of the the instance
+
+```php
+// Call imap_check(); 	
+// http://php.net/manual/en/function.imap-check.php	
+$info = $mailbox->imap('check'); // 
+	
+// Show current time for the mailbox
+$currentServerTime = isset($info->Date) && $info->Date ? date('Y-m-d H:i:s', strtotime($info->Date)) : 'Unknown';	
+	
+echo $currentServerTime;
+```
+
+If you don't need to grab attachments you can significantly increase performance of your application:
+
+
 
 ### Recommended
 
