@@ -656,6 +656,8 @@ class Mailbox {
 			$attachment->id = $attachmentId;
 			$attachment->contentId = $partStructure->ifid ? trim($partStructure->id, " <>") : null;
 			$attachment->name = $fileName;
+			if ( !empty($params['charset']))
+			    $attachment->charset = $params['charset'];			
 			$attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
 			if($this->attachmentsDir) {
 				$replace = [
