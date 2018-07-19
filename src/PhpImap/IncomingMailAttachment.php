@@ -11,4 +11,5 @@ class IncomingMailAttachment {
 	public $name;
 	public $filePath;
 	public $disposition;
+	public $charset;
 }
