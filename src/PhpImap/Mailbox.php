@@ -859,7 +859,7 @@ class Mailbox {
 		if(!is_array($args)) {
 			$args = [$args];
 		}
-		if($methodShortName !== 'open') { // duct tape https://github.com/barbushin/php-imap/issues/242
+		if(in_array($methodShortName, ['open', 'reopen', 'search'])) { // duct tape https://github.com/barbushin/php-imap/issues/242
 			foreach($args as &$arg) {
 				if(is_string($arg)) {
 					$arg = mb_convert_encoding($arg, 'UTF7-IMAP', 'UTF-8');
