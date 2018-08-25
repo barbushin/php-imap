@@ -20,6 +20,7 @@ class Mailbox {
 	protected $attachmentsDir = null;
 	protected $expungeOnDisconnect = true;
 	protected $timeouts = [];
+	protected $pathDelimiter = '.';
 	private $imapStream;
 
 	/**
@@ -97,7 +98,15 @@ class Mailbox {
 		$this->connectionRetryDelay = $milliseconds;
 	}
 
-	/**
+	public function setPathDelimiter($delimiter) {
+		$this->pathDelimiter = $delimiter;
+	}
+
+	public function getPathDelimiter(){
+		return $this->pathDelimiter;
+	}
+
+    /**
 	 * Get IMAP mailbox connection stream
 	 * @param bool $forceConnection Initialize connection if it's not initialized
 	 * @return null|resource
@@ -184,7 +193,7 @@ class Mailbox {
 	 * @param $name
 	 */
 	public function createMailbox($name) {
-		$this->imap('createmailbox', $this->imapPath . '.' . $name);
+		$this->imap('createmailbox', $this->imapPath . $this->pathDelimiter . $name);
 	}
 
 	/**
@@ -192,7 +201,7 @@ class Mailbox {
 	 * @param $name
 	 */
 	public function deleteMailbox($name) {
-		$this->imap('deletemailbox', $this->imapPath . '.' . $name);
+		$this->imap('deletemailbox', $this->imapPath . $this->pathDelimiter . $name);
 	}
 
 	/**
@@ -201,7 +210,10 @@ class Mailbox {
 	 * @param $newName
 	 */
 	public function renameMailbox($oldName, $newName) {
-		$this->imap('renamemailbox', [$this->imapPath . '.' . $oldName, $this->imapPath . '.' . $newName]);
+		$this->imap(
+			'renamemailbox',
+			[$this->imapPath . $this->pathDelimiter . $oldName, $this->imapPath . $this->pathDelimiter . $newName]
+        );
 	}
 
 	/**
@@ -819,7 +831,7 @@ class Mailbox {
 	 * @throws Exception
 	 */
 	public function subscribeMailbox($mailbox) {
-		$this->imap('subscribe', $this->imapPath . '.' . $mailbox);
+		$this->imap('subscribe', $this->imapPath . $this->pathDelimiter . $mailbox);
 	}
 
 	/**
@@ -827,7 +839,7 @@ class Mailbox {
 	 * @throws Exception
 	 */
 	public function unsubscribeMailbox($mailbox) {
-		$this->imap('unsubscribe', $this->imapPath . '.' . $mailbox);
+		$this->imap('unsubscribe', $this->imapPath . $this->pathDelimiter . $mailbox);
 	}
 	/**
 	 * Call IMAP extension function call wrapped with utf7 args conversion & errors handling
