@@ -529,6 +529,9 @@ class Mailbox {
 				$fileName = $this->decodeRFC2231($fileName, $this->serverEncoding);
 			}
 			
+			// Rimozione caratteri non stampabili
+			$fileName = preg_replace('/[^[:print:]]/', '', $fileName);
+			
 			// 255 è il limite su fs ext4. 200 per poter prependere altri caratteri al nome.
 			if (strlen($fileName) > 200) {
 				$fileName = substr($fileName, -200);
