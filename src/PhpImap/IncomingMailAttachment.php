@@ -4,11 +4,14 @@
  * @see https://github.com/barbushin/php-imap
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
  */
-class IncomingMailAttachment {
-
-	public $id;
-	public $contentId;
-	public $name;
-	public $filePath;
-	public $disposition;
+class IncomingMailAttachment extends AbstractMailAttachment {
+    /**
+     * Function from save file
+     *
+     * @param $content
+     * @return mixed
+     */
+    public function save ($content) {
+        file_put_contents($this->filePath, $content);
+    }
 }

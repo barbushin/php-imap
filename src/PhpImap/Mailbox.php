@@ -20,6 +20,7 @@ class Mailbox {
 	protected $attachmentsDir = null;
 	protected $expungeOnDisconnect = true;
 	protected $timeouts = [];
+	protected $pathIncomingMailAttachment = '\PhpImap\IncomingMailAttachment';
 	private $imapStream;
 
 	/**
@@ -30,7 +31,7 @@ class Mailbox {
 	 * @param string $serverEncoding
 	 * @throws Exception
 	 */
-	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8') {
+	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $pathIncomingMailAttachment = null, $serverEncoding = 'UTF-8') {
 		$this->imapPath = $imapPath;
 		$this->imapLogin = $login;
 		$this->imapPassword = $password;
@@ -41,6 +42,10 @@ class Mailbox {
 			}
 			$this->attachmentsDir = rtrim(realpath($attachmentsDir), '\\/');
 		}
+
+		if(!is_null($pathIncomingMailAttachment)) {
+		    $this->pathIncomingMailAttachment = $pathIncomingMailAttachment;
+        }
 	}
 
 	public function getServerEncoding() {
@@ -652,7 +657,7 @@ class Mailbox {
 				$fileName = $this->decodeRFC2231($fileName, $this->serverEncoding);
 			}
 
-			$attachment = new IncomingMailAttachment();
+			$attachment = new $this->pathIncomingMailAttachment();
 			$attachment->id = $attachmentId;
 			$attachment->contentId = $partStructure->ifid ? trim($partStructure->id, " <>") : null;
 			$attachment->name = $fileName;
@@ -671,8 +676,7 @@ class Mailbox {
 					$ext = pathinfo($attachment->filePath, PATHINFO_EXTENSION);
 					$attachment->filePath = substr($attachment->filePath, 0, 255 - 1 - strlen($ext)) . "." . $ext;
 				}
-
-				file_put_contents($attachment->filePath, $data);
+				$attachment->save($data);
 			}
 			$mail->addAttachment($attachment);
 		}
