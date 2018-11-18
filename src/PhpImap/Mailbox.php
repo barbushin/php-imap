@@ -845,7 +845,7 @@ class Mailbox {
 		}
 		foreach($args as &$arg) {
 			if(is_string($arg)) {
-				$arg = imap_utf7_encode($arg);
+				$arg = mb_convert_encoding($arg, 'UTF7-IMAP', 'UTF-8');
 			}
 		}
 		if($prependConnectionAsFirstArg) {
