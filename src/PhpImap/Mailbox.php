@@ -250,7 +250,7 @@ class Mailbox {
 	 * @param string $filename
 	 */
 	public function saveMail($mailId, $filename = 'email.eml') {
-		$this->imap('savebody', [$filename, $mailId, "", FT_UID]);
+		$this->imap('savebody', [$filename, $mailId, "", FT_UID | FT_PEEK]);
 	}
 
 	/**
