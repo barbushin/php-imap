@@ -1,5 +1,5 @@
 {
-    "name": "php-imap/php-imap",
+    "name": "yachtfocus/php-imap",
     "description": "Manage mailboxes, filter/get/delete emails in PHP (supports IMAP/POP3/NNTP)",
     "keywords": [
         "PHP",
