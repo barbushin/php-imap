@@ -704,15 +704,16 @@ class Mailbox {
 		}
 	}
 
-	protected function decodeMimeStr($string, $toCharset = 'utf-8') {
+	protected function decodeMimeStr($string, $toCharset = 'utf-8'){
 		$newString = '';
-		foreach(imap_mime_header_decode($string) as $element) {
-			if(isset($element->text)) {
-				$fromCharset = !isset($element->charset) || $element->charset == 'default' ? 'iso-8859-1' : $element->charset;
-				$newString .= $this->convertStringEncoding($element->text, $fromCharset, $toCharset);
-			}
+
+		foreach (imap_mime_header_decode(imap_utf8($string)) as $element) {
+		    if (isset($element->text)) {
+			$newString .= $element->text;
+		    }
 		}
-		return $newString;
+
+		return $this->convertStringEncoding($newString, 'utf-8', $toCharset);
 	}
 
 	function isUrlEncoded($string) {
