@@ -3,13 +3,15 @@
 /**
  * @see https://github.com/barbushin/php-imap
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
+ * 
+ * @property-read string $textPlain lazy plain message body
+ * @property-read string $textHtml lazy html message body
  */
 class IncomingMail extends IncomingMailHeader {
 
-	public $textPlain;
-	public $textHtml;
 	/** @var IncomingMailAttachment[] */
 	protected $attachments = array();
+	protected $dataInfo = array([],[]);
 
 	public function setHeader(IncomingMailHeader $header) {
 		foreach(get_object_vars($header) as $property => $value) {
@@ -17,7 +19,29 @@ class IncomingMail extends IncomingMailHeader {
 		}
 	}
 
-	public function addAttachment(IncomingMailAttachment $attachment) {
+	public function addDataPartInfo(DataPartInfo $dataInfo, $type) {
+	    $this->dataInfo[$type][] = $dataInfo;
+	}
+
+	public function __get ($name) {
+	    $type = false;
+	    if($name == 'textPlain') {
+	        $type = DataPartInfo::TEXT_PLAIN;
+	    }
+	    if($name == 'textHtml') {
+	        $type = DataPartInfo::TEXT_HTML;
+	    }
+	    if(false === $type) {
+	        trigger_error("Undefined property: IncomingMail::$name");
+	    }
+	    $this->$name = '';
+	    foreach($this->dataInfo[$type] as $data) {
+	        $this->$name .= trim($data->fetch());
+	    }
+	    return $this->$name;
+	}
+
+    public function addAttachment(IncomingMailAttachment $attachment) {
 		$this->attachments[$attachment->id] = $attachment;
 	}
 
