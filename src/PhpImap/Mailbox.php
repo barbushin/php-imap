@@ -1,5 +1,6 @@
 <?php namespace PhpImap;
 
+use DateTime;
 use stdClass;
 
 /**
@@ -512,8 +513,17 @@ class Mailbox {
 		$header->headersRaw = $headersRaw;
 		$header->headers = $head;
 		$header->id = $mailId;
-		$header->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime(preg_replace('/\(.*?\)/', '', $head->date)) : time());
 		$header->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
+		if(isset($head->date)) {
+			$dateRegex = '/\\s*\\(.*?\\)/';
+			$header->dateTime = DateTime::createFromFormat(DateTime::RFC2822, preg_replace($dateRegex, '', $head->date));
+			$header->date = $header->dateTime->format('Y-m-d H:i:s');
+		}
+		else {
+			$now = new DateTime;
+			$header->date = $now->format('Y-m-d H:i:s');
+		}
+
 		if(isset($head->from)) {
 			$header->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : null;
 			$header->fromAddress = strtolower($head->from[0]->mailbox . '@' . $head->from[0]->host);
