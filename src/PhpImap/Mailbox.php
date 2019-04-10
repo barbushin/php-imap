@@ -486,7 +486,7 @@ class Mailbox {
 			$data = imap_utf8($data);
 		}
 		elseif($partStructure->encoding == 2) {
-			$data = imap_binary($data);
+			//$data = imap_binary($data);
 		}
 		elseif($partStructure->encoding == 3) {
 			$data = preg_replace('~[^a-zA-Z0-9+=/]+~s', '', $data); // https://github.com/barbushin/php-imap/issues/88
