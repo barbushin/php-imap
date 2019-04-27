@@ -11,6 +11,8 @@ class IncomingMailHeader {
 	public $date;
 	public $headersRaw;
 	public $headers;
+	public $autoSubmitted;
+	public $precedence;
 	public $subject;
 
 	public $fromName;
