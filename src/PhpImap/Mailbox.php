@@ -511,6 +511,8 @@ class Mailbox {
 		$header = new IncomingMailHeader();
 		$header->headersRaw = $headersRaw;
 		$header->headers = $head;
+		$header->autoSubmitted = (preg_match("/Auto-Submitted\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
+		$header->precedence = (preg_match("/Precedence\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
 		$header->id = $mailId;
 		$header->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime(preg_replace('/\(.*?\)/', '', $head->date)) : time());
 		$header->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
