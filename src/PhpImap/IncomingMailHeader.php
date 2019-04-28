@@ -11,7 +11,10 @@ class IncomingMailHeader {
 	public $date;
 	public $headersRaw;
 	public $headers;
-	public $autoSubmitted;
+	public $priority;
+	public $importance;
+	public $sensitivity;
+  public $autoSubmitted;
 	public $precedence;
 	public $subject;
 
