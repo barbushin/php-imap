@@ -31,10 +31,10 @@ class Mailbox {
 	 * @throws Exception
 	 */
 	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8') {
-		$this->imapPath = $imapPath;
-		$this->imapLogin = $login;
+		$this->imapPath = trim($imapPath);
+		$this->imapLogin = trim($login);
 		$this->imapPassword = $password;
-		$this->serverEncoding = strtoupper($serverEncoding);
+		$this->serverEncoding = strtoupper(trim($serverEncoding));
 		if($attachmentsDir) {
 			if(!is_dir($attachmentsDir)) {
 				throw new Exception('Directory "' . $attachmentsDir . '" not found');
@@ -511,7 +511,10 @@ class Mailbox {
 		$header = new IncomingMailHeader();
 		$header->headersRaw = $headersRaw;
 		$header->headers = $head;
-		$header->autoSubmitted = (preg_match("/Auto-Submitted\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
+		$header->priority = (preg_match("/Priority\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
+		$header->importance = (preg_match("/Importance\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
+		$header->sensitivity = (preg_match("/Sensitivity\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
+    $header->autoSubmitted = (preg_match("/Auto-Submitted\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
 		$header->precedence = (preg_match("/Precedence\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
 		$header->id = $mailId;
 		$header->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime(preg_replace('/\(.*?\)/', '', $head->date)) : time());
@@ -845,9 +848,24 @@ class Mailbox {
 		if(!is_array($args)) {
 			$args = [$args];
 		}
-		foreach($args as &$arg) {
-			if(is_string($arg)) {
-				$arg = imap_utf7_encode($arg);
+		 // https://github.com/barbushin/php-imap/issues/242
+		if(in_array($methodShortName, ['open'])) {
+			// Mailbox names that contain international characters besides those in the printable ASCII space have to be encoded with imap_utf7_encode().
+			// https://www.php.net/manual/en/function.imap-open.php
+			if(is_string($args[0])) {
+				if(preg_match("/^\{.*\}(.*)$/", $args[0], $matches)) {
+					$mailbox_name = $matches[1];
+
+					if(!mb_detect_encoding($mailbox_name, 'ASCII', true)) {
+						$args[0] = imap_utf7_encode($mailbox_name);
+					}
+				}
+			}
+		} else {
+			foreach($args as &$arg) {
+				if(is_string($arg)) {
+					$arg = imap_utf7_encode($arg);
+				}
 			}
 		}
 		if($prependConnectionAsFirstArg) {

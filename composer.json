@@ -21,7 +21,8 @@
     ],
     "require": {
         "php": ">=5.5",
-        "ext-imap": "*"
+        "ext-imap": "*",
+        "phpunit/phpunit": "^7.5"
     },
     "autoload": {
         "psr-4": {

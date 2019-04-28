@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+         bootstrap="vendor/autoload.php"
+         verbose="true"
+         stopOnError="false"
+         stopOnFailure="false"
+         stopOnIncomplete="false"
+         stopOnSkipped="false"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         colors="true"
+         forceCoversAnnotation="false"
+         processIsolation="false">
+    <testsuites>
+        <testsuite name="php-imap Tests">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
