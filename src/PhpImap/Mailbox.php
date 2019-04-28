@@ -843,9 +843,24 @@ class Mailbox {
 		if(!is_array($args)) {
 			$args = [$args];
 		}
-		foreach($args as &$arg) {
-			if(is_string($arg)) {
-				$arg = imap_utf7_encode($arg);
+		 // https://github.com/barbushin/php-imap/issues/242
+		if(in_array($methodShortName, ['open'])) {
+			// Mailbox names that contain international characters besides those in the printable ASCII space have to be encoded with imap_utf7_encode().
+			// https://www.php.net/manual/en/function.imap-open.php
+			if(is_string($args[0])) {
+				if(preg_match("/^\{.*\}(.*)$/", $args[0], $matches)) {
+					$mailbox_name = $matches[1];
+
+					if(!mb_detect_encoding($mailbox_name, 'ASCII', true)) {
+						$args[0] = imap_utf7_encode($mailbox_name);
+					}
+				}
+			}
+		} else {
+			foreach($args as &$arg) {
+				if(is_string($arg)) {
+					$arg = imap_utf7_encode($arg);
+				}
 			}
 		}
 		if($prependConnectionAsFirstArg) {
