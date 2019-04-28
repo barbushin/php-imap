@@ -116,4 +116,43 @@ final class MailboxTest extends TestCase
 	{
 		$this->assertEquals($this->mailbox->getLogin(), 'php-imap@example.com');
 	}
+
+	/*
+	 * Test, that the path delimiter has a default value
+	*/
+	public function testPathDelimiterHasADefault()
+	{
+		$this->assertNotEmpty($this->mailbox->getPathDelimiter());
+	}
+
+	/*
+	 * Test, that the path delimiter is checked for supported chars
+	*/
+	public function testPathDelimiterIsBeingChecked()
+	{
+		$supported_delimiters = array('.', '/');
+		$random_strings = str_split(substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyz!'§$%&/()=#~*+,;.:<>|"), 0));
+
+		foreach($random_strings as $str) {
+			$this->mailbox->setPathDelimiter($str);
+
+			if(in_array($str, $supported_delimiters)) {
+				$this->assertTrue($this->mailbox->validatePathDelimiter());
+			} else {
+				$this->assertFalse($this->mailbox->validatePathDelimiter());
+			}
+		}
+	}
+
+	/*
+	 * Test, that the path delimiter can be set
+	*/
+	public function testSetAndGetPathDelimiter()
+	{
+		$this->mailbox->setPathDelimiter('.');
+		$this->assertEquals($this->mailbox->getPathDelimiter(), '.');
+
+		$this->mailbox->setPathDelimiter('/');
+		$this->assertEquals($this->mailbox->getPathDelimiter(), '/');
+	}
 }
