@@ -1,26 +1,78 @@
 <?php
 
+/**
+* Mailbox - PHPUnit tests.
+*
+* @author    Sebastian Kraetzig <sebastian-kraetzig@gmx.de>
+*/
+
+use PhpImap\Mailbox;
 use PHPUnit\Framework\TestCase;
 
 final class MailboxTest extends TestCase
 {
-	protected $mailbox;
-	protected $imapPath = '{imap.example.com:993/imap/ssl/novalidate-cert}INBOX';
-	protected $login = 'php-imap@example.com';
-	protected $password = 'v3rY!53cEt&P4sSWöRd$';
-	protected $attachmentsDir = '.';
-	protected $serverEncoding = 'UTF-8';
+	/**
+	* Holds a PhpImap\Mailbox instance
+	*
+	* @var Mailbox
+	*/
+	private $mailbox;
 
+	/**
+	* Holds the imap path
+	*
+	* @var string
+	*/
+	private $imapPath = '{imap.example.com:993/imap/ssl/novalidate-cert}INBOX';
+
+	/**
+	* Holds the imap username
+	*
+	* @var string|email
+	*/
+	private $login = 'php-imap@example.com';
+
+	/**
+	* Holds the imap user password
+	*
+	* @var string
+	*/
+	private $password = 'v3rY!53cEt&P4sSWöRd$';
+
+	/**
+	* Holds the relative name of the directory, where email attachments will be saved
+	*
+	* @var string
+	*/
+	private $attachmentsDir = '.';
+
+	/**
+	* Holds the server encoding setting
+	*
+	* @var string
+	*/
+	private $serverEncoding = 'UTF-8';
+
+	/**
+	* Run before each test is started.
+	*/
 	public function setUp() {
 
-		$this->mailbox = new PhpImap\Mailbox($this->imapPath, $this->login, $this->password, $this->attachmentsDir, $this->serverEncoding);
+		$this->mailbox = new Mailbox($this->imapPath, $this->login, $this->password, $this->attachmentsDir, $this->serverEncoding);
 	}
 
+	/**
+	* Test, that the constructor returns an instance of PhpImap\Mailbox::class
+	*/
 	public function testConstructor()
 	{
-		$this->assertInstanceOf(PhpImap\Mailbox::class, $this->mailbox);
+		$this->assertInstanceOf(Mailbox::class, $this->mailbox);
 	}
 
+	/*
+	 * Test, that the constructor trims possible variables
+	 * Leading and ending spaces are not even possible in some variables.
+	*/
 	public function testConstructorTrimsPossibleVariables() {
 		$imapPath = ' {imap.example.com:993/imap/ssl}INBOX     ';
 		$login = '    php-imap@example.com';
@@ -29,7 +81,7 @@ final class MailboxTest extends TestCase
 		$attachmentsDir = '.';
 		$serverEncoding = 'UTF-8  ';
 
-		$mailbox = new PhpImap\Mailbox($imapPath, $login, $password, $attachmentsDir, $serverEncoding);
+		$mailbox = new Mailbox($imapPath, $login, $password, $attachmentsDir, $serverEncoding);
 
 		$this->assertAttributeEquals('{imap.example.com:993/imap/ssl}INBOX', 'imapPath', $mailbox);
 		$this->assertAttributeEquals('php-imap@example.com', 'imapLogin', $mailbox);
@@ -38,12 +90,18 @@ final class MailboxTest extends TestCase
 		$this->assertAttributeEquals('UTF-8', 'serverEncoding', $mailbox);
 	}
 
+	/*
+	 * Test, that the constructor uppers the server encoding setting
+	*/
 	public function testConstructorUppersServerEncoding() {
 		$serverEncoding = 'Utf-8';
 
 		$this->assertAttributeEquals('UTF-8', 'serverEncoding', $this->mailbox);
 	}
 
+	/*
+	 * Test, that the server encoding can be set
+	*/
 	public function testSetAndGetServerEncoding()
 	{
 		$this->mailbox->setServerEncoding('UTF-8');
@@ -51,6 +109,9 @@ final class MailboxTest extends TestCase
 		$this->assertEquals($this->mailbox->getServerEncoding(), 'UTF-8');
 	}
 
+	/*
+	 * Test, that the imap login can be retrieved
+	*/
 	public function testGetLogin()
 	{
 		$this->assertEquals($this->mailbox->getLogin(), 'php-imap@example.com');
