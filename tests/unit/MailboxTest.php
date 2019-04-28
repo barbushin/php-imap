@@ -7,7 +7,7 @@ final class MailboxTest extends TestCase
 	protected $mailbox;
 	protected $imapPath = '{imap.example.com:993/imap/ssl/novalidate-cert}INBOX';
 	protected $login = 'php-imap@example.com';
-	protected $password = 'v3rY!53cEtP4sSW0Rd$';
+	protected $password = 'v3rY!53cEt&P4sSWöRd$';
 	protected $attachmentsDir = '.';
 	protected $serverEncoding = 'UTF-8';
 
@@ -24,7 +24,7 @@ final class MailboxTest extends TestCase
 	public function testConstructorTrimsPossibleVariables() {
 		$imapPath = ' {imap.example.com:993/imap/ssl}INBOX     ';
 		$login = '    php-imap@example.com';
-		$password = '  v3rY!53cEtP4sSW0Rd$';
+		$password = '  v3rY!53cEt&P4sSWöRd$';
 		// directory names can contain spaces before AND after on Linux/Unix systems. Windows trims these spaces automatically.
 		$attachmentsDir = '.';
 		$serverEncoding = 'UTF-8  ';
@@ -33,7 +33,7 @@ final class MailboxTest extends TestCase
 
 		$this->assertAttributeEquals('{imap.example.com:993/imap/ssl}INBOX', 'imapPath', $mailbox);
 		$this->assertAttributeEquals('php-imap@example.com', 'imapLogin', $mailbox);
-		$this->assertAttributeEquals('  v3rY!53cEtP4sSW0Rd$', 'imapPassword', $mailbox);
+		$this->assertAttributeEquals('  v3rY!53cEt&P4sSWöRd$', 'imapPassword', $mailbox);
 		$this->assertAttributeEquals(realpath('.'), 'attachmentsDir', $mailbox);
 		$this->assertAttributeEquals('UTF-8', 'serverEncoding', $mailbox);
 	}
