@@ -155,4 +155,48 @@ final class MailboxTest extends TestCase
 		$this->mailbox->setPathDelimiter('/');
 		$this->assertEquals($this->mailbox->getPathDelimiter(), '/');
 	}
+
+	/*
+	 * Test, that values are identical before and after encoding
+	*/
+	public function testEncodingReturnsCorrectValues()
+	{
+		$test_strings = array(
+			'Avañe’ẽ', // Guaraní
+			'azərbaycanca', // Azerbaijani (Latin)
+			'Bokmål', // Norwegian Bokmål
+			'chiCheŵa', // Chewa
+			'Deutsch', // German
+			'U.S. English', // U.S. English
+			'français', // French
+			'føroyskt', // Faroese
+			'Kĩmĩrũ', // Kimîîru
+			'Kɨlaangi', // Langi
+			'oʼzbekcha', // Uzbek (Latin)
+			'Plattdüütsch', // Low German
+			'română', // Romanian
+			'Sängö', // Sango
+			'Tiếng Việt', // Vietnamese
+			'ɔl-Maa', // Masai
+			'Ελληνικά', // Greek
+			'Ўзбек', // Uzbek (Cyrillic)
+			'Азәрбајҹан', // Azerbaijani (Cyrillic)
+			'Српски', // Serbian (Cyrillic)
+			'русский', // Russian
+			'ѩзыкъ словѣньскъ', // Church Slavic
+			'العربية', // Arabic
+			'नेपाली', // / Nepali
+			'日本語', // Japanese
+			'简体中文', // Chinese (Simplified)
+			'繁體中文', // Chinese (Traditional)
+			'한국어', // Korean
+		);
+
+		foreach($test_strings as $str) {
+			$utf7_encoded_str = $this->mailbox->encodeStringToUtf7Imap($str);
+			$utf8_decoded_str = $this->mailbox->decodeStringFromUtf7ImapToUtf8($utf7_encoded_str);
+
+			$this->assertEquals($utf8_decoded_str, $str);
+		}
+	}
 }

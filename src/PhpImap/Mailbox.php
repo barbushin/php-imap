@@ -140,6 +140,36 @@ class Mailbox {
 	}
 
 	/**
+	 * Returns the provided string in UTF7-IMAP encoded format
+	 *
+	 * @param string $any_encoded_string
+	 * @return string $utf7_encoded_string
+	 */
+	public function encodeStringToUtf7Imap(string $str) {
+		if(is_string($str)) {
+			return mb_convert_encoding($str, 'UTF7-IMAP', mb_detect_encoding($str, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
+		}
+
+		// Return $str as it is, when it is no string
+		return $str;
+	}
+
+	/**
+	 * Returns the provided string in UTF-8 encoded format
+	 *
+	 * @param string $any_encoded_string
+	 * @return string $utf7_encoded_string
+	 */
+	public function decodeStringFromUtf7ImapToUtf8(string $str) {
+		if(is_string($str)) {
+			return mb_convert_encoding($str, 'UTF-8', 'UTF7-IMAP');
+		}
+
+		// Return $str as it is, when it is no string
+		return $str;
+	}
+
+	/**
 	 * Switch mailbox without opening a new connection
 	 *
 	 * @param string $imapPath
@@ -252,7 +282,7 @@ class Mailbox {
 	public function getListingFolders($pattern = '*') {
 		$folders = $this->imap('list', [$this->imapPath, $pattern]) ?: [];
 		foreach($folders as &$folder) {
-			$folder = imap_utf7_decode($folder);
+			$folder = $this->decodeStringFromUtf7ImapToUtf8($folder);
 		}
 		return $folders;
 	}
@@ -858,6 +888,7 @@ class Mailbox {
 	public function unsubscribeMailbox($mailbox) {
 		$this->imap('unsubscribe', $this->imapPath . $this->getPathDelimiter() . $mailbox);
 	}
+
 	/**
 	 * Call IMAP extension function call wrapped with utf7 args conversion & errors handling
 	 *
@@ -881,14 +912,14 @@ class Mailbox {
 					$mailbox_name = $matches[1];
 
 					if(!mb_detect_encoding($mailbox_name, 'ASCII', true)) {
-						$args[0] = imap_utf7_encode($mailbox_name);
+						$args[0] = $this->encodeStringToUtf7Imap($mailbox_name);
 					}
 				}
 			}
 		} else {
 			foreach($args as &$arg) {
 				if(is_string($arg)) {
-					$arg = imap_utf7_encode($arg);
+					$arg = $this->encodeStringToUtf7Imap($arg);
 				}
 			}
 		}
