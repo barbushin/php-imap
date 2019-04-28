@@ -31,10 +31,10 @@ class Mailbox {
 	 * @throws Exception
 	 */
 	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8') {
-		$this->imapPath = $imapPath;
-		$this->imapLogin = $login;
+		$this->imapPath = trim($imapPath);
+		$this->imapLogin = trim($login);
 		$this->imapPassword = $password;
-		$this->serverEncoding = strtoupper($serverEncoding);
+		$this->serverEncoding = strtoupper(trim($serverEncoding));
 		if($attachmentsDir) {
 			if(!is_dir($attachmentsDir)) {
 				throw new Exception('Directory "' . $attachmentsDir . '" not found');
