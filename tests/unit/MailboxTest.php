@@ -116,4 +116,87 @@ final class MailboxTest extends TestCase
 	{
 		$this->assertEquals($this->mailbox->getLogin(), 'php-imap@example.com');
 	}
+
+	/*
+	 * Test, that the path delimiter has a default value
+	*/
+	public function testPathDelimiterHasADefault()
+	{
+		$this->assertNotEmpty($this->mailbox->getPathDelimiter());
+	}
+
+	/*
+	 * Test, that the path delimiter is checked for supported chars
+	*/
+	public function testPathDelimiterIsBeingChecked()
+	{
+		$supported_delimiters = array('.', '/');
+		$random_strings = str_split(substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyz!'§$%&/()=#~*+,;.:<>|"), 0));
+
+		foreach($random_strings as $str) {
+			$this->mailbox->setPathDelimiter($str);
+
+			if(in_array($str, $supported_delimiters)) {
+				$this->assertTrue($this->mailbox->validatePathDelimiter());
+			} else {
+				$this->assertFalse($this->mailbox->validatePathDelimiter());
+			}
+		}
+	}
+
+	/*
+	 * Test, that the path delimiter can be set
+	*/
+	public function testSetAndGetPathDelimiter()
+	{
+		$this->mailbox->setPathDelimiter('.');
+		$this->assertEquals($this->mailbox->getPathDelimiter(), '.');
+
+		$this->mailbox->setPathDelimiter('/');
+		$this->assertEquals($this->mailbox->getPathDelimiter(), '/');
+	}
+
+	/*
+	 * Test, that values are identical before and after encoding
+	*/
+	public function testEncodingReturnsCorrectValues()
+	{
+		$test_strings = array(
+			'Avañe’ẽ', // Guaraní
+			'azərbaycanca', // Azerbaijani (Latin)
+			'Bokmål', // Norwegian Bokmål
+			'chiCheŵa', // Chewa
+			'Deutsch', // German
+			'U.S. English', // U.S. English
+			'français', // French
+			'føroyskt', // Faroese
+			'Kĩmĩrũ', // Kimîîru
+			'Kɨlaangi', // Langi
+			'oʼzbekcha', // Uzbek (Latin)
+			'Plattdüütsch', // Low German
+			'română', // Romanian
+			'Sängö', // Sango
+			'Tiếng Việt', // Vietnamese
+			'ɔl-Maa', // Masai
+			'Ελληνικά', // Greek
+			'Ўзбек', // Uzbek (Cyrillic)
+			'Азәрбајҹан', // Azerbaijani (Cyrillic)
+			'Српски', // Serbian (Cyrillic)
+			'русский', // Russian
+			'ѩзыкъ словѣньскъ', // Church Slavic
+			'العربية', // Arabic
+			'नेपाली', // / Nepali
+			'日本語', // Japanese
+			'简体中文', // Chinese (Simplified)
+			'繁體中文', // Chinese (Traditional)
+			'한국어', // Korean
+		);
+
+		foreach($test_strings as $str) {
+			$utf7_encoded_str = $this->mailbox->encodeStringToUtf7Imap($str);
+			$utf8_decoded_str = $this->mailbox->decodeStringFromUtf7ImapToUtf8($utf7_encoded_str);
+
+			$this->assertEquals($utf8_decoded_str, $str);
+		}
+	}
 }

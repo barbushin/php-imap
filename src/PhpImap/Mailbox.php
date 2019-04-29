@@ -20,6 +20,7 @@ class Mailbox {
 	protected $attachmentsDir = null;
 	protected $expungeOnDisconnect = true;
 	protected $timeouts = [];
+	protected $pathDelimiter = '.';
 	private $imapStream;
 
 	/**
@@ -42,6 +43,29 @@ class Mailbox {
 			$this->attachmentsDir = rtrim(realpath($attachmentsDir), '\\/');
 		}
 	}
+
+	/**
+	 * @param string $delimiter Path delimiter
+	 * Supported values are: '.', '/'
+	 */
+	public function setPathDelimiter($delimiter) {
+		$this->pathDelimiter = $delimiter;
+	}
+
+	public function getPathDelimiter() {
+		return $this->pathDelimiter;
+	}
+
+	public function validatePathDelimiter() {
+		$supported_delimiters = array('.', '/');
+
+		if(in_array($this->getPathDelimiter(), $supported_delimiters)) {
+			return true;
+		}
+
+		return false;
+	}
+
 
 	public function getServerEncoding() {
 		return $this->serverEncoding;
@@ -116,6 +140,36 @@ class Mailbox {
 	}
 
 	/**
+	 * Returns the provided string in UTF7-IMAP encoded format
+	 *
+	 * @param string $any_encoded_string
+	 * @return string $utf7_encoded_string
+	 */
+	public function encodeStringToUtf7Imap(string $str) {
+		if(is_string($str)) {
+			return mb_convert_encoding($str, 'UTF7-IMAP', mb_detect_encoding($str, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
+		}
+
+		// Return $str as it is, when it is no string
+		return $str;
+	}
+
+	/**
+	 * Returns the provided string in UTF-8 encoded format
+	 *
+	 * @param string $any_encoded_string
+	 * @return string $utf7_encoded_string
+	 */
+	public function decodeStringFromUtf7ImapToUtf8(string $str) {
+		if(is_string($str)) {
+			return mb_convert_encoding($str, 'UTF-8', 'UTF7-IMAP');
+		}
+
+		// Return $str as it is, when it is no string
+		return $str;
+	}
+
+	/**
 	 * Switch mailbox without opening a new connection
 	 *
 	 * @param string $imapPath
@@ -184,7 +238,7 @@ class Mailbox {
 	 * @param $name
 	 */
 	public function createMailbox($name) {
-		$this->imap('createmailbox', $this->imapPath . '.' . $name);
+		$this->imap('createmailbox', $this->imapPath . $this->getPathDelimiter() . $name);
 	}
 
 	/**
@@ -192,7 +246,7 @@ class Mailbox {
 	 * @param $name
 	 */
 	public function deleteMailbox($name) {
-		$this->imap('deletemailbox', $this->imapPath . '.' . $name);
+		$this->imap('deletemailbox', $this->imapPath . $this->getPathDelimiter() . $name);
 	}
 
 	/**
@@ -201,7 +255,7 @@ class Mailbox {
 	 * @param $newName
 	 */
 	public function renameMailbox($oldName, $newName) {
-		$this->imap('renamemailbox', [$this->imapPath . '.' . $oldName, $this->imapPath . '.' . $newName]);
+		$this->imap('renamemailbox', [$this->imapPath . $this->getPathDelimiter() . $oldName, $this->imapPath . $this->getPathDelimiter() . $newName]);
 	}
 
 	/**
@@ -228,7 +282,7 @@ class Mailbox {
 	public function getListingFolders($pattern = '*') {
 		$folders = $this->imap('list', [$this->imapPath, $pattern]) ?: [];
 		foreach($folders as &$folder) {
-			$folder = imap_utf7_decode($folder);
+			$folder = $this->decodeStringFromUtf7ImapToUtf8($folder);
 		}
 		return $folders;
 	}
@@ -824,7 +878,7 @@ class Mailbox {
 	 * @throws Exception
 	 */
 	public function subscribeMailbox($mailbox) {
-		$this->imap('subscribe', $this->imapPath . '.' . $mailbox);
+		$this->imap('subscribe', $this->imapPath . $this->getPathDelimiter() . $mailbox);
 	}
 
 	/**
@@ -832,8 +886,9 @@ class Mailbox {
 	 * @throws Exception
 	 */
 	public function unsubscribeMailbox($mailbox) {
-		$this->imap('unsubscribe', $this->imapPath . '.' . $mailbox);
+		$this->imap('unsubscribe', $this->imapPath . $this->getPathDelimiter() . $mailbox);
 	}
+
 	/**
 	 * Call IMAP extension function call wrapped with utf7 args conversion & errors handling
 	 *
@@ -857,14 +912,14 @@ class Mailbox {
 					$mailbox_name = $matches[1];
 
 					if(!mb_detect_encoding($mailbox_name, 'ASCII', true)) {
-						$args[0] = imap_utf7_encode($mailbox_name);
+						$args[0] = $this->encodeStringToUtf7Imap($mailbox_name);
 					}
 				}
 			}
 		} else {
 			foreach($args as &$arg) {
 				if(is_string($arg)) {
-					$arg = imap_utf7_encode($arg);
+					$arg = $this->encodeStringToUtf7Imap($arg);
 				}
 			}
 		}
