@@ -149,7 +149,7 @@ class Mailbox {
 	 * @param string $any_encoded_string
 	 * @return string $utf7_encoded_string
 	 */
-	public function encodeStringToUtf7Imap(string $str) {
+	public function encodeStringToUtf7Imap($str) {
 		if(is_string($str)) {
 			return mb_convert_encoding($str, 'UTF7-IMAP', mb_detect_encoding($str, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
 		}
