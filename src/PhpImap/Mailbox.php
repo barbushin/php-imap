@@ -16,7 +16,7 @@ class Mailbox {
 	protected $imapOptions = 0;
 	protected $imapRetriesNum = 0;
 	protected $imapParams = [];
-	protected $serverEncoding;
+	protected $serverEncoding = 'UTF-8';
 	protected $attachmentsDir = null;
 	protected $expungeOnDisconnect = true;
 	protected $timeouts = [];
@@ -35,7 +35,7 @@ class Mailbox {
 		$this->imapPath = trim($imapPath);
 		$this->imapLogin = trim($login);
 		$this->imapPassword = $password;
-		$this->serverEncoding = strtoupper(trim($serverEncoding));
+		$this->setServerEncoding($serverEncoding);
 		if($attachmentsDir) {
 			if(!is_dir($attachmentsDir)) {
 				throw new Exception('Directory "' . $attachmentsDir . '" not found');
@@ -72,7 +72,11 @@ class Mailbox {
 	}
 
 	public function setServerEncoding($serverEncoding) {
-		$this->serverEncoding = $serverEncoding;
+		$serverEncoding = strtoupper(trim($serverEncoding));
+
+		if(in_array($serverEncoding, mb_list_encodings())) {
+			$this->serverEncoding = $serverEncoding;
+		}
 	}
 
 	/**
