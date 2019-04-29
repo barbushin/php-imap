@@ -17,6 +17,7 @@
  
 ### Requirements
 
+* PHP 7.1, 7.2
 * IMAP extension must be present; so make sure this line is active in your php.ini: `extension=php_imap.dll`
 
 ### Installation by Composer
