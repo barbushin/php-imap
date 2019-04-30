@@ -245,4 +245,93 @@ final class MailboxTest extends TestCase
 			$this->assertEquals($utf8_decoded_str, $str);
 		}
 	}
+
+
+	/**
+	 * Test, different datetimes conversions using differents timezones
+	 */
+
+	public function testParsedDateDifferentTimeZones(){
+		$test_datetimes = array (
+			array('Sun, 14 Aug 2005 16:13:03 +0000 (CEST)' ,'1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 +0000','1124035983'),
+
+			array('Sun, 14 Aug 2005 16:13:03 +1000 (CEST)','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 +1000','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 -1000','1124035983'),
+
+			array('Sun, 14 Aug 2005 16:13:03 +2000 (CEST)','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 +2000','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 -2000','1124035983'),
+
+			array('Sun, 14 Aug 2005 16:13:03 +3000 (CEST)','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 +3000','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 -3000','1124035983'),
+
+			array('Sun, 14 Aug 2005 16:13:03 +4000 (CEST)','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 +4000','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 -4000','1124035983'),
+
+			array('Sun, 14 Aug 2005 16:13:03 +5000 (CEST)','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 +5000','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 -5000','1124035983'),
+
+			array('Sun, 14 Aug 2005 16:13:03 +6000 (CEST)','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 +6000','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 -6000','1124035983'),
+
+			array('Sun, 14 Aug 2005 16:13:03 +7000 (CEST)','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 +7000','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 -7000','1124035983'),
+
+			array('Sun, 14 Aug 2005 16:13:03 +8000 (CEST)','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 +8000','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 -8000','1124035983'),
+
+			array('Sun, 14 Aug 2005 16:13:03 +9000 (CEST)','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 +9000','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 -9000','1124035983'),
+
+			array('Sun, 14 Aug 2005 16:13:03 +1000 (CEST)','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 +1000','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 -1000','1124035983'),
+
+			array('Sun, 14 Aug 2005 16:13:03 +1100 (CEST)','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 +1100','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 -1100','1124035983'),
+
+			array('Sun, 14 Aug 2005 16:13:03 +1200 (CEST)','1124035983'),
+			array('Sun, 14 Aug 2005 16:13:03 +1200','1124035983'),
+			
+		);
+
+		foreach($test_datetimes as $datetime) {
+			$dateToParse = $datetime["0"];
+			$epochToCompare = $datetime["1"];
+
+			$parsedDt = $this->mailbox->parseDateTime($dateToParse);
+
+			$parsedDateTime = new DateTime($parsedDt);
+
+			$this->assertEquals($parsedDateTime->format('U'), $epochToCompare);
+
+		}
+
+	}
+
+
+	/**
+	 * Test, parsed datetime being emtpy the header date 
+	 */
+
+	public function testParsedDateTimeWithEmptyHeaderDate(){
+
+		$parsedDt = $this->mailbox->parseDateTime('');
+		$now = new \DateTime;
+		$this->assertEquals($parsedDt, $now->format('Y-m-d H:i:s'));
+
+	}
+
+
+
 }

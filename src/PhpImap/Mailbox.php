@@ -575,7 +575,9 @@ class Mailbox {
     $header->autoSubmitted = (preg_match("/Auto-Submitted\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
 		$header->precedence = (preg_match("/Precedence\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
 		$header->id = $mailId;
-		$header->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime(preg_replace('/\(.*?\)/', '', $head->date)) : time());
+		
+		$header->date = self::parseDateTime($head->date);
+		
 		$header->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
 		if(isset($head->from)) {
 			$header->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : null;
@@ -793,6 +795,22 @@ class Mailbox {
 			}
 		}
 		return $string;
+	}
+
+	/**
+	 * Converts the datetime to a normalized datetime
+	 * 	@param string header datetime
+	 *  @return datetime Normalized datetime
+	 */
+	public function parseDateTime($dateHeader){
+		if(!empty($dateHeader)) {
+			$dateRegex = '/\\s*\\(.*?\\)/';
+			$dateFormatted = \DateTime::createFromFormat(\DateTime::RFC2822, preg_replace($dateRegex, '', $dateHeader));
+			return $dateFormatted->format('Y-m-d H:i:s');
+		} else {
+			$now = new \DateTime;
+			return $now->format('Y-m-d H:i:s');
+		}
 	}
 
 	/**
