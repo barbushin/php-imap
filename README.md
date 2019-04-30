@@ -67,7 +67,8 @@ if(!$mailsIds) {
 }
 
 // Get the first message
-// If '__DIR__' was defined in the first line, it will automatically save all attachments to the specified directory
+// If '__DIR__' was defined in the first line, it will automatically
+// save all attachments to the specified directory
 $mail = $mailbox->getMail($mailsIds[0]);
 
 // Print all information of $mail
