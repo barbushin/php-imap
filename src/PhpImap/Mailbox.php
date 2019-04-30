@@ -418,6 +418,7 @@ class Mailbox {
 	 * Returns an array of objects describing one mail header each. The object will only define a property if it exists. The possible properties are:
 	 *  subject - the mails subject
 	 *  from - who sent it
+	 *  sender - who sent it
 	 *  to - recipient
 	 *  date - when was it sent
 	 *  message_id - Mail-ID
@@ -443,8 +444,11 @@ class Mailbox {
 				if(isset($mail->subject)) {
 					$mail->subject = $this->decodeMimeStr($mail->subject, $this->serverEncoding);
 				}
-				if(isset($mail->from)) {
+				if(isset($mail->from) AND !empty($head->from)) {
 					$mail->from = $this->decodeMimeStr($mail->from, $this->serverEncoding);
+				}
+				if(isset($mail->sender AND !empty($head->sender))) {
+					$mail->sender = $this->decodeMimeStr($mail->sender, $this->serverEncoding);
 				}
 				if(isset($mail->to)) {
 					$mail->to = $this->decodeMimeStr($mail->to, $this->serverEncoding);
@@ -579,12 +583,16 @@ class Mailbox {
 		$header->date = self::parseDateTime($head->date);
 		
 		$header->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
-		if(isset($head->from)) {
+		if(isset($head->from) AND !empty($head->from)) {
 			$header->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : null;
 			$header->fromAddress = strtolower($head->from[0]->mailbox . '@' . $head->from[0]->host);
 		}
 		elseif(preg_match("/smtp.mailfrom=[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/", $headersRaw, $matches)) {
 			$header->fromAddress = substr($matches[0], 14);
+		}
+		if(isset($head->sender) AND !empty($head->sender)) {
+			$header->senderName = isset($head->sender[0]->personal) ? $this->decodeMimeStr($head->sender[0]->personal, $this->serverEncoding) : null;
+			$header->senderAddress = strtolower($head->sender[0]->mailbox . '@' . $head->sender[0]->host);
 		}
 		if(isset($head->to)) {
 			$toStrings = [];

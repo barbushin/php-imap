@@ -20,6 +20,8 @@ class IncomingMailHeader {
 
 	public $fromName;
 	public $fromAddress;
+	public $senderName;
+	public $senderAddress;
 
 	public $to = array();
 	public $toString;
