@@ -16,11 +16,12 @@ class Mailbox {
 	protected $imapOptions = 0;
 	protected $imapRetriesNum = 0;
 	protected $imapParams = [];
-	protected $serverEncoding;
+	protected $serverEncoding = 'UTF-8';
 	protected $attachmentsDir = null;
 	protected $expungeOnDisconnect = true;
 	protected $timeouts = [];
 	protected $attachmentsIgnore = false;
+	protected $pathDelimiter = '.';
 	private $imapStream;
 
 	/**
@@ -32,10 +33,10 @@ class Mailbox {
 	 * @throws Exception
 	 */
 	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8') {
-		$this->imapPath = $imapPath;
-		$this->imapLogin = $login;
+		$this->imapPath = trim($imapPath);
+		$this->imapLogin = trim($login);
 		$this->imapPassword = $password;
-		$this->serverEncoding = strtoupper($serverEncoding);
+		$this->setServerEncoding($serverEncoding);
 		if($attachmentsDir) {
 			if(!is_dir($attachmentsDir)) {
 				throw new Exception('Directory "' . $attachmentsDir . '" not found');
@@ -44,12 +45,39 @@ class Mailbox {
 		}
 	}
 
+	/**
+	 * @param string $delimiter Path delimiter
+	 * Supported values are: '.', '/'
+	 */
+	public function setPathDelimiter($delimiter) {
+		$this->pathDelimiter = $delimiter;
+	}
+
+	public function getPathDelimiter() {
+		return $this->pathDelimiter;
+	}
+
+	public function validatePathDelimiter() {
+		$supported_delimiters = array('.', '/');
+
+		if(in_array($this->getPathDelimiter(), $supported_delimiters)) {
+			return true;
+		}
+
+		return false;
+	}
+
+
 	public function getServerEncoding() {
 		return $this->serverEncoding;
 	}
 
 	public function setServerEncoding($serverEncoding) {
-		$this->serverEncoding = $serverEncoding;
+		$serverEncoding = strtoupper(trim($serverEncoding));
+
+		if(in_array($serverEncoding, mb_list_encodings())) {
+			$this->serverEncoding = $serverEncoding;
+		}
 	}
 
 	/**
@@ -124,6 +152,36 @@ class Mailbox {
 	}
 
 	/**
+	 * Returns the provided string in UTF7-IMAP encoded format
+	 *
+	 * @param string $any_encoded_string
+	 * @return string $utf7_encoded_string
+	 */
+	public function encodeStringToUtf7Imap($str) {
+		if(is_string($str)) {
+			return mb_convert_encoding($str, 'UTF7-IMAP', mb_detect_encoding($str, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
+		}
+
+		// Return $str as it is, when it is no string
+		return $str;
+	}
+
+	/**
+	 * Returns the provided string in UTF-8 encoded format
+	 *
+	 * @param string $any_encoded_string
+	 * @return string $utf7_encoded_string
+	 */
+	public function decodeStringFromUtf7ImapToUtf8($str) {
+		if(is_string($str)) {
+			return mb_convert_encoding($str, 'UTF-8', 'UTF7-IMAP');
+		}
+
+		// Return $str as it is, when it is no string
+		return $str;
+	}
+
+	/**
 	 * Switch mailbox without opening a new connection
 	 *
 	 * @param string $imapPath
@@ -192,7 +250,7 @@ class Mailbox {
 	 * @param $name
 	 */
 	public function createMailbox($name) {
-		$this->imap('createmailbox', $this->imapPath . '.' . $name);
+		$this->imap('createmailbox', $this->imapPath . $this->getPathDelimiter() . $name);
 	}
 
 	/**
@@ -200,7 +258,7 @@ class Mailbox {
 	 * @param $name
 	 */
 	public function deleteMailbox($name) {
-		$this->imap('deletemailbox', $this->imapPath . '.' . $name);
+		$this->imap('deletemailbox', $this->imapPath . $this->getPathDelimiter() . $name);
 	}
 
 	/**
@@ -209,7 +267,7 @@ class Mailbox {
 	 * @param $newName
 	 */
 	public function renameMailbox($oldName, $newName) {
-		$this->imap('renamemailbox', [$this->imapPath . '.' . $oldName, $this->imapPath . '.' . $newName]);
+		$this->imap('renamemailbox', [$this->imapPath . $this->getPathDelimiter() . $oldName, $this->imapPath . $this->getPathDelimiter() . $newName]);
 	}
 
 	/**
@@ -236,7 +294,7 @@ class Mailbox {
 	public function getListingFolders($pattern = '*') {
 		$folders = $this->imap('list', [$this->imapPath, $pattern]) ?: [];
 		foreach($folders as &$folder) {
-			$folder = imap_utf7_decode($folder);
+			$folder = $this->decodeStringFromUtf7ImapToUtf8($folder);
 		}
 		return $folders;
 	}
@@ -519,6 +577,11 @@ class Mailbox {
 		$header = new IncomingMailHeader();
 		$header->headersRaw = $headersRaw;
 		$header->headers = $head;
+		$header->priority = (preg_match("/Priority\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
+		$header->importance = (preg_match("/Importance\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
+		$header->sensitivity = (preg_match("/Sensitivity\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
+    $header->autoSubmitted = (preg_match("/Auto-Submitted\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
+		$header->precedence = (preg_match("/Precedence\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
 		$header->id = $mailId;
 		$header->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime(preg_replace('/\(.*?\)/', '', $head->date)) : time());
 		$header->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
@@ -835,7 +898,7 @@ class Mailbox {
 	 * @throws Exception
 	 */
 	public function subscribeMailbox($mailbox) {
-		$this->imap('subscribe', $this->imapPath . '.' . $mailbox);
+		$this->imap('subscribe', $this->imapPath . $this->getPathDelimiter() . $mailbox);
 	}
 
 	/**
@@ -843,8 +906,9 @@ class Mailbox {
 	 * @throws Exception
 	 */
 	public function unsubscribeMailbox($mailbox) {
-		$this->imap('unsubscribe', $this->imapPath . '.' . $mailbox);
+		$this->imap('unsubscribe', $this->imapPath . $this->getPathDelimiter() . $mailbox);
 	}
+
 	/**
 	 * Call IMAP extension function call wrapped with utf7 args conversion & errors handling
 	 *
@@ -859,9 +923,24 @@ class Mailbox {
 		if(!is_array($args)) {
 			$args = [$args];
 		}
-		foreach($args as &$arg) {
-			if(is_string($arg)) {
-				$arg = imap_utf7_encode($arg);
+		 // https://github.com/barbushin/php-imap/issues/242
+		if(in_array($methodShortName, ['open'])) {
+			// Mailbox names that contain international characters besides those in the printable ASCII space have to be encoded with imap_utf7_encode().
+			// https://www.php.net/manual/en/function.imap-open.php
+			if(is_string($args[0])) {
+				if(preg_match("/^\{.*\}(.*)$/", $args[0], $matches)) {
+					$mailbox_name = $matches[1];
+
+					if(!mb_detect_encoding($mailbox_name, 'ASCII', true)) {
+						$args[0] = $this->encodeStringToUtf7Imap($mailbox_name);
+					}
+				}
+			}
+		} else {
+			foreach($args as &$arg) {
+				if(is_string($arg)) {
+					$arg = $this->encodeStringToUtf7Imap($arg);
+				}
 			}
 		}
 		if($prependConnectionAsFirstArg) {
