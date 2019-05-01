@@ -68,6 +68,10 @@ final class MailboxTest extends TestCase
 	public function testConstructor()
 	{
 		$this->assertInstanceOf(Mailbox::class, $this->mailbox);
+
+		$this->mailbox->setTimeouts(1, array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT));
+		$this->expectException(ConnectionException::class);
+		$this->mailbox->getImapStream();
 	}
 
 	/*
