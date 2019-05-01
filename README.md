@@ -60,8 +60,14 @@ $mailbox = new PhpImap\Mailbox(
 	'UTF-8' // Server encoding (optional)
 );
 
-// Get all emails (messages)
-$mailsIds = $mailbox->searchMailbox('ALL');
+try {
+	// Get all emails (messages)
+	// PHP.net imap_search criteria: http://php.net/manual/en/function.imap-search.php
+	$mailsIds = $mailbox->searchMailbox('ALL');
+} catch(ConnectionException $ex) {
+	echo "IMAP connection failed: " . $ex;
+	die();
+}
 
 // If $mailsIds is empty, no emails could be found
 if(!$mailsIds) {
