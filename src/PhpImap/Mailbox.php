@@ -4,6 +4,7 @@ namespace PhpImap;
 use stdClass;
 use Exception;
 use PhpImap\Exceptions\ConnectionException;
+use PhpImap\Exceptions\InvalidParameterException;
 
 /**
  * @see https://github.com/barbushin/php-imap
@@ -32,7 +33,7 @@ class Mailbox {
 	 * @param string $password
 	 * @param string $attachmentsDir
 	 * @param string $serverEncoding
-	 * @throws Exception
+	 * @throws InvalidParameterException
 	 */
 	public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8') {
 		$this->imapPath = trim($imapPath);
@@ -41,57 +42,96 @@ class Mailbox {
 		$this->setServerEncoding($serverEncoding);
 		if($attachmentsDir) {
 			if(!is_dir($attachmentsDir)) {
-				throw new Exception('Directory "' . $attachmentsDir . '" not found');
+				throw new InvalidParameterException('Directory "' . $attachmentsDir . '" not found');
 			}
 			$this->attachmentsDir = rtrim(realpath($attachmentsDir), '\\/');
 		}
 	}
 
 	/**
+	 * Sets / Changes the path delimiter character (Supported values: '.', '/')
 	 * @param string $delimiter Path delimiter
-	 * Supported values are: '.', '/'
+	 * @throws InvalidParameterException
 	 */
 	public function setPathDelimiter($delimiter) {
+		if(!$this->validatePathDelimiter($delimiter)) {
+			throw new InvalidParameterException('setPathDelimiter() can only set the delimiter to these characters: ".", "/"');
+		}
+
 		$this->pathDelimiter = $delimiter;
 	}
 
+	/**
+	 * Returns the current set path delimiter character
+	 * @return string Path delimiter
+	 */
 	public function getPathDelimiter() {
 		return $this->pathDelimiter;
 	}
 
-	public function validatePathDelimiter() {
+	/**
+	 * Validates the given path delimiter character
+	 * @param string Path delimiter
+	 * @return boolean true (supported) or false (unsupported)
+	 */
+	public function validatePathDelimiter($delimiter) {
 		$supported_delimiters = array('.', '/');
 
-		if(in_array($this->getPathDelimiter(), $supported_delimiters)) {
-			return true;
+		if(!in_array($delimiter, $supported_delimiters)) {
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 
+	/**
+	 * Returns the current set server encoding
+	 * @return string Server encoding (eg. 'UTF-8')
+	 */
 	public function getServerEncoding() {
 		return $this->serverEncoding;
 	}
 
+	/**
+	 * Sets / Changes the server encoding
+	 * @param string Server encoding (eg. 'UTF-8')
+	 * @return boolean true (supported) or false (unsupported)
+	 * @throws InvalidParameterException
+	 */
 	public function setServerEncoding($serverEncoding) {
 		$serverEncoding = strtoupper(trim($serverEncoding));
 
-		if(in_array($serverEncoding, mb_list_encodings())) {
-			$this->serverEncoding = $serverEncoding;
+		$supported_encodings = mb_list_encodings();
+
+		if(!in_array($serverEncoding, $supported_encodings)) {
+			throw new InvalidParameterException('"'.$serverEncoding.'" is not supported by setServerEncoding(). Your system only supports these encodings: ' . implode(", ", $supported_encodings));
 		}
+
+		$this->serverEncoding = $serverEncoding;
 	}
 
 	/**
+	 * Sets the timeout of all or one specific type
 	 * @param int $timeout Timeout in seconds
 	 * @param array $types One of the following: IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT
+	 * @throws InvalidParameterException
 	 */
 	public function setTimeouts($timeout, $types = [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT]) {
+		$supported_types = array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT);
+
+		$found_types = array_intersect($types, $supported_types);
+
+		if(count($types) != count($found_types)) {
+			throw new InvalidParameterException('You have provided at least one unsupported timeout type. Supported types are: IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT');
+		}
+
 		$this->timeouts = array_fill_keys($types, $timeout);
 	}
 
 	/**
-	 * @return string
+	 * Returns the IMAP login (usually an email address)
+	 * @return string IMAP login
 	 */
 	public function getLogin() {
 		return $this->imapLogin;
@@ -102,10 +142,30 @@ class Mailbox {
 	 * @param int $options
 	 * @param int $retriesNum
 	 * @param array $params
+	 * @throws InvalidParameterException
 	 */
-	public function setConnectionArgs($options = 0, $retriesNum = 0, array $params = null) {
+	public function setConnectionArgs($options = 0, $retriesNum = 0, $params = null) {
+		$supported_options = array(OP_READONLY, OP_ANONYMOUS, OP_HALFOPEN, CL_EXPUNGE, OP_DEBUG, OP_SHORTCACHE, OP_SILENT, OP_PROTOTYPE, OP_SECURE);
+		if(!in_array($options, $supported_options)) {
+			throw new InvalidParameterException('Please check your options for setConnectionArgs()! You have provided an unsupported option. Available options: https://www.php.net/manual/de/function.imap-open.php');
+		}
 		$this->imapOptions = $options;
+
+		if(!is_int($retriesNum) OR $retriesNum < 0) {
+			throw new InvalidParameterException('Invalid number of retries provided for setConnectionArgs()! It must be a positive integer. (eg. 1 or 3)');
+		}
 		$this->imapRetriesNum = $retriesNum;
+
+		$supported_params = array('DISABLE_AUTHENTICATOR');
+		if(!is_array($params)) {
+			throw new InvalidParameterException('setConnectionArgs() requires $params to be an array!');
+		}
+
+		foreach($params as $key => $value) {
+			if(!array_key_exists($key, $supported_params)) {
+				throw new InvalidParameterException('Invalid array key of params provided for setConnectionArgs()! Only DISABLE_AUTHENTICATOR is currently valid.');
+			}
+		}
 		$this->imapParams = $params;
 	}
 
@@ -209,6 +269,9 @@ class Mailbox {
 		return $this->imap('open', [$this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams], false, ConnectionException::class);
 	}
 
+	/**
+	 * Disconnects from IMAP server / mailbox
+	 */
 	public function disconnect() {
 		$imapStream = $this->getImapStream(false);
 		if($imapStream && is_resource($imapStream)) {

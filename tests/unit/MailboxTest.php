@@ -8,6 +8,7 @@
 
 use PhpImap\Mailbox;
 use PhpImap\Exceptions\ConnectionException;
+use PhpImap\Exceptions\InvalidParameterException;
 use PHPUnit\Framework\TestCase;
 
 final class MailboxTest extends TestCase
@@ -68,10 +69,6 @@ final class MailboxTest extends TestCase
 	public function testConstructor()
 	{
 		$this->assertInstanceOf(Mailbox::class, $this->mailbox);
-
-		$this->mailbox->setTimeouts(1, array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT));
-		$this->expectException(ConnectionException::class);
-		$this->mailbox->getImapStream();
 	}
 
 	/*
@@ -106,41 +103,6 @@ final class MailboxTest extends TestCase
 		$mailbox = new Mailbox($this->imapPath, $this->login, $this->password, $this->attachmentsDir);
 		$this->assertAttributeEquals('UTF-8', 'serverEncoding', $mailbox);
 
-		// Only supported character encodings should be possible to use
-		$test_character_encodings = array(
-			// Supported encodings
-			'1' => 'UTF-7',
-			'1' => 'UTF7-IMAP',
-			'1' => 'UTF-8',
-			'1' => 'US-ASCII',
-			'1' => 'ASCII',
-			'1' => 'ISO-8859-1',
-			'1' => 'ISO-8859-7',
-			'1' => 'ISO-8859-11',
-			'1' => 'ISO-8859-16',
-			// NOT supported encodings
-			'0' => 'UTF7',
-			'0' => 'UTF-7-IMAP',
-			'0' => 'UTF-7IMAP',
-			'0' => 'UTF8',
-			'0' => 'USASCII',
-			'0' => 'ASC11',
-			'0' => 'ISO-8859-0',
-			'0' => 'ISO-8855-7',
-			'0' => 'ISO-8859',
-			'0' => 'ISO-8859-99',
-		);
-
-		foreach($test_character_encodings as $bool => $encoding) {
-			if($bool) {
-				$mailbox = new Mailbox($this->imapPath, $this->login, $this->password, $this->attachmentsDir, $encoding);
-				$this->assertAttributeEquals($encoding, 'serverEncoding', $mailbox);
-			} else {
-				$mailbox = new Mailbox($this->imapPath, $this->login, $this->password, $this->attachmentsDir, $encoding);
-				$this->assertAttributeNotEquals($encoding, 'serverEncoding', $mailbox);
-			}
-		}
-
 		// Server encoding should be always upper formatted
 		$mailbox = new Mailbox($this->imapPath, $this->login, $this->password, $this->attachmentsDir, 'utf-8');
 		$this->assertAttributeEquals('UTF-8', 'serverEncoding', $mailbox);
@@ -148,6 +110,41 @@ final class MailboxTest extends TestCase
 		$mailbox = new Mailbox($this->imapPath, $this->login, $this->password, $this->attachmentsDir, 'UTF7-IMAP');
 		$mailbox->setServerEncoding('uTf-8');
 		$this->assertAttributeEquals('UTF-8', 'serverEncoding', $mailbox);
+
+		// Only supported character encodings should be possible to use
+		$test_character_encodings = array(
+			// Supported encodings
+			array('1', 'UTF-7'),
+			array('1', 'UTF7-IMAP'),
+			array('1', 'UTF-8'),
+			array('1', 'ASCII'),
+			array('1', 'ISO-8859-1'),
+			// NOT supported encodings
+			array('0', 'UTF7'),
+			array('0', 'UTF-7-IMAP'),
+			array('0', 'UTF-7IMAP'),
+			array('0', 'UTF8'),
+			array('0', 'USASCII'),
+			array('0', 'ASC11'),
+			array('0', 'ISO-8859-0'),
+			array('0', 'ISO-8855-1'),
+			array('0', 'ISO-8859')
+		);
+
+		foreach($test_character_encodings as $testCase) {
+			$bool = $testCase[0];
+			$encoding = $testCase[1];
+
+
+			if($bool) {
+				$this->mailbox->setServerEncoding($encoding);
+				$this->assertEquals($encoding, $this->mailbox->getServerEncoding());
+			} else {
+				$this->expectException(InvalidParameterException::class);
+				$this->mailbox->setServerEncoding($encoding);
+				$this->assertNotEquals($encoding, $this->mailbox->getServerEncoding());
+			}
+		}
 	}
 
 	/*
@@ -182,15 +179,14 @@ final class MailboxTest extends TestCase
 	public function testPathDelimiterIsBeingChecked()
 	{
 		$supported_delimiters = array('.', '/');
-		$random_strings = str_split(substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyz!'§$%&/()=#~*+,;.:<>|"), 0));
+		$random_strings = str_split('0123456789abcdefghijklmnopqrstuvwxyz!\§$%&/()=#~*+,;.:<>|_');
 
 		foreach($random_strings as $str) {
-			$this->mailbox->setPathDelimiter($str);
-
 			if(in_array($str, $supported_delimiters)) {
-				$this->assertTrue($this->mailbox->validatePathDelimiter());
+				$this->assertTrue($this->mailbox->validatePathDelimiter($str));
 			} else {
-				$this->assertFalse($this->mailbox->validatePathDelimiter());
+				$this->expectException(InvalidParameterException::class);
+				$this->mailbox->setPathDelimiter($str);
 			}
 		}
 	}
@@ -356,6 +352,159 @@ final class MailboxTest extends TestCase
 				$this->mailbox->decodeMimeStr($str);
 			} else {
 				$this->assertEquals($this->mailbox->decodeMimeStr($str), $expected);
+			}
+		}
+	}
+
+	/**
+	* Test, that only supported timeouts can be set
+	*/
+	public function testSetTimeouts()
+	{
+		$this->mailbox->setTimeouts(1, array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT));
+		$this->expectException(ConnectionException::class);
+		$this->mailbox->getImapStream();
+
+		//$supported_types = array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT);
+		$test_timeouts = array(
+			array('assertTrue', array(true, 1, array(IMAP_OPENTIMEOUT))),
+			array('assertTrue', array(true, 1, array(IMAP_READTIMEOUT))),
+			array('assertTrue', array(true, 1, array(IMAP_WRITETIMEOUT))),
+			array('assertTrue', array(true, 1, array(IMAP_CLOSEDTIMEOUT))),
+		);
+
+		foreach($test_timeouts as $testCase) {
+			$assertMethod = $testCase[0];
+			$timeout = $testCase[1];
+
+			if($assertMethod == 'expectException') {
+				$this->expectException($timeout[1]);
+			}
+
+			try {
+				$this->mailbox->setTimeouts($timeout[2], $timeout[3]);
+			} catch(InvalidParameterException $ex) {
+				continue;
+			}
+
+			if($assertMethod == 'assertTrue') {
+				$this->assertTrue($timeout[1]);
+			}
+		}
+
+	}
+
+	/*
+	 * Test, that only supported and valid connection args can be set
+	*/
+	public function testSetConnectionArgs() {
+		define("SOMETHING", "some value");
+
+		/*
+		 * OPTIONS
+		*/
+		$test_options = array(
+			// Supported Options
+			array('1', OP_READONLY),
+			array('1', OP_ANONYMOUS),
+			array('1', OP_HALFOPEN),
+			array('1', CL_EXPUNGE),
+			array('1', OP_DEBUG),
+			array('1', OP_SHORTCACHE),
+			array('1', OP_SILENT),
+			array('1', OP_PROTOTYPE),
+			array('1', OP_SECURE),
+			// NOT Supported Options
+			array('0', 'OP_READONLY'),
+			array('0', 'OP_READONLY.'),
+			array('0', OP_READONLY.OP_DEBUG),
+			array('0', "OP_READONLY"),
+			array('0', SOMETHING),
+			array('0', "SOMETHING"),
+			array('0', '*'),
+		);
+
+		foreach($test_options as $testCase) {
+			$bool = $testCase[0];
+			$option = $testCase[1];
+
+			if($bool) {
+				try {
+					$this->mailbox->setConnectionArgs($option);
+				} catch(InvalidParameterException $ex) {
+					continue;
+				}
+				$this->assertTrue(true);
+			} else {
+				$this->expectException(InvalidParameterException::class);
+				$this->mailbox->setConnectionArgs($option);
+			}
+		}
+
+		/*
+		 * RETRIES NUMBER
+		*/
+		$test_retriesNum = array(
+			// Supported Retries
+			array('1', 0),
+			array('1', 1),
+			array('1', 3),
+			array('1', 12),
+			// NOT Supported Retries
+			array('0', -1),
+			array('0', -3),
+			array('0', -12),
+			array('0', -99),
+			array('0', "-1"),
+			array('0', "1"),
+			array('0', "one"),
+			array('0', "any non-integer value")
+		);
+
+		foreach($test_retriesNum as $testCase) {
+			$bool = $testCase[0];
+			$retriesNum = $testCase[1];
+
+			if($bool) {
+				try {
+					$this->mailbox->setConnectionArgs(OP_READONLY, $retriesNum);
+				} catch(InvalidParameterException $ex) {
+					continue;
+				}
+				$this->assertTrue(true);
+			} else {
+				$this->expectException(InvalidParameterException::class);
+				$this->mailbox->setConnectionArgs(OP_READONLY, $retriesNum);
+			}
+		}
+
+		/*
+		 * PARAMS
+		*/
+		$test_params = array(
+			// Supported Params
+			array('1', array('DISABLE_AUTHENTICATOR' => 'GSSAPI')),
+			// NOT Supported Params
+			array('1', DISABLE_AUTHENTICATOR),
+			array('0', 'DISABLE_AUTHENTICATOR'),
+			array('0', SOMETHING),
+			array('0', "SOMETHING"),
+		);
+
+		foreach($test_params as $testCase) {
+			$bool = $testCase[0];
+			$param = $testCase[1];
+
+			if($bool) {
+				try {
+					$this->mailbox->setConnectionArgs(OP_READONLY, 3, $param);
+				} catch(InvalidParameterException $ex) {
+					continue;
+				}
+				$this->assertTrue(true);
+			} else {
+				$this->expectException(InvalidParameterException::class);
+				$this->mailbox->setConnectionArgs(OP_READONLY, 3, $param);
 			}
 		}
 	}
