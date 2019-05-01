@@ -16,6 +16,7 @@ class IncomingMailHeader {
 	public $sensitivity;
   public $autoSubmitted;
 	public $precedence;
+	public $failedRecipients;
 	public $subject;
 
 	public $fromName;
