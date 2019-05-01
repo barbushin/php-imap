@@ -6,8 +6,8 @@
 * @author    Sebastian Kraetzig <sebastian-kraetzig@gmx.de>
 */
 
-use DateTime;
 use PhpImap\Mailbox;
+use PhpImap\Exceptions\ConnectionException;
 use PHPUnit\Framework\TestCase;
 
 final class MailboxTest extends TestCase
@@ -340,13 +340,19 @@ final class MailboxTest extends TestCase
 			'=?iso-8859-1?Q?Sebastian_Kr=E4tzig?=' => 'Sebastian Krätzig',
 			'sebastian.kraetzig' => 'sebastian.kraetzig',
 			'=?US-ASCII?Q?Keith_Moore?= <km@ab.example.edu>' => 'Keith Moore <km@ab.example.edu>',
+			'   ' => '',
 			'=?ISO-8859-1?Q?Max_J=F8rn_Simsen?= <max.joern.s@example.dk>' => 'Max Jørn Simsen <max.joern.s@example.dk>',
 			'=?ISO-8859-1?Q?Andr=E9?= Muster <andre.muster@vm1.ulg.ac.be>' => 'André Muster <andre.muster@vm1.ulg.ac.be>',
 			'=?ISO-8859-1?B?SWYgeW91IGNhbiByZWFkIHRoaXMgeW8=?= =?ISO-8859-2?B?dSB1bmRlcnN0YW5kIHRoZSBleGFtcGxlLg==?=' => 'If you can read this you understand the example.'
 		);
 
 		foreach($test_strings as $str => $expected) {
-			$this->assertEquals($this->mailbox->decodeMimeStr($str), $expected);
+			if(empty($expected)) {
+				$this->expectException(Exception::class);
+				$this->mailbox->decodeMimeStr($str);
+			} else {
+				$this->assertEquals($this->mailbox->decodeMimeStr($str), $expected);
+			}
 		}
 	}
 }

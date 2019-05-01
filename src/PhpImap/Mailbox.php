@@ -1,6 +1,9 @@
-<?php namespace PhpImap;
+<?php
+namespace PhpImap;
 
 use stdClass;
+use Exception;
+use PhpImap\Exceptions\ConnectionException;
 
 /**
  * @see https://github.com/barbushin/php-imap
@@ -789,8 +792,13 @@ class Mailbox {
 	 * @param string $string
 	 * @param string $toEncoding
 	 * @return string Converted string if conversion was successful, or the original string if not
+	 * @throws Exception
 	 */
 	public function decodeMimeStr($string, $toCharset = 'utf-8') {
+		if(empty(trim($string))) {
+			throw new Exception('decodeMimeStr() Can not decode an empty string!');
+		}
+
 		$newString = '';
 		foreach(imap_mime_header_decode($string) as $element) {
 			if(isset($element->text)) {
@@ -987,12 +995,4 @@ class Mailbox {
 
 		return $result;
 	}
-}
-
-class Exception extends \Exception {
-
-}
-
-class ConnectionException extends Exception {
-
 }
