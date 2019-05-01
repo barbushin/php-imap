@@ -6,6 +6,7 @@
 * @author    Sebastian Kraetzig <sebastian-kraetzig@gmx.de>
 */
 
+use DateTime;
 use PhpImap\Mailbox;
 use PHPUnit\Framework\TestCase;
 
@@ -323,9 +324,9 @@ final class MailboxTest extends TestCase
 	/**
 	 * Test, parsed datetime being emtpy the header date 
 	 */
-	public function testParsedDateTimeWithEmptyHeaderDate(){
+	public function testParsedDateTimeWithEmptyHeaderDate() {
 		$parsedDt = $this->mailbox->parseDateTime('');
-		$now = new \DateTime;
+		$now = new DateTime;
 		$this->assertEquals($parsedDt, $now->format('Y-m-d H:i:s'));
 
 	}
