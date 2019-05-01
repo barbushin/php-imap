@@ -15,6 +15,7 @@ class Mailbox {
 	protected $imapPath;
 	protected $imapLogin;
 	protected $imapPassword;
+	protected $imapSearchOption = SE_UID;
 	protected $connectionRetry = 0;
 	protected $connectionRetryDelay = 100;
 	protected $imapOptions = 0;
@@ -96,7 +97,7 @@ class Mailbox {
 	/**
 	 * Sets / Changes the server encoding
 	 * @param string Server encoding (eg. 'UTF-8')
-	 * @return boolean true (supported) or false (unsupported)
+	 * @return void
 	 * @throws InvalidParameterException
 	 */
 	public function setServerEncoding($serverEncoding) {
@@ -109,6 +110,32 @@ class Mailbox {
 		}
 
 		$this->serverEncoding = $serverEncoding;
+	}
+
+	/**
+	 * Returns the current set IMAP search option
+	 * @return string IMAP search option (eg. 'SE_UID')
+	 */
+	public function getImapSearchOption() {
+		return $this->imapSearchOption;
+	}
+
+	/**
+	 * Sets / Changes the IMAP search option
+	 * @return string IMAP search option (eg. 'SE_UID')
+	 * @return void
+	 * @throws InvalidParameterException
+	 */
+	public function setImapSearchOption($imapSearchOption) {
+		$imapSearchOption = strtoupper(trim($imapSearchOption));
+
+		$supported_options = array(SE_FREE, SE_UID);
+
+		if(!in_array($imapSearchOption, $supported_options)) {
+			throw new InvalidParameterException('"'.$imapSearchOption.'" is not supported by setImapSearchOption(). Supported options are SE_FREE and SE_UID.');
+		}
+
+		$this->imapSearchOption = $imapSearchOption;
 	}
 
 	/**
@@ -365,7 +392,7 @@ class Mailbox {
 	 * @return array mailsIds (or empty array)
 	 */
 	public function searchMailbox($criteria = 'ALL') {
-		return $this->imap('search', [$criteria, SE_UID, $this->serverEncoding]) ?: [];
+		return $this->imap('search', [$criteria, $this->imapSearchOption, $this->serverEncoding]) ?: [];
 	}
 
 	/**
@@ -374,7 +401,7 @@ class Mailbox {
 	 * @param string $filename
 	 */
 	public function saveMail($mailId, $filename = 'email.eml') {
-		$this->imap('savebody', [$filename, $mailId, "", FT_UID]);
+		$this->imap('savebody', [$filename, $mailId, "", ($this->imapSearchOption == SE_UID) ? FT_UID : 0]);
 	}
 
 	/**
@@ -382,7 +409,7 @@ class Mailbox {
 	 * @param $mailId
 	 */
 	public function deleteMail($mailId) {
-		$this->imap('delete', [$mailId . ':' . $mailId, FT_UID]);
+		$this->imap('delete', [$mailId . ':' . $mailId, ($this->imapSearchOption == SE_UID) ? FT_UID : 0]);
 	}
 
 	/**
@@ -504,7 +531,7 @@ class Mailbox {
 	 * @return array
 	 */
 	public function getMailsInfo(array $mailsIds) {
-		$mails = $this->imap('fetch_overview', [implode(',', $mailsIds), FT_UID]);
+		$mails = $this->imap('fetch_overview', [implode(',', $mailsIds), ($this->imapSearchOption == SE_UID) ? FT_UID : 0]);
 		if(is_array($mails) && count($mails)) {
 			foreach($mails as &$mail) {
 				if(isset($mail->subject)) {
@@ -573,7 +600,7 @@ class Mailbox {
 	 * @return array Mails ids
 	 */
 	public function sortMails($criteria = SORTARRIVAL, $reverse = true, $searchCriteria = 'ALL') {
-		return $this->imap('sort', [$criteria, $reverse, SE_UID, $searchCriteria]);
+		return $this->imap('sort', [$criteria, $reverse, $this->imapSearchOption, $searchCriteria]);
 	}
 
 	/**
@@ -618,7 +645,7 @@ class Mailbox {
 	 * @return mixed
 	 */
 	public function getRawMail($msgId, $markAsSeen = true) {
-		$options = FT_UID;
+		$options = ($this->imapSearchOption == SE_UID) ? FT_UID : 0;
 		if(!$markAsSeen) {
 			$options |= FT_PEEK;
 		}
@@ -634,7 +661,7 @@ class Mailbox {
 	 * @throws Exception
 	 */
 	public function getMailHeader($mailId) {
-		$headersRaw = $this->imap('fetchheader', [$mailId, FT_UID]);
+		$headersRaw = $this->imap('fetchheader', [$mailId, ($this->imapSearchOption == SE_UID) ? FT_UID : 0]);
 
 		if($headersRaw === false) {
 			throw new Exception('Empty mail header - fetchheader failed. Invalid mail ID?');
@@ -720,7 +747,7 @@ class Mailbox {
 		$mail = new IncomingMail();
 		$mail->setHeader($this->getMailHeader($mailId));
 
-		$mailStructure = $this->imap('fetchstructure', [$mailId, FT_UID]);
+		$mailStructure = $this->imap('fetchstructure', [$mailId, ($this->imapSearchOption == SE_UID) ? FT_UID : 0]);
 
 		if(empty($mailStructure->parts)) {
 			$this->initMailPart($mail, $mailStructure, 0, $markAsSeen);
@@ -735,7 +762,7 @@ class Mailbox {
 	}
 
 	protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true) {
-		$options = FT_UID;
+		$options = ($this->imapSearchOption == SE_UID) ? FT_UID : 0;
 		if(!$markAsSeen) {
 			$options |= FT_PEEK;
 		}
@@ -945,7 +972,8 @@ class Mailbox {
 	 * @return string
 	 */
 	public function getMailMboxFormat($mailId) {
-		return imap_fetchheader($this->getImapStream(), $mailId, FT_UID && FT_PREFETCHTEXT) . imap_body($this->getImapStream(), $mailId, FT_UID);
+		$option = ($this->imapSearchOption == SE_UID) ? FT_UID : 0;
+		return imap_fetchheader($this->getImapStream(), $mailId, $option && FT_PREFETCHTEXT) . imap_body($this->getImapStream(), $mailId, $option);
 	}
 
 	/**

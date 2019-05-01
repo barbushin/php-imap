@@ -158,6 +158,38 @@ final class MailboxTest extends TestCase
 	}
 
 	/*
+	 * Test, that the IMAP search option has a default value
+	 * 1 => SE_UID
+	 * 2 => SE_FREE
+	*/
+	public function testImapSearchOptionHasADefault()
+	{
+		$this->assertEquals($this->mailbox->getImapSearchOption(), 1);
+	}
+
+	/*
+	 * Test, that the IMAP search option can be changed
+	 * 1 => SE_UID
+	 * 2 => SE_FREE
+	*/
+	public function testSetAndGetImapSearchOption()
+	{
+		define('ANYTHING', 0);
+
+		$this->mailbox->setImapSearchOption(SE_FREE);
+		$this->assertEquals($this->mailbox->getImapSearchOption(), 2);
+
+		$this->expectException(InvalidParameterException::class);
+		$this->mailbox->setImapSearchOption("SE_FREE");
+
+		$this->expectException(InvalidParameterException::class);
+		$this->mailbox->setImapSearchOption(ANYTHING);
+
+		$this->mailbox->setImapSearchOption(SE_UID);
+		$this->assertEquals($this->mailbox->getImapSearchOption(), 1);
+	}
+
+	/*
 	 * Test, that the imap login can be retrieved
 	*/
 	public function testGetLogin()
