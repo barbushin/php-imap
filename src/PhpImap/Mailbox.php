@@ -784,7 +784,13 @@ class Mailbox {
 		}
 	}
 
-	protected function decodeMimeStr($string, $toCharset = 'utf-8') {
+	/**
+	 * Decodes a mime string
+	 * @param string $string
+	 * @param string $toEncoding
+	 * @return string Converted string if conversion was successful, or the original string if not
+	 */
+	public function decodeMimeStr($string, $toCharset = 'utf-8') {
 		$newString = '';
 		foreach(imap_mime_header_decode($string) as $element) {
 			if(isset($element->text)) {

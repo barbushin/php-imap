@@ -323,15 +323,29 @@ final class MailboxTest extends TestCase
 	/**
 	 * Test, parsed datetime being emtpy the header date 
 	 */
-
 	public function testParsedDateTimeWithEmptyHeaderDate(){
-
 		$parsedDt = $this->mailbox->parseDateTime('');
 		$now = new \DateTime;
 		$this->assertEquals($parsedDt, $now->format('Y-m-d H:i:s'));
 
 	}
 
+	/**
+	 * Test, that mime encoding returns correct strings
+	 */
+	public function testMimeEncoding() {
+		$test_strings = array(
+			'=?iso-8859-1?Q?Sebastian_Kr=E4tzig?= <sebastian.kraetzig@example.com>' => 'Sebastian Krätzig <sebastian.kraetzig@example.com>',
+			'=?iso-8859-1?Q?Sebastian_Kr=E4tzig?=' => 'Sebastian Krätzig',
+			'sebastian.kraetzig' => 'sebastian.kraetzig',
+			'=?US-ASCII?Q?Keith_Moore?= <km@ab.example.edu>' => 'Keith Moore <km@ab.example.edu>',
+			'=?ISO-8859-1?Q?Max_J=F8rn_Simsen?= <max.joern.s@example.dk>' => 'Max Jørn Simsen <max.joern.s@example.dk>',
+			'=?ISO-8859-1?Q?Andr=E9?= Muster <andre.muster@vm1.ulg.ac.be>' => 'André Muster <andre.muster@vm1.ulg.ac.be>',
+			'=?ISO-8859-1?B?SWYgeW91IGNhbiByZWFkIHRoaXMgeW8=?= =?ISO-8859-2?B?dSB1bmRlcnN0YW5kIHRoZSBleGFtcGxlLg==?=' => 'If you can read this you understand the example.'
+		);
 
-
+		foreach($test_strings as $str => $expected) {
+			$this->assertEquals($this->mailbox->decodeMimeStr($str), $expected);
+		}
+	}
 }
