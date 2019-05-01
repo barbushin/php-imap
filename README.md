@@ -64,7 +64,7 @@ try {
 	// Get all emails (messages)
 	// PHP.net imap_search criteria: http://php.net/manual/en/function.imap-search.php
 	$mailsIds = $mailbox->searchMailbox('ALL');
-} catch(ConnectionException $ex) {
+} catch(PhpImap\ConnectionException $ex) {
 	echo "IMAP connection failed: " . $ex;
 	die();
 }
