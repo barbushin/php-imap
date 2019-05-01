@@ -565,9 +565,15 @@ class Mailbox {
 	 *
 	 * @param $mailId
 	 * @return IncomingMailHeader
+	 * @throws Exception
 	 */
 	public function getMailHeader($mailId) {
 		$headersRaw = $this->imap('fetchheader', [$mailId, FT_UID]);
+
+		if($headersRaw === false) {
+			throw new Exception('Empty mail header - fetchheader failed. Invalid mail ID?');
+		}
+
 		$head = imap_rfc822_parse_headers($headersRaw);
 
 		$header = new IncomingMailHeader();
