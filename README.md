@@ -40,6 +40,8 @@ Install the latest available and may unstable source code from `develop`, which 
 
 You can run all PHPUnit tests by running the following command (inside of the installed `php-imap` directory): `php vendor/bin/phpunit --testdox`
 
+Before you can run the PHPUnit tests you may need to run `composer install` to install all (development) dependencies. 
+
 ### Integration with frameworks
 
 * Symfony - https://github.com/secit-pl/imap-bundle
