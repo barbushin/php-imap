@@ -3,6 +3,9 @@ namespace PhpImap;
 
 use stdClass;
 use Exception;
+use PhpImap\IncomingMail;
+use PhpImap\IncomingMailHeader;
+use PhpImap\IncomingMailAttachment;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
 

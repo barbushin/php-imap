@@ -1,5 +1,8 @@
 <?php namespace PhpImap;
 
+use PhpImap\IncomingMailHeader;
+use PhpImap\IncomingMailAttachment;
+
 /**
  * @see https://github.com/barbushin/php-imap
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
