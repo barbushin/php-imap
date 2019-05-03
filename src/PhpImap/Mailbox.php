@@ -105,8 +105,8 @@ class Mailbox {
 
 		$supported_encodings = mb_list_encodings();
 
-		if(!in_array($serverEncoding, $supported_encodings)) {
-			throw new InvalidParameterException('"'.$serverEncoding.'" is not supported by setServerEncoding(). Your system only supports these encodings: ' . implode(", ", $supported_encodings));
+		if(!in_array($serverEncoding, $supported_encodings) && $serverEncoding != "US-ASCII") {
+			throw new InvalidParameterException('"'.$serverEncoding.'" is not supported by setServerEncoding(). Your system only supports these encodings: US-ASCII, ' . implode(", ", $supported_encodings));
 		}
 
 		$this->serverEncoding = $serverEncoding;
@@ -391,7 +391,10 @@ class Mailbox {
 	 * @param string $criteria See http://php.net/imap_search for a complete list of available criteria
 	 * @return array mailsIds (or empty array)
 	 */
-	public function searchMailbox($criteria = 'ALL') {
+	public function searchMailbox($criteria = 'ALL', $disableServerEncoding = false) {
+		if($disableServerEncoding) {
+			return $this->imap('search', [$criteria, $this->imapSearchOption]) ?: [];
+		}
 		return $this->imap('search', [$criteria, $this->imapSearchOption, $this->serverEncoding]) ?: [];
 	}
 
