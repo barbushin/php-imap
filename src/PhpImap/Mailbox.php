@@ -690,15 +690,17 @@ class Mailbox {
 		
 		$header->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
 		if(isset($head->from) AND !empty($head->from)) {
-			$header->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : null;
-			$header->fromAddress = strtolower($head->from[0]->mailbox . '@' . $head->from[0]->host);
+			$header->fromHost = isset($head->from[0]->host) ? $head->from[0]->host : (isset($head->from[1]->host) ? $head->from[1]->host : null);
+			$header->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : (isset($head->from[1]->personal) ? $this->decodeMimeStr($head->from[1]->personal, $this->serverEncoding) : null);
+			$header->fromAddress = strtolower($head->from[0]->mailbox . '@' . $header->fromHost);
 		}
 		elseif(preg_match("/smtp.mailfrom=[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/", $headersRaw, $matches)) {
 			$header->fromAddress = substr($matches[0], 14);
 		}
 		if(isset($head->sender) AND !empty($head->sender)) {
-			$header->senderName = isset($head->sender[0]->personal) ? $this->decodeMimeStr($head->sender[0]->personal, $this->serverEncoding) : null;
-			$header->senderAddress = strtolower($head->sender[0]->mailbox . '@' . $head->sender[0]->host);
+			$header->senderHost = isset($head->sender[0]->host) ? $head->sender[0]->host : (isset($head->sender[1]->host) ? $head->sender[1]->host : null);
+			$header->senderName = isset($head->sender[0]->personal) ? $this->decodeMimeStr($head->sender[0]->personal, $this->serverEncoding) : (isset($head->sender[1]->personal) ? $this->decodeMimeStr($head->sender[1]->personal, $this->serverEncoding) : null);
+			$header->senderAddress = strtolower($head->sender[0]->mailbox . '@' . $header->senderHost);
 		}
 		if(isset($head->to)) {
 			$toStrings = [];

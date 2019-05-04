@@ -19,8 +19,10 @@ class IncomingMailHeader {
 	public $failedRecipients;
 	public $subject;
 
+	public $fromHost;
 	public $fromName;
 	public $fromAddress;
+	public $senderHost;
 	public $senderName;
 	public $senderAddress;
 
