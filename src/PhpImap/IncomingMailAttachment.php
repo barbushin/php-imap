@@ -16,29 +16,34 @@ class IncomingMailAttachment {
 	private $dataInfo;
 
 	public function __get ($name) {
-	    if($name !== 'filePath') {
-	        trigger_error("Undefined property: IncomingMailAttachment::$name");
-	    }
-        if(!isset($this->file_path)) {
-            return false;
-        }
-        $this->filePath = $this->file_path;
-        if(@file_exists($this->file_path)) {
-            return $this->filePath;
-        }
-        if(false === file_put_contents($this->filePath, $this->dataInfo->fetch())) {
-            unset($this->filePath);
-            unset($this->file_path);
-            return false;
-        }
-        return $this->filePath;
-    }
+		if($name !== 'filePath') {
+			trigger_error("Undefined property: IncomingMailAttachment::$name");
+		}
+		
+		if(!isset($this->file_path)) {
+			return false;
+		}
 
-    public function setFilePath($filePath) {
-        $this->file_path = $filePath;
-    }
+		$this->filePath = $this->file_path;
 
-    public function addDataPartInfo(DataPartInfo $dataInfo) {
-	    $this->dataInfo = $dataInfo;
+		if(@file_exists($this->file_path)) {
+			return $this->filePath;
+		}
+
+		if(false === file_put_contents($this->filePath, $this->dataInfo->fetch())) {
+			unset($this->filePath);
+			unset($this->file_path);
+			return false;
+		}
+
+		return $this->filePath;
+	}
+	
+	public function setFilePath($filePath) {
+		$this->file_path = $filePath;
+	}
+	
+	public function addDataPartInfo(DataPartInfo $dataInfo) {
+		$this->dataInfo = $dataInfo;
 	}
 }

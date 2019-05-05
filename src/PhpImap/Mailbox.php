@@ -149,7 +149,7 @@ class Mailbox {
 	 */
 	public function setAttachmentsIgnore($attachmentsIgnore) {
 		if(!is_bool($attachmentsIgnore)) {
-			throw new InvalidParameterException('setAttachmentsIgnore() expects a boolean.');
+			throw new InvalidParameterException('setAttachmentsIgnore() expects a boolean: true or false');
 		}
 		$this->attachmentsIgnore = $attachmentsIgnore;
 	}
@@ -791,10 +791,10 @@ class Mailbox {
 	}
 
 	protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true) {
-		if ($this->attachmentsIgnore && 
-		($partStructure->type !== TYPEMULTIPART && 
-		($partStructure->type !== TYPETEXT || !in_array(strtolower($partStructure->subtype), ['plain','html']))))
-		{ // skip all but plain and html when attachments are not required
+		// skip all but plain and html when attachments are not required
+		if ($this->getAttachmentsIgnore() && 
+			($partStructure->type !== TYPEMULTIPART && 
+			($partStructure->type !== TYPETEXT || !in_array(strtolower($partStructure->subtype), ['plain','html'])))) {
 			return false;
 		}
 		
