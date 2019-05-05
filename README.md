@@ -103,7 +103,8 @@ echo $currentServerTime;
 Some request require much time and resources:
 
 ```php
-$mailbox->setAttachmentsIgnore(true); // If you don't need to grab attachments you can significantly increase performance of your application
+// If you don't need to grab attachments you can significantly increase performance of your application
+$mailbox->setAttachmentsIgnore(true);
 
 // get the list of folders/mailboxes	
 $folders = $mailbox->getMailboxes('*'); 	

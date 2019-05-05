@@ -145,9 +145,21 @@ class Mailbox {
 	/**
 	 * Set $this->attachmentsIgnore param. Allow to ignore attachments when they are not required and boost performance
 	 * @param bool $attachmentsIgnore
+	 * @throws InvalidParameterException
 	 */
 	public function setAttachmentsIgnore($attachmentsIgnore) {
+		if(!is_bool($attachmentsIgnore)) {
+			throw new InvalidParameterException('setAttachmentsIgnore() expects a boolean.');
+		}
 		$this->attachmentsIgnore = $attachmentsIgnore;
+	}
+
+	/**
+	 * Get $this->attachmentsIgnore param.
+	 * @return bool $attachmentsIgnore
+	 */
+	public function getAttachmentsIgnore() {
+		return $this->attachmentsIgnore;
 	}
 
 	/**

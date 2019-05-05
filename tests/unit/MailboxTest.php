@@ -236,6 +236,42 @@ final class MailboxTest extends TestCase
 	}
 
 	/*
+	 * Test, that the attachments are not ignored by default
+	*/
+	public function testGetAttachmentsAreNotIgnoredByDefault()
+	{
+		$this->assertEquals($this->mailbox->getAttachmentsIgnore(), false);
+	}
+
+	/*
+	 * Test, that attachments can be ignored and only valid values are accepted
+	*/
+	public function testSetAttachmentsIgnore()
+	{
+		$test_params = array(
+			array("assertEquals", true),
+			array("assertEquals", false),
+			array("expectException", 1),
+			array("expectException", 0),
+			array("expectException", "something"),
+			array("expectException", 2)
+		);
+
+		foreach($test_params as $param) {
+			$assertTest = $param[0];
+			$paramValue = $param[1];
+
+			if($assertTest == "expectException") {
+				$this->expectException(InvalidParameterException::class);
+				$this->mailbox->setAttachmentsIgnore($paramValue);
+			} else {
+				$this->mailbox->setAttachmentsIgnore($paramValue);
+				$this->$assertTest($this->mailbox->getAttachmentsIgnore(), $paramValue);
+			}
+		}
+	}
+
+	/*
 	 * Test, that values are identical before and after encoding
 	*/
 	public function testEncodingReturnsCorrectValues()
