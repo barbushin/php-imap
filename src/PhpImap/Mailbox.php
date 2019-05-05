@@ -28,6 +28,7 @@ class Mailbox {
 	protected $attachmentsDir = null;
 	protected $expungeOnDisconnect = true;
 	protected $timeouts = [];
+	protected $attachmentsIgnore = false;
 	protected $pathDelimiter = '.';
 	private $imapStream;
 
@@ -139,6 +140,14 @@ class Mailbox {
 		}
 
 		$this->imapSearchOption = $imapSearchOption;
+	}
+
+	/**
+	 * Set $this->attachmentsIgnore param. Allow to ignore attachments when they are not required and boost performance
+	 * @param bool $attachmentsIgnore
+	 */
+	public function setAttachmentsIgnore($attachmentsIgnore) {
+		$this->attachmentsIgnore = $attachmentsIgnore;
 	}
 
 	/**
@@ -770,7 +779,15 @@ class Mailbox {
 	}
 
 	protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true) {
+		if ($this->attachmentsIgnore && 
+		($partStructure->type !== TYPEMULTIPART && 
+		($partStructure->type !== TYPETEXT || !in_array(strtolower($partStructure->subtype), ['plain','html']))))
+		{ // skip all but plain and html when attachments are not required
+			return false;
+		}
+		
 		$options = ($this->imapSearchOption == SE_UID) ? FT_UID : 0;
+
 		if(!$markAsSeen) {
 			$options |= FT_PEEK;
 		}

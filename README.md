@@ -87,6 +87,40 @@ echo "\n\nAttachments:\n";
 print_r($mail->getAttachments());
 ```
 
+Method imap() allows to call any imap function in a context of the the instance
+
+```php
+// Call imap_check(); 	
+// http://php.net/manual/en/function.imap-check.php	
+$info = $mailbox->imap('check'); // 
+	
+// Show current time for the mailbox
+$currentServerTime = isset($info->Date) && $info->Date ? date('Y-m-d H:i:s', strtotime($info->Date)) : 'Unknown';	
+	
+echo $currentServerTime;
+```
+
+Some request require much time and resources:
+
+```php
+$mailbox->setAttachmentsIgnore(true); // If you don't need to grab attachments you can significantly increase performance of your application
+
+// get the list of folders/mailboxes	
+$folders = $mailbox->getMailboxes('*'); 	
+	
+// loop through mailboxs	
+foreach($folders as $folder) {	
+	
+	// switch to particular mailbox	
+	$mailbox->switchMailbox($folder['fullpath']); 	
+		
+	// search in particular mailbox	
+	$mails_ids[$folder['fullpath']] = $mailbox->searchMailbox('SINCE "1 Jan 2018" BEFORE "28 Jan 2018"');	
+}	
+	
+print_r($mails_ids);
+```
+
 ### Recommended
 
 * Google Chrome extension [PHP Console](https://chrome.google.com/webstore/detail/php-console/nfhmhhlpfleoednkpnnnkolmclajemef)
