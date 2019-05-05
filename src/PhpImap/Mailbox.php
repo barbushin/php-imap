@@ -803,28 +803,8 @@ class Mailbox {
 		if(!$markAsSeen) {
 			$options |= FT_PEEK;
 		}
-
-		if($partNum) { // don't use ternary operator to optimize memory usage / parsing speed (see http://fabien.potencier.org/the-php-ternary-operator-fast-or-not.html)
-			$data = $this->imap('fetchbody', [$mail->id, $partNum, $options]);
-		}
-		else {
-			$data = $this->imap('body', [$mail->id, $options]);
-		}
-
-		if($partStructure->encoding == 1) {
-			$data = imap_utf8($data);
-		}
-		elseif($partStructure->encoding == 2) {
-			$data = imap_binary($data);
-		}
-		elseif($partStructure->encoding == 3) {
-			$data = preg_replace('~[^a-zA-Z0-9+=/]+~s', '', $data); // https://github.com/barbushin/php-imap/issues/88
-			$data = imap_base64($data);
-		}
-		elseif($partStructure->encoding == 4) {
-			$data = quoted_printable_decode($data);
-		}
-
+		$dataInfo = new DataPartInfo($this, $mail->id, $partNum, $partStructure->encoding, $options);
+		
 		$params = [];
 		if(!empty($partStructure->parameters)) {
 			foreach($partStructure->parameters as $param) {
@@ -875,31 +855,31 @@ class Mailbox {
 					'/(^_)|(_$)/' => '',
 				];
 				$fileSysName = preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . preg_replace(array_keys($replace), $replace, $fileName));
-				$attachment->filePath = $this->attachmentsDir . DIRECTORY_SEPARATOR . $fileSysName;
+				$filePath = $this->attachmentsDir . DIRECTORY_SEPARATOR . $fileSysName;
 
-				if(strlen($attachment->filePath) > 255) {
-					$ext = pathinfo($attachment->filePath, PATHINFO_EXTENSION);
-					$attachment->filePath = substr($attachment->filePath, 0, 255 - 1 - strlen($ext)) . "." . $ext;
+				if(strlen($filePath) > 255) {
+					$ext = pathinfo($filePath, PATHINFO_EXTENSION);
+					$filePath = substr($filePath, 0, 255 - 1 - strlen($ext)) . "." . $ext;
 				}
-
-				file_put_contents($attachment->filePath, $data);
+                $attachment->setFilePath($filePath);
 			}
+			$attachment->addDataPartInfo($dataInfo);
 			$mail->addAttachment($attachment);
 		}
 		else {
 			if(!empty($params['charset'])) {
-				$data = $this->convertStringEncoding($data, $params['charset'], $this->serverEncoding);
+			    $dataInfo->charset = $params['charset'];
 			}
-			if($partStructure->type == 0 && $data) {
+			if($partStructure->type === TYPETEXT) {
 				if(strtolower($partStructure->subtype) == 'plain') {
-					$mail->textPlain .= $data;
+					$mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
 				}
 				else {
-					$mail->textHtml .= $data;
+				    $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
 				}
 			}
-			elseif($partStructure->type == 2 && $data) {
-				$mail->textPlain .= trim($data);
+			elseif($partStructure->type === TYPEMESSAGE) {
+			    $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
 			}
 		}
 		if(!empty($partStructure->parts)) {
@@ -977,7 +957,7 @@ class Mailbox {
 	 * @return string Converted string if conversion was successful, or the original string if not
 	 * @throws Exception
 	 */
-	protected function convertStringEncoding($string, $fromEncoding, $toEncoding) {
+	public function convertStringEncoding($string, $fromEncoding, $toEncoding) {
 		if(!$string || $fromEncoding == $toEncoding) {
 			return $string;
 		}
