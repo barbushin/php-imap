@@ -814,7 +814,7 @@ class Mailbox {
 			}
 		}
 
-		$isAttachment = $partStructure->ifid || isset($params['filename']) || isset($params['name']);
+		$isAttachment = isset($params['filename']) || isset($params['name']);
 
 		// ignore contentId on body when mail isn't multipart (https://github.com/barbushin/php-imap/issues/71)
 		if(!$partNum && TYPETEXT === $partStructure->type) {
