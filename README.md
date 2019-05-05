@@ -38,9 +38,9 @@ Install the latest available and may unstable source code from `develop`, which 
 
 ### PHPUnit Tests
 
-You can run all PHPUnit tests by running the following command (inside of the installed `php-imap` directory): `php vendor/bin/phpunit --testdox`
+Before you can run the PHPUnit tests you may need to run `composer install` to install all (development) dependencies.
 
-Before you can run the PHPUnit tests you may need to run `composer install` to install all (development) dependencies. 
+You can run all PHPUnit tests by running the following command (inside of the installed `php-imap` directory): `php vendor/bin/phpunit --testdox`
 
 ### Integration with frameworks
 
@@ -64,7 +64,7 @@ try {
 	// Get all emails (messages)
 	// PHP.net imap_search criteria: http://php.net/manual/en/function.imap-search.php
 	$mailsIds = $mailbox->searchMailbox('ALL');
-} catch(PhpImap\ConnectionException $ex) {
+} catch(PhpImap\Exceptions\ConnectionException $ex) {
 	echo "IMAP connection failed: " . $ex;
 	die();
 }
@@ -87,7 +87,7 @@ echo "\n\nAttachments:\n";
 print_r($mail->getAttachments());
 ```
 
-Method imap() allows to call any imap function in a context of the the instance
+Method imap() allows to call any imap function in a context of the the instance:
 
 ```php
 // Call imap_check(); 	
