@@ -14,12 +14,17 @@ class IncomingMailHeader {
 	public $priority;
 	public $importance;
 	public $sensitivity;
-  public $autoSubmitted;
+	public $autoSubmitted;
 	public $precedence;
+	public $failedRecipients;
 	public $subject;
 
+	public $fromHost;
 	public $fromName;
 	public $fromAddress;
+	public $senderHost;
+	public $senderName;
+	public $senderAddress;
 
 	public $to = array();
 	public $toString;
