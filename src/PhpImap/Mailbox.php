@@ -3,6 +3,7 @@ namespace PhpImap;
 
 use stdClass;
 use Exception;
+use DateTime;
 use PhpImap\IncomingMail;
 use PhpImap\IncomingMailHeader;
 use PhpImap\IncomingMailAttachment;
@@ -935,17 +936,22 @@ class Mailbox {
 
 	/**
 	 * Converts the datetime to a normalized datetime
-	 * 	@param string header datetime
-	 *  @return datetime Normalized datetime
+	 * @param string header datetime
+	 * @return datetime Normalized datetime
 	 */
-	public function parseDateTime($dateHeader){
-		if(!empty($dateHeader)) {
-			$dateRegex = '/\\s*\\(.*?\\)/';
-			$dateFormatted = \DateTime::createFromFormat(\DateTime::RFC2822, preg_replace($dateRegex, '', $dateHeader));
-			return $dateFormatted->format('Y-m-d H:i:s');
-		} else {
-			$now = new \DateTime;
+	public function parseDateTime($dateHeader) {
+		if(empty($dateHeader)) {
+			throw new InvalidParameterException('parseDateTime() expects parameter 1 to be a parsable string datetime');
+		}
+
+		$dateRegex = '/\\s*\\(.*?\\)/';
+		$dateFormatted = DateTime::createFromFormat(DateTime::RFC2822, preg_replace($dateRegex, '', $dateHeader));
+
+		if(is_bool($dateFormatted)) {
+			$now = new DateTime;
 			return $now->format('Y-m-d H:i:s');
+		} else {
+			return $dateFormatted->format('Y-m-d H:i:s');
 		}
 	}
 

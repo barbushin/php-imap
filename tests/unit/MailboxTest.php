@@ -6,6 +6,7 @@
 * @author    Sebastian Kraetzig <sebastian-kraetzig@gmx.de>
 */
 
+use DateTime;
 use PhpImap\Mailbox;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
@@ -318,9 +319,8 @@ final class MailboxTest extends TestCase
 
 	/**
 	 * Test, different datetimes conversions using differents timezones
-	 */
-
-	public function testParsedDateDifferentTimeZones(){
+	*/
+	public function testParsedDateDifferentTimeZones() {
 		$test_datetimes = array (
 			array('Sun, 14 Aug 2005 16:13:03 +0000 (CEST)' ,'1124035983'),
 			array('Sun, 14 Aug 2005 16:13:03 +0000','1124035983'),
@@ -371,7 +371,6 @@ final class MailboxTest extends TestCase
 
 			array('Sun, 14 Aug 2005 16:13:03 +1200 (CEST)','1124035983'),
 			array('Sun, 14 Aug 2005 16:13:03 +1200','1124035983'),
-			
 		);
 
 		foreach($test_datetimes as $datetime) {
@@ -383,19 +382,37 @@ final class MailboxTest extends TestCase
 			$parsedDateTime = new DateTime($parsedDt);
 
 			$this->assertEquals($parsedDateTime->format('U'), $epochToCompare);
-
 		}
-
 	}
 
+	/**
+	 * Test, different invalid / unparseable datetimes conversions
+	*/
+	public function testParsedDateWithUnparseableDateTime() {
+		$test_unparseable_datetimes = array (
+			array('14 Aug 2005 16:13:03 +1200 (CEST)','1124035983'),
+			array('14 Aug 2005 16:13:03 +1200','1124035983'),
+			array('14 Aug 2005 16:13:03 -0500','1124035983'),
+		);
+
+		foreach($test_unparseable_datetimes as $datetime) {
+			$dateToParse = $datetime["0"];
+			$epochToCompare = $datetime["1"];
+
+			$parsedDt = $this->mailbox->parseDateTime($dateToParse);
+
+			$parsedDateTime = new DateTime($parsedDt);
+
+			$this->assertNotEquals($parsedDateTime->format('U'), $epochToCompare);
+		}
+	}
 
 	/**
 	 * Test, parsed datetime being emtpy the header date 
 	 */
 	public function testParsedDateTimeWithEmptyHeaderDate() {
-		$parsedDt = $this->mailbox->parseDateTime('');
-		$now = new DateTime;
-		$this->assertEquals($parsedDt, $now->format('Y-m-d H:i:s'));
+		$this->expectException(InvalidParameterException::class);
+		$this->mailbox->parseDateTime('');
 
 	}
 
