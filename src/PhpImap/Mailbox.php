@@ -46,12 +46,7 @@ class Mailbox {
 		$this->imapLogin = trim($login);
 		$this->imapPassword = $password;
 		$this->setServerEncoding($serverEncoding);
-		if($attachmentsDir) {
-			if(!is_dir($attachmentsDir)) {
-				throw new InvalidParameterException('Directory "' . $attachmentsDir . '" not found');
-			}
-			$this->attachmentsDir = rtrim(realpath($attachmentsDir), '\\/');
-		}
+		$this->setAttachmentsDir($attachmentsDir);
 	}
 
 	/**
@@ -167,6 +162,7 @@ class Mailbox {
 	 * Sets the timeout of all or one specific type
 	 * @param int $timeout Timeout in seconds
 	 * @param array $types One of the following: IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT
+	 * @return void
 	 * @throws InvalidParameterException
 	 */
 	public function setTimeouts($timeout, $types = [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT]) {
@@ -230,18 +226,42 @@ class Mailbox {
 	/**
 	 * Set custom folder for attachments in case you want to have tree of folders for each email
 	 * i.e. a/1 b/1 c/1 where a,b,c - senders, i.e. john@smith.com
-	 * @param string $dir folder where to save attachments
-	 *
+	 * @param string $attachmentsDir Folder where to save attachments
 	 * @return void
+	 * @throws InvalidParameterException
 	 */
-	public function setAttachmentsDir($dir) {
-		$this->attachmentsDir = $dir;
+	public function setAttachmentsDir($attachmentsDir) {
+		if(empty($attachmentsDir)) {
+			throw new InvalidParameterException('setAttachmentsDir() expects a string as first parameter!');
+		}
+		if(!is_dir($attachmentsDir)) {
+			throw new InvalidParameterException('Directory "' . $attachmentsDir . '" not found');
+		}
+		$this->attachmentsDir = rtrim(realpath($attachmentsDir), '\\/');
 	}
 
+	/**
+	 * Get current saving folder for attachments
+	 * @return string Attachments dir
+	 */
+	public function getAttachmentsDir() {
+		return $this->attachmentsDir;
+	}
+
+	/*
+	 * Sets / Changes the attempts / retries to connect
+	 * @param int $maxAttempts
+	 * @return void
+	*/
 	public function setConnectionRetry($maxAttempts) {
 		$this->connectionRetry = $maxAttempts;
 	}
 
+	/*
+	 * Sets / Changes the delay between each attempt / retry to connect
+	 * @param int $milliseconds
+	 * @return void
+	*/
 	public function setConnectionRetryDelay($milliseconds) {
 		$this->connectionRetryDelay = $milliseconds;
 	}
@@ -267,8 +287,8 @@ class Mailbox {
 	/**
 	 * Returns the provided string in UTF7-IMAP encoded format
 	 *
-	 * @param string $any_encoded_string
-	 * @return string $utf7_encoded_string
+	 * @param string $tr Any encoded string
+	 * @return string $str UTF-7 encoded string or same as before, when it's no string
 	 */
 	public function encodeStringToUtf7Imap($str) {
 		if(is_string($str)) {
@@ -282,8 +302,8 @@ class Mailbox {
 	/**
 	 * Returns the provided string in UTF-8 encoded format
 	 *
-	 * @param string $any_encoded_string
-	 * @return string $utf7_encoded_string
+	 * @param string $tr Any encoded string
+	 * @return string $str UTF-7 encoded string or same as before, when it's no string
 	 */
 	public function decodeStringFromUtf7ImapToUtf8($str) {
 		if(is_string($str)) {
@@ -363,24 +383,24 @@ class Mailbox {
 
 	/**
 	 * Creates a new mailbox
-	 * @param $name
+	 * @param string $name Name of new mailbox (eg. 'PhpImap')
 	 */
 	public function createMailbox($name) {
 		$this->imap('createmailbox', $this->imapPath . $this->getPathDelimiter() . $name);
 	}
 
 	/**
-	 * Delete mailbox
-	 * @param $name
+	 * Deletes a specific mailbox
+	 * @param string $name Name of mailbox, which you want to delete (eg. 'PhpImap')
 	 */
 	public function deleteMailbox($name) {
 		$this->imap('deletemailbox', $this->imapPath . $this->getPathDelimiter() . $name);
 	}
 
 	/**
-	 * Rename mailbox
-	 * @param $oldName
-	 * @param $newName
+	 * Rename an existing mailbox from $oldName to $newName
+	 * @param string $oldName Current name of mailbox, which you want to rename (eg. 'PhpImap')
+	 * @param string $newName New name of mailbox, to which you want to rename it (eg. 'PhpImapTests')
 	 */
 	public function renameMailbox($oldName, $newName) {
 		$this->imap('renamemailbox', [$this->imapPath . $this->getPathDelimiter() . $oldName, $this->imapPath . $this->getPathDelimiter() . $newName]);
@@ -420,17 +440,18 @@ class Mailbox {
 	 * For example, to match all unanswered mails sent by Mom, you'd use: "UNANSWERED FROM mom".
 	 *
 	 * @param string $criteria See http://php.net/imap_search for a complete list of available criteria
+	 * @param boolean $disableServerEncoding Disables server encoding while searching for mails (can be useful on Exchange servers)
 	 * @return array mailsIds (or empty array)
 	 */
 	public function searchMailbox($criteria = 'ALL', $disableServerEncoding = false) {
 		if($disableServerEncoding) {
 			return $this->imap('search', [$criteria, $this->imapSearchOption]) ?: [];
 		}
-		return $this->imap('search', [$criteria, $this->imapSearchOption, $this->serverEncoding]) ?: [];
+		return $this->imap('search', [$criteria, $this->imapSearchOption, $this->getServerEncoding()]) ?: [];
 	}
 
 	/**
-	 * Save mail body.
+	 * Save a specific body section to a file
 	 * @param $mailId
 	 * @param string $filename
 	 */
@@ -569,16 +590,16 @@ class Mailbox {
 		if(is_array($mails) && count($mails)) {
 			foreach($mails as &$mail) {
 				if(isset($mail->subject)) {
-					$mail->subject = $this->decodeMimeStr($mail->subject, $this->serverEncoding);
+					$mail->subject = $this->decodeMimeStr($mail->subject, $this->getServerEncoding());
 				}
 				if(isset($mail->from) AND !empty($head->from)) {
-					$mail->from = $this->decodeMimeStr($mail->from, $this->serverEncoding);
+					$mail->from = $this->decodeMimeStr($mail->from, $this->getServerEncoding());
 				}
 				if(isset($mail->sender) AND !empty($head->sender)) {
-					$mail->sender = $this->decodeMimeStr($mail->sender, $this->serverEncoding);
+					$mail->sender = $this->decodeMimeStr($mail->sender, $this->getServerEncoding());
 				}
 				if(isset($mail->to)) {
-					$mail->to = $this->decodeMimeStr($mail->to, $this->serverEncoding);
+					$mail->to = $this->decodeMimeStr($mail->to, $this->getServerEncoding());
 				}
 			}
 		}
@@ -647,27 +668,30 @@ class Mailbox {
 
 	/**
 	 * Retrieve the quota settings per user
+	 * @param string Should normally be in the form of which mailbox (i.e. INBOX)
 	 * @return array
 	 */
-	protected function getQuota() {
-		return $this->imap('get_quotaroot', 'INBOX');
+	protected function getQuota($quota_root = 'INBOX') {
+		return $this->imap('get_quotaroot', $quota_root);
 	}
 
 	/**
 	 * Return quota limit in KB
+	 * @param string Should normally be in the form of which mailbox (i.e. INBOX)
 	 * @return int
 	 */
-	public function getQuotaLimit() {
-		$quota = $this->getQuota();
+	public function getQuotaLimit($quota_root = 'INBOX') {
+		$quota = $this->getQuota($quota_root);
 		return isset($quota['STORAGE']['limit']) ? $quota['STORAGE']['limit'] : 0;
 	}
 
 	/**
 	 * Return quota usage in KB
+	 * @param string Should normally be in the form of which mailbox (i.e. INBOX)
 	 * @return int FALSE in the case of call failure
 	 */
-	public function getQuotaUsage() {
-		$quota = $this->getQuota();
+	public function getQuotaUsage($quota_root = 'INBOX') {
+		$quota = $this->getQuota($quota_root);
 		return isset($quota['STORAGE']['usage']) ? $quota['STORAGE']['usage'] : 0;
 	}
 
@@ -675,7 +699,7 @@ class Mailbox {
 	 * Get raw mail data
 	 *
 	 * @param $msgId
-	 * @param bool $markAsSeen
+	 * @param bool $markAsSeen Mark the email as seen, when set to true
 	 * @return mixed
 	 */
 	public function getRawMail($msgId, $markAsSeen = true) {
@@ -722,10 +746,10 @@ class Mailbox {
 			$header->date = self::parseDateTime($now->format('Y-m-d H:i:s'));
 		}
 		
-		$header->subject = (isset($head->subject) AND !empty($head->subject)) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
+		$header->subject = (isset($head->subject) AND !empty($head->subject)) ? $this->decodeMimeStr($head->subject, $this->getServerEncoding()) : null;
 		if(isset($head->from) AND !empty($head->from)) {
 			$header->fromHost = isset($head->from[0]->host) ? $head->from[0]->host : (isset($head->from[1]->host) ? $head->from[1]->host : null);
-			$header->fromName = (isset($head->from[0]->personal) AND !empty($head->from[0]->personal)) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : ((isset($head->from[1]->personal) AND (!empty($head->from[1]->personal))) ? $this->decodeMimeStr($head->from[1]->personal, $this->serverEncoding) : null);
+			$header->fromName = (isset($head->from[0]->personal) AND !empty($head->from[0]->personal)) ? $this->decodeMimeStr($head->from[0]->personal, $this->getServerEncoding()) : ((isset($head->from[1]->personal) AND (!empty($head->from[1]->personal))) ? $this->decodeMimeStr($head->from[1]->personal, $this->getServerEncoding()) : null);
 			$header->fromAddress = strtolower($head->from[0]->mailbox . '@' . $header->fromHost);
 		}
 		elseif(preg_match("/smtp.mailfrom=[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/", $headersRaw, $matches)) {
@@ -733,7 +757,7 @@ class Mailbox {
 		}
 		if(isset($head->sender) AND !empty($head->sender)) {
 			$header->senderHost = isset($head->sender[0]->host) ? $head->sender[0]->host : (isset($head->sender[1]->host) ? $head->sender[1]->host : null);
-			$header->senderName = (isset($head->sender[0]->personal) AND !empty($head->sender[0]->personal)) ? $this->decodeMimeStr($head->sender[0]->personal, $this->serverEncoding) : ((isset($head->sender[1]->personal) AND (!empty($head->sender[1]->personal))) ? $this->decodeMimeStr($head->sender[1]->personal, $this->serverEncoding) : null);
+			$header->senderName = (isset($head->sender[0]->personal) AND !empty($head->sender[0]->personal)) ? $this->decodeMimeStr($head->sender[0]->personal, $this->getServerEncoding()) : ((isset($head->sender[1]->personal) AND (!empty($head->sender[1]->personal))) ? $this->decodeMimeStr($head->sender[1]->personal, $this->getServerEncoding()) : null);
 			$header->senderAddress = strtolower($head->sender[0]->mailbox . '@' . $header->senderHost);
 		}
 		if(isset($head->to)) {
@@ -741,7 +765,7 @@ class Mailbox {
 			foreach($head->to as $to) {
 				if(!empty($to->mailbox) && !empty($to->host)) {
 					$toEmail = strtolower($to->mailbox . '@' . $to->host);
-					$toName = (isset($to->personal) AND !empty($to->personal)) ? $this->decodeMimeStr($to->personal, $this->serverEncoding) : null;
+					$toName = (isset($to->personal) AND !empty($to->personal)) ? $this->decodeMimeStr($to->personal, $this->getServerEncoding()) : null;
 					$toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
 					$header->to[$toEmail] = $toName;
 				}
@@ -752,7 +776,7 @@ class Mailbox {
 		if(isset($head->cc)) {
 			foreach($head->cc as $cc) {
 				if(!empty($cc->mailbox) && !empty($cc->host)) {
-					$header->cc[strtolower($cc->mailbox . '@' . $cc->host)] = (isset($cc->personal) AND !empty($cc->personal)) ? $this->decodeMimeStr($cc->personal, $this->serverEncoding) : null;
+					$header->cc[strtolower($cc->mailbox . '@' . $cc->host)] = (isset($cc->personal) AND !empty($cc->personal)) ? $this->decodeMimeStr($cc->personal, $this->getServerEncoding()) : null;
 				}
 			}
 		}
@@ -760,14 +784,14 @@ class Mailbox {
 		if(isset($head->bcc)) {
 			foreach($head->bcc as $bcc) {
 				if(!empty($bcc->mailbox) && !empty($bcc->host)) {
-					$header->bcc[strtolower($bcc->mailbox . '@' . $bcc->host)] = (isset($bcc->personal) AND !empty($bcc->personal)) ? $this->decodeMimeStr($bcc->personal, $this->serverEncoding) : null;
+					$header->bcc[strtolower($bcc->mailbox . '@' . $bcc->host)] = (isset($bcc->personal) AND !empty($bcc->personal)) ? $this->decodeMimeStr($bcc->personal, $this->getServerEncoding()) : null;
 				}
 			}
 		}
 
 		if(isset($head->reply_to)) {
 			foreach($head->reply_to as $replyTo) {
-				$header->replyTo[strtolower($replyTo->mailbox . '@' . $replyTo->host)] = (isset($replyTo->personal) AND !empty($replyTo->personal)) ? $this->decodeMimeStr($replyTo->personal, $this->serverEncoding) : null;
+				$header->replyTo[strtolower($replyTo->mailbox . '@' . $replyTo->host)] = (isset($replyTo->personal) AND !empty($replyTo->personal)) ? $this->decodeMimeStr($replyTo->personal, $this->getServerEncoding()) : null;
 			}
 		}
 
@@ -782,7 +806,7 @@ class Mailbox {
 	 * Get mail data
 	 *
 	 * @param $mailId
-	 * @param bool $markAsSeen
+	 * @param bool $markAsSeen Mark the email as seen, when set to true
 	 * @return IncomingMail
 	 */
 	public function getMail($mailId, $markAsSeen = true) {
@@ -851,8 +875,8 @@ class Mailbox {
 			}
 			else {
 				$fileName = !empty($params['filename']) ? $params['filename'] : $params['name'];
-				$fileName = $this->decodeMimeStr($fileName, $this->serverEncoding);
-				$fileName = $this->decodeRFC2231($fileName, $this->serverEncoding);
+				$fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
+				$fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
 			}
 
 			$attachment = new IncomingMailAttachment();
@@ -910,8 +934,8 @@ class Mailbox {
 
 	/**
 	 * Decodes a mime string
-	 * @param string $string
-	 * @param string $toEncoding
+	 * @param string $string MIME string to decode
+	 * @param string $toEncoding Charset, to which you want to decode it
 	 * @return string Converted string if conversion was successful, or the original string if not
 	 * @throws Exception
 	 */
@@ -949,7 +973,7 @@ class Mailbox {
 
 	/**
 	 * Converts the datetime to a normalized datetime
-	 * @param string header datetime
+	 * @param string Header datetime
 	 * @return datetime Normalized datetime
 	 */
 	public function parseDateTime($dateHeader) {
@@ -970,9 +994,9 @@ class Mailbox {
 
 	/**
 	 * Converts a string from one encoding to another.
-	 * @param string $string
-	 * @param string $fromEncoding
-	 * @param string $toEncoding
+	 * @param string $string The string, which you want to convert.
+	 * @param string $fromEncoding The current charset (encoding).
+	 * @param string $toEncoding The new charset (encoding).
 	 * @return string Converted string if conversion was successful, or the original string if not
 	 * @throws Exception
 	 */
@@ -1052,6 +1076,7 @@ class Mailbox {
 	}
 
 	/**
+	 * Subscribe to a mailbox
 	 * @param $mailbox
 	 * @throws Exception
 	 */
@@ -1060,6 +1085,7 @@ class Mailbox {
 	}
 
 	/**
+	 * Unsubscribe from a mailbox
 	 * @param $mailbox
 	 * @throws Exception
 	 */
@@ -1070,10 +1096,10 @@ class Mailbox {
 	/**
 	 * Call IMAP extension function call wrapped with utf7 args conversion & errors handling
 	 *
-	 * @param $methodShortName
-	 * @param array|string $args
-	 * @param bool $prependConnectionAsFirstArg
-	 * @param string|null $throwExceptionClass
+	 * @param string $methodShortName Name of PHP imap_ method, but without the 'imap_' prefix. (eg. imap_fetch_overview => fetch_overview)
+	 * @param array|string $args All arguments of the original method, except the 'resource $imap_stream' (eg. imap_fetch_overview => string $sequence [, int $options = 0 ])
+	 * @param bool $prependConnectionAsFirstArg Add 'resource $imap_stream' as first argument, if set to true
+	 * @param string|null $throwExceptionClass Name of exception class, which will be thrown in case of errors
 	 * @return mixed
 	 * @throws Exception
 	 */
