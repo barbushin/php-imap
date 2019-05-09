@@ -605,6 +605,7 @@ final class MailboxTest extends TestCase
 			array('<CAE78dO7vwnd_rkozHLZ5xSU-=nFE_QA9+fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>', '<CAE78dO7vwnd_rkozHLZ5xSU-=nFE_QA9+fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>'),
 			array('=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 'Some subject here 😘'),
 			array('=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 'mountainguan测试'),
+			array("This is the Euro symbol ''.", "This is the Euro symbol ''."),
 		);
 
 		foreach($test_strings as $test) {
