@@ -617,5 +617,20 @@ final class MailboxTest extends TestCase
 
 			$this->assertEquals($this->mailbox->decodeMimeStr($str, $this->mailbox->getServerEncoding()), $expectedStr);
 		}
+
+		$test_strings = array(
+			array('=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 'Some subject here 😘', 'US-ASCII'),
+			array('=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 'mountainguan测试', 'US-ASCII'),
+		);
+
+		foreach($test_strings as $test) {
+			$str = $test[0];
+			$expectedStr = $test[1];
+			$serverEncoding = (isset($test[2])) ? $test[2] : 'utf-8';
+
+			$this->mailbox->setServerEncoding($serverEncoding);
+
+			$this->assertNotEquals($this->mailbox->decodeMimeStr($str, $this->mailbox->getServerEncoding()), $expectedStr);
+		}
 	}
 }
