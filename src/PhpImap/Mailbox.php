@@ -46,7 +46,9 @@ class Mailbox {
 		$this->imapLogin = trim($login);
 		$this->imapPassword = $password;
 		$this->setServerEncoding($serverEncoding);
-		$this->setAttachmentsDir($attachmentsDir);
+		if($attachmentsDir != null) {
+			$this->setAttachmentsDir($attachmentsDir);
+		}
 	}
 
 	/**
