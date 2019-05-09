@@ -593,4 +593,26 @@ final class MailboxTest extends TestCase
 			}
 		}
 	}
+
+	/*
+	 * Test, that decoding mime strings return unchanged / not broken strings
+	*/
+	public function testDecodeMimeStr() {
+		$test_strings = array(
+			array('<bde36ec8-9710-47bc-9ea3-bf0425078e33@php.imap>', '<bde36ec8-9710-47bc-9ea3-bf0425078e33@php.imap>'),
+			array('<CAKBqNfyKo+ZXtkz6DUAHw6FjmsDjWDB-pvHkJy6kwO82jTbkNA@mail.gmail.com>', '<CAKBqNfyKo+ZXtkz6DUAHw6FjmsDjWDB-pvHkJy6kwO82jTbkNA@mail.gmail.com>'),
+			array('<CAE78dO7vwnd_rkozHLZ5xSUnFEQA9fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>', '<CAE78dO7vwnd_rkozHLZ5xSUnFEQA9fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>'),
+			array('<CAE78dO7vwnd_rkozHLZ5xSU-=nFE_QA9+fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>', '<CAE78dO7vwnd_rkozHLZ5xSU-=nFE_QA9+fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>')
+		);
+
+		foreach($test_strings as $test) {
+			$str = $test[0];
+			$expectedStr = $test[1];
+			$serverEncoding = (isset($test[2])) ? $test[2] : 'utf-8';
+
+			$this->mailbox->setServerEncoding($serverEncoding);
+
+			$this->assertEquals($this->mailbox->decodeMimeStr($str, $this->mailbox->getServerEncoding()), $expectedStr);
+		}
+	}
 }

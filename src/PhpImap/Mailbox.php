@@ -196,29 +196,35 @@ class Mailbox {
 	 * @param array $params
 	 * @throws InvalidParameterException
 	 */
-	public function setConnectionArgs($options = 0, $retriesNum = 0, $params = null) {
-		$supported_options = array(OP_READONLY, OP_ANONYMOUS, OP_HALFOPEN, CL_EXPUNGE, OP_DEBUG, OP_SHORTCACHE, OP_SILENT, OP_PROTOTYPE, OP_SECURE);
-		if(!in_array($options, $supported_options)) {
-			throw new InvalidParameterException('Please check your options for setConnectionArgs()! You have provided an unsupported option. Available options: https://www.php.net/manual/de/function.imap-open.php');
-		}
-		$this->imapOptions = $options;
-
-		if(!is_int($retriesNum) OR $retriesNum < 0) {
-			throw new InvalidParameterException('Invalid number of retries provided for setConnectionArgs()! It must be a positive integer. (eg. 1 or 3)');
-		}
-		$this->imapRetriesNum = $retriesNum;
-
-		$supported_params = array('DISABLE_AUTHENTICATOR');
-		if(!is_array($params)) {
-			throw new InvalidParameterException('setConnectionArgs() requires $params to be an array!');
-		}
-
-		foreach($params as $key => $value) {
-			if(!array_key_exists($key, $supported_params)) {
-				throw new InvalidParameterException('Invalid array key of params provided for setConnectionArgs()! Only DISABLE_AUTHENTICATOR is currently valid.');
+	public function setConnectionArgs($options = 0, $retriesNum = 0, $params = NULL) {
+		if($options != 0) {
+			$supported_options = array(OP_READONLY, OP_ANONYMOUS, OP_HALFOPEN, CL_EXPUNGE, OP_DEBUG, OP_SHORTCACHE, OP_SILENT, OP_PROTOTYPE, OP_SECURE);
+			if(!in_array($options, $supported_options)) {
+				throw new InvalidParameterException('Please check your options for setConnectionArgs()! You have provided an unsupported option. Available options: https://www.php.net/manual/de/function.imap-open.php');
 			}
+			$this->imapOptions = $options;
 		}
-		$this->imapParams = $params;
+
+		if($retriesNum != 0) {
+			if(!is_int($retriesNum) OR $retriesNum < 0) {
+				throw new InvalidParameterException('Invalid number of retries provided for setConnectionArgs()! It must be a positive integer. (eg. 1 or 3)');
+			}
+			$this->imapRetriesNum = $retriesNum;
+		}
+
+		if($params != NULL AND !empty(is_array($params))) {
+			$supported_params = array('DISABLE_AUTHENTICATOR');
+			if(!is_array($params)) {
+				throw new InvalidParameterException('setConnectionArgs() requires $params to be an array!');
+			}
+
+			foreach($params as $key => $value) {
+				if(!array_key_exists($key, $supported_params)) {
+					throw new InvalidParameterException('Invalid array key of params provided for setConnectionArgs()! Only DISABLE_AUTHENTICATOR is currently valid.');
+				}
+			}
+			$this->imapParams = $params;
+		}
 	}
 
 	/**
@@ -700,20 +706,26 @@ class Mailbox {
 		$header = new IncomingMailHeader();
 		$header->headersRaw = $headersRaw;
 		$header->headers = $head;
+		$header->id = $mailId;
+		$header->isDraft = (!isset($head->date)) ? true : false;
 		$header->priority = (preg_match("/Priority\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
 		$header->importance = (preg_match("/Importance\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
 		$header->sensitivity = (preg_match("/Sensitivity\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
 		$header->autoSubmitted = (preg_match("/Auto-Submitted\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
 		$header->precedence = (preg_match("/Precedence\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
 		$header->failedRecipients = (preg_match("/Failed-Recipients\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
-		$header->id = $mailId;
 		
-		$header->date = self::parseDateTime($head->date);
+		if(isset($head->date)) {
+			$header->date = self::parseDateTime($head->date);
+		} else {
+			$now = new DateTime;
+			$header->date = self::parseDateTime($now->format('Y-m-d H:i:s'));
+		}
 		
-		$header->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
+		$header->subject = (isset($head->subject) AND !empty($head->subject)) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
 		if(isset($head->from) AND !empty($head->from)) {
 			$header->fromHost = isset($head->from[0]->host) ? $head->from[0]->host : (isset($head->from[1]->host) ? $head->from[1]->host : null);
-			$header->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : (isset($head->from[1]->personal) ? $this->decodeMimeStr($head->from[1]->personal, $this->serverEncoding) : null);
+			$header->fromName = (isset($head->from[0]->personal) AND !empty($head->from[0]->personal)) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : ((isset($head->from[1]->personal) AND (!empty($head->from[1]->personal))) ? $this->decodeMimeStr($head->from[1]->personal, $this->serverEncoding) : null);
 			$header->fromAddress = strtolower($head->from[0]->mailbox . '@' . $header->fromHost);
 		}
 		elseif(preg_match("/smtp.mailfrom=[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/", $headersRaw, $matches)) {
@@ -721,7 +733,7 @@ class Mailbox {
 		}
 		if(isset($head->sender) AND !empty($head->sender)) {
 			$header->senderHost = isset($head->sender[0]->host) ? $head->sender[0]->host : (isset($head->sender[1]->host) ? $head->sender[1]->host : null);
-			$header->senderName = isset($head->sender[0]->personal) ? $this->decodeMimeStr($head->sender[0]->personal, $this->serverEncoding) : (isset($head->sender[1]->personal) ? $this->decodeMimeStr($head->sender[1]->personal, $this->serverEncoding) : null);
+			$header->senderName = (isset($head->sender[0]->personal) AND !empty($head->sender[0]->personal)) ? $this->decodeMimeStr($head->sender[0]->personal, $this->serverEncoding) : ((isset($head->sender[1]->personal) AND (!empty($head->sender[1]->personal))) ? $this->decodeMimeStr($head->sender[1]->personal, $this->serverEncoding) : null);
 			$header->senderAddress = strtolower($head->sender[0]->mailbox . '@' . $header->senderHost);
 		}
 		if(isset($head->to)) {
@@ -729,7 +741,7 @@ class Mailbox {
 			foreach($head->to as $to) {
 				if(!empty($to->mailbox) && !empty($to->host)) {
 					$toEmail = strtolower($to->mailbox . '@' . $to->host);
-					$toName = isset($to->personal) ? $this->decodeMimeStr($to->personal, $this->serverEncoding) : null;
+					$toName = (isset($to->personal) AND !empty($to->personal)) ? $this->decodeMimeStr($to->personal, $this->serverEncoding) : null;
 					$toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
 					$header->to[$toEmail] = $toName;
 				}
@@ -740,7 +752,7 @@ class Mailbox {
 		if(isset($head->cc)) {
 			foreach($head->cc as $cc) {
 				if(!empty($cc->mailbox) && !empty($cc->host)) {
-					$header->cc[strtolower($cc->mailbox . '@' . $cc->host)] = isset($cc->personal) ? $this->decodeMimeStr($cc->personal, $this->serverEncoding) : null;
+					$header->cc[strtolower($cc->mailbox . '@' . $cc->host)] = (isset($cc->personal) AND !empty($cc->personal)) ? $this->decodeMimeStr($cc->personal, $this->serverEncoding) : null;
 				}
 			}
 		}
@@ -748,14 +760,14 @@ class Mailbox {
 		if(isset($head->bcc)) {
 			foreach($head->bcc as $bcc) {
 				if(!empty($bcc->mailbox) && !empty($bcc->host)) {
-					$header->bcc[strtolower($bcc->mailbox . '@' . $bcc->host)] = isset($bcc->personal) ? $this->decodeMimeStr($bcc->personal, $this->serverEncoding) : null;
+					$header->bcc[strtolower($bcc->mailbox . '@' . $bcc->host)] = (isset($bcc->personal) AND !empty($bcc->personal)) ? $this->decodeMimeStr($bcc->personal, $this->serverEncoding) : null;
 				}
 			}
 		}
 
 		if(isset($head->reply_to)) {
 			foreach($head->reply_to as $replyTo) {
-				$header->replyTo[strtolower($replyTo->mailbox . '@' . $replyTo->host)] = isset($replyTo->personal) ? $this->decodeMimeStr($replyTo->personal, $this->serverEncoding) : null;
+				$header->replyTo[strtolower($replyTo->mailbox . '@' . $replyTo->host)] = (isset($replyTo->personal) AND !empty($replyTo->personal)) ? $this->decodeMimeStr($replyTo->personal, $this->serverEncoding) : null;
 			}
 		}
 
@@ -848,6 +860,7 @@ class Mailbox {
 			$attachment->contentId = $partStructure->ifid ? trim($partStructure->id, " <>") : null;
 			$attachment->name = $fileName;
 			$attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
+			$attachment->charset = (isset($params['charset']) AND !empty($params['charset'])) ? $params['charset'] : null;
 			if($this->attachmentsDir) {
 				$replace = [
 					'/\s/' => '_',
