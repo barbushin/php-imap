@@ -860,6 +860,7 @@ class Mailbox {
 			$attachment->contentId = $partStructure->ifid ? trim($partStructure->id, " <>") : null;
 			$attachment->name = $fileName;
 			$attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
+			$attachment->charset = (isset($params['charset']) AND !empty($params['charset'])) ? $params['charset'] : null;
 			if($this->attachmentsDir) {
 				$replace = [
 					'/\s/' => '_',

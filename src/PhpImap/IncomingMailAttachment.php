@@ -12,6 +12,7 @@ class IncomingMailAttachment {
 	public $contentId;
 	public $name;
 	public $disposition;
+	public $charset;
 	private $file_path;
 	private $dataInfo;
 
