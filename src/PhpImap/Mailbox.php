@@ -949,9 +949,9 @@ class Mailbox {
 		$newString = '';
 		foreach(imap_mime_header_decode($string) as $element) {
 			if(isset($element->text)) {
-				$fromCharset = !isset($element->charset) || $element->charset == 'default' ? 'iso-8859-1' : $element->charset;
+				$fromCharset = !isset($element->charset) ? 'iso-8859-1' : $element->charset;
 				// Convert to UTF-8, if string has UTF-8 characters to avoid broken strings. See https://github.com/barbushin/php-imap/issues/232
-				$toCharset = isset($element->charset) && $element->charset == 'UTF-8' ? 'UTF-8' : $toCharset;
+				$toCharset = isset($element->charset) && preg_match('/(UTF\-8)|(default)/i', $element->charset) ? 'UTF-8' : $toCharset;
 				$newString .= $this->convertStringEncoding($element->text, $fromCharset, $toCharset);
 			}
 		}

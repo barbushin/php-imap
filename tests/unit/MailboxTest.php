@@ -608,6 +608,7 @@ final class MailboxTest extends TestCase
 			array("This is the Euro symbol ''.", "This is the Euro symbol ''."),
 			array('=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 'Some subject here 😘', 'US-ASCII'),
 			array('=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 'mountainguan测试', 'US-ASCII'),
+			array('مقتطفات من: صن تزو. "فن الحرب". كتب أبل. Something in english', 'مقتطفات من: صن تزو. "فن الحرب". كتب أبل. Something in english', 'US-ASCII'),
 		);
 
 		foreach($test_strings as $test) {
