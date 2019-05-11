@@ -36,6 +36,9 @@ class DataPartInfo {
 		}
 
 		switch($this->encoding) {
+			case ENC7BIT:
+				$this->data = $this->data;
+				break;
 			case ENC8BIT:
 				$this->data = imap_utf8($this->data);
 				break;
@@ -49,10 +52,16 @@ class DataPartInfo {
 			case ENCQUOTEDPRINTABLE:
 				$this->data = quoted_printable_decode($this->data);
 				break;
+			case ENCOTHER:
+				$this->data = $this->data;
+				break;
+			default:
+				$this->data = $this->data;
+				break;
 		}
 
 		if(isset($this->charset)) {
-			$this->data = $this->mail->convertStringEncoding($this->data, $this->charset, $this->mail->getServerEncoding());
+			$this->data = $this->mail->decodeMimeStr($this->data, $this->charset);
 		}
 
 		return $this->data;
