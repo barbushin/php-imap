@@ -741,8 +741,10 @@ class Mailbox {
 		$header->precedence = (preg_match("/Precedence\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
 		$header->failedRecipients = (preg_match("/Failed-Recipients\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : "";
 		
-		if(isset($head->date)) {
+		if(isset($head->date) AND !empty($head->date)) {
 			$header->date = self::parseDateTime($head->date);
+		} elseif(isset($head->Date) AND !empty($head->Date)) {
+			$header->date = self::parseDateTime($head->Date);
 		} else {
 			$now = new DateTime;
 			$header->date = self::parseDateTime($now->format('Y-m-d H:i:s'));
