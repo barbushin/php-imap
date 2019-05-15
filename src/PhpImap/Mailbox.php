@@ -903,9 +903,10 @@ class Mailbox {
 					$ext = pathinfo($filePath, PATHINFO_EXTENSION);
 					$filePath = substr($filePath, 0, 255 - 1 - strlen($ext)) . "." . $ext;
 				}
-                $attachment->setFilePath($filePath);
+ 				$attachment->setFilePath($filePath);
+				$attachment->addDataPartInfo($dataInfo);
+				$attachment->saveToDisk();
 			}
-			$attachment->addDataPartInfo($dataInfo);
 			$mail->addAttachment($attachment);
 		}
 		else {
