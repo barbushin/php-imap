@@ -889,7 +889,7 @@ class Mailbox {
 			$attachment->name = $fileName;
 			$attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
 			$attachment->charset = (isset($params['charset']) AND !empty($params['charset'])) ? $params['charset'] : null;
-			if($this->attachmentsDir) {
+			if($this->getAttachmentsDir() != null) {
 				$replace = [
 					'/\s/' => '_',
 					'/[^\w\.]/iu' => '',
@@ -897,7 +897,7 @@ class Mailbox {
 					'/(^_)|(_$)/' => '',
 				];
 				$fileSysName = preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . preg_replace(array_keys($replace), $replace, $fileName));
-				$filePath = $this->attachmentsDir . DIRECTORY_SEPARATOR . $fileSysName;
+				$filePath = $this->getAttachmentsDir() . DIRECTORY_SEPARATOR . $fileSysName;
 
 				if(strlen($filePath) > 255) {
 					$ext = pathinfo($filePath, PATHINFO_EXTENSION);
@@ -1007,12 +1007,13 @@ class Mailbox {
 	 * @throws Exception
 	 */
 	public function convertStringEncoding($string, $fromEncoding, $toEncoding) {
-		if(!$string || $fromEncoding == $toEncoding) {
+		if(!$string || $fromEncoding == $toEncoding || preg_match("/default/i", $fromEncoding)) {
 			return $string;
 		}
-		$convertedString = function_exists('iconv') ? @iconv($fromEncoding, $toEncoding . '//IGNORE', $string) : null;
-		if(!$convertedString && extension_loaded('mbstring')) {
-			$convertedString = @mb_convert_encoding($string, $toEncoding, $fromEncoding);
+		if(extension_loaded('mbstring')) {
+			$convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
+		} elseif(function_exists('iconv')) {
+			$convertedString = iconv($fromEncoding, $toEncoding . '//IGNORE', $string);
 		}
 		if(!$convertedString) {
 			throw new Exception('Mime string encoding conversion failed');
