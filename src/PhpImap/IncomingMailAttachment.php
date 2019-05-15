@@ -31,12 +31,6 @@ class IncomingMailAttachment {
 			return $this->filePath;
 		}
 
-		if(false === file_put_contents($this->filePath, $this->dataInfo->fetch())) {
-			unset($this->filePath);
-			unset($this->file_path);
-			return false;
-		}
-
 		return $this->filePath;
 	}
 	
@@ -46,5 +40,19 @@ class IncomingMailAttachment {
 	
 	public function addDataPartInfo(DataPartInfo $dataInfo) {
 		$this->dataInfo = $dataInfo;
+	}
+
+	/*
+	 * Saves the attachment object on the disk
+	 * @return boolean True, if it could save the attachment on the disk
+	*/
+	public function saveToDisk() {
+		if(false === file_put_contents($this->filePath, $this->dataInfo->fetch())) {
+			unset($this->filePath);
+			unset($this->file_path);
+
+			return false;
+		}
+		return true;
 	}
 }

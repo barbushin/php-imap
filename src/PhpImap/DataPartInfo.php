@@ -60,7 +60,7 @@ class DataPartInfo {
 				break;
 		}
 
-		if(isset($this->charset)) {
+		if(isset($this->charset) AND !empty($this->charset)) {
 			$this->data = $this->mail->decodeMimeStr($this->data, $this->charset);
 		}
 
