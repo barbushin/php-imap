@@ -61,7 +61,7 @@ class DataPartInfo {
 		}
 
 		if(isset($this->charset) AND !empty($this->charset)) {
-			$this->data = $this->mail->decodeMimeStr($this->data, $this->charset);
+			$this->data = $this->mail->convertStringEncoding($this->data, $this->charset, $this->mail->getServerEncoding());
 		}
 
 		return $this->data;
