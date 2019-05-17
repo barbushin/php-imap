@@ -210,7 +210,7 @@ class Mailbox {
 			$this->imapRetriesNum = $retriesNum;
 		}
 
-		if($params != NULL AND !empty(is_array($params))) {
+		if($params != NULL AND !empty($params)) {
 			$supported_params = array('DISABLE_AUTHENTICATOR');
 			if(!is_array($params)) {
 				throw new InvalidParameterException('setConnectionArgs() requires $params to be an array!');
