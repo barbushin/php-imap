@@ -198,7 +198,7 @@ class Mailbox {
 		if($options != 0) {
 			$supported_options = array(OP_READONLY, OP_ANONYMOUS, OP_HALFOPEN, CL_EXPUNGE, OP_DEBUG, OP_SHORTCACHE, OP_SILENT, OP_PROTOTYPE, OP_SECURE);
 			if(!in_array($options, $supported_options)) {
-				throw new InvalidParameterException('Please check your options for setConnectionArgs()! You have provided an unsupported option. Available options: https://www.php.net/manual/de/function.imap-open.php');
+				throw new InvalidParameterException('Please check your option for setConnectionArgs()! Unsupported option "'.$options.'". Available options: https://www.php.net/manual/de/function.imap-open.php');
 			}
 			$this->imapOptions = $options;
 		}
