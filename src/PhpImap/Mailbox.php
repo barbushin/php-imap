@@ -198,7 +198,7 @@ class Mailbox {
 		if($options != 0) {
 			$supported_options = array(OP_READONLY, OP_ANONYMOUS, OP_HALFOPEN, CL_EXPUNGE, OP_DEBUG, OP_SHORTCACHE, OP_SILENT, OP_PROTOTYPE, OP_SECURE);
 			if(!in_array($options, $supported_options)) {
-				throw new InvalidParameterException('Please check your options for setConnectionArgs()! You have provided an unsupported option. Available options: https://www.php.net/manual/de/function.imap-open.php');
+				throw new InvalidParameterException('Please check your option for setConnectionArgs()! Unsupported option "'.$options.'". Available options: https://www.php.net/manual/de/function.imap-open.php');
 			}
 			$this->imapOptions = $options;
 		}
@@ -210,14 +210,14 @@ class Mailbox {
 			$this->imapRetriesNum = $retriesNum;
 		}
 
-		if($params != NULL AND !empty(is_array($params))) {
+		if($params != NULL AND !empty($params)) {
 			$supported_params = array('DISABLE_AUTHENTICATOR');
 			if(!is_array($params)) {
 				throw new InvalidParameterException('setConnectionArgs() requires $params to be an array!');
 			}
 
 			foreach($params as $key => $value) {
-				if(!array_key_exists($key, $supported_params)) {
+				if(!in_array($key, $supported_params)) {
 					throw new InvalidParameterException('Invalid array key of params provided for setConnectionArgs()! Only DISABLE_AUTHENTICATOR is currently valid.');
 				}
 			}
