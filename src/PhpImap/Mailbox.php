@@ -849,6 +849,10 @@ class Mailbox {
 		$params = [];
 		if(!empty($partStructure->parameters)) {
 			foreach($partStructure->parameters as $param) {
+				if (!isset($param->value) || empty($param->value)) {
+					continue;
+				}
+				
 				$params[strtolower($param->attribute)] = $this->decodeMimeStr($param->value);
 			}
 		}
