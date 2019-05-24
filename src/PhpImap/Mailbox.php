@@ -594,10 +594,10 @@ class Mailbox {
 				if(isset($mail->subject) && !empty($mail->subject)) {
 					$mail->subject = $this->decodeMimeStr($mail->subject, $this->getServerEncoding());
 				}
-				if(isset($mail->from) AND !empty($head->from)) {
+				if(isset($mail->from) AND !empty($mail->from)) {
 					$mail->from = $this->decodeMimeStr($mail->from, $this->getServerEncoding());
 				}
-				if(isset($mail->sender) AND !empty($head->sender)) {
+				if(isset($mail->sender) AND !empty($mail->sender)) {
 					$mail->sender = $this->decodeMimeStr($mail->sender, $this->getServerEncoding());
 				}
 				if(isset($mail->to) && !empty($mail->to)) {
