@@ -591,7 +591,7 @@ class Mailbox {
 		$mails = $this->imap('fetch_overview', [implode(',', $mailsIds), ($this->imapSearchOption == SE_UID) ? FT_UID : 0]);
 		if(is_array($mails) && count($mails)) {
 			foreach($mails as &$mail) {
-				if(isset($mail->subject)) {
+				if(isset($mail->subject) && !empty($mail->subject)) {
 					$mail->subject = $this->decodeMimeStr($mail->subject, $this->getServerEncoding());
 				}
 				if(isset($mail->from) AND !empty($head->from)) {
@@ -600,7 +600,7 @@ class Mailbox {
 				if(isset($mail->sender) AND !empty($head->sender)) {
 					$mail->sender = $this->decodeMimeStr($mail->sender, $this->getServerEncoding());
 				}
-				if(isset($mail->to)) {
+				if(isset($mail->to) && !empty($mail->to)) {
 					$mail->to = $this->decodeMimeStr($mail->to, $this->getServerEncoding());
 				}
 			}
