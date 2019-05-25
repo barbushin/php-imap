@@ -1008,7 +1008,7 @@ class Mailbox {
 	 * @throws Exception
 	 */
 	public function convertStringEncoding($string, $fromEncoding, $toEncoding) {
-		if(!$string || $fromEncoding == $toEncoding || preg_match("/default/i", $fromEncoding)) {
+		if(preg_match("/default|ascii|windows/i", $fromEncoding) || !$string || $fromEncoding == $toEncoding) {
 			return $string;
 		}
 		if(extension_loaded('mbstring')) {
