@@ -105,7 +105,11 @@ class Mailbox {
 	public function setServerEncoding($serverEncoding) {
 		$serverEncoding = strtoupper(trim($serverEncoding));
 
-		$supported_encodings = mb_list_encodings();
+		// https://github.com/barbushin/php-imap/issues/336
+		$supported_encodings = array();
+		if(extension_loaded('mbstring')) {
+			$supported_encodings = mb_list_encodings();
+		}
 
 		if(!in_array($serverEncoding, $supported_encodings) && $serverEncoding != "US-ASCII") {
 			throw new InvalidParameterException('"'.$serverEncoding.'" is not supported by setServerEncoding(). Your system only supports these encodings: US-ASCII, ' . implode(", ", $supported_encodings));
