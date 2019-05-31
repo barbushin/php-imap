@@ -339,7 +339,7 @@ final class MailboxTest extends TestCase
 	/**
 	 * Provides test data for testing encoding
 	 */
-	public function encodingProvider() {
+	public function encodingTestStringsProvider() {
 		return [
 			'Avañe’ẽ' => ['Avañe’ẽ'], // Guaraní
 			'azərbaycanca' => ['azərbaycanca'], // Azerbaijani (Latin)
@@ -369,19 +369,29 @@ final class MailboxTest extends TestCase
 			'简体中文' => ['简体中文'], // Chinese (Simplified)
 			'繁體中文' => ['繁體中文'], // Chinese (Traditional)
 			'한국어' => ['한국어'], // Korean
+			'ąčęėįšųūžĄČĘĖĮŠŲŪŽ' => ['ąčęėįšųūžĄČĘĖĮŠŲŪŽ'], // Lithuanian letters
 		];
 	}
 
 	/**
-	 * Test, that values are identical before and after encoding
-	 * @dataProvider encodingProvider
+	 * Test, that strings encoded to UTF-7 can be decoded back to UTF-8
+	 * @dataProvider encodingTestStringsProvider
 	 */
-	public function testEncodingReturnsCorrectValues($str)
+	public function testEncodingToUtf7DecodeBackToUtf8($str)
 	{
 		$utf7_encoded_str = $this->mailbox->encodeStringToUtf7Imap($str);
 		$utf8_decoded_str = $this->mailbox->decodeStringFromUtf7ImapToUtf8($utf7_encoded_str);
 
 		$this->assertEquals($utf8_decoded_str, $str);
+	}
+
+	/**
+	 * Test, that strings encoded to UTF-7 can be decoded back to UTF-8
+	 * @dataProvider encodingTestStringsProvider
+	 */
+	public function testMimeDecodingReturnsCorrectValues($str)
+	{
+		$this->assertEquals($this->mailbox->decodeMimeStr($str, 'utf-8'), $str);
 	}
 
 	/**
