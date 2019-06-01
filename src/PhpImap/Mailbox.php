@@ -876,16 +876,16 @@ class Mailbox {
 		}
 
 		if($isAttachment) {
-			$attachmentId = mt_rand() . mt_rand();
-
 			if(empty($params['filename']) && empty($params['name'])) {
-				$fileName = $attachmentId . '.' . strtolower($partStructure->subtype);
+				$fileName = strtolower($partStructure->subtype);
 			}
 			else {
 				$fileName = !empty($params['filename']) ? $params['filename'] : $params['name'];
 				$fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
 				$fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
 			}
+
+			$attachmentId = sha1($fileName);
 
 			$attachment = new IncomingMailAttachment();
 			$attachment->id = $attachmentId;
