@@ -836,13 +836,6 @@ class Mailbox {
 	}
 
 	protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true) {
-		// skip all but plain and html when attachments are not required
-		if ($this->getAttachmentsIgnore() && 
-			($partStructure->type !== TYPEMULTIPART && 
-			($partStructure->type !== TYPETEXT || !in_array(strtolower($partStructure->subtype), ['plain','html'])))) {
-			return false;
-		}
-		
 		$options = ($this->imapSearchOption == SE_UID) ? FT_UID : 0;
 
 		if(!$markAsSeen) {
@@ -873,6 +866,17 @@ class Mailbox {
 		// ignore contentId on body when mail isn't multipart (https://github.com/barbushin/php-imap/issues/71)
 		if(!$partNum && TYPETEXT === $partStructure->type) {
 			$isAttachment = false;
+		}
+
+		if($isAttachment) {
+			$mail->setHasAttachments(true);
+		}
+
+		// Do NOT parse attachments, when getAttachmentsIgnore() is true
+		if($this->getAttachmentsIgnore() &&
+			($partStructure->type !== TYPEMULTIPART &&
+			($partStructure->type !== TYPETEXT || !in_array(strtolower($partStructure->subtype), ['plain','html'])))) {
+			return false;
 		}
 
 		if($isAttachment) {

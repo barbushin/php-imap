@@ -83,6 +83,14 @@ if(!$mailsIds) {
 // save all attachments to the specified directory
 $mail = $mailbox->getMail($mailsIds[0]);
 
+// Show, if $mail has one or more attachments
+echo "\nMail has attachments? ";
+if($mail->hasAttachments()) {
+	echo "Yes\n";
+} else {
+	echo "No\n";
+}
+
 // Print all information of $mail
 print_r($mail);
 
