@@ -1061,11 +1061,13 @@ class Mailbox {
 		$arr = [];
 		if($t = imap_getmailboxes($this->getImapStream(), $this->imapPath, $search)) {
 			foreach($t as $item) {
+				// https://github.com/barbushin/php-imap/issues/339
+				$name = $this->decodeStringFromUtf7ImapToUtf8($item->name);
 				$arr[] = [
-					"fullpath" => $item->name,
+					"fullpath" => $name,
 					"attributes" => $item->attributes,
 					"delimiter" => $item->delimiter,
-					"shortpath" => substr($item->name, strpos($item->name, '}') + 1),
+					"shortpath" => substr($name, strpos($name, '}') + 1),
 				];
 			}
 		}
@@ -1080,11 +1082,13 @@ class Mailbox {
 		$arr = [];
 		if($t = imap_getsubscribed($this->getImapStream(), $this->imapPath, $search)) {
 			foreach($t as $item) {
+				// https://github.com/barbushin/php-imap/issues/339
+				$name = $this->decodeStringFromUtf7ImapToUtf8($item->name);
 				$arr[] = [
-					"fullpath" => $item->name,
+					"fullpath" => $name,
 					"attributes" => $item->attributes,
 					"delimiter" => $item->delimiter,
-					"shortpath" => substr($item->name, strpos($item->name, '}') + 1),
+					"shortpath" => substr($name, strpos($name, '}') + 1),
 				];
 			}
 		}
