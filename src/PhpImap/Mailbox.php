@@ -835,7 +835,7 @@ class Mailbox {
 		return $mail;
 	}
 
-	protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true) {
+	protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true, $emlParse = false) {
 		$options = ($this->imapSearchOption == SE_UID) ? FT_UID : 0;
 
 		if(!$markAsSeen) {
@@ -872,6 +872,18 @@ class Mailbox {
 			$mail->setHasAttachments(true);
 		}
 
+		// check if the part is a subpart of another attachment part (RFC822)
+		if ($partStructure->subtype == 'RFC822' && $partStructure->disposition == 'attachment') {
+			//Although weàre downloading each parte separately, we'are going to donwload de eml to a single file
+			//incase someone wants to process or parse in another process
+			$attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, false);
+			$mail->addAttachment($attachment);
+		}
+		if ($emlParse){
+			//If it comes, from EML, it is and attachment
+			$isAttachment = true;
+		}
+
 		// Do NOT parse attachments, when getAttachmentsIgnore() is true
 		if($this->getAttachmentsIgnore() &&
 			($partStructure->type !== TYPEMULTIPART &&
@@ -880,41 +892,8 @@ class Mailbox {
 		}
 
 		if($isAttachment) {
-			if(empty($params['filename']) && empty($params['name'])) {
-				$fileName = strtolower($partStructure->subtype);
-			}
-			else {
-				$fileName = !empty($params['filename']) ? $params['filename'] : $params['name'];
-				$fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
-				$fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
-			}
-
-			$attachmentId = sha1($fileName);
-
-			$attachment = new IncomingMailAttachment();
-			$attachment->id = $attachmentId;
-			$attachment->contentId = $partStructure->ifid ? trim($partStructure->id, " <>") : null;
-			$attachment->name = $fileName;
-			$attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
-			$attachment->charset = (isset($params['charset']) AND !empty($params['charset'])) ? $params['charset'] : null;
-			if($this->getAttachmentsDir() != null) {
-				$replace = [
-					'/\s/' => '_',
-					'/[^\w\.]/iu' => '',
-					'/_+/' => '_',
-					'/(^_)|(_$)/' => '',
-				];
-				$fileSysName = preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . preg_replace(array_keys($replace), $replace, $fileName));
-				$filePath = $this->getAttachmentsDir() . DIRECTORY_SEPARATOR . $fileSysName;
-
-				if(strlen($filePath) > 255) {
-					$ext = pathinfo($filePath, PATHINFO_EXTENSION);
-					$filePath = substr($filePath, 0, 255 - 1 - strlen($ext)) . "." . $ext;
-				}
- 				$attachment->setFilePath($filePath);
-				$attachment->addDataPartInfo($dataInfo);
-				$attachment->saveToDisk();
-			}
+			//Donwload attachment extracted to another function
+			$attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, $emlParse);
 			$mail->addAttachment($attachment);
 		}
 		else {
@@ -937,12 +916,61 @@ class Mailbox {
 			foreach($partStructure->parts as $subPartNum => $subPartStructure) {
 				if($partStructure->type == 2 && $partStructure->subtype == 'RFC822' && (!isset($partStructure->disposition) || $partStructure->disposition !== "attachment")) {
 					$this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
-				}
-				else {
+				}else if ($partStructure->subtype == 'RFC822' && $partStructure->disposition == 'attachment') {
+					//If it comes from am EML attachment, download each part separately as a file
+					$this->initMailPart($mail, $subPartStructure, $partNum . '.' . ($subPartNum + 1), $markAsSeen, true);
+				}else {
 					$this->initMailPart($mail, $subPartStructure, $partNum . '.' . ($subPartNum + 1), $markAsSeen);
 				}
 			}
 		}
+	}
+
+		/**
+	 * Download attachmentment (separated from the code)
+	 * 
+	 * @param string emlOrigin => used to know if an attachment cames from an fron an eml or not
+	 */
+	public function downloadAttachment($dataInfo, $params, $partStructure, $mailId, $emlOrigin = false){
+		if ($partStructure->subtype == 'RFC822' && $partStructure->disposition == 'attachment') {
+			$fileName = strtolower($partStructure->subtype).'.eml';
+		}else if(empty($params['filename']) && empty($params['name'])) {
+			$fileName = strtolower($partStructure->subtype);
+		}
+		else {
+			$fileName = !empty($params['filename']) ? $params['filename'] : $params['name'];
+			$fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
+			$fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
+		}
+
+		$attachmentId = sha1($fileName);
+
+		$attachment = new IncomingMailAttachment();
+		$attachment->id = $attachmentId;
+		$attachment->contentId = $partStructure->ifid ? trim($partStructure->id, " <>") : null;
+		$attachment->name = $fileName;
+		$attachment->emlOrigin = $emlOrigin;
+		$attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
+		$attachment->charset = (isset($params['charset']) AND !empty($params['charset'])) ? $params['charset'] : null;
+		if($this->getAttachmentsDir() != null) {
+			$replace = [
+				'/\s/' => '_',
+				'/[^\w\.]/iu' => '',
+				'/_+/' => '_',
+				'/(^_)|(_$)/' => '',
+			];
+			$fileSysName = preg_replace('~[\\\\/]~', '', $mailId . '_' . $attachmentId . '_' . preg_replace(array_keys($replace), $replace, $fileName));
+			$filePath = $this->getAttachmentsDir() . DIRECTORY_SEPARATOR . $fileSysName;
+
+			if(strlen($filePath) > 255) {
+				$ext = pathinfo($filePath, PATHINFO_EXTENSION);
+				$filePath = substr($filePath, 0, 255 - 1 - strlen($ext)) . "." . $ext;
+			}
+			 $attachment->setFilePath($filePath);
+			$attachment->addDataPartInfo($dataInfo);
+			$attachment->saveToDisk();
+		}
+		return $attachment;
 	}
 
 	/**
