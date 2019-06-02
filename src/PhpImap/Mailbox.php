@@ -919,7 +919,7 @@ class Mailbox {
 				}else if ($partStructure->subtype == 'RFC822' && $partStructure->disposition == 'attachment') {
 					//If it comes from am EML attachment, download each part separately as a file
 					$this->initMailPart($mail, $subPartStructure, $partNum . '.' . ($subPartNum + 1), $markAsSeen, true);
-				}else {
+				}else{
 					$this->initMailPart($mail, $subPartStructure, $partNum . '.' . ($subPartNum + 1), $markAsSeen);
 				}
 			}
