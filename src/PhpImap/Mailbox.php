@@ -4,9 +4,6 @@ namespace PhpImap;
 use stdClass;
 use Exception;
 use DateTime;
-use PhpImap\IncomingMail;
-use PhpImap\IncomingMailHeader;
-use PhpImap\IncomingMailAttachment;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
 
@@ -128,7 +125,7 @@ class Mailbox {
 
 	/**
 	 * Sets / Changes the IMAP search option
-	 * @return string IMAP search option (eg. 'SE_UID')
+	 * @param string IMAP search option (eg. 'SE_UID')
 	 * @return void
 	 * @throws InvalidParameterException
 	 */
@@ -483,7 +480,7 @@ class Mailbox {
 	}
 
 	/**
-	 * Copys mails listed in mailId into new mailbox
+	 * Copies mails listed in mailId into new mailbox
 	 * @param $mailId
 	 * @param $mailBox
 	 */
@@ -598,10 +595,10 @@ class Mailbox {
 				if(isset($mail->subject)) {
 					$mail->subject = $this->decodeMimeStr($mail->subject, $this->getServerEncoding());
 				}
-				if(isset($mail->from) AND !empty($head->from)) {
+				if(isset($mail->from) AND !empty($mail->from)) {
 					$mail->from = $this->decodeMimeStr($mail->from, $this->getServerEncoding());
 				}
-				if(isset($mail->sender) AND !empty($head->sender)) {
+				if(isset($mail->sender) AND !empty($mail->sender)) {
 					$mail->sender = $this->decodeMimeStr($mail->sender, $this->getServerEncoding());
 				}
 				if(isset($mail->to)) {
@@ -989,7 +986,7 @@ class Mailbox {
 	/**
 	 * Converts the datetime to a normalized datetime
 	 * @param string Header datetime
-	 * @return datetime Normalized datetime
+	 * @return string Normalized datetime
 	 */
 	public function parseDateTime($dateHeader) {
 		if(empty($dateHeader)) {
@@ -1024,7 +1021,7 @@ class Mailbox {
 		} elseif(function_exists('iconv')) {
 			$convertedString = iconv($fromEncoding, $toEncoding . '//IGNORE', $string);
 		}
-		if(!$convertedString) {
+		if(!isset($convertedString)) {
 			throw new Exception('Mime string encoding conversion failed');
 		}
 		return $convertedString;
