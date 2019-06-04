@@ -22,7 +22,9 @@ Initially released in December 2012, the PHP IMAP Mailbox is a powerful and open
 ### Requirements
 
 * PHP 5.6, 7.0, 7.1, 7.2 or 7.3
-* IMAP extension must be present; so make sure this line is active in your php.ini: `extension=php_imap.dll`
+* PHP `imap` extension must be present; so make sure this line is active in your php.ini: `extension=php_imap.dll`
+* PHP `mbstring` extension must be present; so make sure this line is active in your php.ini: `extension=php_mbstring.dll`
+* PHP `iconv` extension must be present, if `mbstring` is not available; so make sure this line is active in your php.ini: `extension=php_iconv.dll`
 
 ### Installation by Composer
 
@@ -80,6 +82,14 @@ if(!$mailsIds) {
 // If '__DIR__' was defined in the first line, it will automatically
 // save all attachments to the specified directory
 $mail = $mailbox->getMail($mailsIds[0]);
+
+// Show, if $mail has one or more attachments
+echo "\nMail has attachments? ";
+if($mail->hasAttachments()) {
+	echo "Yes\n";
+} else {
+	echo "No\n";
+}
 
 // Print all information of $mail
 print_r($mail);
