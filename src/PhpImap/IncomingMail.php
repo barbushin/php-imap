@@ -14,6 +14,7 @@ class IncomingMail extends IncomingMailHeader {
 
 	/** @var IncomingMailAttachment[] */
 	protected $attachments = array();
+	protected $hasAttachments = false;
 	protected $dataInfo = array([],[]);
 
 	public function setHeader(IncomingMailHeader $header) {
@@ -44,8 +45,25 @@ class IncomingMail extends IncomingMailHeader {
 	    return $this->$name;
 	}
 
-    public function addAttachment(IncomingMailAttachment $attachment) {
+	public function addAttachment(IncomingMailAttachment $attachment) {
 		$this->attachments[$attachment->id] = $attachment;
+	}
+
+	/**
+	 * Sets property $hasAttachments
+	 * @param boolean $hasAttachments True, if IncomingMail[] has one or more attachments
+	 * @return void
+	 */
+	public function setHasAttachments($hasAttachments) {
+		$this->hasAttachments = $hasAttachments;
+	}
+
+	/**
+	 * Returns, if the mail has attachments or not
+	 * @return boolean true or false
+	 */
+	public function hasAttachments() {
+		return $this->hasAttachments;
 	}
 
 	/**

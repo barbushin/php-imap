@@ -102,7 +102,11 @@ class Mailbox {
 	public function setServerEncoding($serverEncoding) {
 		$serverEncoding = strtoupper(trim($serverEncoding));
 
-		$supported_encodings = mb_list_encodings();
+		// https://github.com/barbushin/php-imap/issues/336
+		$supported_encodings = array();
+		if(extension_loaded('mbstring')) {
+			$supported_encodings = mb_list_encodings();
+		}
 
 		if(!in_array($serverEncoding, $supported_encodings) && $serverEncoding != "US-ASCII") {
 			throw new InvalidParameterException('"'.$serverEncoding.'" is not supported by setServerEncoding(). Your system only supports these encodings: US-ASCII, ' . implode(", ", $supported_encodings));
@@ -829,13 +833,6 @@ class Mailbox {
 	}
 
 	protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true) {
-		// skip all but plain and html when attachments are not required
-		if ($this->getAttachmentsIgnore() && 
-			($partStructure->type !== TYPEMULTIPART && 
-			($partStructure->type !== TYPETEXT || !in_array(strtolower($partStructure->subtype), ['plain','html'])))) {
-			return;
-		}
-		
 		$options = ($this->imapSearchOption == SE_UID) ? FT_UID : 0;
 
 		if(!$markAsSeen) {
@@ -869,16 +866,27 @@ class Mailbox {
 		}
 
 		if($isAttachment) {
-			$attachmentId = mt_rand() . mt_rand();
+			$mail->setHasAttachments(true);
+		}
 
+		// Do NOT parse attachments, when getAttachmentsIgnore() is true
+		if($this->getAttachmentsIgnore() &&
+			($partStructure->type !== TYPEMULTIPART &&
+			($partStructure->type !== TYPETEXT || !in_array(strtolower($partStructure->subtype), ['plain','html'])))) {
+			return false;
+		}
+
+		if($isAttachment) {
 			if(empty($params['filename']) && empty($params['name'])) {
-				$fileName = $attachmentId . '.' . strtolower($partStructure->subtype);
+				$fileName = strtolower($partStructure->subtype);
 			}
 			else {
 				$fileName = !empty($params['filename']) ? $params['filename'] : $params['name'];
 				$fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
 				$fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
 			}
+
+			$attachmentId = sha1($fileName);
 
 			$attachment = new IncomingMailAttachment();
 			$attachment->id = $attachmentId;
@@ -1050,11 +1058,13 @@ class Mailbox {
 		$arr = [];
 		if($t = imap_getmailboxes($this->getImapStream(), $this->imapPath, $search)) {
 			foreach($t as $item) {
+				// https://github.com/barbushin/php-imap/issues/339
+				$name = $this->decodeStringFromUtf7ImapToUtf8($item->name);
 				$arr[] = [
-					"fullpath" => $item->name,
+					"fullpath" => $name,
 					"attributes" => $item->attributes,
 					"delimiter" => $item->delimiter,
-					"shortpath" => substr($item->name, strpos($item->name, '}') + 1),
+					"shortpath" => substr($name, strpos($name, '}') + 1),
 				];
 			}
 		}
@@ -1069,11 +1079,13 @@ class Mailbox {
 		$arr = [];
 		if($t = imap_getsubscribed($this->getImapStream(), $this->imapPath, $search)) {
 			foreach($t as $item) {
+				// https://github.com/barbushin/php-imap/issues/339
+				$name = $this->decodeStringFromUtf7ImapToUtf8($item->name);
 				$arr[] = [
-					"fullpath" => $item->name,
+					"fullpath" => $name,
 					"attributes" => $item->attributes,
 					"delimiter" => $item->delimiter,
-					"shortpath" => substr($item->name, strpos($item->name, '}') + 1),
+					"shortpath" => substr($name, strpos($name, '}') + 1),
 				];
 			}
 		}
