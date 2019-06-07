@@ -871,13 +871,14 @@ class Mailbox {
 
 		// check if the part is a subpart of another attachment part (RFC822)
 		if ($partStructure->subtype == 'RFC822' && $partStructure->disposition == 'attachment') {
-			//Although weàre downloading each parte separately, we'are going to donwload de eml to a single file
+			// Although we are downloading each part separately, we are going to download the EML to a single file
 			//incase someone wants to process or parse in another process
 			$attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, false);
 			$mail->addAttachment($attachment);
 		}
-		if ($emlParse){
-			//If it comes, from EML, it is and attachment
+
+		// If it comes from an EML file it is an attachment
+		if($emlParse) {
 			$isAttachment = true;
 		}
 
@@ -889,7 +890,6 @@ class Mailbox {
 		}
 
 		if($isAttachment) {
-			//Donwload attachment extracted to another function
 			$attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, $emlParse);
 			$mail->addAttachment($attachment);
 		}
@@ -913,31 +913,45 @@ class Mailbox {
 			foreach($partStructure->parts as $subPartNum => $subPartStructure) {
 				if($partStructure->type == 2 && $partStructure->subtype == 'RFC822' && (!isset($partStructure->disposition) || $partStructure->disposition !== "attachment")) {
 					$this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
-				}else if ($partStructure->subtype == 'RFC822' && $partStructure->disposition == 'attachment') {
+				} elseif($partStructure->subtype == 'RFC822' && $partStructure->disposition == 'attachment') {
 					//If it comes from am EML attachment, download each part separately as a file
 					$this->initMailPart($mail, $subPartStructure, $partNum . '.' . ($subPartNum + 1), $markAsSeen, true);
-				}else{
+				} else {
 					$this->initMailPart($mail, $subPartStructure, $partNum . '.' . ($subPartNum + 1), $markAsSeen);
 				}
 			}
 		}
 	}
 
-		/**
-	 * Download attachmentment (separated from the code)
+	/**
+	 * Download attachment
 	 * 
-	 * @param string emlOrigin => used to know if an attachment cames from an fron an eml or not
+	 * @param string $dataInfo
+	 * @param array $params Array of params of mail
+	 * @param object $partStructure Part of mail
+	 * @param integer $mailId ID of mail
+	 * @param boolean $emlOrigin True, if it indicates, that the attachment comes from an EML (mail) file
+	 * @return IncomingMailAttachment[] $attachment
 	 */
 	public function downloadAttachment($dataInfo, $params, $partStructure, $mailId, $emlOrigin = false){
-		if ($partStructure->subtype == 'RFC822' && $partStructure->disposition == 'attachment') {
-			$fileName = strtolower($partStructure->subtype).'.eml';
-		}else if(empty($params['filename']) && empty($params['name'])) {
-			$fileName = strtolower($partStructure->subtype);
-		}
-		else {
+		if($partStructure->subtype == 'RFC822' && $partStructure->disposition == 'attachment') {
+			$fileExt = strtolower($partStructure->subtype).'.eml';
+		} elseif($partStructure->subtype == 'ALTERNATIVE') {
+			$fileExt = strtolower($partStructure->subtype).'.eml';
+		} elseif(empty($params['filename']) && empty($params['name'])) {
+			$fileExt = strtolower($partStructure->subtype);
+		} else {
 			$fileName = !empty($params['filename']) ? $params['filename'] : $params['name'];
 			$fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
 			$fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
+		}
+
+		if(isset($fileExt) && isset($fileName)) {
+			$fileName = $fileName.'.'.$fileExt;
+		} elseif(isset($fileExt) && !isset($fileName)) {
+			$fileName = $fileExt;
+		} elseif(!isset($fileExt) && isset($fileName)) {
+			$fileName = $fileName;
 		}
 
 		$attachmentId = sha1($fileName);
@@ -963,7 +977,7 @@ class Mailbox {
 				$ext = pathinfo($filePath, PATHINFO_EXTENSION);
 				$filePath = substr($filePath, 0, 255 - 1 - strlen($ext)) . "." . $ext;
 			}
-			 $attachment->setFilePath($filePath);
+			$attachment->setFilePath($filePath);
 			$attachment->addDataPartInfo($dataInfo);
 			$attachment->saveToDisk();
 		}
