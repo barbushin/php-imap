@@ -13,6 +13,7 @@ class IncomingMailAttachment {
 	public $name;
 	public $disposition;
 	public $charset;
+	public $emlOrigin;
 	private $file_path;
 	private $dataInfo;
 
