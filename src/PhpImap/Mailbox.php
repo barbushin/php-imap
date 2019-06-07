@@ -1013,10 +1013,15 @@ class Mailbox {
 	 * @throws Exception
 	 */
 	public function convertStringEncoding($string, $fromEncoding, $toEncoding) {
-		if(preg_match("/default|ascii|windows/i", $fromEncoding) || !$string || $fromEncoding == $toEncoding) {
+		if(preg_match("/default|ascii/i", $fromEncoding) || !$string || $fromEncoding == $toEncoding) {
 			return $string;
 		}
-		if(extension_loaded('mbstring')) {
+		$mbLoaded = extension_loaded('mbstring');
+		$supportedEncodings = [];
+		if($mbLoaded) {
+		    $supportedEncodings = array_map('strtolower', mb_list_encodings());
+        }
+		if($mbLoaded && in_array(strtolower($fromEncoding), $supportedEncodings) && in_array(strtolower($toEncoding), $supportedEncodings)) {
 			$convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
 		} elseif(function_exists('iconv')) {
 			$convertedString = iconv($fromEncoding, $toEncoding . '//IGNORE', $string);
