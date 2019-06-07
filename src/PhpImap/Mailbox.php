@@ -1019,8 +1019,8 @@ class Mailbox {
 		$mbLoaded = extension_loaded('mbstring');
 		$supportedEncodings = [];
 		if($mbLoaded) {
-		    $supportedEncodings = array_map('strtolower', mb_list_encodings());
-        }
+			$supportedEncodings = array_map('strtolower', mb_list_encodings());
+		}
 		if($mbLoaded && in_array(strtolower($fromEncoding), $supportedEncodings) && in_array(strtolower($toEncoding), $supportedEncodings)) {
 			$convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
 		} elseif(function_exists('iconv')) {
