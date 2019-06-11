@@ -1,5 +1,4 @@
-<?php
-namespace PhpImap;
+<?php namespace PhpImap;
 
 use stdClass;
 use Exception;
@@ -870,7 +869,7 @@ class Mailbox {
 		}
 
 		// check if the part is a subpart of another attachment part (RFC822)
-		if ($partStructure->subtype == 'RFC822' && $partStructure->disposition == 'attachment') {
+		if ($partStructure->subtype == 'RFC822' && isset($partStructure->disposition) && $partStructure->disposition == 'attachment') {
 			// Although we are downloading each part separately, we are going to download the EML to a single file
 			//incase someone wants to process or parse in another process
 			$attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, false);
@@ -913,7 +912,7 @@ class Mailbox {
 			foreach($partStructure->parts as $subPartNum => $subPartStructure) {
 				if($partStructure->type == 2 && $partStructure->subtype == 'RFC822' && (!isset($partStructure->disposition) || $partStructure->disposition !== "attachment")) {
 					$this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
-				} elseif($partStructure->subtype == 'RFC822' && $partStructure->disposition == 'attachment') {
+				} elseif($partStructure->subtype == 'RFC822' && isset($partStructure->disposition) && $partStructure->disposition == 'attachment') {
 					//If it comes from am EML attachment, download each part separately as a file
 					$this->initMailPart($mail, $subPartStructure, $partNum . '.' . ($subPartNum + 1), $markAsSeen, true);
 				} else {
@@ -934,7 +933,7 @@ class Mailbox {
 	 * @return IncomingMailAttachment[] $attachment
 	 */
 	public function downloadAttachment($dataInfo, $params, $partStructure, $mailId, $emlOrigin = false){
-		if($partStructure->subtype == 'RFC822' && $partStructure->disposition == 'attachment') {
+		if($partStructure->subtype == 'RFC822' && isset($partStructure->disposition) && $partStructure->disposition == 'attachment') {
 			$fileExt = strtolower($partStructure->subtype).'.eml';
 		} elseif($partStructure->subtype == 'ALTERNATIVE') {
 			$fileExt = strtolower($partStructure->subtype).'.eml';
