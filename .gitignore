@@ -1,6 +1,8 @@
 # All of the vendor directory should be installed by running 'composer install'
 vendor/
 composer.lock
+*.phar
+.php_cs.cache
 
 #################
 ## Eclipse
