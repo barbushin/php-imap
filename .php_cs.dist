@@ -1,0 +1,18 @@
+<?php
+
+return PhpCsFixer\Config::create()
+    ->setRules([
+        'array_syntax' => [
+            'syntax' => 'short'
+        ],
+        'ordered_imports' => true,
+        'no_superfluous_phpdoc_tags' => true
+    ])
+    ->setRiskyAllowed(true)
+    ->setFinder(
+        PhpCsFixer\Finder::create()
+            ->in(__DIR__.'/src')
+            ->in(__DIR__.'/tests')
+    )
+;
+
