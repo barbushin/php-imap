@@ -992,6 +992,23 @@ class Mailbox
             if (!empty($params['charset'])) {
                 $dataInfo->charset = $params['charset'];
             }
+        }
+
+        if (!empty($partStructure->parts)) {
+            foreach ($partStructure->parts as $subPartNum => $subPartStructure) {
+                if (TYPEMESSAGE === $partStructure->type && 'RFC822' == $partStructure->subtype && (!isset($partStructure->disposition) || 'attachment' !== $partStructure->disposition)) {
+                    $this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
+                } elseif (TYPEMULTIPART === $partStructure->type && 'ALTERNATIVE' == $partStructure->subtype && (!isset($partStructure->disposition) || 'attachment' !== $partStructure->disposition)) {
+                    // https://github.com/barbushin/php-imap/issues/198
+                    $this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
+                } elseif ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
+                    //If it comes from am EML attachment, download each part separately as a file
+                    $this->initMailPart($mail, $subPartStructure, $partNum.'.'.($subPartNum + 1), $markAsSeen, true);
+                } else {
+                    $this->initMailPart($mail, $subPartStructure, $partNum.'.'.($subPartNum + 1), $markAsSeen);
+                }
+            }
+        } else {
             if (TYPETEXT === $partStructure->type) {
                 if ('plain' == strtolower($partStructure->subtype)) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
@@ -1000,18 +1017,6 @@ class Mailbox
                 }
             } elseif (TYPEMESSAGE === $partStructure->type) {
                 $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
-            }
-        }
-        if (!empty($partStructure->parts)) {
-            foreach ($partStructure->parts as $subPartNum => $subPartStructure) {
-                if (2 == $partStructure->type && 'RFC822' == $partStructure->subtype && (!isset($partStructure->disposition) || 'attachment' !== $partStructure->disposition)) {
-                    $this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
-                } elseif ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
-                    //If it comes from am EML attachment, download each part separately as a file
-                    $this->initMailPart($mail, $subPartStructure, $partNum.'.'.($subPartNum + 1), $markAsSeen, true);
-                } else {
-                    $this->initMailPart($mail, $subPartStructure, $partNum.'.'.($subPartNum + 1), $markAsSeen);
-                }
             }
         }
     }
