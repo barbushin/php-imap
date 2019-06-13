@@ -15,9 +15,12 @@ before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
+  - curl https://cs.symfony.com/download/php-cs-fixer-v2.phar -o php-cs-fixer.phar
+  - chmod +x php-cs-fixer.phar
 
 script:
   - vendor/bin/phpunit
+  - ./php-cs-fixer.phar fix --allow-risky=yes --no-interaction --dry-run --diff -v
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
