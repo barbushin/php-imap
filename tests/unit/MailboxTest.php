@@ -5,9 +5,9 @@
  * @author Sebastian Kraetzig <sebastian-kraetzig@gmx.de>
  */
 
-use PhpImap\Mailbox;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
+use PhpImap\Mailbox;
 use PHPUnit\Framework\TestCase;
 
 final class MailboxTest extends TestCase
@@ -277,7 +277,7 @@ final class MailboxTest extends TestCase
 	 */
 	public function testPathDelimiterIsBeingChecked($str)
 	{
-		$supported_delimiters = array('.', '/');
+		$supported_delimiters = ['.', '/'];
 
 		if(in_array($str, $supported_delimiters)) {
 			$this->assertTrue($this->mailbox->validatePathDelimiter($str));
@@ -525,16 +525,16 @@ final class MailboxTest extends TestCase
 	 */
 	public function timeoutsProvider() {
 		return [
-			'array(IMAP_OPENTIMEOUT)' => ['assertNull', 1, array(IMAP_OPENTIMEOUT)],
-			'array(IMAP_READTIMEOUT)' => ['assertNull', 1, array(IMAP_READTIMEOUT)],
-			'array(IMAP_WRITETIMEOUT)' => ['assertNull', 1, array(IMAP_WRITETIMEOUT)],
-			'array(IMAP_CLOSETIMEOUT)' => ['assertNull', 1, array(IMAP_CLOSETIMEOUT)],
-			'array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT)' => ['assertNull', 1, array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT)],
-			'array(IMAP_OPENTIMEOUT)' => ['expectException', 1, array(OPENTIMEOUT)],
-			'array(IMAP_READTIMEOUT)' => ['expectException', 1, array(READTIMEOUT)],
-			'array(IMAP_WRITETIMEOUT)' => ['expectException', 1, array(WRITETIMEOUT)],
-			'array(IMAP_CLOSETIMEOUT)' => ['expectException', 1, array(CLOSETIMEOUT)],
-			'array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT)' => ['expectException', 1, array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, WRITETIMEOUT, IMAP_CLOSETIMEOUT)],
+			'array(IMAP_OPENTIMEOUT)' => ['assertNull', 1, [IMAP_OPENTIMEOUT]],
+			'array(IMAP_READTIMEOUT)' => ['assertNull', 1, [IMAP_READTIMEOUT]],
+			'array(IMAP_WRITETIMEOUT)' => ['assertNull', 1, [IMAP_WRITETIMEOUT]],
+			'array(IMAP_CLOSETIMEOUT)' => ['assertNull', 1, [IMAP_CLOSETIMEOUT]],
+			'array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT)' => ['assertNull', 1, [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT]],
+			'array(IMAP_OPENTIMEOUT)' => ['expectException', 1, [OPENTIMEOUT]],
+			'array(IMAP_READTIMEOUT)' => ['expectException', 1, [READTIMEOUT]],
+			'array(IMAP_WRITETIMEOUT)' => ['expectException', 1, [WRITETIMEOUT]],
+			'array(IMAP_CLOSETIMEOUT)' => ['expectException', 1, [CLOSETIMEOUT]],
+			'array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT)' => ['expectException', 1, [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, WRITETIMEOUT, IMAP_CLOSETIMEOUT]],
 		];
 	}
 
@@ -557,26 +557,26 @@ final class MailboxTest extends TestCase
 	 */
 	public function connectionArgsProvider() {
 		return [
-			['assertNull', OP_READONLY, 0, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
 			['assertNull', OP_READONLY, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-			['assertNull', OP_ANONYMOUS, 0, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
-			['assertNull', OP_HALFOPEN, 0, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
-			['assertNull', CL_EXPUNGE, 0, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
-			['assertNull', OP_DEBUG, 0, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
-			['assertNull', OP_SHORTCACHE, 0, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
-			['assertNull', OP_SILENT, 0, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
-			['assertNull', OP_PROTOTYPE, 0, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
-			['assertNull', OP_SECURE, 0, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
-			['assertNull', OP_READONLY, 1, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
-			['assertNull', OP_READONLY, 3, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
-			['assertNull', OP_READONLY, 12, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
+			['assertNull', OP_READONLY, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['assertNull', OP_ANONYMOUS, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['assertNull', OP_HALFOPEN, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['assertNull', CL_EXPUNGE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['assertNull', OP_DEBUG, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['assertNull', OP_SHORTCACHE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['assertNull', OP_SILENT, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['assertNull', OP_PROTOTYPE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['assertNull', OP_SECURE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['assertNull', OP_READONLY, 1, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['assertNull', OP_READONLY, 3, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['assertNull', OP_READONLY, 12, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
 
-			['expectException', OP_READONLY.OP_DEBUG, 0, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
-			['expectException', OP_READONLY, -1, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
-			['expectException', OP_READONLY, -3, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
-			['expectException', OP_READONLY, -12, array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
-			['expectException', OP_READONLY, "-1", array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
-			['expectException', OP_READONLY, "1", array('DISABLE_AUTHENTICATOR' => 'GSSAPI')],
+			['expectException', OP_READONLY.OP_DEBUG, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['expectException', OP_READONLY, -1, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['expectException', OP_READONLY, -3, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['expectException', OP_READONLY, -12, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['expectException', OP_READONLY, "-1", ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+			['expectException', OP_READONLY, "1", ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
 			['expectException', OP_READONLY, 0, DISABLE_AUTHENTICATOR],
 			['expectException', OP_READONLY, 0, 'DISABLE_AUTHENTICATOR'],
 			['expectException', OP_READONLY, 0, SOMETHING],

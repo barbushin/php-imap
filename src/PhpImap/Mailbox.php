@@ -1,10 +1,10 @@
 <?php namespace PhpImap;
 
-use stdClass;
-use Exception;
 use DateTime;
+use Exception;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
+use stdClass;
 
 /**
  * @see https://github.com/barbushin/php-imap
@@ -74,7 +74,7 @@ class Mailbox {
 	 * @return boolean true (supported) or false (unsupported)
 	 */
 	public function validatePathDelimiter($delimiter) {
-		$supported_delimiters = array('.', '/');
+		$supported_delimiters = ['.', '/'];
 
 		if(!in_array($delimiter, $supported_delimiters)) {
 			return false;
@@ -102,7 +102,7 @@ class Mailbox {
 		$serverEncoding = strtoupper(trim($serverEncoding));
 
 		// https://github.com/barbushin/php-imap/issues/336
-		$supported_encodings = array();
+		$supported_encodings = [];
 		if(extension_loaded('mbstring')) {
 			$supported_encodings = mb_list_encodings();
 		}
@@ -131,7 +131,7 @@ class Mailbox {
 	public function setImapSearchOption($imapSearchOption) {
 		$imapSearchOption = strtoupper(trim($imapSearchOption));
 
-		$supported_options = array(SE_FREE, SE_UID);
+		$supported_options = [SE_FREE, SE_UID];
 
 		if(!in_array($imapSearchOption, $supported_options)) {
 			throw new InvalidParameterException('"'.$imapSearchOption.'" is not supported by setImapSearchOption(). Supported options are SE_FREE and SE_UID.');
@@ -168,7 +168,7 @@ class Mailbox {
 	 * @throws InvalidParameterException
 	 */
 	public function setTimeouts($timeout, $types = [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT]) {
-		$supported_types = array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT);
+		$supported_types = [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT];
 
 		$found_types = array_intersect($types, $supported_types);
 
@@ -196,7 +196,7 @@ class Mailbox {
 	 */
 	public function setConnectionArgs($options = 0, $retriesNum = 0, $params = NULL) {
 		if($options != 0) {
-			$supported_options = array(OP_READONLY, OP_ANONYMOUS, OP_HALFOPEN, CL_EXPUNGE, OP_DEBUG, OP_SHORTCACHE, OP_SILENT, OP_PROTOTYPE, OP_SECURE);
+			$supported_options = [OP_READONLY, OP_ANONYMOUS, OP_HALFOPEN, CL_EXPUNGE, OP_DEBUG, OP_SHORTCACHE, OP_SILENT, OP_PROTOTYPE, OP_SECURE];
 			if(!in_array($options, $supported_options)) {
 				throw new InvalidParameterException('Please check your option for setConnectionArgs()! Unsupported option "'.$options.'". Available options: https://www.php.net/manual/de/function.imap-open.php');
 			}
@@ -211,7 +211,7 @@ class Mailbox {
 		}
 
 		if($params != NULL AND !empty($params)) {
-			$supported_params = array('DISABLE_AUTHENTICATOR');
+			$supported_params = ['DISABLE_AUTHENTICATOR'];
 			if(!is_array($params)) {
 				throw new InvalidParameterException('setConnectionArgs() requires $params to be an array!');
 			}
@@ -289,7 +289,6 @@ class Mailbox {
 	/**
 	 * Returns the provided string in UTF7-IMAP encoded format
 	 *
-	 * @param string $tr Any encoded string
 	 * @return string $str UTF-7 encoded string or same as before, when it's no string
 	 */
 	public function encodeStringToUtf7Imap($str) {
@@ -304,7 +303,6 @@ class Mailbox {
 	/**
 	 * Returns the provided string in UTF-8 encoded format
 	 *
-	 * @param string $tr Any encoded string
 	 * @return string $str UTF-7 encoded string or same as before, when it's no string
 	 */
 	public function decodeStringFromUtf7ImapToUtf8($str) {
@@ -520,7 +518,6 @@ class Mailbox {
 
 	/**
 	 * Add the flag \Seen to a mails.
-	 * @param array $mailId
 	 */
 	public function markMailsAsRead(array $mailId) {
 		$this->setFlag($mailId, '\\Seen');
@@ -528,7 +525,6 @@ class Mailbox {
 
 	/**
 	 * Remove the flag \Seen from some mails.
-	 * @param array $mailId
 	 */
 	public function markMailsAsUnread(array $mailId) {
 		$this->clearFlag($mailId, '\\Seen');
@@ -536,7 +532,6 @@ class Mailbox {
 
 	/**
 	 * Add the flag \Flagged to some mails.
-	 * @param array $mailId
 	 */
 	public function markMailsAsImportant(array $mailId) {
 		$this->setFlag($mailId, '\\Flagged');
@@ -545,7 +540,6 @@ class Mailbox {
 	/**
 	 * Causes a store to add the specified flag to the flags set for the mails in the specified sequence.
 	 *
-	 * @param array $mailsIds
 	 * @param string $flag which you can set are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060.
 	 */
 	public function setFlag(array $mailsIds, $flag) {
@@ -555,7 +549,6 @@ class Mailbox {
 	/**
 	 * Cause a store to delete the specified flag to the flags set for the mails in the specified sequence.
 	 *
-	 * @param array $mailsIds
 	 * @param string $flag which you can set are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060.
 	 */
 	public function clearFlag(array $mailsIds, $flag) {
@@ -584,7 +577,6 @@ class Mailbox {
 	 *  seen - this mail is flagged as already read
 	 *  draft - this mail is flagged as being a draft
 	 *
-	 * @param array $mailsIds
 	 * @return array
 	 */
 	public function getMailsInfo(array $mailsIds) {
@@ -702,7 +694,6 @@ class Mailbox {
 	 *
 	 * @param $msgId
 	 * @param bool $markAsSeen Mark the email as seen, when set to true
-	 * @return mixed
 	 */
 	public function getRawMail($msgId, $markAsSeen = true) {
 		$options = ($this->imapSearchOption == SE_UID) ? FT_UID : 0;
@@ -986,7 +977,6 @@ class Mailbox {
 	/**
 	 * Decodes a mime string
 	 * @param string $string MIME string to decode
-	 * @param string $toEncoding Charset, to which you want to decode it
 	 * @return string Converted string if conversion was successful, or the original string if not
 	 * @throws Exception
 	 */
@@ -1163,7 +1153,6 @@ class Mailbox {
 	 * @param array|string $args All arguments of the original method, except the 'resource $imap_stream' (eg. imap_fetch_overview => string $sequence [, int $options = 0 ])
 	 * @param bool $prependConnectionAsFirstArg Add 'resource $imap_stream' as first argument, if set to true
 	 * @param string|null $throwExceptionClass Name of exception class, which will be thrown in case of errors
-	 * @return mixed
 	 * @throws Exception
 	 */
 	public function imap($methodShortName, $args = [], $prependConnectionAsFirstArg = true, $throwExceptionClass = Exception::class) {

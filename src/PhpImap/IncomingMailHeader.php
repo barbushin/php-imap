@@ -27,11 +27,11 @@ class IncomingMailHeader {
 	public $senderName;
 	public $senderAddress;
 
-	public $to = array();
+	public $to = [];
 	public $toString;
-	public $cc = array();
-	public $bcc = array();
-	public $replyTo = array();
+	public $cc = [];
+	public $bcc = [];
+	public $replyTo = [];
 
 	public $messageId;
 }

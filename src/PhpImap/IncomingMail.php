@@ -1,7 +1,7 @@
 <?php namespace PhpImap;
 
-use PhpImap\IncomingMailHeader;
 use PhpImap\IncomingMailAttachment;
+use PhpImap\IncomingMailHeader;
 
 /**
  * @see https://github.com/barbushin/php-imap
@@ -13,9 +13,9 @@ use PhpImap\IncomingMailAttachment;
 class IncomingMail extends IncomingMailHeader {
 
 	/** @var IncomingMailAttachment[] */
-	protected $attachments = array();
+	protected $attachments = [];
 	protected $hasAttachments = false;
-	protected $dataInfo = array([],[]);
+	protected $dataInfo = [[],[]];
 
 	public function setHeader(IncomingMailHeader $header) {
 		foreach(get_object_vars($header) as $property => $value) {
@@ -78,15 +78,15 @@ class IncomingMail extends IncomingMailHeader {
 	 * @return array attachmentId => link placeholder
 	 */
 	public function getInternalLinksPlaceholders() {
-		return preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $this->textHtml, $matches) ? array_combine($matches[2], $matches[1]) : array();
+		return preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $this->textHtml, $matches) ? array_combine($matches[2], $matches[1]) : [];
 
 	}
 
 	public function replaceInternalLinks($baseUri) {
 		$baseUri = rtrim($baseUri, '\\/') . '/';
 		$fetchedHtml = $this->textHtml;
-		$search = array();
-		$replace = array();
+		$search = [];
+		$replace = [];
 		foreach($this->getInternalLinksPlaceholders() as $attachmentId => $placeholder) {
 			foreach($this->attachments as $attachment) {
 				if($attachment->contentId == $attachmentId) {
