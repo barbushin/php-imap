@@ -1,18 +1,22 @@
 <?php
 
-namespace PhpImap;
-
 /**
- * @see https://github.com/barbushin/php-imap
- *
+ * The PhpImap IncomingMail class
+ * 
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
+ * @see    https://github.com/barbushin/php-imap
  *
  * @property string $textPlain lazy plain message body
  * @property string $textHtml  lazy html message body
  */
+
+ namespace PhpImap;
+
 class IncomingMail extends IncomingMailHeader
 {
-    /** @var IncomingMailAttachment[] */
+    /**
+     * @var IncomingMailAttachment[]
+     */
     protected $attachments = [];
     protected $hasAttachments = false;
     protected $dataInfo = [[], []];
@@ -29,6 +33,13 @@ class IncomingMail extends IncomingMailHeader
         $this->dataInfo[$type][] = $dataInfo;
     }
 
+    /**
+     * __get() is utilized for reading data from inaccessible (protected
+     * or private) or non-existing properties.
+     * 
+     * @property $name Name of the property (eg. textPlain)
+     * @return   mixed Value of the property (eg. Plain text message)
+     */
     public function __get($name)
     {
         $type = false;
@@ -47,6 +58,19 @@ class IncomingMail extends IncomingMailHeader
         }
 
         return $this->$name;
+    }
+
+    /**
+     * The method __isset() is triggered by calling isset() or empty()
+     * on inaccessible (protected or private) or non-existing properties.
+     * 
+     * @property $name Name of the property (eg. textPlain)
+     * @return   bool True, if property is set or empty
+     */
+    public function __isset($name)
+    {
+        self::__get($name);
+        return isset($this->$name);
     }
 
     public function addAttachment(IncomingMailAttachment $attachment)
