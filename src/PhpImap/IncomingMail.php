@@ -29,6 +29,10 @@ class IncomingMail extends IncomingMailHeader
         $this->dataInfo[$type][] = $dataInfo;
     }
 
+    /**
+     * __get() is utilized for reading data from inaccessible (protected
+     * or private) or non-existing properties.
+     */
     public function __get($name)
     {
         $type = false;
