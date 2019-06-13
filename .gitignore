@@ -171,3 +171,6 @@ pip-log.txt
 
 # NetBeans IDE
 nbproject/
+
+# Visual Studio Code
+.vscode/
