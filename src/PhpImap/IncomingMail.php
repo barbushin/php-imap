@@ -49,6 +49,16 @@ class IncomingMail extends IncomingMailHeader
         return $this->$name;
     }
 
+    /**
+     * The method __isset() is triggered by calling isset() or empty()
+     * on inaccessible (protected or private) or non-existing properties.
+     */
+    public function __isset($name)
+    {
+        self::__get($name);
+        return isset($this->$name);
+    }
+
     public function addAttachment(IncomingMailAttachment $attachment)
     {
         $this->attachments[$attachment->id] = $attachment;
