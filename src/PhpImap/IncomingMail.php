@@ -1,18 +1,17 @@
 <?php
 
- /**
-  * The PhpImap IncomingMail class.
-  *
-  * @author Barbushin Sergey http://linkedin.com/in/barbushin
-  *
-  * @see    https://github.com/barbushin/php-imap
-  *
-  * @property string $textPlain lazy plain message body
-  * @property string $textHtml  lazy html message body
-  */
-
 namespace PhpImap;
 
+/**
+ * The PhpImap IncomingMail class.
+ *
+ * @author Barbushin Sergey http://linkedin.com/in/barbushin
+ *
+ * @see https://github.com/barbushin/php-imap
+ *
+ * @property string $textPlain lazy plain message body
+ * @property string $textHtml  lazy html message body
+ */
 class IncomingMail extends IncomingMailHeader
 {
     /**
