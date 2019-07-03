@@ -668,7 +668,7 @@ class Mailbox
         $mails = $this->imap('fetch_overview', [implode(',', $mailsIds), (SE_UID == $this->imapSearchOption) ? FT_UID : 0]);
         if (\is_array($mails) && \count($mails)) {
             foreach ($mails as &$mail) {
-                if (!empty($mail->subject)) {
+                if (isset($mail->subject) and !empty($mail->subject)) {
                     $mail->subject = $this->decodeMimeStr($mail->subject, $this->getServerEncoding());
                 }
                 if (isset($mail->from) and !empty($mail->from)) {
