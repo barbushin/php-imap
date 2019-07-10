@@ -903,25 +903,27 @@ class Mailbox
     }
 
     /**
-    * taken from https://www.electrictoolbox.com/php-imap-message-parts/
-    */
-    function flattenParts( $messageParts, $flattenedParts = array(), $prefix = '', $index = 1, $fullPrefix = true ) {
-		foreach ( $messageParts as $part ) {
-			$flattenedParts[ $prefix . $index ] = $part;
-			if ( isset( $part->parts ) ) {
-				if ( $part->type == 2 ) {
-					$flattenedParts = $this->flattenParts( $part->parts, $flattenedParts, $prefix . $index . '.', 0, false );
-				} elseif ( $fullPrefix ) {
-					$flattenedParts = $this->flattenParts( $part->parts, $flattenedParts, $prefix . $index . '.' );
-				} else {
-					$flattenedParts = $this->flattenParts( $part->parts, $flattenedParts, $prefix );
-				}
-				unset( $flattenedParts[ $prefix . $index ]->parts );
-			}
-			$index ++;
-		}
-		return $flattenedParts;
-	}
+     * taken from https://www.electrictoolbox.com/php-imap-message-parts/.
+     */
+    public function flattenParts($messageParts, $flattenedParts = [], $prefix = '', $index = 1, $fullPrefix = true)
+    {
+        foreach ($messageParts as $part) {
+            $flattenedParts[$prefix.$index] = $part;
+            if (isset($part->parts)) {
+                if (2 == $part->type) {
+                    $flattenedParts = $this->flattenParts($part->parts, $flattenedParts, $prefix.$index.'.', 0, false);
+                } elseif ($fullPrefix) {
+                    $flattenedParts = $this->flattenParts($part->parts, $flattenedParts, $prefix.$index.'.');
+                } else {
+                    $flattenedParts = $this->flattenParts($part->parts, $flattenedParts, $prefix);
+                }
+                unset($flattenedParts[$prefix.$index]->parts);
+            }
+            ++$index;
+        }
+
+        return $flattenedParts;
+    }
     
     /**
      * Get mail data.
@@ -941,9 +943,9 @@ class Mailbox
         if (empty($mailStructure->parts)) {
             $this->initMailPart($mail, $mailStructure, 0, $markAsSeen);
         } else {
-			foreach ( $this->flattenParts( $mailStructure->parts ) as $partNum => $partStructure ) {
-				$this->initMailPart( $mail, $partStructure, $partNum, $markAsSeen );
-			}
+            foreach ($this->flattenParts($mailStructure->parts) as $partNum => $partStructure) {
+                $this->initMailPart($mail, $partStructure, $partNum, $markAsSeen);
+            }
         }
 
         return $mail;
