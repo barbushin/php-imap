@@ -924,7 +924,7 @@ class Mailbox
 
         return $flattenedParts;
     }
-    
+
     /**
      * Get mail data.
      *
