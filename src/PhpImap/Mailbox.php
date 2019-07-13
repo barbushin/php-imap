@@ -902,7 +902,7 @@ class Mailbox
                     $replyToName = (isset($replyTo->personal) and !empty(trim($replyTo->personal))) ? $this->decodeMimeStr($replyTo->personal, $this->getServerEncoding()) : null;
                     $replyToStrings[] = $replyToName ? "$replyToName <$replyToEmail>" : $replyToEmail;
                     $header->replyTo[$replyToEmail] = $replyToName;
-		}
+                }
             }
         }
 
