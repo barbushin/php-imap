@@ -795,7 +795,7 @@ class Mailbox
      * Get raw mail data.
      *
      * @param $msgId
-     * @param bool $markAsSeen Mark the email as seen, when set to true
+     * @param bool  $markAsSeen Mark the email as seen, when set to true
      */
     public function getRawMail($msgId, $markAsSeen = true)
     {
@@ -940,7 +940,7 @@ class Mailbox
      * Get mail data.
      *
      * @param $mailId
-     * @param bool $markAsSeen Mark the email as seen, when set to true
+     * @param bool   $markAsSeen Mark the email as seen, when set to true
      *
      * @return IncomingMail
      */
@@ -1013,9 +1013,10 @@ class Mailbox
         }
 
         // Do NOT parse attachments, when getAttachmentsIgnore() is true
-        if ($this->getAttachmentsIgnore() &&
-            (TYPEMULTIPART !== $partStructure->type &&
-            (TYPETEXT !== $partStructure->type || !\in_array(strtolower($partStructure->subtype), ['plain', 'html'])))) {
+        if ($this->getAttachmentsIgnore() 
+            && (TYPEMULTIPART !== $partStructure->type 
+            && (TYPETEXT !== $partStructure->type || !\in_array(strtolower($partStructure->subtype), ['plain', 'html'])))
+        ) {
             return false;
         }
 
