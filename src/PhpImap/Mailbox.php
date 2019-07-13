@@ -368,7 +368,7 @@ class Mailbox
     public function switchMailbox($imapPath)
     {
         $this->imapPath = $imapPath;
-        $this->imap('reopen', $this->imapPath);
+        $this->imap('reopen', $this->getCombinedPath($imapPath, true));
     }
 
     protected function initImapStreamWithRetry()
@@ -439,7 +439,7 @@ class Mailbox
      */
     public function createMailbox($name)
     {
-        $this->imap('createmailbox', $this->imapPath.$this->getPathDelimiter().$name);
+        $this->imap('createmailbox', $this->getCombinedPath($name));
     }
 
     /**
@@ -449,7 +449,7 @@ class Mailbox
      */
     public function deleteMailbox($name)
     {
-        $this->imap('deletemailbox', $this->imapPath.$this->getPathDelimiter().$name);
+        $this->imap('deletemailbox', $this->getCombinedPath($name));
     }
 
     /**
@@ -460,7 +460,7 @@ class Mailbox
      */
     public function renameMailbox($oldName, $newName)
     {
-        $this->imap('renamemailbox', [$this->imapPath.$this->getPathDelimiter().$oldName, $this->imapPath.$this->getPathDelimiter().$newName]);
+        $this->imap('renamemailbox', [$this->getCombinedPath($oldName), $this->getCombinedPath($newName)]);
     }
 
     /**
@@ -622,7 +622,8 @@ class Mailbox
     /**
      * Causes a store to add the specified flag to the flags set for the mails in the specified sequence.
      *
-     * @param string $flag which you can set are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060
+     * @param array  $mailsIds Array of mail IDs
+     * @param string $flag     Which you can set are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060
      */
     public function setFlag(array $mailsIds, $flag)
     {
@@ -630,9 +631,10 @@ class Mailbox
     }
 
     /**
-     * Cause a store to delete the specified flag to the flags set for the mails in the specified sequence.
+     * Causes a store to delete the specified flag to the flags set for the mails in the specified sequence.
      *
-     * @param string $flag which you can set are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060
+     * @param array  $mailsIds Array of mail IDs
+     * @param string $flag     Which you can delete are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060
      */
     public function clearFlag(array $mailsIds, $flag)
     {
@@ -661,14 +663,14 @@ class Mailbox
      *  seen - this mail is flagged as already read
      *  draft - this mail is flagged as being a draft
      *
-     * @return array
+     * @return array $mailsIds Array of mail IDs
      */
     public function getMailsInfo(array $mailsIds)
     {
         $mails = $this->imap('fetch_overview', [implode(',', $mailsIds), (SE_UID == $this->imapSearchOption) ? FT_UID : 0]);
         if (\is_array($mails) && \count($mails)) {
             foreach ($mails as &$mail) {
-                if (isset($mail->subject)) {
+                if (isset($mail->subject) and !empty($mail->subject)) {
                     $mail->subject = $this->decodeMimeStr($mail->subject, $this->getServerEncoding());
                 }
                 if (isset($mail->from) and !empty($mail->from)) {
@@ -730,8 +732,8 @@ class Mailbox
      *  SORTCC - mailbox in first cc address
      *  SORTSIZE - size of mail in octets
      *
-     * @param int    $criteria
-     * @param bool   $reverse
+     * @param int    $criteria       Sorting criteria (eg. SORTARRIVAL)
+     * @param bool   $reverse        Sort reverse or not
      * @param string $searchCriteria See http://php.net/imap_search for a complete list of available criteria
      *
      * @return array Mails ids
@@ -754,7 +756,7 @@ class Mailbox
     /**
      * Retrieve the quota settings per user.
      *
-     * @param string Should normally be in the form of which mailbox (i.e. INBOX)
+     * @param string $quota_root Should normally be in the form of which mailbox (i.e. INBOX)
      *
      * @return array
      */
@@ -766,7 +768,7 @@ class Mailbox
     /**
      * Return quota limit in KB.
      *
-     * @param string Should normally be in the form of which mailbox (i.e. INBOX)
+     * @param string $quota_root Should normally be in the form of which mailbox (i.e. INBOX)
      *
      * @return int
      */
@@ -780,7 +782,7 @@ class Mailbox
     /**
      * Return quota usage in KB.
      *
-     * @param string Should normally be in the form of which mailbox (i.e. INBOX)
+     * @param string $quota_root Should normally be in the form of which mailbox (i.e. INBOX)
      *
      * @return int FALSE in the case of call failure
      */
@@ -794,8 +796,10 @@ class Mailbox
     /**
      * Get raw mail data.
      *
-     * @param $msgId
+     * @param int  $msgId      ID of the message
      * @param bool $markAsSeen Mark the email as seen, when set to true
+     *
+     * @return string Message of the fetched body
      */
     public function getRawMail($msgId, $markAsSeen = true)
     {
@@ -810,7 +814,7 @@ class Mailbox
     /**
      * Get mail header.
      *
-     * @param $mailId
+     * @param int $mailId ID of the message
      *
      * @return IncomingMailHeader
      *
@@ -865,7 +869,7 @@ class Mailbox
             foreach ($head->to as $to) {
                 if (!empty($to->mailbox) && !empty($to->host)) {
                     $toEmail = strtolower($to->mailbox.'@'.$to->host);
-                    $toName = (isset($to->personal) and !empty($to->personal)) ? $this->decodeMimeStr($to->personal, $this->getServerEncoding()) : null;
+                    $toName = (isset($to->personal) and !empty(trim($to->personal))) ? $this->decodeMimeStr($to->personal, $this->getServerEncoding()) : null;
                     $toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
                     $header->to[$toEmail] = $toName;
                 }
@@ -876,7 +880,10 @@ class Mailbox
         if (isset($head->cc)) {
             foreach ($head->cc as $cc) {
                 if (!empty($cc->mailbox) && !empty($cc->host)) {
-                    $header->cc[strtolower($cc->mailbox.'@'.$cc->host)] = (isset($cc->personal) and !empty($cc->personal)) ? $this->decodeMimeStr($cc->personal, $this->getServerEncoding()) : null;
+                    $ccEmail = strtolower($cc->mailbox.'@'.$cc->host);
+                    $ccName = (isset($cc->personal) and !empty(trim($cc->personal))) ? $this->decodeMimeStr($cc->personal, $this->getServerEncoding()) : null;
+                    $ccStrings[] = $ccName ? "$ccName <$ccEmail>" : $ccEmail;
+                    $header->cc[$ccEmail] = $ccName;
                 }
             }
         }
@@ -884,14 +891,22 @@ class Mailbox
         if (isset($head->bcc)) {
             foreach ($head->bcc as $bcc) {
                 if (!empty($bcc->mailbox) && !empty($bcc->host)) {
-                    $header->bcc[strtolower($bcc->mailbox.'@'.$bcc->host)] = (isset($bcc->personal) and !empty($bcc->personal)) ? $this->decodeMimeStr($bcc->personal, $this->getServerEncoding()) : null;
+                    $bccEmail = strtolower($bcc->mailbox.'@'.$bcc->host);
+                    $bccName = (isset($bcc->personal) and !empty(trim($bcc->personal))) ? $this->decodeMimeStr($bcc->personal, $this->getServerEncoding()) : null;
+                    $bccStrings[] = $bccName ? "$bccName <$bccEmail>" : $bccEmail;
+                    $header->bcc[$bccEmail] = $bccName;
                 }
             }
         }
 
         if (isset($head->reply_to)) {
             foreach ($head->reply_to as $replyTo) {
-                $header->replyTo[strtolower($replyTo->mailbox.'@'.$replyTo->host)] = (isset($replyTo->personal) and !empty($replyTo->personal)) ? $this->decodeMimeStr($replyTo->personal, $this->getServerEncoding()) : null;
+                if (!empty($replyTo->mailbox) && !empty($replyTo->host)) {
+                    $replyToEmail = strtolower($replyTo->mailbox.'@'.$replyTo->host);
+                    $replyToName = (isset($replyTo->personal) and !empty(trim($replyTo->personal))) ? $this->decodeMimeStr($replyTo->personal, $this->getServerEncoding()) : null;
+                    $replyToStrings[] = $replyToName ? "$replyToName <$replyToEmail>" : $replyToEmail;
+                    $header->replyTo[$replyToEmail] = $replyToName;
+                }
             }
         }
 
@@ -903,9 +918,32 @@ class Mailbox
     }
 
     /**
+     * taken from https://www.electrictoolbox.com/php-imap-message-parts/.
+     */
+    public function flattenParts($messageParts, $flattenedParts = [], $prefix = '', $index = 1, $fullPrefix = true)
+    {
+        foreach ($messageParts as $part) {
+            $flattenedParts[$prefix.$index] = $part;
+            if (isset($part->parts)) {
+                if (2 == $part->type) {
+                    $flattenedParts = $this->flattenParts($part->parts, $flattenedParts, $prefix.$index.'.', 0, false);
+                } elseif ($fullPrefix) {
+                    $flattenedParts = $this->flattenParts($part->parts, $flattenedParts, $prefix.$index.'.');
+                } else {
+                    $flattenedParts = $this->flattenParts($part->parts, $flattenedParts, $prefix);
+                }
+                unset($flattenedParts[$prefix.$index]->parts);
+            }
+            ++$index;
+        }
+
+        return $flattenedParts;
+    }
+
+    /**
      * Get mail data.
      *
-     * @param $mailId
+     * @param int  $mailId     ID of the mail
      * @param bool $markAsSeen Mark the email as seen, when set to true
      *
      * @return IncomingMail
@@ -920,8 +958,8 @@ class Mailbox
         if (empty($mailStructure->parts)) {
             $this->initMailPart($mail, $mailStructure, 0, $markAsSeen);
         } else {
-            foreach ($mailStructure->parts as $partNum => $partStructure) {
-                $this->initMailPart($mail, $partStructure, $partNum + 1, $markAsSeen);
+            foreach ($this->flattenParts($mailStructure->parts) as $partNum => $partStructure) {
+                $this->initMailPart($mail, $partStructure, $partNum, $markAsSeen);
             }
         }
 
@@ -979,9 +1017,10 @@ class Mailbox
         }
 
         // Do NOT parse attachments, when getAttachmentsIgnore() is true
-        if ($this->getAttachmentsIgnore() &&
-            (TYPEMULTIPART !== $partStructure->type &&
-            (TYPETEXT !== $partStructure->type || !\in_array(strtolower($partStructure->subtype), ['plain', 'html'])))) {
+        if ($this->getAttachmentsIgnore()
+            && (TYPEMULTIPART !== $partStructure->type
+            && (TYPETEXT !== $partStructure->type || !\in_array(strtolower($partStructure->subtype), ['plain', 'html'])))
+        ) {
             return false;
         }
 
@@ -1282,7 +1321,7 @@ class Mailbox
      */
     public function subscribeMailbox($mailbox)
     {
-        $this->imap('subscribe', $this->imapPath.$this->getPathDelimiter().$mailbox);
+        $this->imap('subscribe', $this->getCombinedPath($mailbox));
     }
 
     /**
@@ -1294,7 +1333,7 @@ class Mailbox
      */
     public function unsubscribeMailbox($mailbox)
     {
-        $this->imap('unsubscribe', $this->imapPath.$this->getPathDelimiter().$mailbox);
+        $this->imap('unsubscribe', $this->getCombinedPath($mailbox));
     }
 
     /**
@@ -1351,5 +1390,30 @@ class Mailbox
         }
 
         return $result;
+    }
+
+    /**
+     * Combine Subfolder or Folder to the connection.
+     * Have the imapPath a folder added to the connection info, then will the $folder added as subfolder.
+     * If the parameter $absolute TRUE, then will the connection new builded only with this folder as root element.
+     *
+     * @param string $folder   Folder, the will added to the path
+     * @param bool   $absolute Add folder as root element to the connection and remove all other from this
+     *
+     * @return string Return the new path
+     */
+    protected function getCombinedPath(string $folder, bool $absolute = false)
+    {
+        if (!empty($folder)) {
+            if ('}' === substr($this->imapPath, -1) || true === $absolute) {
+                $posConnectionDefinitionEnd = strpos($this->imapPath, '}');
+
+                return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1).$folder;
+            } else {
+                return $this->imapPath.$this->getPathDelimiter().$folder;
+            }
+        }
+
+        return $this->imapPath;
     }
 }
