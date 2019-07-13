@@ -865,7 +865,7 @@ class Mailbox
             foreach ($head->to as $to) {
                 if (!empty($to->mailbox) && !empty($to->host)) {
                     $toEmail = strtolower($to->mailbox.'@'.$to->host);
-                    $toName = (isset($to->personal) and !empty($to->personal)) ? $this->decodeMimeStr($to->personal, $this->getServerEncoding()) : null;
+                    $toName = (isset($to->personal) and !empty(trim($to->personal))) ? $this->decodeMimeStr($to->personal, $this->getServerEncoding()) : null;
                     $toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
                     $header->to[$toEmail] = $toName;
                 }
