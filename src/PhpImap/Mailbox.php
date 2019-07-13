@@ -622,7 +622,8 @@ class Mailbox
     /**
      * Causes a store to add the specified flag to the flags set for the mails in the specified sequence.
      *
-     * @param string $flag which you can set are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060
+     * @param array  $mailsIds Array of mail IDs
+     * @param string $flag     Which you can set are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060
      */
     public function setFlag(array $mailsIds, $flag)
     {
@@ -630,9 +631,10 @@ class Mailbox
     }
 
     /**
-     * Cause a store to delete the specified flag to the flags set for the mails in the specified sequence.
+     * Causes a store to delete the specified flag to the flags set for the mails in the specified sequence.
      *
-     * @param string $flag which you can set are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060
+     * @param array  $mailsIds Array of mail IDs
+     * @param string $flag     Which you can delete are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060
      */
     public function clearFlag(array $mailsIds, $flag)
     {
@@ -661,7 +663,7 @@ class Mailbox
      *  seen - this mail is flagged as already read
      *  draft - this mail is flagged as being a draft
      *
-     * @return array
+     * @return array $mailsIds Array of mail IDs
      */
     public function getMailsInfo(array $mailsIds)
     {
@@ -730,8 +732,8 @@ class Mailbox
      *  SORTCC - mailbox in first cc address
      *  SORTSIZE - size of mail in octets
      *
-     * @param int    $criteria
-     * @param bool   $reverse
+     * @param int    $criteria       Sorting criteria (eg. SORTARRIVAL)
+     * @param bool   $reverse        Sort reverse or not
      * @param string $searchCriteria See http://php.net/imap_search for a complete list of available criteria
      *
      * @return array Mails ids
@@ -754,7 +756,7 @@ class Mailbox
     /**
      * Retrieve the quota settings per user.
      *
-     * @param string Should normally be in the form of which mailbox (i.e. INBOX)
+     * @param string $quota_root Should normally be in the form of which mailbox (i.e. INBOX)
      *
      * @return array
      */
@@ -766,7 +768,7 @@ class Mailbox
     /**
      * Return quota limit in KB.
      *
-     * @param string Should normally be in the form of which mailbox (i.e. INBOX)
+     * @param string $quota_root Should normally be in the form of which mailbox (i.e. INBOX)
      *
      * @return int
      */
@@ -780,7 +782,7 @@ class Mailbox
     /**
      * Return quota usage in KB.
      *
-     * @param string Should normally be in the form of which mailbox (i.e. INBOX)
+     * @param string $quota_root Should normally be in the form of which mailbox (i.e. INBOX)
      *
      * @return int FALSE in the case of call failure
      */
@@ -794,8 +796,10 @@ class Mailbox
     /**
      * Get raw mail data.
      *
-     * @param $msgId
-     * @param bool  $markAsSeen Mark the email as seen, when set to true
+     * @param integer $msgId      ID of the message
+     * @param bool    $markAsSeen Mark the email as seen, when set to true
+     * 
+     * @return string Message of the fetched body
      */
     public function getRawMail($msgId, $markAsSeen = true)
     {
@@ -810,7 +814,7 @@ class Mailbox
     /**
      * Get mail header.
      *
-     * @param $mailId
+     * @param integer $mailId ID of the message
      *
      * @return IncomingMailHeader
      *
@@ -939,8 +943,8 @@ class Mailbox
     /**
      * Get mail data.
      *
-     * @param $mailId
-     * @param bool   $markAsSeen Mark the email as seen, when set to true
+     * @param integer $mailId     ID of the mail
+     * @param bool    $markAsSeen Mark the email as seen, when set to true
      *
      * @return IncomingMail
      */
@@ -1013,8 +1017,8 @@ class Mailbox
         }
 
         // Do NOT parse attachments, when getAttachmentsIgnore() is true
-        if ($this->getAttachmentsIgnore() 
-            && (TYPEMULTIPART !== $partStructure->type 
+        if ($this->getAttachmentsIgnore()
+            && (TYPEMULTIPART !== $partStructure->type
             && (TYPETEXT !== $partStructure->type || !\in_array(strtolower($partStructure->subtype), ['plain', 'html'])))
         ) {
             return false;
@@ -1390,10 +1394,9 @@ class Mailbox
 
     /**
      * Combine Subfolder or Folder to the connection.
-     *
      * Have the imapPath a folder added to the connection info, then will the $folder added as subfolder.
      * If the parameter $absolute TRUE, then will the connection new builded only with this folder as root element.
-     *
+     * 
      * @param string $folder   Folder, the will added to the path
      * @param bool   $absolute Add folder as root element to the connection and remove all other from this
      * 
@@ -1402,11 +1405,12 @@ class Mailbox
     protected function getCombinedPath(string $folder, bool $absolute = false)
     {
         if (!empty($folder)) {
-            if ("}" === substr($this->imapPath, -1) || true === $absolute) {
-                $posConnectionDefinitionEnd = strpos($this->imapPath, "}");
-                return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1) . $folder;
+            if ('}' === substr($this->imapPath, -1) || true === $absolute) {
+                $posConnectionDefinitionEnd = strpos($this->imapPath, '}');
+
+                return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1).$folder;
             } else {
-                return $this->imapPath . $this->getPathDelimiter() . $folder;
+                return $this->imapPath.$this->getPathDelimiter().$folder;
             }
         }
 
