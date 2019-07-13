@@ -876,7 +876,10 @@ class Mailbox
         if (isset($head->cc)) {
             foreach ($head->cc as $cc) {
                 if (!empty($cc->mailbox) && !empty($cc->host)) {
-                    $header->cc[strtolower($cc->mailbox.'@'.$cc->host)] = (isset($cc->personal) and !empty($cc->personal)) ? $this->decodeMimeStr($cc->personal, $this->getServerEncoding()) : null;
+                    $ccEmail = strtolower($cc->mailbox.'@'.$cc->host);
+                    $ccName = (isset($cc->personal) and !empty(trim($cc->personal))) ? $this->decodeMimeStr($cc->personal, $this->getServerEncoding()) : null;
+                    $ccStrings[] = $ccName ? "$ccName <$ccEmail>" : $ccEmail;
+                    $header->cc[$ccEmail] = $ccName;
                 }
             }
         }
@@ -884,14 +887,22 @@ class Mailbox
         if (isset($head->bcc)) {
             foreach ($head->bcc as $bcc) {
                 if (!empty($bcc->mailbox) && !empty($bcc->host)) {
-                    $header->bcc[strtolower($bcc->mailbox.'@'.$bcc->host)] = (isset($bcc->personal) and !empty($bcc->personal)) ? $this->decodeMimeStr($bcc->personal, $this->getServerEncoding()) : null;
+                    $bccEmail = strtolower($bcc->mailbox.'@'.$bcc->host);
+                    $bccName = (isset($bcc->personal) and !empty(trim($bcc->personal))) ? $this->decodeMimeStr($bcc->personal, $this->getServerEncoding()) : null;
+                    $bccStrings[] = $bccName ? "$bccName <$bccEmail>" : $bccEmail;
+                    $header->bcc[$bccEmail] = $bccName;
                 }
             }
         }
 
         if (isset($head->reply_to)) {
             foreach ($head->reply_to as $replyTo) {
-                $header->replyTo[strtolower($replyTo->mailbox.'@'.$replyTo->host)] = (isset($replyTo->personal) and !empty($replyTo->personal)) ? $this->decodeMimeStr($replyTo->personal, $this->getServerEncoding()) : null;
+                if (!empty($replyTo->mailbox) && !empty($replyTo->host)) {
+                    $replyToEmail = strtolower($replyTo->mailbox.'@'.$replyTo->host);
+                    $replyToName = (isset($replyTo->personal) and !empty(trim($replyTo->personal))) ? $this->decodeMimeStr($replyTo->personal, $this->getServerEncoding()) : null;
+                    $replyToStrings[] = $replyToName ? "$replyToName <$replyToEmail>" : $replyToEmail;
+                    $header->replyTo[$replyToEmail] = $replyToName;
+		}
             }
         }
 
