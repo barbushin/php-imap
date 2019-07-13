@@ -798,7 +798,7 @@ class Mailbox
      *
      * @param int  $msgId      ID of the message
      * @param bool $markAsSeen Mark the email as seen, when set to true
-     * 
+     *
      * @return string Message of the fetched body
      */
     public function getRawMail($msgId, $markAsSeen = true)
