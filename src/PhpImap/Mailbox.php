@@ -943,8 +943,8 @@ class Mailbox
     /**
      * Get mail data.
      *
-     * @param integer $mailId     ID of the mail
-     * @param bool    $markAsSeen Mark the email as seen, when set to true
+     * @param int  $mailId     ID of the mail
+     * @param bool $markAsSeen Mark the email as seen, when set to true
      *
      * @return IncomingMail
      */
