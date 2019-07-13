@@ -796,8 +796,8 @@ class Mailbox
     /**
      * Get raw mail data.
      *
-     * @param integer $msgId      ID of the message
-     * @param bool    $markAsSeen Mark the email as seen, when set to true
+     * @param int  $msgId      ID of the message
+     * @param bool $markAsSeen Mark the email as seen, when set to true
      * 
      * @return string Message of the fetched body
      */
@@ -814,7 +814,7 @@ class Mailbox
     /**
      * Get mail header.
      *
-     * @param integer $mailId ID of the message
+     * @param int $mailId ID of the message
      *
      * @return IncomingMailHeader
      *
