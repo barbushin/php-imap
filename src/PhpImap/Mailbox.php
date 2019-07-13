@@ -368,7 +368,7 @@ class Mailbox
     public function switchMailbox($imapPath)
     {
         $this->imapPath = $imapPath;
-        $this->imap('reopen', $this->imapPath);
+        $this->imap('reopen', $this->getCombinedPath($imapPath, true));
     }
 
     protected function initImapStreamWithRetry()
@@ -439,7 +439,7 @@ class Mailbox
      */
     public function createMailbox($name)
     {
-        $this->imap('createmailbox', $this->imapPath.$this->getPathDelimiter().$name);
+        $this->imap('createmailbox', $this->getCombinedPath($name));
     }
 
     /**
@@ -449,7 +449,7 @@ class Mailbox
      */
     public function deleteMailbox($name)
     {
-        $this->imap('deletemailbox', $this->imapPath.$this->getPathDelimiter().$name);
+        $this->imap('deletemailbox', $this->getCombinedPath($name));
     }
 
     /**
@@ -460,7 +460,7 @@ class Mailbox
      */
     public function renameMailbox($oldName, $newName)
     {
-        $this->imap('renamemailbox', [$this->imapPath.$this->getPathDelimiter().$oldName, $this->imapPath.$this->getPathDelimiter().$newName]);
+        $this->imap('renamemailbox', [$this->getCombinedPath($oldName), $this->getCombinedPath($newName)]);
     }
 
     /**
@@ -1316,7 +1316,7 @@ class Mailbox
      */
     public function subscribeMailbox($mailbox)
     {
-        $this->imap('subscribe', $this->imapPath.$this->getPathDelimiter().$mailbox);
+        $this->imap('subscribe', $this->getCombinedPath($mailbox));
     }
 
     /**
@@ -1328,7 +1328,7 @@ class Mailbox
      */
     public function unsubscribeMailbox($mailbox)
     {
-        $this->imap('unsubscribe', $this->imapPath.$this->getPathDelimiter().$mailbox);
+        $this->imap('unsubscribe', $this->getCombinedPath($mailbox));
     }
 
     /**
@@ -1385,5 +1385,29 @@ class Mailbox
         }
 
         return $result;
+    }
+
+    /**
+     * Combine Subfolder or Folder to the connection.
+     *
+     * Have the imapPath a folder added to the connection info, then will the $folder added as subfolder.
+     * If the parameter $absolute TRUE, then will the connection new builded only with this folder as root element.
+     *
+     * @param string $folder Folder, the will added to the path
+     * @param bool $absolute Add folder as root element to the connection and remove all other from this
+     * @return string        Return the new path
+     */
+    protected function getCombinedPath(string $folder, bool $absolute = false)
+    {
+        if (!empty($folder)) {
+            if ("}" === substr($this->imapPath, -1) || true === $absolute) {
+                $posConnectionDefinitionEnd = strpos($this->imapPath, "}");
+                return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1) . $folder;
+            } else {
+                return $this->imapPath . $this->getPathDelimiter() . $folder;
+            }
+        }
+
+        return $this->imapPath;
     }
 }
