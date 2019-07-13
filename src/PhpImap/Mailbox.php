@@ -1396,10 +1396,10 @@ class Mailbox
      * Combine Subfolder or Folder to the connection.
      * Have the imapPath a folder added to the connection info, then will the $folder added as subfolder.
      * If the parameter $absolute TRUE, then will the connection new builded only with this folder as root element.
-     * 
+     *
      * @param string $folder   Folder, the will added to the path
      * @param bool   $absolute Add folder as root element to the connection and remove all other from this
-     * 
+     *
      * @return string Return the new path
      */
     protected function getCombinedPath(string $folder, bool $absolute = false)
