@@ -1402,7 +1402,7 @@ class Mailbox
      *
      * @return string Return the new path
      */
-    protected function getCombinedPath(string $folder, bool $absolute = false)
+    protected function getCombinedPath($folder, $absolute = false)
     {
         if (!empty($folder)) {
             if ('}' === substr($this->imapPath, -1) || true === $absolute) {
