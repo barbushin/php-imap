@@ -16,7 +16,7 @@ class Mailbox {
 	protected $imapParams = array();
 	protected $outputEncoding;
 	protected $serverEncoding;
-	protected $attachmentsDir = null;
+	protected $attachmentsDir;
 	protected $expungeOnDisconnect = true;
 	private $imapStream;
 
@@ -53,18 +53,7 @@ class Mailbox {
 		$this->imapRetriesNum = $retriesNum;
 		$this->imapParams = $params;
 	}
-        
-        /**
-         * Set custom folder for attachments in case you want to have tree of folders for each email
-         * i.e. a/1 b/1 c/1 where a,b,c - senders, i.e. john@smith.com
-         * @param string $dir folder where to save attachments
-         * 
-         * @return void
-         */
-        public function setAttachmentsDir($dir) {
-                $this->attachmentsDir = $dir;
-        }
-        
+
 	/**
 	 * Get IMAP mailbox connection stream
 	 * @param bool $forceConnection Initialize connection if it's not initialized
@@ -83,25 +72,10 @@ class Mailbox {
 		return $this->imapStream;
 	}
 
-	/**
-	 * Switch mailbox without opening a new connection
-	 * 
-	 * @param string $imapPath
-	 */
-	public function switchMailbox($imapPath = '') {
-		$this->imapPath = $imapPath;
-		$imapStream = @imap_reopen($this->getImapStream(), $imapPath);
-		if(!$imapStream) {
-			throw new Exception("Couldn't switch  mailbox: " . imap_last_error());
-		}
-	}
-
 	protected function initImapStream() {
 		$imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
 		if(!$imapStream) {
-			$lastError = imap_last_error();
-			imap_errors();
-			throw new Exception('Connection error: ' . $lastError);
+			throw new Exception('Connection error: ' . imap_last_error());
 		}
 		return $imapStream;
 	}
@@ -225,7 +199,7 @@ class Mailbox {
 	public function moveMail($mailId, $mailBox) {
 		return imap_mail_move($this->getImapStream(), $mailId, $mailBox, CP_UID) && $this->expungeDeletedMails();
 	}
-
+	
 	/**
 	 * Copys mails listed in mailId into new mailbox
 	 * @return bool
@@ -355,7 +329,7 @@ class Mailbox {
 		}
 		return $mails;
 	}
-	
+
 	/**
 	 * Get information about the current mailbox.
 	 *
@@ -435,7 +409,7 @@ class Mailbox {
 		}
 		return $quota;
 	}
-
+	
 	/**
 	 * Get raw mail data
 	 *
@@ -448,7 +422,7 @@ class Mailbox {
         	if(!$markAsSeen) {
             		$options |= FT_PEEK;
         	}
-
+        	
 		return imap_fetchbody($this->getImapStream(), $msgId, '', $options);
 	}
 
@@ -460,12 +434,9 @@ class Mailbox {
      * @return IncomingMail
      */
 	public function getMail($mailId, $markAsSeen = true) {
-		$headersRaw = imap_fetchheader($this->getImapStream(), $mailId, FT_UID);
-		$head = imap_rfc822_parse_headers($headersRaw);
+		$head = imap_rfc822_parse_headers(imap_fetchheader($this->getImapStream(), $mailId, FT_UID));
 
 		$mail = new IncomingMail();
-		$mail->headersRaw = $headersRaw;
-		$mail->headers = $head;
 		$mail->id = $mailId;
 		$mail->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime(preg_replace('/\(.*?\)/', '', $head->date)) : time());
 		$mail->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->outputEncoding) : null;
@@ -490,12 +461,6 @@ class Mailbox {
 		if(isset($head->cc)) {
 			foreach($head->cc as $cc) {
 				$mail->cc[strtolower($cc->mailbox . '@' . $cc->host)] = isset($cc->personal) ? $this->decodeMimeStr($cc->personal, $this->outputEncoding) : null;
-			}
-		}
-		
-		if(isset($head->bcc)) {
-			foreach($head->bcc as $bcc) {
-				$mail->bcc[strtolower($bcc->mailbox . '@' . $bcc->host)] = isset($bcc->personal) ? $this->decodeMimeStr($bcc->personal, $this->serverEncoding) : null;
 			}
 		}
 
@@ -567,12 +532,6 @@ class Mailbox {
 			? trim($partStructure->id, " <>")
 			: (isset($params['filename']) || isset($params['name']) ? mt_rand() . mt_rand() : null);
 
-		// ignore contentId on body when mail isn't multipart (https://github.com/barbushin/php-imap/issues/71)
-		if (!$partNum && TYPETEXT === $partStructure->type)
-		{
-			$attachmentId = null;
-		}
-
 		if($attachmentId) {
 			if(empty($params['filename']) && empty($params['name'])) {
 				$fileName = $attachmentId . '.' . strtolower($partStructure->subtype);
@@ -595,12 +554,6 @@ class Mailbox {
 				);
 				$fileSysName = preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . preg_replace(array_keys($replace), $replace, $fileName));
 				$attachment->filePath = $this->attachmentsDir . DIRECTORY_SEPARATOR . $fileSysName;
-				
-				if(strlen($attachment->filePath) > 255) {
-					$ext = pathinfo($attachment->filePath, PATHINFO_EXTENSION);
-					$attachment->filePath = substr($attachment->filePath, 0, 255 -1 -strlen($ext)).".".$ext;
-				}
-				
 				file_put_contents($attachment->filePath, $data);
 			}
 			$mail->addAttachment($attachment);
