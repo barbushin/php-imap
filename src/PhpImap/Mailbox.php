@@ -1093,7 +1093,7 @@ class Mailbox
             $fileName = $fileName;
         }
 
-        $attachmentId = sha1($fileName.($partStructure->ifid ? $partStructure->id : ""));
+        $attachmentId = sha1($fileName.($partStructure->ifid ? $partStructure->id : ''));
 
         $attachment = new IncomingMailAttachment();
         $attachment->id = $attachmentId;
