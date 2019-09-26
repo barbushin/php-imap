@@ -34,7 +34,7 @@ Install the [latest available release](https://github.com/barbushin/php-imap/rel
 
 Install the latest available and stable source code from `master`, which is may not released / tagged yet:
 
-	$ composer require php-imap/php-imap
+	$ composer require php-imap/php-imap:dev-master
 
 Install the latest available and may unstable source code from `develop`, which is may not properly tested yet:
 
