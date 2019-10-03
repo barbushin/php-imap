@@ -1,5 +1,6 @@
 <?php namespace PhpImap;
 
+use Ramsey\Uuid\Uuid;
 use stdClass;
 
 /**
@@ -542,16 +543,12 @@ class Mailbox {
 			$attachment->name = $fileName;
 			$attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
 			if($this->attachmentsDir) {
-				$replace = array(
-					'/\s/' => '_',
-					'/[^0-9a-zа-яіїє_\.]/iu' => '',
-					'/_+/' => '_',
-					'/(^_)|(_$)/' => '',
-				);
-				$fileSysName = preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . preg_replace(array_keys($replace), $replace, $fileName));
+				$fileSysName = Uuid::uuid4()->toString();
 				$attachment->filePath = $this->attachmentsDir . DIRECTORY_SEPARATOR . $fileSysName;
+
 				file_put_contents($attachment->filePath, $data);
 			}
+
 			$mail->addAttachment($attachment);
 		}
 		else {
