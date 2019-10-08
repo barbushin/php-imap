@@ -426,6 +426,7 @@ class Mailbox
      *  Recent - number of recent mails in the mailbox
      *
      * @return stdClass
+     * @see imap_check
      */
     public function checkMailbox()
     {
@@ -436,6 +437,7 @@ class Mailbox
      * Creates a new mailbox.
      *
      * @param string $name Name of new mailbox (eg. 'PhpImap')
+     * @see imap_createmailbox()
      */
     public function createMailbox($name)
     {
@@ -446,6 +448,7 @@ class Mailbox
      * Deletes a specific mailbox.
      *
      * @param string $name Name of mailbox, which you want to delete (eg. 'PhpImap')
+     * @see imap_deletemailbox()
      */
     public function deleteMailbox($name)
     {
@@ -517,8 +520,9 @@ class Mailbox
     /**
      * Save a specific body section to a file.
      *
-     * @param $mailId
+     * @param int $mailId message number
      * @param string $filename
+     * @see imap_savebody()
      */
     public function saveMail($mailId, $filename = 'email.eml')
     {
@@ -528,7 +532,8 @@ class Mailbox
     /**
      * Marks mails listed in mailId for deletion.
      *
-     * @param $mailId
+     * @param int $mailId message number
+     * @see imap_delete()
      */
     public function deleteMail($mailId)
     {
@@ -538,8 +543,9 @@ class Mailbox
     /**
      * Moves mails listed in mailId into new mailbox.
      *
-     * @param $mailId
-     * @param $mailBox
+     * @param string $mailId a range or message number
+     * @param string $mailBox Mailbox name
+     * @see imap_mail_move()
      */
     public function moveMail($mailId, $mailBox)
     {
@@ -549,8 +555,9 @@ class Mailbox
     /**
      * Copies mails listed in mailId into new mailbox.
      *
-     * @param $mailId
-     * @param $mailBox
+     * @param string $mailId a range or message number
+     * @param string $mailBox Mailbox name
+     * @see imap_mail_copy()
      */
     public function copyMail($mailId, $mailBox)
     {
@@ -559,6 +566,7 @@ class Mailbox
 
     /**
      * Deletes all the mails marked for deletion by imap_delete(), imap_mail_move(), or imap_setflag_full().
+     * @see imap_expunge()
      */
     public function expungeDeletedMails()
     {
@@ -694,6 +702,7 @@ class Mailbox
      * one element per mail message.
      *
      * @return array
+     * @see imap_headers()
      */
     public function getMailboxHeaders()
     {
@@ -714,6 +723,7 @@ class Mailbox
      *  Size - mailbox size
      *
      * @return object Object with info
+     * @see mailboxmsginfo
      */
     public function getMailboxInfo()
     {
@@ -747,6 +757,7 @@ class Mailbox
      * Get mails count in mail box.
      *
      * @return int
+     * @see imap_num_msg()
      */
     public function countMails()
     {
@@ -759,6 +770,7 @@ class Mailbox
      * @param string $quota_root Should normally be in the form of which mailbox (i.e. INBOX)
      *
      * @return array
+     * @see imap_get_quotaroot()
      */
     protected function getQuota($quota_root = 'INBOX')
     {
@@ -1249,7 +1261,7 @@ class Mailbox
     /**
      * Get message in MBOX format.
      *
-     * @param $mailId
+     * @param int $mailId message number
      *
      * @return string
      */
@@ -1315,7 +1327,7 @@ class Mailbox
     /**
      * Subscribe to a mailbox.
      *
-     * @param $mailbox
+     * @param string $mailbox
      *
      * @throws Exception
      */
@@ -1327,7 +1339,7 @@ class Mailbox
     /**
      * Unsubscribe from a mailbox.
      *
-     * @param $mailbox
+     * @param string $mailbox
      *
      * @throws Exception
      */
