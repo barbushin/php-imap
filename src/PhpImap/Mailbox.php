@@ -426,6 +426,7 @@ class Mailbox
      *  Recent - number of recent mails in the mailbox
      *
      * @return stdClass
+     *
      * @see    imap_check
      */
     public function checkMailbox()
@@ -437,6 +438,7 @@ class Mailbox
      * Creates a new mailbox.
      *
      * @param string $name Name of new mailbox (eg. 'PhpImap')
+     *
      * @see   imap_createmailbox()
      */
     public function createMailbox($name)
@@ -448,6 +450,7 @@ class Mailbox
      * Deletes a specific mailbox.
      *
      * @param string $name Name of mailbox, which you want to delete (eg. 'PhpImap')
+     *
      * @see   imap_deletemailbox()
      */
     public function deleteMailbox($name)
@@ -522,6 +525,7 @@ class Mailbox
      *
      * @param int    $mailId   message number
      * @param string $filename
+     *
      * @see   imap_savebody()
      */
     public function saveMail($mailId, $filename = 'email.eml')
@@ -533,6 +537,7 @@ class Mailbox
      * Marks mails listed in mailId for deletion.
      *
      * @param int $mailId message number
+     *
      * @see   imap_delete()
      */
     public function deleteMail($mailId)
@@ -545,6 +550,7 @@ class Mailbox
      *
      * @param string $mailId  a range or message number
      * @param string $mailBox Mailbox name
+     *
      * @see   imap_mail_move()
      */
     public function moveMail($mailId, $mailBox)
@@ -557,6 +563,7 @@ class Mailbox
      *
      * @param string $mailId  a range or message number
      * @param string $mailBox Mailbox name
+     *
      * @see   imap_mail_copy()
      */
     public function copyMail($mailId, $mailBox)
@@ -703,6 +710,7 @@ class Mailbox
      * one element per mail message.
      *
      * @return array
+     *
      * @see    imap_headers()
      */
     public function getMailboxHeaders()
@@ -724,6 +732,7 @@ class Mailbox
      *  Size - mailbox size
      *
      * @return object Object with info
+     *
      * @see    mailboxmsginfo
      */
     public function getMailboxInfo()
@@ -758,6 +767,7 @@ class Mailbox
      * Get mails count in mail box.
      *
      * @return int
+     *
      * @see    imap_num_msg()
      */
     public function countMails()
@@ -771,6 +781,7 @@ class Mailbox
      * @param string $quota_root Should normally be in the form of which mailbox (i.e. INBOX)
      *
      * @return array
+     *
      * @see    imap_get_quotaroot()
      */
     protected function getQuota($quota_root = 'INBOX')
