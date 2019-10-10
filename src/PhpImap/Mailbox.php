@@ -1222,7 +1222,7 @@ class Mailbox
         if ($mbLoaded && \in_array(strtolower($fromEncoding), $supportedEncodings) && \in_array(strtolower($toEncoding), $supportedEncodings)) {
             $convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
         } elseif (\function_exists('iconv')) {
-            $convertedString = iconv($fromEncoding, $toEncoding.'//IGNORE', $string);
+            $convertedString = iconv($fromEncoding, $toEncoding.'//TRANSLIT//IGNORE', $string);
         }
         if (!isset($convertedString)) {
             throw new Exception('Mime string encoding conversion failed');
