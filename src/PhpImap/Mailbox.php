@@ -367,7 +367,7 @@ class Mailbox
      */
     public function switchMailbox($imapPath)
     {
-        if (strpos($imapPath, "}") > 0) {
+        if (strpos($imapPath, '}') > 0) {
             $this->imapPath = $imapPath;
         } else {
             $this->imapPath = $this->getCombinedPath($imapPath, true);
@@ -1411,14 +1411,14 @@ class Mailbox
     {
         if (!empty($folder)) {
             if ('}' === substr($this->imapPath, -1)) {
-                return $this->imapPath . $folder;
+                return $this->imapPath.$folder;
             }
-            if ($absolute === true) {
-                if ($folder === "/") {
-                    $folder = "";
+            if (true === $absolute) {
+                if ('/' === $folder) {
+                    $folder = '';
                 }
                 $posConnectionDefinitionEnd = strpos($this->imapPath, '}');
-                return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1) . $folder;
+                return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1).$folder;
             }
 
             return $this->imapPath.$this->getPathDelimiter().$folder;
