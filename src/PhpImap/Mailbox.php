@@ -1409,22 +1409,17 @@ class Mailbox
      */
     protected function getCombinedPath($folder, $absolute = false)
     {
-        if (!empty($folder)) {
-            if ('}' === substr($this->imapPath, -1)) {
-                return $this->imapPath.$folder;
-            }
-            if (true === $absolute) {
-                if ('/' === $folder) {
-                    $folder = '';
-                }
-                $posConnectionDefinitionEnd = strpos($this->imapPath, '}');
+        if (empty($folder)) {
+            return $this->imapPath;
+        } elseif ('}' === substr($this->imapPath, -1)) {
+            return $this->imapPath.$folder;
+        } elseif (true === $absolute) {
+            $folder = ('/' === $folder) ? '' : $folder;
+            $posConnectionDefinitionEnd = strpos($this->imapPath, '}');
 
-                return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1).$folder;
-            }
-
-            return $this->imapPath.$this->getPathDelimiter().$folder;
+            return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1).$folder;
         }
 
-        return $this->imapPath;
+        return $this->imapPath.$this->getPathDelimiter().$folder;
     }
 }
