@@ -1418,11 +1418,11 @@ class Mailbox
                     $folder = '';
                 }
                 $posConnectionDefinitionEnd = strpos($this->imapPath, '}');
+
                 return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1).$folder;
             }
 
             return $this->imapPath.$this->getPathDelimiter().$folder;
-
         }
 
         return $this->imapPath;
