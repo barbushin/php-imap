@@ -367,8 +367,13 @@ class Mailbox
      */
     public function switchMailbox($imapPath)
     {
-        $this->imapPath = $imapPath;
-        $this->imap('reopen', $this->getCombinedPath($imapPath, true));
+        if (strpos($imapPath, "}") > 0) {
+            $this->imapPath = $imapPath;
+        } else {
+            $this->imapPath = $this->getCombinedPath($imapPath, true);
+        }
+
+        $this->imap('reopen', $this->imapPath);
     }
 
     protected function initImapStreamWithRetry()
@@ -1405,13 +1410,19 @@ class Mailbox
     protected function getCombinedPath($folder, $absolute = false)
     {
         if (!empty($folder)) {
-            if ('}' === substr($this->imapPath, -1) || true === $absolute) {
-                $posConnectionDefinitionEnd = strpos($this->imapPath, '}');
-
-                return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1).$folder;
-            } else {
-                return $this->imapPath.$this->getPathDelimiter().$folder;
+            if ('}' === substr($this->imapPath, -1)) {
+                return $this->imapPath . $folder;
             }
+            if ($absolute === true) {
+                if ($folder === "/") {
+                    $folder = "";
+                }
+                $posConnectionDefinitionEnd = strpos($this->imapPath, '}');
+                return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1) . $folder;
+            }
+
+            return $this->imapPath.$this->getPathDelimiter().$folder;
+
         }
 
         return $this->imapPath;
