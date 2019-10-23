@@ -110,6 +110,22 @@ class IncomingMail extends IncomingMailHeader
     }
 
     /**
+     * @param string $id The attachment id
+     *
+     * @return bool
+     */
+    public function removeAttachment( $id )
+    {
+      if( !isset($this->attachments[$id]) ) {
+        return false;
+      }
+
+      unset($this->attachments[$id]);
+
+      return true;
+    }
+
+    /**
      * Get array of internal HTML links placeholders.
      *
      * @return array attachmentId => link placeholder
