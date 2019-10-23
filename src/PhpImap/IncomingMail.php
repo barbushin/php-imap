@@ -116,13 +116,13 @@ class IncomingMail extends IncomingMailHeader
      */
     public function removeAttachment( $id )
     {
-      if( !isset($this->attachments[$id]) ) {
-        return false;
-      }
+        if( !isset($this->attachments[$id]) ) {
+            return false;
+        }
 
-      unset($this->attachments[$id]);
+        unset($this->attachments[$id]);
 
-      return true;
+        return true;
     }
 
     /**
