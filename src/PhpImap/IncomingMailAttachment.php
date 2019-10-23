@@ -78,7 +78,7 @@ class IncomingMailAttachment
     public function getMimeType()
     {
         if( !$this->mimeType ) {
-            if( !class_exists("finfo") ) {
+            if( class_exists("finfo") ) {
                 $finfo = new finfo(FILEINFO_MIME);
 
                 $this->mimeType = $finfo->buffer($this->getContents());
