@@ -64,4 +64,12 @@ class IncomingMailAttachment
 
         return true;
     }
+
+    /**
+     * @return string
+     */
+    public function getContents()
+    {
+        return $this->dataInfo->fetch();
+    }
 }
