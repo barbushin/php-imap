@@ -2,6 +2,8 @@
 
 namespace PhpImap;
 
+use finfo;
+
 /**
  * @see https://github.com/barbushin/php-imap
  *
@@ -19,6 +21,11 @@ class IncomingMailAttachment
     public $emlOrigin;
     private $file_path;
     private $dataInfo;
+
+    /**
+     * @var string
+     */
+    private $mimeType;
 
     public function __get($name)
     {
@@ -63,5 +70,29 @@ class IncomingMailAttachment
         }
 
         return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMimeType()
+    {
+        if( !$this->mimeType ) {
+            if( class_exists("finfo") ) {
+                $finfo = new finfo(FILEINFO_MIME);
+
+                $this->mimeType = $finfo->buffer($this->getContents());
+            }
+        }
+
+        return $this->mimeType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContents()
+    {
+        return $this->dataInfo->fetch();
     }
 }
