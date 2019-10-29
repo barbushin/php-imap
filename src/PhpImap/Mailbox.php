@@ -1257,8 +1257,8 @@ class Mailbox
 			throw new Exception('Mime string encoding conversion failed');
 		}
         }
-        if ($convertedString == '') {
-            throw new Exception('Mime string encoding conversion failed');
+	if ($convertedString == '') {
+		return $string;
         }
 
         return $convertedString;
