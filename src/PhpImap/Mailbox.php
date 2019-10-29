@@ -1243,6 +1243,7 @@ class Mailbox
         if (preg_match('/default|ascii/i', $fromEncoding) || !$string || $fromEncoding == $toEncoding) {
             return $string;
         }
+        $convertedString = '';
         $mbLoaded = \extension_loaded('mbstring');
         $supportedEncodings = [];
         if ($mbLoaded) {
@@ -1251,9 +1252,12 @@ class Mailbox
         if ($mbLoaded && \in_array(strtolower($fromEncoding), $supportedEncodings) && \in_array(strtolower($toEncoding), $supportedEncodings)) {
             $convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
         } elseif (\function_exists('iconv')) {
-            $convertedString = iconv($fromEncoding, $toEncoding.'//TRANSLIT//IGNORE', $string);
+		$convertedString = iconv($fromEncoding, $toEncoding.'//TRANSLIT//IGNORE', $string);
+		if ($convertedString === false) {
+			throw new Exception('Mime string encoding conversion failed');
+		}
         }
-        if (!isset($convertedString)) {
+        if ($convertedString == '') {
             throw new Exception('Mime string encoding conversion failed');
         }
 
