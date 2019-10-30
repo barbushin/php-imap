@@ -286,7 +286,7 @@ class Mailbox
         return $this->attachmentsDir;
     }
 
-    /*
+    /**
      * Sets / Changes the attempts / retries to connect
      * @param int $maxAttempts
      * @return void
@@ -296,7 +296,7 @@ class Mailbox
         $this->connectionRetry = $maxAttempts;
     }
 
-    /*
+    /**
      * Sets / Changes the delay between each attempt / retry to connect
      * @param int $milliseconds
      * @return void
@@ -367,8 +367,8 @@ class Mailbox
      */
     public function switchMailbox($imapPath)
     {
-        $this->imapPath = $imapPath;
-        $this->imap('reopen', $this->getCombinedPath($imapPath, true));
+        $this->imapPath = $this->getCombinedPath($imapPath, true);
+        $this->imap('reopen', $this->imapPath);
     }
 
     protected function initImapStreamWithRetry()
@@ -1402,13 +1402,14 @@ class Mailbox
      *
      * @return string Return the new path
      */
-    protected function getCombinedPath($folder, $absolute = false)
+    public function getCombinedPath($folder, $absolute = false)
     {
         if (!empty($folder)) {
+            if (strpos($folder, '}')) {
+                $folder = substr($folder, strpos($folder, '}')+1);
+            }
             if ('}' === substr($this->imapPath, -1) || true === $absolute) {
-                $posConnectionDefinitionEnd = strpos($this->imapPath, '}');
-
-                return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1).$folder;
+                return substr($this->imapPath, 0, strpos($this->imapPath, '}')+1).$folder;
             } else {
                 return $this->imapPath.$this->getPathDelimiter().$folder;
             }

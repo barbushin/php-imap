@@ -658,4 +658,26 @@ final class MailboxTest extends TestCase
         $this->mailbox->setServerEncoding($serverEncoding);
         $this->assertEquals($this->mailbox->decodeMimeStr($str, $this->mailbox->getServerEncoding()), $expectedStr);
     }
+
+    /**
+     * Provides test data for testing getCombinedPath.
+     */
+    public function combinedPathProvider()
+    {
+        return [
+            ['SubFolder', '{imap.example.com:993/imap/ssl/novalidate-cert}INBOX.SubFolder', false],
+            ['MYFOLDER', '{imap.example.com:993/imap/ssl/novalidate-cert}MYFOLDER', true],
+            ['{imap.example.com:993/imap/ssl/novalidate-cert}MYFOLDER', '{imap.example.com:993/imap/ssl/novalidate-cert}MYFOLDER', true],
+        ];
+    }
+
+    /**
+     * Tests the returned value of getCombinedPath function
+     *
+     * @dataProvider combinedPathProvider
+     */
+    public function testCombinedPath($folder, $expectedStr, $absolute)
+    {
+        $this->assertEquals($expectedStr, $this->mailbox->getCombinedPath($folder, $absolute));
+    }
 }
