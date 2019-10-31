@@ -59,7 +59,7 @@ class IncomingMailAttachment
     /**
      * Saves the attachment object on the disk.
      * 
-     * @return boolean True, if it could save the attachment on the disk
+     * @return bool True, if it could save the attachment on the disk
      */
     public function saveToDisk()
     {
@@ -81,7 +81,7 @@ class IncomingMailAttachment
     public function getMimeType()
     {
         if (!$this->mimeType) {
-            if (class_exists("finfo")) {
+            if (class_exists('finfo')) {
                 $finfo = new finfo(FILEINFO_MIME);
 
                 $this->mimeType = $finfo->buffer($this->getContents());

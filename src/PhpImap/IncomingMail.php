@@ -156,23 +156,21 @@ class IncomingMail extends IncomingMailHeader
     /**
      * Embed inline image attachments as base64 to allow for
      * email html to display inline images automatically.
-     * 
-     * @return void
      */
     public function embedImageAttachments()
     {
         preg_match_all("/\bcid:[^'\"\s]{1,256}/mi", $this->textHtml, $matches);
 
-        if (count($matches)) {
+        if (\count($matches)) {
             foreach ($matches as $match) {
                 if (!isset($match[0])) {
                     continue;
                 }
 
-                $cid = str_replace("cid:", "", $match[0]);
+                $cid = str_replace('cid:', '', $match[0]);
 
                 foreach ($this->getAttachments() as $attachment) {
-                    if ($attachment->contentId == $cid && $attachment->disposition == 'inline') {
+                    if ($attachment->contentId == $cid && 'inline' == $attachment->disposition) {
                         $contents = $attachment->getContents();
                         $contentType = $attachment->getMimeType();
 
@@ -181,7 +179,7 @@ class IncomingMail extends IncomingMailHeader
                         }
 
                         $base64encoded = base64_encode($contents);
-                        $replacement = "data:".$contentType.";base64, ".$base64encoded;
+                        $replacement = 'data:'.$contentType.';base64, '.$base64encoded;
 
                         $this->textHtml = str_replace($match[0], $replacement, $this->textHtml);
 
