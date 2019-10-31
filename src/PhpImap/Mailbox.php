@@ -390,13 +390,37 @@ class Mailbox
         throw $exception;
     }
 
+    /**
+     * Open an IMAP stream to a mailbox
+     * 
+     * @return object IMAP stream on success
+     * @throws Exception if an error occured 
+     */
     protected function initImapStream()
     {
         foreach ($this->timeouts as $type => $timeout) {
             $this->imap('timeout', [$type, $timeout], false);
         }
 
-        return $this->imap('open', [$this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams], false, ConnectionException::class);
+        $imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
+
+        if (!$imapStream) {
+            $lastError = imap_last_error();
+
+            if (!empty($lastError)) {
+                // imap error = report imap error
+                throw new Exception("IMAP error: " . $lastError);
+            } else {
+                // no imap error = connectivity issue
+                throw new Exception("Connection error: Unable to connect to " . $this->imapPath);
+            }
+        }
+
+        // this function is called multiple times and imap keeps errors around.
+        // Let's clear them out to avoid it tripping up future calls.
+        @imap_errors();
+
+        return $imapStream;
     }
 
     /**
