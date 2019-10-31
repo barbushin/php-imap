@@ -367,8 +367,13 @@ class Mailbox
      */
     public function switchMailbox($imapPath)
     {
-        $this->imapPath = $imapPath;
-        $this->imap('reopen', $this->getCombinedPath($imapPath, true));
+        if (strpos($imapPath, '}') > 0) {
+            $this->imapPath = $imapPath;
+        } else {
+            $this->imapPath = $this->getCombinedPath($imapPath, true);
+        }
+
+        $this->imap('reopen', $this->imapPath);
     }
 
     protected function initImapStreamWithRetry()
@@ -385,13 +390,38 @@ class Mailbox
         throw $exception;
     }
 
+    /**
+     * Open an IMAP stream to a mailbox.
+     *
+     * @return object IMAP stream on success
+     *
+     * @throws Exception if an error occured
+     */
     protected function initImapStream()
     {
         foreach ($this->timeouts as $type => $timeout) {
             $this->imap('timeout', [$type, $timeout], false);
         }
 
-        return $this->imap('open', [$this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams], false, ConnectionException::class);
+        $imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
+
+        if (!$imapStream) {
+            $lastError = imap_last_error();
+
+            if (!empty($lastError)) {
+                // imap error = report imap error
+                throw new Exception('IMAP error: '.$lastError);
+            } else {
+                // no imap error = connectivity issue
+                throw new Exception('Connection error: Unable to connect to '.$this->imapPath);
+            }
+        }
+
+        // this function is called multiple times and imap keeps errors around.
+        // Let's clear them out to avoid it tripping up future calls.
+        @imap_errors();
+
+        return $imapStream;
     }
 
     /**
@@ -426,6 +456,8 @@ class Mailbox
      *  Recent - number of recent mails in the mailbox
      *
      * @return stdClass
+     *
+     * @see    imap_check
      */
     public function checkMailbox()
     {
@@ -436,6 +468,8 @@ class Mailbox
      * Creates a new mailbox.
      *
      * @param string $name Name of new mailbox (eg. 'PhpImap')
+     *
+     * @see   imap_createmailbox()
      */
     public function createMailbox($name)
     {
@@ -446,6 +480,8 @@ class Mailbox
      * Deletes a specific mailbox.
      *
      * @param string $name Name of mailbox, which you want to delete (eg. 'PhpImap')
+     *
+     * @see   imap_deletemailbox()
      */
     public function deleteMailbox($name)
     {
@@ -517,8 +553,10 @@ class Mailbox
     /**
      * Save a specific body section to a file.
      *
-     * @param $mailId
+     * @param int    $mailId   message number
      * @param string $filename
+     *
+     * @see   imap_savebody()
      */
     public function saveMail($mailId, $filename = 'email.eml')
     {
@@ -528,7 +566,9 @@ class Mailbox
     /**
      * Marks mails listed in mailId for deletion.
      *
-     * @param $mailId
+     * @param int $mailId message number
+     *
+     * @see   imap_delete()
      */
     public function deleteMail($mailId)
     {
@@ -538,8 +578,10 @@ class Mailbox
     /**
      * Moves mails listed in mailId into new mailbox.
      *
-     * @param $mailId
-     * @param $mailBox
+     * @param string $mailId  a range or message number
+     * @param string $mailBox Mailbox name
+     *
+     * @see   imap_mail_move()
      */
     public function moveMail($mailId, $mailBox)
     {
@@ -549,8 +591,10 @@ class Mailbox
     /**
      * Copies mails listed in mailId into new mailbox.
      *
-     * @param $mailId
-     * @param $mailBox
+     * @param string $mailId  a range or message number
+     * @param string $mailBox Mailbox name
+     *
+     * @see   imap_mail_copy()
      */
     public function copyMail($mailId, $mailBox)
     {
@@ -559,6 +603,8 @@ class Mailbox
 
     /**
      * Deletes all the mails marked for deletion by imap_delete(), imap_mail_move(), or imap_setflag_full().
+     *
+     * @see imap_expunge()
      */
     public function expungeDeletedMails()
     {
@@ -694,6 +740,8 @@ class Mailbox
      * one element per mail message.
      *
      * @return array
+     *
+     * @see    imap_headers()
      */
     public function getMailboxHeaders()
     {
@@ -714,6 +762,8 @@ class Mailbox
      *  Size - mailbox size
      *
      * @return object Object with info
+     *
+     * @see    mailboxmsginfo
      */
     public function getMailboxInfo()
     {
@@ -747,6 +797,8 @@ class Mailbox
      * Get mails count in mail box.
      *
      * @return int
+     *
+     * @see    imap_num_msg()
      */
     public function countMails()
     {
@@ -759,6 +811,8 @@ class Mailbox
      * @param string $quota_root Should normally be in the form of which mailbox (i.e. INBOX)
      *
      * @return array
+     *
+     * @see    imap_get_quotaroot()
      */
     protected function getQuota($quota_root = 'INBOX')
     {
@@ -1174,11 +1228,12 @@ class Mailbox
     }
 
     /**
-     * Converts the datetime to a normalized datetime.
+     * Converts the datetime to a RFC 3339 compliant format.
      *
-     * @param string Header datetime
+     * @param string $dateHeader Header datetime
      *
-     * @return string Normalized datetime
+     * @return string RFC 3339 compliant format or original (unchanged) format,
+     *                if conversation is not possible
      */
     public function parseDateTime($dateHeader)
     {
@@ -1186,16 +1241,19 @@ class Mailbox
             throw new InvalidParameterException('parseDateTime() expects parameter 1 to be a parsable string datetime');
         }
 
-        $dateRegex = '/\\s*\\(.*?\\)/';
-        $dateFormatted = DateTime::createFromFormat(DateTime::RFC2822, preg_replace($dateRegex, '', $dateHeader));
+        $dateHeaderUnixtimestamp = strtotime($dateHeader);
 
-        if (\is_bool($dateFormatted)) {
-            $now = new DateTime();
-
-            return $now->format('Y-m-d H:i:s');
-        } else {
-            return $dateFormatted->format('Y-m-d H:i:s');
+        if (!$dateHeaderUnixtimestamp) {
+            return $dateHeader;
         }
+
+        $dateHeaderRfc3339 = date(DATE_RFC3339, $dateHeaderUnixtimestamp);
+
+        if (!$dateHeaderRfc3339) {
+            return $dateHeader;
+        }
+
+        return $dateHeaderRfc3339;
     }
 
     /**
@@ -1214,6 +1272,7 @@ class Mailbox
         if (preg_match('/default|ascii/i', $fromEncoding) || !$string || $fromEncoding == $toEncoding) {
             return $string;
         }
+        $convertedString = '';
         $mbLoaded = \extension_loaded('mbstring');
         $supportedEncodings = [];
         if ($mbLoaded) {
@@ -1222,10 +1281,13 @@ class Mailbox
         if ($mbLoaded && \in_array(strtolower($fromEncoding), $supportedEncodings) && \in_array(strtolower($toEncoding), $supportedEncodings)) {
             $convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
         } elseif (\function_exists('iconv')) {
-            $convertedString = iconv($fromEncoding, $toEncoding.'//IGNORE', $string);
+            $convertedString = @iconv($fromEncoding, $toEncoding.'//TRANSLIT//IGNORE', $string);
+            if (false === $convertedString) {
+                throw new Exception('Mime string encoding conversion failed');
+            }
         }
-        if (!isset($convertedString)) {
-            throw new Exception('Mime string encoding conversion failed');
+        if ('' == $convertedString) {
+            return $string;
         }
 
         return $convertedString;
@@ -1249,7 +1311,7 @@ class Mailbox
     /**
      * Get message in MBOX format.
      *
-     * @param $mailId
+     * @param int $mailId message number
      *
      * @return string
      */
@@ -1315,7 +1377,7 @@ class Mailbox
     /**
      * Subscribe to a mailbox.
      *
-     * @param $mailbox
+     * @param string $mailbox
      *
      * @throws Exception
      */
@@ -1327,7 +1389,7 @@ class Mailbox
     /**
      * Unsubscribe from a mailbox.
      *
-     * @param $mailbox
+     * @param string $mailbox
      *
      * @throws Exception
      */
@@ -1404,16 +1466,17 @@ class Mailbox
      */
     protected function getCombinedPath($folder, $absolute = false)
     {
-        if (!empty($folder)) {
-            if ('}' === substr($this->imapPath, -1) || true === $absolute) {
-                $posConnectionDefinitionEnd = strpos($this->imapPath, '}');
+        if (empty($folder)) {
+            return $this->imapPath;
+        } elseif ('}' === substr($this->imapPath, -1)) {
+            return $this->imapPath.$folder;
+        } elseif (true === $absolute) {
+            $folder = ('/' === $folder) ? '' : $folder;
+            $posConnectionDefinitionEnd = strpos($this->imapPath, '}');
 
-                return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1).$folder;
-            } else {
-                return $this->imapPath.$this->getPathDelimiter().$folder;
-            }
+            return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1).$folder;
         }
 
-        return $this->imapPath;
+        return $this->imapPath.$this->getPathDelimiter().$folder;
     }
 }

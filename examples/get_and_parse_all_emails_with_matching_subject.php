@@ -22,6 +22,8 @@
         $mail_ids = $mailbox->searchMailbox('SUBJECT "part of the subject"');
     } catch(ConnectionException $ex) {
         die("IMAP connection failed: " . $ex->getMessage());
+    } catch (Exception $ex) {
+        die("An error occured: " . $ex->getMessage());
     }
 
     foreach ($mail_ids as $mail_id) {
