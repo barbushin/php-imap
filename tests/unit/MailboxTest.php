@@ -458,9 +458,9 @@ final class MailboxTest extends TestCase
     public function invalidDatetimeProvider()
     {
         return [
-            'Sun, 14 Aug 2005 16:13:03 +9000 (CEST)' => ['Sun, 14 Aug 2005 16:13:03 +9000 (CEST)', '1124035983'],
-            'Sun, 14 Aug 2005 16:13:03 +9000' => ['Sun, 14 Aug 2005 16:13:03 +9000', '1124035983'],
-            'Sun, 14 Aug 2005 16:13:03 -9000' => ['Sun, 14 Aug 2005 16:13:03 -9000', '1124035983'],
+            'Sun, 14 Aug 2005 16:13:03 +9000 (CEST)' => ['Sun, 14 Aug 2005 16:13:03 +9000 (CEST)'],
+            'Sun, 14 Aug 2005 16:13:03 +9000' => ['Sun, 14 Aug 2005 16:13:03 +9000'],
+            'Sun, 14 Aug 2005 16:13:03 -9000' => ['Sun, 14 Aug 2005 16:13:03 -9000'],
         ];
     }
 
@@ -469,11 +469,10 @@ final class MailboxTest extends TestCase
      *
      * @dataProvider invalidDatetimeProvider
      */
-    public function testParsedDateWithUnparseableDateTime($dateToParse, $epochToCompare)
+    public function testParsedDateWithUnparseableDateTime($dateToParse)
     {
         $parsedDt = $this->mailbox->parseDateTime($dateToParse);
-        $parsedDateTime = new DateTime($parsedDt);
-        $this->assertNotEquals($parsedDateTime->format('U'), $epochToCompare);
+        $this->assertEquals($parsedDt, $dateToParse);
     }
 
     /**
