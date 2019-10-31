@@ -1227,11 +1227,12 @@ class Mailbox
     }
 
     /**
-     * Converts the datetime to a normalized datetime.
+     * Converts the datetime to a RFC 3339 compliant format
      *
-     * @param string Header datetime
+     * @param string $dateHeader Header datetime
      *
-     * @return string Normalized datetime
+     * @return string RFC 3339 compliant format or original (unchanged) format,
+     *                if conversation is not possible
      */
     public function parseDateTime($dateHeader)
     {
@@ -1239,16 +1240,19 @@ class Mailbox
             throw new InvalidParameterException('parseDateTime() expects parameter 1 to be a parsable string datetime');
         }
 
-        $dateRegex = '/\\s*\\(.*?\\)/';
-        $dateFormatted = DateTime::createFromFormat(DateTime::RFC2822, preg_replace($dateRegex, '', $dateHeader));
+        $dateHeaderUnixtimestamp = strtotime($dateHeader);
 
-        if (\is_bool($dateFormatted)) {
-            $now = new DateTime();
-
-            return $now->format('Y-m-d H:i:s');
-        } else {
-            return $dateFormatted->format('Y-m-d H:i:s');
+        if (!$dateHeaderUnixtimestamp) {
+            return $dateHeader;
         }
+
+        $dateHeaderRfc3339 = date(DATE_RFC3339, $dateHeaderUnixtimestamp);
+
+        if (!$dateHeaderRfc3339) {
+            return $dateHeader;
+        }
+
+        return $dateHeaderRfc3339;
     }
 
     /**
