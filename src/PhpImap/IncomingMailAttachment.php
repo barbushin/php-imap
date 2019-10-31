@@ -58,7 +58,7 @@ class IncomingMailAttachment
 
     /**
      * Saves the attachment object on the disk.
-     * 
+     *
      * @return bool True, if it could save the attachment on the disk
      */
     public function saveToDisk()
@@ -75,7 +75,7 @@ class IncomingMailAttachment
 
     /**
      * Gets the MIME type.
-     * 
+     *
      * @return string
      */
     public function getMimeType()
