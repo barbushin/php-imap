@@ -391,9 +391,10 @@ class Mailbox
     }
 
     /**
-     * Open an IMAP stream to a mailbox
+     * Open an IMAP stream to a mailbox.
      * 
      * @return object IMAP stream on success
+     * 
      * @throws Exception if an error occured 
      */
     protected function initImapStream()
@@ -409,10 +410,10 @@ class Mailbox
 
             if (!empty($lastError)) {
                 // imap error = report imap error
-                throw new Exception("IMAP error: " . $lastError);
+                throw new Exception("IMAP error: ".$lastError);
             } else {
                 // no imap error = connectivity issue
-                throw new Exception("Connection error: Unable to connect to " . $this->imapPath);
+                throw new Exception("Connection error: Unable to connect to ".$this->imapPath);
             }
         }
 
@@ -1227,7 +1228,7 @@ class Mailbox
     }
 
     /**
-     * Converts the datetime to a RFC 3339 compliant format
+     * Converts the datetime to a RFC 3339 compliant format.
      *
      * @param string $dateHeader Header datetime
      *
@@ -1280,13 +1281,13 @@ class Mailbox
         if ($mbLoaded && \in_array(strtolower($fromEncoding), $supportedEncodings) && \in_array(strtolower($toEncoding), $supportedEncodings)) {
             $convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
         } elseif (\function_exists('iconv')) {
-		$convertedString = @iconv($fromEncoding, $toEncoding.'//TRANSLIT//IGNORE', $string);
-		if ($convertedString === false) {
-			throw new Exception('Mime string encoding conversion failed');
-		}
+            $convertedString = @iconv($fromEncoding, $toEncoding.'//TRANSLIT//IGNORE', $string);
+            if ($convertedString === false) {
+                throw new Exception('Mime string encoding conversion failed');
+            }
         }
-	if ($convertedString == '') {
-		return $string;
+        if ($convertedString == '') {
+            return $string;
         }
 
         return $convertedString;
