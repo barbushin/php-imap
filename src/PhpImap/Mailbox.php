@@ -1125,7 +1125,7 @@ class Mailbox
      *
      * @return IncomingMailAttachment[] $attachment
      */
-    public function downloadAttachment($dataInfo, $params, $partStructure, $mailId, $emlOrigin = false)
+    public function downloadAttachment(DataPartInfo $dataInfo, $params, $partStructure, $mailId, $emlOrigin = false)
     {
         if ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
             $fileExt = strtolower($partStructure->subtype).'.eml';
