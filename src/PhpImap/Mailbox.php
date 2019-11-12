@@ -906,14 +906,14 @@ class Mailbox
         }
 
         $header->subject = (isset($head->subject) and !empty(trim($head->subject))) ? $this->decodeMimeStr($head->subject, $this->getServerEncoding()) : null;
-        if (isset($head->from) and !empty(trim($head->from))) {
+        if (isset($head->from) and !empty($head->from)) {
             $header->fromHost = isset($head->from[0]->host) ? $head->from[0]->host : (isset($head->from[1]->host) ? $head->from[1]->host : null);
             $header->fromName = (isset($head->from[0]->personal) and !empty(trim($head->from[0]->personal))) ? $this->decodeMimeStr($head->from[0]->personal, $this->getServerEncoding()) : ((isset($head->from[1]->personal) and (!empty(trim($head->from[1]->personal)))) ? $this->decodeMimeStr($head->from[1]->personal, $this->getServerEncoding()) : null);
             $header->fromAddress = strtolower($head->from[0]->mailbox.'@'.$header->fromHost);
         } elseif (preg_match('/smtp.mailfrom=[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/', $headersRaw, $matches)) {
             $header->fromAddress = substr($matches[0], 14);
         }
-        if (isset($head->sender) and !empty(trim($head->sender))) {
+        if (isset($head->sender) and !empty($head->sender)) {
             $header->senderHost = isset($head->sender[0]->host) ? $head->sender[0]->host : (isset($head->sender[1]->host) ? $head->sender[1]->host : null);
             $header->senderName = (isset($head->sender[0]->personal) and !empty(trim($head->sender[0]->personal))) ? $this->decodeMimeStr($head->sender[0]->personal, $this->getServerEncoding()) : ((isset($head->sender[1]->personal) and (!empty(trim($head->sender[1]->personal)))) ? $this->decodeMimeStr($head->sender[1]->personal, $this->getServerEncoding()) : null);
             $header->senderAddress = strtolower($head->sender[0]->mailbox.'@'.$header->senderHost);
@@ -1082,7 +1082,7 @@ class Mailbox
             $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, $emlParse);
             $mail->addAttachment($attachment);
         } else {
-            if (!empty(trim($params['charset']))) {
+            if (isset($params['charset']) AND !empty(trim($params['charset']))) {
                 $dataInfo->charset = $params['charset'];
             }
         }
@@ -1131,10 +1131,10 @@ class Mailbox
             $fileExt = strtolower($partStructure->subtype).'.eml';
         } elseif ('ALTERNATIVE' == $partStructure->subtype) {
             $fileExt = strtolower($partStructure->subtype).'.eml';
-        } elseif (empty(trim($params['filename'])) && empty(trim($params['name']))) {
+        } elseif (!isset($params['filename']) OR empty(trim($params['filename'])) && (!isset($params['name']) OR empty(trim($params['name'])))) {
             $fileExt = strtolower($partStructure->subtype);
         } else {
-            $fileName = !empty(trim($params['filename'])) ? $params['filename'] : $params['name'];
+            $fileName = (isset($params['filename']) AND !empty(trim($params['filename']))) ? $params['filename'] : $params['name'];
             $fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
             $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
         }
