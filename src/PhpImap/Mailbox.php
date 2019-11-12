@@ -1157,6 +1157,8 @@ class Mailbox
         $attachment->charset = (isset($params['charset']) and !empty(trim($params['charset']))) ? $params['charset'] : null;
         $attachment->emlOrigin = $emlOrigin;
 
+        $attachment->addDataPartInfo($dataInfo);
+
         if (null != $this->getAttachmentsDir()) {
             $replace = [
                 '/\s/' => '_',
@@ -1172,7 +1174,6 @@ class Mailbox
                 $filePath = substr($filePath, 0, 255 - 1 - \strlen($ext)).'.'.$ext;
             }
             $attachment->setFilePath($filePath);
-            $attachment->addDataPartInfo($dataInfo);
             $attachment->saveToDisk();
         }
 
