@@ -581,7 +581,9 @@ class Mailbox
      * @param string $mailId  a range or message number
      * @param string $mailBox Mailbox name
      *
-     * @see   imap_mail_move()
+     * @see imap_mail_move()
+     *
+     * @return void
      */
     public function moveMail($mailId, $mailBox)
     {
@@ -1082,7 +1084,7 @@ class Mailbox
             $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, $emlParse);
             $mail->addAttachment($attachment);
         } else {
-            if (isset($params['charset']) AND !empty(trim($params['charset']))) {
+            if (isset($params['charset']) and !empty(trim($params['charset']))) {
                 $dataInfo->charset = $params['charset'];
             }
         }
@@ -1105,7 +1107,7 @@ class Mailbox
             if (TYPETEXT === $partStructure->type) {
                 if ('plain' == strtolower($partStructure->subtype)) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
-                } elseif (! $partStructure->ifdisposition) {
+                } elseif (!$partStructure->ifdisposition) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
                 } elseif ('attachment' != strtolower($partStructure->disposition)) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
@@ -1133,10 +1135,10 @@ class Mailbox
             $fileExt = strtolower($partStructure->subtype).'.eml';
         } elseif ('ALTERNATIVE' == $partStructure->subtype) {
             $fileExt = strtolower($partStructure->subtype).'.eml';
-        } elseif (!isset($params['filename']) OR empty(trim($params['filename'])) && (!isset($params['name']) OR empty(trim($params['name'])))) {
+        } elseif (!isset($params['filename']) or empty(trim($params['filename'])) && (!isset($params['name']) or empty(trim($params['name'])))) {
             $fileExt = strtolower($partStructure->subtype);
         } else {
-            $fileName = (isset($params['filename']) AND !empty(trim($params['filename']))) ? $params['filename'] : $params['name'];
+            $fileName = (isset($params['filename']) and !empty(trim($params['filename']))) ? $params['filename'] : $params['name'];
             $fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
             $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
         }
@@ -1285,7 +1287,7 @@ class Mailbox
         } elseif (\function_exists('iconv')) {
             $convertedString = @iconv($fromEncoding, $toEncoding.'//TRANSLIT//IGNORE', $string);
         }
-        if (('' == $convertedString) OR (false === $convertedString)) {
+        if (('' == $convertedString) or (false === $convertedString)) {
             return $string;
         }
 
