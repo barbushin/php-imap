@@ -1264,8 +1264,6 @@ class Mailbox
      * @param string $toEncoding   the new charset (encoding)
      *
      * @return string Converted string if conversion was successful, or the original string if not
-     *
-     * @throws Exception
      */
     public function convertStringEncoding($string, $fromEncoding, $toEncoding)
     {
@@ -1282,11 +1280,8 @@ class Mailbox
             $convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
         } elseif (\function_exists('iconv')) {
             $convertedString = @iconv($fromEncoding, $toEncoding.'//TRANSLIT//IGNORE', $string);
-            if (false === $convertedString) {
-                throw new Exception('Mime string encoding conversion failed');
-            }
         }
-        if ('' == $convertedString) {
+        if (('' == $convertedString) OR (false === $convertedString)) {
             return $string;
         }
 
