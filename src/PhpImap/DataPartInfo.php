@@ -31,10 +31,6 @@ class DataPartInfo
 
     public function fetch()
     {
-        if (isset($this->data)) {
-            return $this->data;
-        }
-
         if (0 == $this->part) {
             $this->data = $this->mail->imap('body', [$this->id, $this->options]);
         } else {
