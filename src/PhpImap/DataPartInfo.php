@@ -31,10 +31,6 @@ class DataPartInfo
 
     public function fetch()
     {
-        if (isset($this->data)) {
-            return $this->data;
-        }
-
         if (0 == $this->part) {
             $this->data = $this->mail->imap('body', [$this->id, $this->options]);
         } else {
@@ -66,8 +62,12 @@ class DataPartInfo
                 break;
         }
 
-        if (isset($this->charset) and !empty($this->charset)) {
-            $this->data = $this->mail->convertStringEncoding($this->data, $this->charset, $this->mail->getServerEncoding());
+        if (isset($this->charset) and !empty(trim($this->charset))) {
+            $this->data = $this->mail->convertStringEncoding(
+                $this->data, // Data to convert
+                $this->charset, // FROM-Encoding (Charset)
+                $this->mail->getServerEncoding() // TO-Encoding (Charset)
+            );
         }
 
         return $this->data;
