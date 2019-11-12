@@ -267,7 +267,7 @@ class Mailbox
      */
     public function setAttachmentsDir($attachmentsDir)
     {
-        if (empty($attachmentsDir)) {
+        if (empty(trim($attachmentsDir))) {
             throw new InvalidParameterException('setAttachmentsDir() expects a string as first parameter!');
         }
         if (!is_dir($attachmentsDir)) {
@@ -408,7 +408,7 @@ class Mailbox
         if (!$imapStream) {
             $lastError = imap_last_error();
 
-            if (!empty($lastError)) {
+            if (!empty(trim($lastError))) {
                 // imap error = report imap error
                 throw new Exception('IMAP error: '.$lastError);
             } else {
@@ -716,16 +716,16 @@ class Mailbox
         $mails = $this->imap('fetch_overview', [implode(',', $mailsIds), (SE_UID == $this->imapSearchOption) ? FT_UID : 0]);
         if (\is_array($mails) && \count($mails)) {
             foreach ($mails as &$mail) {
-                if (isset($mail->subject) and !empty($mail->subject)) {
+                if (isset($mail->subject) and !empty(trim($mail->subject))) {
                     $mail->subject = $this->decodeMimeStr($mail->subject, $this->getServerEncoding());
                 }
-                if (isset($mail->from) and !empty($mail->from)) {
+                if (isset($mail->from) and !empty(trim($mail->from))) {
                     $mail->from = $this->decodeMimeStr($mail->from, $this->getServerEncoding());
                 }
-                if (isset($mail->sender) and !empty($mail->sender)) {
+                if (isset($mail->sender) and !empty(trim($mail->sender))) {
                     $mail->sender = $this->decodeMimeStr($mail->sender, $this->getServerEncoding());
                 }
-                if (isset($mail->to)) {
+                if (isset($mail->to) and !empty(trim($mail->to))) {
                     $mail->to = $this->decodeMimeStr($mail->to, $this->getServerEncoding());
                 }
             }
@@ -896,32 +896,32 @@ class Mailbox
         $header->precedence = (preg_match("/Precedence\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : '';
         $header->failedRecipients = (preg_match("/Failed-Recipients\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : '';
 
-        if (isset($head->date) and !empty($head->date)) {
+        if (isset($head->date) and !empty(trim($head->date))) {
             $header->date = self::parseDateTime($head->date);
-        } elseif (isset($head->Date) and !empty($head->Date)) {
+        } elseif (isset($head->Date) and !empty(trim($head->Date))) {
             $header->date = self::parseDateTime($head->Date);
         } else {
             $now = new DateTime();
             $header->date = self::parseDateTime($now->format('Y-m-d H:i:s'));
         }
 
-        $header->subject = (isset($head->subject) and !empty($head->subject)) ? $this->decodeMimeStr($head->subject, $this->getServerEncoding()) : null;
-        if (isset($head->from) and !empty($head->from)) {
+        $header->subject = (isset($head->subject) and !empty(trim($head->subject))) ? $this->decodeMimeStr($head->subject, $this->getServerEncoding()) : null;
+        if (isset($head->from) and !empty(trim($head->from))) {
             $header->fromHost = isset($head->from[0]->host) ? $head->from[0]->host : (isset($head->from[1]->host) ? $head->from[1]->host : null);
-            $header->fromName = (isset($head->from[0]->personal) and !empty($head->from[0]->personal)) ? $this->decodeMimeStr($head->from[0]->personal, $this->getServerEncoding()) : ((isset($head->from[1]->personal) and (!empty($head->from[1]->personal))) ? $this->decodeMimeStr($head->from[1]->personal, $this->getServerEncoding()) : null);
+            $header->fromName = (isset($head->from[0]->personal) and !empty(trim($head->from[0]->personal))) ? $this->decodeMimeStr($head->from[0]->personal, $this->getServerEncoding()) : ((isset($head->from[1]->personal) and (!empty(trim($head->from[1]->personal)))) ? $this->decodeMimeStr($head->from[1]->personal, $this->getServerEncoding()) : null);
             $header->fromAddress = strtolower($head->from[0]->mailbox.'@'.$header->fromHost);
         } elseif (preg_match('/smtp.mailfrom=[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/', $headersRaw, $matches)) {
             $header->fromAddress = substr($matches[0], 14);
         }
-        if (isset($head->sender) and !empty($head->sender)) {
+        if (isset($head->sender) and !empty(trim($head->sender))) {
             $header->senderHost = isset($head->sender[0]->host) ? $head->sender[0]->host : (isset($head->sender[1]->host) ? $head->sender[1]->host : null);
-            $header->senderName = (isset($head->sender[0]->personal) and !empty($head->sender[0]->personal)) ? $this->decodeMimeStr($head->sender[0]->personal, $this->getServerEncoding()) : ((isset($head->sender[1]->personal) and (!empty($head->sender[1]->personal))) ? $this->decodeMimeStr($head->sender[1]->personal, $this->getServerEncoding()) : null);
+            $header->senderName = (isset($head->sender[0]->personal) and !empty(trim($head->sender[0]->personal))) ? $this->decodeMimeStr($head->sender[0]->personal, $this->getServerEncoding()) : ((isset($head->sender[1]->personal) and (!empty(trim($head->sender[1]->personal)))) ? $this->decodeMimeStr($head->sender[1]->personal, $this->getServerEncoding()) : null);
             $header->senderAddress = strtolower($head->sender[0]->mailbox.'@'.$header->senderHost);
         }
         if (isset($head->to)) {
             $toStrings = [];
             foreach ($head->to as $to) {
-                if (!empty($to->mailbox) && !empty($to->host)) {
+                if (!empty($to->mailbox) && !empty(trim($to->host))) {
                     $toEmail = strtolower($to->mailbox.'@'.$to->host);
                     $toName = (isset($to->personal) and !empty(trim($to->personal))) ? $this->decodeMimeStr($to->personal, $this->getServerEncoding()) : null;
                     $toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
@@ -933,7 +933,7 @@ class Mailbox
 
         if (isset($head->cc)) {
             foreach ($head->cc as $cc) {
-                if (!empty($cc->mailbox) && !empty($cc->host)) {
+                if (!empty(trim($cc->mailbox)) && !empty(trim($cc->host))) {
                     $ccEmail = strtolower($cc->mailbox.'@'.$cc->host);
                     $ccName = (isset($cc->personal) and !empty(trim($cc->personal))) ? $this->decodeMimeStr($cc->personal, $this->getServerEncoding()) : null;
                     $ccStrings[] = $ccName ? "$ccName <$ccEmail>" : $ccEmail;
@@ -944,7 +944,7 @@ class Mailbox
 
         if (isset($head->bcc)) {
             foreach ($head->bcc as $bcc) {
-                if (!empty($bcc->mailbox) && !empty($bcc->host)) {
+                if (!empty(trim($bcc->mailbox)) && !empty(trim($bcc->host))) {
                     $bccEmail = strtolower($bcc->mailbox.'@'.$bcc->host);
                     $bccName = (isset($bcc->personal) and !empty(trim($bcc->personal))) ? $this->decodeMimeStr($bcc->personal, $this->getServerEncoding()) : null;
                     $bccStrings[] = $bccName ? "$bccName <$bccEmail>" : $bccEmail;
@@ -955,7 +955,7 @@ class Mailbox
 
         if (isset($head->reply_to)) {
             foreach ($head->reply_to as $replyTo) {
-                if (!empty($replyTo->mailbox) && !empty($replyTo->host)) {
+                if (!empty(trim($replyTo->mailbox)) && !empty(trim($replyTo->host))) {
                     $replyToEmail = strtolower($replyTo->mailbox.'@'.$replyTo->host);
                     $replyToName = (isset($replyTo->personal) and !empty(trim($replyTo->personal))) ? $this->decodeMimeStr($replyTo->personal, $this->getServerEncoding()) : null;
                     $replyToStrings[] = $replyToName ? "$replyToName <$replyToEmail>" : $replyToEmail;
@@ -1032,7 +1032,7 @@ class Mailbox
         $params = [];
         if (!empty($partStructure->parameters)) {
             foreach ($partStructure->parameters as $param) {
-                $params[strtolower($param->attribute)] = (!isset($param->value) || empty($param->value)) ? '' : $this->decodeMimeStr($param->value);
+                $params[strtolower($param->attribute)] = (!isset($param->value) || empty(trim($param->value))) ? '' : $this->decodeMimeStr($param->value);
             }
         }
         if (!empty($partStructure->dparameters)) {
@@ -1082,7 +1082,7 @@ class Mailbox
             $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, $emlParse);
             $mail->addAttachment($attachment);
         } else {
-            if (!empty($params['charset'])) {
+            if (!empty(trim($params['charset']))) {
                 $dataInfo->charset = $params['charset'];
             }
         }
@@ -1131,10 +1131,10 @@ class Mailbox
             $fileExt = strtolower($partStructure->subtype).'.eml';
         } elseif ('ALTERNATIVE' == $partStructure->subtype) {
             $fileExt = strtolower($partStructure->subtype).'.eml';
-        } elseif (empty($params['filename']) && empty($params['name'])) {
+        } elseif (empty(trim($params['filename'])) && empty(trim($params['name']))) {
             $fileExt = strtolower($partStructure->subtype);
         } else {
-            $fileName = !empty($params['filename']) ? $params['filename'] : $params['name'];
+            $fileName = !empty(trim($params['filename'])) ? $params['filename'] : $params['name'];
             $fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
             $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
         }
@@ -1155,7 +1155,7 @@ class Mailbox
         $attachment->name = $fileName;
         $attachment->emlOrigin = $emlOrigin;
         $attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
-        $attachment->charset = (isset($params['charset']) and !empty($params['charset'])) ? $params['charset'] : null;
+        $attachment->charset = (isset($params['charset']) and !empty(trim($params['charset']))) ? $params['charset'] : null;
         if (null != $this->getAttachmentsDir()) {
             $replace = [
                 '/\s/' => '_',
@@ -1237,7 +1237,7 @@ class Mailbox
      */
     public function parseDateTime($dateHeader)
     {
-        if (empty($dateHeader)) {
+        if (empty(trim($dateHeader))) {
             throw new InvalidParameterException('parseDateTime() expects parameter 1 to be a parsable string datetime');
         }
 
@@ -1466,7 +1466,7 @@ class Mailbox
      */
     protected function getCombinedPath($folder, $absolute = false)
     {
-        if (empty($folder)) {
+        if (empty(trim($folder))) {
             return $this->imapPath;
         } elseif ('}' === substr($this->imapPath, -1)) {
             return $this->imapPath.$folder;
