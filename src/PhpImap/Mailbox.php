@@ -1288,6 +1288,9 @@ class Mailbox
         return $convertedString;
     }
 
+    /**
+     * Disconnects from the IMAP server / mailbox.
+     */
     public function __destruct()
     {
         $this->disconnect();
