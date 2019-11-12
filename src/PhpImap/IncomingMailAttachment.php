@@ -48,7 +48,7 @@ class IncomingMailAttachment
 
     /**
      * Sets the file path.
-     * 
+     *
      * @param string $filePath File path incl. file name and optional extension
      *
      * @return void
@@ -60,7 +60,7 @@ class IncomingMailAttachment
 
     /**
      * Sets the data part info.
-     * 
+     *
      * @param DataPartInfo $dataInfo Date info (file content)
      *
      * @return void
@@ -90,7 +90,7 @@ class IncomingMailAttachment
 
     /**
      * Gets the file content.
-     * 
+     *
      * @return string
      */
     public function getContents()
@@ -105,7 +105,7 @@ class IncomingMailAttachment
      */
     public function saveToDisk()
     {
-        if (is_null($this->dataInfo)) {
+        if (null === $this->dataInfo) {
             return false;
         }
 
