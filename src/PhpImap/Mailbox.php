@@ -1297,7 +1297,7 @@ class Mailbox
     }
 
     /**
-     * Gets imappath.
+     * Gets IMAP path.
      *
      * @return string
      */
