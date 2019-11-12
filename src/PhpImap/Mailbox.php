@@ -1105,7 +1105,9 @@ class Mailbox
             if (TYPETEXT === $partStructure->type) {
                 if ('plain' == strtolower($partStructure->subtype)) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
-                } else {
+                } elseif (! $partStructure->ifdisposition) {
+                    $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
+                } elseif ('attachment' != strtolower($partStructure->disposition)) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
                 }
             } elseif (TYPEMESSAGE === $partStructure->type) {
