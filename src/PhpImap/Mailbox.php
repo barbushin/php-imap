@@ -1153,9 +1153,10 @@ class Mailbox
         $attachment->id = $attachmentId;
         $attachment->contentId = $partStructure->ifid ? trim($partStructure->id, ' <>') : null;
         $attachment->name = $fileName;
-        $attachment->emlOrigin = $emlOrigin;
         $attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
         $attachment->charset = (isset($params['charset']) and !empty(trim($params['charset']))) ? $params['charset'] : null;
+        $attachment->emlOrigin = $emlOrigin;
+
         if (null != $this->getAttachmentsDir()) {
             $replace = [
                 '/\s/' => '_',
