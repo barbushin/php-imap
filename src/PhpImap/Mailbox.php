@@ -923,7 +923,7 @@ class Mailbox
         if (isset($head->to)) {
             $toStrings = [];
             foreach ($head->to as $to) {
-                if (!empty($to->mailbox) && !empty(trim($to->host))) {
+                if (isset($to->mailbox) && !empty(trim($to->mailbox)) && isset($to->host) && !empty(trim($to->host))) {
                     $toEmail = strtolower($to->mailbox.'@'.$to->host);
                     $toName = (isset($to->personal) and !empty(trim($to->personal))) ? $this->decodeMimeStr($to->personal, $this->getServerEncoding()) : null;
                     $toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
@@ -935,7 +935,7 @@ class Mailbox
 
         if (isset($head->cc)) {
             foreach ($head->cc as $cc) {
-                if (!empty(trim($cc->mailbox)) && !empty(trim($cc->host))) {
+                if (isset($cc->mailbox) && !empty(trim($cc->mailbox)) && isset($cc->host) && !empty(trim($cc->host))) {
                     $ccEmail = strtolower($cc->mailbox.'@'.$cc->host);
                     $ccName = (isset($cc->personal) and !empty(trim($cc->personal))) ? $this->decodeMimeStr($cc->personal, $this->getServerEncoding()) : null;
                     $ccStrings[] = $ccName ? "$ccName <$ccEmail>" : $ccEmail;
@@ -946,7 +946,7 @@ class Mailbox
 
         if (isset($head->bcc)) {
             foreach ($head->bcc as $bcc) {
-                if (!empty(trim($bcc->mailbox)) && !empty(trim($bcc->host))) {
+                if (isset($bcc->mailbox) && !empty(trim($bcc->mailbox)) && isset($bcc->host) && !empty(trim($bcc->host))) {
                     $bccEmail = strtolower($bcc->mailbox.'@'.$bcc->host);
                     $bccName = (isset($bcc->personal) and !empty(trim($bcc->personal))) ? $this->decodeMimeStr($bcc->personal, $this->getServerEncoding()) : null;
                     $bccStrings[] = $bccName ? "$bccName <$bccEmail>" : $bccEmail;
@@ -957,7 +957,7 @@ class Mailbox
 
         if (isset($head->reply_to)) {
             foreach ($head->reply_to as $replyTo) {
-                if (!empty(trim($replyTo->mailbox)) && !empty(trim($replyTo->host))) {
+                if (isset($replyTo->mailbox) && !empty(trim($replyTo->mailbox)) && isset($replyTo->host) && !empty(trim($replyTo->host))) {
                     $replyToEmail = strtolower($replyTo->mailbox.'@'.$replyTo->host);
                     $replyToName = (isset($replyTo->personal) and !empty(trim($replyTo->personal))) ? $this->decodeMimeStr($replyTo->personal, $this->getServerEncoding()) : null;
                     $replyToStrings[] = $replyToName ? "$replyToName <$replyToEmail>" : $replyToEmail;
