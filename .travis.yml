@@ -9,8 +9,8 @@ php:
   - 7.1
   - 7.2
   - 7.3
-  - 7.4snapshot # Not supported yet (2019-11-12)
-  - 8.0snapshot # Not supported yet (2019-11-12)
+  - 7.4snapshot
+  - nightly
 
 before_script:
   - composer install --no-interaction
