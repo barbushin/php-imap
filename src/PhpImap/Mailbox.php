@@ -1135,7 +1135,7 @@ class Mailbox
             $fileExt = strtolower($partStructure->subtype).'.eml';
         } elseif ('ALTERNATIVE' == $partStructure->subtype) {
             $fileExt = strtolower($partStructure->subtype).'.eml';
-        } elseif (!isset($params['filename']) or empty(trim($params['filename'])) && (!isset($params['name']) or empty(trim($params['name'])))) {
+        } elseif ((!isset($params['filename']) or empty(trim($params['filename']))) && (!isset($params['name']) or empty(trim($params['name'])))) {
             $fileExt = strtolower($partStructure->subtype);
         } else {
             $fileName = (isset($params['filename']) and !empty(trim($params['filename']))) ? $params['filename'] : $params['name'];
