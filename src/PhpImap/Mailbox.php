@@ -405,8 +405,12 @@ class Mailbox
 
         $imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
 
-        if (!$imapStream) {
+        if (! $imapStream) {
             $lastError = imap_last_error();
+
+            // this function is called multiple times and imap keeps errors around.
+            // Let's clear them out to avoid it tripping up future calls.
+            @imap_errors();
 
             if (!empty(trim($lastError))) {
                 // imap error = report imap error
@@ -416,10 +420,6 @@ class Mailbox
                 throw new Exception('Connection error: Unable to connect to '.$this->imapPath);
             }
         }
-
-        // this function is called multiple times and imap keeps errors around.
-        // Let's clear them out to avoid it tripping up future calls.
-        @imap_errors();
 
         return $imapStream;
     }
