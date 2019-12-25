@@ -18,6 +18,7 @@ class Mailbox
     protected $imapPath;
     protected $imapLogin;
     protected $imapPassword;
+    protected $imapOAuthAccessToken = null;
     protected $imapSearchOption = SE_UID;
     protected $connectionRetry = 0;
     protected $connectionRetryDelay = 100;
@@ -50,6 +51,72 @@ class Mailbox
         if (null != $attachmentsDir) {
             $this->setAttachmentsDir($attachmentsDir);
         }
+    }
+
+    /**
+     * Builds an OAuth2 authentication string for the given email address and access token.
+     *
+     * @return string $access_token Formatted OAuth access token
+     */
+    protected function _constructAuthString() {
+        return base64_encode("user=$this->imapLogin\1auth=Bearer $this->imapOAuthAccessToken\1\1");
+    }
+
+    /**
+     * Authenticates the IMAP client with the OAuth access token
+     *
+     * @return void
+     * @throws Exception If any error occured
+     */
+    protected function _oauthAuthentication() {
+        $oauth_command = 'A AUTHENTICATE XOAUTH2 '.$this->_constructAuthString();
+
+        $oauth_result = fwrite($this->imapStream, $oauth_command);
+
+        if ($oauth_result === false) {
+            throw new Exception('Could not authenticate using OAuth!');
+        }
+
+        try {
+            $mailbox_info = $this->imap('check');
+        } catch (Exception $ex) {
+            throw new Exception('OAuth authentication failed! IMAP Error: '.$ex->getMessage());
+        }
+
+        if ($mailbox_info === false) {
+            throw new Exception('OAuth authentication failed! imap_check() could not gather any mailbox information.');
+        }
+    }
+
+    /**
+     * Sets / Changes the OAuth Token for the authentication
+     *
+     * @param string $access_token OAuth token from your application (eg. Google Mail)
+     * @return void
+     * @throws InvalidArgumentException If no access token is provided
+     * @throws Exception If OAuth authentication was unsuccessful
+     */
+    public function setOAuthToken($access_token) {
+        if (empty(trim($access_token))) {
+            throw new InvalidParameterException('setOAuthToken() requires an access token as parameter!');
+        }
+
+        $this->imapOAuthAccessToken = trim($access_token);
+
+        try {
+            $this->_oauthAuthentication();
+        } catch (Exception $ex) {
+            throw new Exception('Invalid OAuth token provided. Error: '.$ex->getMessage());
+        }
+    }
+
+    /**
+     * Gets the OAuth Token for the authentication
+     *
+     * @return string $access_token OAuth Access Token
+     */
+    public function getOAuthToken() {
+        return $this->imapOAuthAccessToken;
     }
 
     /**
