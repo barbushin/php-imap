@@ -58,22 +58,24 @@ class Mailbox
      *
      * @return string $access_token Formatted OAuth access token
      */
-    protected function _constructAuthString() {
+    protected function _constructAuthString()
+    {
         return base64_encode("user=$this->imapLogin\1auth=Bearer $this->imapOAuthAccessToken\1\1");
     }
 
     /**
-     * Authenticates the IMAP client with the OAuth access token
+     * Authenticates the IMAP client with the OAuth access token.
      *
      * @return void
      * @throws Exception If any error occured
      */
-    protected function _oauthAuthentication() {
+    protected function _oauthAuthentication()
+    {
         $oauth_command = 'A AUTHENTICATE XOAUTH2 '.$this->_constructAuthString();
 
         $oauth_result = fwrite($this->imapStream, $oauth_command);
 
-        if ($oauth_result === false) {
+        if (false === $oauth_result) {
             throw new Exception('Could not authenticate using OAuth!');
         }
 
@@ -83,20 +85,21 @@ class Mailbox
             throw new Exception('OAuth authentication failed! IMAP Error: '.$ex->getMessage());
         }
 
-        if ($mailbox_info === false) {
+        if (false === $mailbox_info) {
             throw new Exception('OAuth authentication failed! imap_check() could not gather any mailbox information.');
         }
     }
 
     /**
-     * Sets / Changes the OAuth Token for the authentication
+     * Sets / Changes the OAuth Token for the authentication.
      *
      * @param string $access_token OAuth token from your application (eg. Google Mail)
      * @return void
      * @throws InvalidArgumentException If no access token is provided
-     * @throws Exception If OAuth authentication was unsuccessful
+     * @throws Exception                If OAuth authentication was unsuccessful
      */
-    public function setOAuthToken($access_token) {
+    public function setOAuthToken($access_token)
+    {
         if (empty(trim($access_token))) {
             throw new InvalidParameterException('setOAuthToken() requires an access token as parameter!');
         }
@@ -111,11 +114,12 @@ class Mailbox
     }
 
     /**
-     * Gets the OAuth Token for the authentication
+     * Gets the OAuth Token for the authentication.
      *
      * @return string $access_token OAuth Access Token
      */
-    public function getOAuthToken() {
+    public function getOAuthToken()
+    {
         return $this->imapOAuthAccessToken;
     }
 
@@ -472,7 +476,7 @@ class Mailbox
 
         $imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
 
-        if (! $imapStream) {
+        if (!$imapStream) {
             $lastError = imap_last_error();
 
             // this function is called multiple times and imap keeps errors around.
