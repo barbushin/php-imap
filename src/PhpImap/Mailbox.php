@@ -67,6 +67,7 @@ class Mailbox
      * Authenticates the IMAP client with the OAuth access token.
      *
      * @return void
+     *
      * @throws Exception If any error occured
      */
     protected function _oauthAuthentication()
