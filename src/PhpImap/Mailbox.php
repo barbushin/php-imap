@@ -94,7 +94,9 @@ class Mailbox
      * Sets / Changes the OAuth Token for the authentication.
      *
      * @param string $access_token OAuth token from your application (eg. Google Mail)
+     *
      * @return void
+     *
      * @throws InvalidArgumentException If no access token is provided
      * @throws Exception                If OAuth authentication was unsuccessful
      */
