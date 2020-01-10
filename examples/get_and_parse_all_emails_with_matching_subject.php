@@ -2,7 +2,7 @@
 
 /**
  * Example: Get and parse all emails which match the subject "part of the subject" with saving their attachments.
- * 
+ *
  * @author Sebastian Krätzig <info@ts3-tools.info>
  */
 
@@ -15,7 +15,7 @@
         'some@gmail.com', // Username for the before configured mailbox
         '*********', // Password for the before configured username
         __DIR__, // Directory, where attachments will be saved (optional)
-        'US-ASCII' // Server encoding (optional)    
+        'US-ASCII' // Server encoding (optional)
     );
 
     try {
@@ -39,14 +39,14 @@
         echo "to: " . $email->to . "\n";
         echo "subject: " . $email->subject . "\n";
         echo "message_id: " . $email->messageId . "\n";
-    
+
         echo "mail has attachments? ";
         if ($email->hasAttachments()) {
             echo "Yes\n";
         } else {
             echo "No\n";
         }
-    
+
         if (!empty($email->getAttachments())) {
             echo count($email->getAttachments()) . " attachements\n";
         }
@@ -55,18 +55,18 @@
         } else {
             echo "Message Plain:\n" . $email->textPlain;
         }
-    
+
         if (!empty($email->autoSubmitted)) {
             // Mark email as "read" / "seen"
             $mailbox->markMailAsRead($mail_id);
                     echo "+------ IGNORING: Auto-Reply ------+\n";
         }
-    
+
         if (!empty($email_content->precedence)) {
             // Mark email as "read" / "seen"
             $mailbox->markMailAsRead($mail_id);
             echo "+------ IGNORING: Non-Delivery Report/Receipt ------+\n";
-        }    
+        }
     }
 
     $mailbox->disconnect();
