@@ -20,8 +20,8 @@ before_script:
   - chmod +x php-cs-fixer.phar
 
 script:
-  - vendor/bin/phpunit
+  - vendor/bin/phpunit --coverage-clover=clover.xml
   - ./php-cs-fixer.phar fix --allow-risky=yes --no-interaction --dry-run --diff -v
 
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT -t clover
