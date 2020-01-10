@@ -5,8 +5,12 @@
  *
  * @author Sebastian Kraetzig <sebastian-kraetzig@gmx.de>
  */
+
+namespace PhpImap;
+
+use DateTime;
+use Exception;
 use PhpImap\Exceptions\InvalidParameterException;
-use PhpImap\Mailbox;
 use PHPUnit\Framework\TestCase;
 
 final class MailboxTest extends TestCase
@@ -210,13 +214,13 @@ final class MailboxTest extends TestCase
      */
     public function testSetAndGetImapSearchOption()
     {
-        define('ANYTHING', 0);
+        \define('ANYTHING', 0);
 
         $this->mailbox->setImapSearchOption(SE_FREE);
         $this->assertEquals($this->mailbox->getImapSearchOption(), 2);
 
         $this->expectException(InvalidParameterException::class);
-        $this->mailbox->setImapSearchOption(constant('ANYTHING'));
+        $this->mailbox->setImapSearchOption(\constant('ANYTHING'));
 
         $this->mailbox->setImapSearchOption(SE_UID);
         $this->assertEquals($this->mailbox->getImapSearchOption(), 1);
@@ -324,7 +328,7 @@ final class MailboxTest extends TestCase
     {
         $supported_delimiters = ['.', '/'];
 
-        if (in_array($str, $supported_delimiters)) {
+        if (\in_array($str, $supported_delimiters)) {
             $this->assertTrue($this->mailbox->validatePathDelimiter($str));
         } else {
             $this->expectException(InvalidParameterException::class);
@@ -604,11 +608,11 @@ final class MailboxTest extends TestCase
             'array(IMAP_WRITETIMEOUT)' => ['assertNull', 1, [IMAP_WRITETIMEOUT]],
             'array(IMAP_CLOSETIMEOUT)' => ['assertNull', 1, [IMAP_CLOSETIMEOUT]],
             'array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT)' => ['assertNull', 1, [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT]],
-            'array(OPENTIMEOUT)' => ['expectException', 1, [constant('OPENTIMEOUT')]],
-            'array(READTIMEOUT)' => ['expectException', 1, [constant('READTIMEOUT')]],
-            'array(WRITETIMEOUT)' => ['expectException', 1, [constant('WRITETIMEOUT')]],
-            'array(CLOSETIMEOUT)' => ['expectException', 1, [constant('CLOSETIMEOUT')]],
-            'array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, WRITETIMEOUT, IMAP_CLOSETIMEOUT)' => ['expectException', 1, [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, constant('WRITETIMEOUT'), IMAP_CLOSETIMEOUT]],
+            'array(OPENTIMEOUT)' => ['expectException', 1, [\constant('OPENTIMEOUT')]],
+            'array(READTIMEOUT)' => ['expectException', 1, [\constant('READTIMEOUT')]],
+            'array(WRITETIMEOUT)' => ['expectException', 1, [\constant('WRITETIMEOUT')]],
+            'array(CLOSETIMEOUT)' => ['expectException', 1, [\constant('CLOSETIMEOUT')]],
+            'array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, WRITETIMEOUT, IMAP_CLOSETIMEOUT)' => ['expectException', 1, [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, \constant('WRITETIMEOUT'), IMAP_CLOSETIMEOUT]],
         ];
     }
 
