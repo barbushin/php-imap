@@ -8,7 +8,7 @@ class DataPartInfo extends Base
 {
     public function fetch()
     {
-        return $this->processFetch();
+        return $this->decodeAfterFetch();
     }
 
     public function setData($data)

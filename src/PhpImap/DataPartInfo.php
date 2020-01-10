@@ -79,10 +79,13 @@ class DataPartInfo
             $this->data = Imap::fetchbody($this->mail->getImapStream(), $this->id, $this->part, $this->options);
         }
 
-        return $this->processFetch();
+        return $this->decodeAfterFetch();
     }
 
-    protected function processFetch()
+    /**
+     * @return string
+     */
+    protected function decodeAfterFetch()
     {
         switch ($this->encoding) {
             case ENC8BIT:
@@ -100,6 +103,14 @@ class DataPartInfo
                 break;
         }
 
+        return $this->convertEncodingAfterFetch();
+    }
+
+    /**
+     * @return string
+     */
+    protected function convertEncodingAfterFetch()
+    {
         if (isset($this->charset) and !empty(trim($this->charset))) {
             $this->data = $this->mail->convertStringEncoding(
                 (string) $this->data, // Data to convert
