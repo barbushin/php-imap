@@ -31,7 +31,6 @@
     "require-dev": {
         "phpunit/phpunit": "^5.7",
         "friendsofphp/php-cs-fixer": "^2.16"
-        "maglnet/composer-require-checker": "^2.1",
         "ext-fileinfo": "*"
     },
     "suggest": {
