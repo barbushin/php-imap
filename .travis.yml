@@ -19,7 +19,7 @@ before_script:
 
 script:
   - vendor/bin/phpunit --coverage-clover=clover.xml
-  - ./vendor/bin/composer-require-checker check ./composer.json
+  - composer require ext-fileinfo:* && ./vendor/bin/composer-require-checker check ./composer.json
   - ./php-cs-fixer.phar fix --allow-risky=yes --no-interaction --dry-run --diff -v
 
 after_script:
