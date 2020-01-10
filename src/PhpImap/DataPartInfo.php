@@ -51,7 +51,7 @@ class DataPartInfo
     public $options;
 
     /** @var string|null */
-    private $data;
+    protected $data;
 
     /**
      * @param int       $id
@@ -79,6 +79,11 @@ class DataPartInfo
             $this->data = Imap::fetchbody($this->mail->getImapStream(), $this->id, $this->part, $this->options);
         }
 
+        return $this->processFetch();
+    }
+
+    protected function processFetch()
+    {
         switch ($this->encoding) {
             case ENC7BIT:
                 /** @var string|null */
