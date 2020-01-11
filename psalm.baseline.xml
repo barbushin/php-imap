@@ -1,0 +1,789 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="3.8.2@90d6b73fd8062432030ef39b7b6694b3902daa31">
+  <file src="src/PhpImap/DataPartInfo.php">
+    <MissingParamType occurrences="5">
+      <code>$mail</code>
+      <code>$id</code>
+      <code>$part</code>
+      <code>$encoding</code>
+      <code>$options</code>
+    </MissingParamType>
+    <MissingPropertyType occurrences="7">
+      <code>$id</code>
+      <code>$encoding</code>
+      <code>$charset</code>
+      <code>$part</code>
+      <code>$mail</code>
+      <code>$options</code>
+      <code>$data</code>
+    </MissingPropertyType>
+    <MissingReturnType occurrences="1">
+      <code>fetch</code>
+    </MissingReturnType>
+    <MixedArgument occurrences="5">
+      <code>$this-&gt;data</code>
+      <code>$this-&gt;data</code>
+      <code>$this-&gt;data</code>
+      <code>$this-&gt;data</code>
+      <code>$this-&gt;charset</code>
+    </MixedArgument>
+    <MixedMethodCall occurrences="4">
+      <code>imap</code>
+      <code>imap</code>
+      <code>convertStringEncoding</code>
+      <code>getServerEncoding</code>
+    </MixedMethodCall>
+    <PossiblyUnusedMethod occurrences="1">
+      <code>fetch</code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/PhpImap/IncomingMail.php">
+    <MissingParamType occurrences="4">
+      <code>$type</code>
+      <code>$name</code>
+      <code>$name</code>
+      <code>$baseUri</code>
+    </MissingParamType>
+    <MissingPropertyType occurrences="8">
+      <code>$attachment-&gt;id</code>
+      <code>$attachment-&gt;contentId</code>
+      <code>$attachment-&gt;id</code>
+      <code>$attachment-&gt;contentId</code>
+      <code>$attachment-&gt;disposition</code>
+      <code>$attachment-&gt;id</code>
+      <code>$hasAttachments</code>
+      <code>$dataInfo</code>
+    </MissingPropertyType>
+    <MissingReturnType occurrences="1">
+      <code>replaceInternalLinks</code>
+    </MissingReturnType>
+    <MixedArgument occurrences="7">
+      <code>$data-&gt;fetch()</code>
+      <code>$matches[2]</code>
+      <code>$matches[1]</code>
+      <code>$baseUri</code>
+      <code>$match[0]</code>
+      <code>$match[0]</code>
+      <code>$attachment-&gt;id</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="4">
+      <code>$this-&gt;dataInfo[$type]</code>
+      <code>$this-&gt;dataInfo[$type]</code>
+      <code>$match[0]</code>
+      <code>$match[0]</code>
+    </MixedArrayAccess>
+    <MixedArrayOffset occurrences="3">
+      <code>$this-&gt;dataInfo[$type]</code>
+      <code>$this-&gt;attachments[$attachment-&gt;id]</code>
+      <code>$this-&gt;attachments[$attachment-&gt;id]</code>
+    </MixedArrayOffset>
+    <MixedAssignment occurrences="5">
+      <code>$value</code>
+      <code>$data</code>
+      <code>$placeholder</code>
+      <code>$search[]</code>
+      <code>$match</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="1">
+      <code>bool</code>
+    </MixedInferredReturnType>
+    <MixedMethodCall occurrences="1">
+      <code>fetch</code>
+    </MixedMethodCall>
+    <MixedReturnStatement occurrences="1">
+      <code>$this-&gt;hasAttachments</code>
+    </MixedReturnStatement>
+    <PossiblyUnusedMethod occurrences="3">
+      <code>hasAttachments</code>
+      <code>replaceInternalLinks</code>
+      <code>embedImageAttachments</code>
+    </PossiblyUnusedMethod>
+    <UndefinedThisPropertyAssignment occurrences="1">
+      <code>$this-&gt;textHtml</code>
+    </UndefinedThisPropertyAssignment>
+  </file>
+  <file src="src/PhpImap/IncomingMailAttachment.php">
+    <MissingConstructor occurrences="1">
+      <code>$mimeType</code>
+    </MissingConstructor>
+    <MissingParamType occurrences="1">
+      <code>$name</code>
+    </MissingParamType>
+    <MissingPropertyType occurrences="8">
+      <code>$id</code>
+      <code>$contentId</code>
+      <code>$name</code>
+      <code>$disposition</code>
+      <code>$charset</code>
+      <code>$emlOrigin</code>
+      <code>$file_path</code>
+      <code>$dataInfo</code>
+    </MissingPropertyType>
+    <MixedArgument occurrences="1">
+      <code>$this-&gt;file_path</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="2">
+      <code>$finfo</code>
+      <code>$this-&gt;mimeType</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="2">
+      <code>string</code>
+      <code>string</code>
+    </MixedInferredReturnType>
+    <MixedMethodCall occurrences="3">
+      <code>buffer</code>
+      <code>fetch</code>
+      <code>fetch</code>
+    </MixedMethodCall>
+    <MixedReturnStatement occurrences="2">
+      <code>$this-&gt;mimeType</code>
+      <code>$this-&gt;dataInfo-&gt;fetch()</code>
+    </MixedReturnStatement>
+    <PossiblyUnusedMethod occurrences="3">
+      <code>setFilePath</code>
+      <code>addDataPartInfo</code>
+      <code>saveToDisk</code>
+    </PossiblyUnusedMethod>
+    <PossiblyUnusedProperty occurrences="3">
+      <code>$name</code>
+      <code>$charset</code>
+      <code>$emlOrigin</code>
+    </PossiblyUnusedProperty>
+    <UndefinedThisPropertyAssignment occurrences="1">
+      <code>$this-&gt;filePath</code>
+    </UndefinedThisPropertyAssignment>
+  </file>
+  <file src="src/PhpImap/IncomingMailHeader.php">
+    <MissingConstructor occurrences="1">
+      <code>$id</code>
+    </MissingConstructor>
+    <MissingPropertyType occurrences="23">
+      <code>$isDraft</code>
+      <code>$date</code>
+      <code>$headersRaw</code>
+      <code>$headers</code>
+      <code>$priority</code>
+      <code>$importance</code>
+      <code>$sensitivity</code>
+      <code>$autoSubmitted</code>
+      <code>$precedence</code>
+      <code>$failedRecipients</code>
+      <code>$subject</code>
+      <code>$fromHost</code>
+      <code>$fromName</code>
+      <code>$fromAddress</code>
+      <code>$senderHost</code>
+      <code>$senderName</code>
+      <code>$senderAddress</code>
+      <code>$to</code>
+      <code>$toString</code>
+      <code>$cc</code>
+      <code>$bcc</code>
+      <code>$replyTo</code>
+      <code>$messageId</code>
+    </MissingPropertyType>
+  </file>
+  <file src="src/PhpImap/Mailbox.php">
+    <DocblockTypeContradiction occurrences="3">
+      <code>\is_bool($attachmentsIgnore)</code>
+      <code>\is_int($retriesNum)</code>
+      <code>\is_array($params)</code>
+    </DocblockTypeContradiction>
+    <InvalidArgument occurrences="5">
+      <code>$dataInfo</code>
+      <code>$attachment</code>
+      <code>$dataInfo</code>
+      <code>$attachment</code>
+      <code>"imap_$methodShortName"</code>
+    </InvalidArgument>
+    <InvalidReturnStatement occurrences="1">
+      <code>$imapStream</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>object</code>
+    </InvalidReturnType>
+    <InvalidScalarArgument occurrences="3">
+      <code>$mail-&gt;id</code>
+      <code>$mail-&gt;id</code>
+      <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
+    </InvalidScalarArgument>
+    <InvalidStringClass occurrences="1">
+      <code>new $throwExceptionClass("IMAP method imap_$methodShortName() failed with error: ".implode('. ', $errors))</code>
+    </InvalidStringClass>
+    <InvalidThrow occurrences="1">
+      <code>throw new $throwExceptionClass("IMAP method imap_$methodShortName() failed with error: ".implode('. ', $errors));</code>
+    </InvalidThrow>
+    <MismatchingDocblockParamType occurrences="1">
+      <code>string</code>
+    </MismatchingDocblockParamType>
+    <MissingParamType occurrences="23">
+      <code>$delimiter</code>
+      <code>$serverEncoding</code>
+      <code>$imapSearchOption</code>
+      <code>$maxAttempts</code>
+      <code>$milliseconds</code>
+      <code>$str</code>
+      <code>$str</code>
+      <code>$mailId</code>
+      <code>$mailId</code>
+      <code>$mailId</code>
+      <code>$messageParts</code>
+      <code>$flattenedParts</code>
+      <code>$prefix</code>
+      <code>$index</code>
+      <code>$fullPrefix</code>
+      <code>$partStructure</code>
+      <code>$partNum</code>
+      <code>$markAsSeen</code>
+      <code>$emlParse</code>
+      <code>$toCharset</code>
+      <code>$string</code>
+      <code>$string</code>
+      <code>$charset</code>
+    </MissingParamType>
+    <MissingPropertyType occurrences="21">
+      <code>$header-&gt;to</code>
+      <code>$header-&gt;cc</code>
+      <code>$header-&gt;bcc</code>
+      <code>$header-&gt;replyTo</code>
+      <code>$imapPath</code>
+      <code>$imapLogin</code>
+      <code>$imapPassword</code>
+      <code>$imapOAuthAccessToken</code>
+      <code>$imapSearchOption</code>
+      <code>$connectionRetry</code>
+      <code>$connectionRetryDelay</code>
+      <code>$imapOptions</code>
+      <code>$imapRetriesNum</code>
+      <code>$imapParams</code>
+      <code>$serverEncoding</code>
+      <code>$attachmentsDir</code>
+      <code>$expungeOnDisconnect</code>
+      <code>$timeouts</code>
+      <code>$attachmentsIgnore</code>
+      <code>$pathDelimiter</code>
+      <code>$imapStream</code>
+    </MissingPropertyType>
+    <MissingReturnType occurrences="6">
+      <code>initImapStreamWithRetry</code>
+      <code>flattenParts</code>
+      <code>initMailPart</code>
+      <code>isUrlEncoded</code>
+      <code>decodeRFC2231</code>
+      <code>imap</code>
+    </MissingReturnType>
+    <MixedArgument occurrences="90">
+      <code>$this-&gt;imapStream</code>
+      <code>$serverEncoding</code>
+      <code>$imapSearchOption</code>
+      <code>$this-&gt;connectionRetryDelay * 1000</code>
+      <code>$this-&gt;imapPath</code>
+      <code>$this-&gt;imapLogin</code>
+      <code>$this-&gt;imapPassword</code>
+      <code>$this-&gt;imapOptions</code>
+      <code>$this-&gt;imapRetriesNum</code>
+      <code>$this-&gt;imapParams</code>
+      <code>$mail-&gt;subject</code>
+      <code>$mail-&gt;subject</code>
+      <code>$mail-&gt;from</code>
+      <code>$mail-&gt;from</code>
+      <code>$mail-&gt;sender</code>
+      <code>$mail-&gt;sender</code>
+      <code>$mail-&gt;to</code>
+      <code>$mail-&gt;to</code>
+      <code>$headersRaw</code>
+      <code>$headersRaw</code>
+      <code>$headersRaw</code>
+      <code>$headersRaw</code>
+      <code>$headersRaw</code>
+      <code>$headersRaw</code>
+      <code>$headersRaw</code>
+      <code>$head-&gt;date</code>
+      <code>$head-&gt;date</code>
+      <code>$head-&gt;Date</code>
+      <code>$head-&gt;Date</code>
+      <code>$head-&gt;subject</code>
+      <code>$head-&gt;subject</code>
+      <code>$head-&gt;from[0]-&gt;personal</code>
+      <code>$head-&gt;from[0]-&gt;personal</code>
+      <code>$head-&gt;from[1]-&gt;personal</code>
+      <code>$head-&gt;from[1]-&gt;personal</code>
+      <code>$headersRaw</code>
+      <code>$head-&gt;sender[0]-&gt;personal</code>
+      <code>$head-&gt;sender[0]-&gt;personal</code>
+      <code>$head-&gt;sender[1]-&gt;personal</code>
+      <code>$head-&gt;sender[1]-&gt;personal</code>
+      <code>$to-&gt;mailbox</code>
+      <code>$to-&gt;host</code>
+      <code>$to-&gt;personal</code>
+      <code>$to-&gt;personal</code>
+      <code>$cc-&gt;mailbox</code>
+      <code>$cc-&gt;host</code>
+      <code>$cc-&gt;personal</code>
+      <code>$cc-&gt;personal</code>
+      <code>$bcc-&gt;mailbox</code>
+      <code>$bcc-&gt;host</code>
+      <code>$bcc-&gt;personal</code>
+      <code>$bcc-&gt;personal</code>
+      <code>$replyTo-&gt;mailbox</code>
+      <code>$replyTo-&gt;host</code>
+      <code>$replyTo-&gt;personal</code>
+      <code>$replyTo-&gt;personal</code>
+      <code>$param-&gt;value</code>
+      <code>$param-&gt;value</code>
+      <code>$param-&gt;attribute</code>
+      <code>$param-&gt;attribute</code>
+      <code>preg_match('~^(.*?)\*~', $param-&gt;attribute, $matches) ? $matches[1] : $param-&gt;attribute</code>
+      <code>$partStructure</code>
+      <code>$partStructure-&gt;subtype</code>
+      <code>$partStructure</code>
+      <code>$emlParse</code>
+      <code>$params['charset']</code>
+      <code>$partStructure-&gt;subtype</code>
+      <code>$partStructure-&gt;disposition</code>
+      <code>$partStructure-&gt;subtype</code>
+      <code>$partStructure-&gt;subtype</code>
+      <code>$params['filename']</code>
+      <code>$params['name']</code>
+      <code>$partStructure-&gt;subtype</code>
+      <code>$params['filename']</code>
+      <code>$fileName</code>
+      <code>$fileName.($partStructure-&gt;ifid ? $partStructure-&gt;id : '')</code>
+      <code>$partStructure-&gt;id</code>
+      <code>$element-&gt;charset</code>
+      <code>$element-&gt;text</code>
+      <code>$fromCharset</code>
+      <code>$toCharset</code>
+      <code>$string</code>
+      <code>$string</code>
+      <code>$string</code>
+      <code>$charset</code>
+      <code>$this-&gt;imapPath</code>
+      <code>$this-&gt;imapPath</code>
+      <code>$this-&gt;imapPath</code>
+      <code>$this-&gt;imapPath</code>
+      <code>$this-&gt;imapPath</code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion occurrences="2">
+      <code>$types</code>
+      <code>$args</code>
+    </MixedArgumentTypeCoercion>
+    <MixedArrayAccess occurrences="11">
+      <code>$head-&gt;from[0]</code>
+      <code>$head-&gt;from[1]</code>
+      <code>$head-&gt;from[0]</code>
+      <code>$head-&gt;from[1]</code>
+      <code>$head-&gt;from[0]</code>
+      <code>$head-&gt;sender[0]</code>
+      <code>$head-&gt;sender[1]</code>
+      <code>$head-&gt;sender[0]</code>
+      <code>$head-&gt;sender[1]</code>
+      <code>$head-&gt;sender[0]</code>
+      <code>$flattenedParts[$prefix.$index]</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="35">
+      <code>$mailbox_info</code>
+      <code>$value</code>
+      <code>$retry</code>
+      <code>$timeout</code>
+      <code>$folders</code>
+      <code>$folder</code>
+      <code>$mails</code>
+      <code>$mail</code>
+      <code>$headersRaw</code>
+      <code>$to</code>
+      <code>$cc</code>
+      <code>$bcc</code>
+      <code>$replyTo</code>
+      <code>$part</code>
+      <code>$flattenedParts[$prefix.$index]</code>
+      <code>$flattenedParts</code>
+      <code>$flattenedParts</code>
+      <code>$flattenedParts</code>
+      <code>$mailStructure</code>
+      <code>$partStructure</code>
+      <code>$param</code>
+      <code>$param</code>
+      <code>$params[$paramName]</code>
+      <code>$subPartStructure</code>
+      <code>$fileName</code>
+      <code>$fileName</code>
+      <code>$fileName</code>
+      <code>$fileName</code>
+      <code>$element</code>
+      <code>$fromCharset</code>
+      <code>$toCharset</code>
+      <code>$item</code>
+      <code>$item</code>
+      <code>$arg</code>
+      <code>$result</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="26">
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>bool</code>
+      <code>string</code>
+      <code>string</code>
+      <code>resource|null</code>
+      <code>string</code>
+      <code>string</code>
+      <code>stdClass</code>
+      <code>stdClass</code>
+      <code>array</code>
+      <code>array</code>
+      <code>array</code>
+      <code>array</code>
+      <code>object</code>
+      <code>array</code>
+      <code>int</code>
+      <code>array</code>
+      <code>int</code>
+      <code>int</code>
+      <code>string</code>
+      <code>IncomingMailAttachment[]</code>
+      <code>string</code>
+      <code>string</code>
+    </MixedInferredReturnType>
+    <MixedOperand occurrences="29">
+      <code>$retry</code>
+      <code>$this-&gt;connectionRetryDelay</code>
+      <code>$this-&gt;imapPath</code>
+      <code>$head-&gt;from[0]-&gt;mailbox</code>
+      <code>$header-&gt;fromHost</code>
+      <code>$head-&gt;sender[0]-&gt;mailbox</code>
+      <code>$header-&gt;senderHost</code>
+      <code>$to-&gt;mailbox</code>
+      <code>$to-&gt;host</code>
+      <code>$cc-&gt;mailbox</code>
+      <code>$cc-&gt;host</code>
+      <code>$bcc-&gt;mailbox</code>
+      <code>$bcc-&gt;host</code>
+      <code>$replyTo-&gt;mailbox</code>
+      <code>$replyTo-&gt;host</code>
+      <code>$prefix</code>
+      <code>$prefix</code>
+      <code>$prefix</code>
+      <code>$prefix</code>
+      <code>$index</code>
+      <code>$params[$paramName]</code>
+      <code>$partNum</code>
+      <code>$subPartNum</code>
+      <code>$partNum</code>
+      <code>$subPartNum</code>
+      <code>$fileName</code>
+      <code>$fileExt</code>
+      <code>$this-&gt;imapPath</code>
+      <code>$this-&gt;imapPath</code>
+    </MixedOperand>
+    <MixedPropertyAssignment occurrences="4">
+      <code>$mail</code>
+      <code>$mail</code>
+      <code>$mail</code>
+      <code>$mail</code>
+    </MixedPropertyAssignment>
+    <MixedPropertyFetch occurrences="81">
+      <code>$mail-&gt;subject</code>
+      <code>$mail-&gt;from</code>
+      <code>$mail-&gt;sender</code>
+      <code>$mail-&gt;to</code>
+      <code>$head-&gt;from[0]-&gt;host</code>
+      <code>$head-&gt;from[0]-&gt;host</code>
+      <code>$head-&gt;from[1]-&gt;host</code>
+      <code>$head-&gt;from[1]-&gt;host</code>
+      <code>$head-&gt;from[0]-&gt;personal</code>
+      <code>$head-&gt;from[1]-&gt;personal</code>
+      <code>$head-&gt;from[0]-&gt;mailbox</code>
+      <code>$head-&gt;sender[0]-&gt;host</code>
+      <code>$head-&gt;sender[0]-&gt;host</code>
+      <code>$head-&gt;sender[1]-&gt;host</code>
+      <code>$head-&gt;sender[1]-&gt;host</code>
+      <code>$head-&gt;sender[0]-&gt;personal</code>
+      <code>$head-&gt;sender[1]-&gt;personal</code>
+      <code>$head-&gt;sender[0]-&gt;mailbox</code>
+      <code>$to-&gt;mailbox</code>
+      <code>$to-&gt;host</code>
+      <code>$to-&gt;personal</code>
+      <code>$cc-&gt;mailbox</code>
+      <code>$cc-&gt;host</code>
+      <code>$cc-&gt;personal</code>
+      <code>$bcc-&gt;mailbox</code>
+      <code>$bcc-&gt;host</code>
+      <code>$bcc-&gt;personal</code>
+      <code>$replyTo-&gt;mailbox</code>
+      <code>$replyTo-&gt;host</code>
+      <code>$replyTo-&gt;personal</code>
+      <code>$part-&gt;parts</code>
+      <code>$part-&gt;type</code>
+      <code>$part-&gt;parts</code>
+      <code>$part-&gt;parts</code>
+      <code>$part-&gt;parts</code>
+      <code>$flattenedParts[$prefix.$index]-&gt;parts</code>
+      <code>$mailStructure-&gt;parts</code>
+      <code>$mailStructure-&gt;parts</code>
+      <code>$partStructure-&gt;encoding</code>
+      <code>$partStructure-&gt;parameters</code>
+      <code>$partStructure-&gt;parameters</code>
+      <code>$param-&gt;value</code>
+      <code>$param-&gt;value</code>
+      <code>$param-&gt;attribute</code>
+      <code>$partStructure-&gt;dparameters</code>
+      <code>$partStructure-&gt;dparameters</code>
+      <code>$param-&gt;attribute</code>
+      <code>$param-&gt;attribute</code>
+      <code>$param-&gt;value</code>
+      <code>$param-&gt;value</code>
+      <code>$partStructure-&gt;type</code>
+      <code>$partStructure-&gt;subtype</code>
+      <code>$partStructure-&gt;disposition</code>
+      <code>$partStructure-&gt;type</code>
+      <code>$partStructure-&gt;subtype</code>
+      <code>$partStructure-&gt;parts</code>
+      <code>$partStructure-&gt;parts</code>
+      <code>$partStructure-&gt;type</code>
+      <code>$partStructure-&gt;subtype</code>
+      <code>$partStructure-&gt;disposition</code>
+      <code>$partStructure-&gt;type</code>
+      <code>$partStructure-&gt;subtype</code>
+      <code>$partStructure-&gt;disposition</code>
+      <code>$partStructure-&gt;subtype</code>
+      <code>$partStructure-&gt;disposition</code>
+      <code>$partStructure-&gt;type</code>
+      <code>$partStructure-&gt;subtype</code>
+      <code>$partStructure-&gt;ifdisposition</code>
+      <code>$partStructure-&gt;disposition</code>
+      <code>$partStructure-&gt;type</code>
+      <code>$element-&gt;text</code>
+      <code>$element-&gt;charset</code>
+      <code>$element-&gt;charset</code>
+      <code>$element-&gt;charset</code>
+      <code>$element-&gt;text</code>
+      <code>$item-&gt;name</code>
+      <code>$item-&gt;attributes</code>
+      <code>$item-&gt;delimiter</code>
+      <code>$item-&gt;name</code>
+      <code>$item-&gt;attributes</code>
+      <code>$item-&gt;delimiter</code>
+    </MixedPropertyFetch>
+    <MixedReturnStatement occurrences="26">
+      <code>$this-&gt;imapOAuthAccessToken</code>
+      <code>$this-&gt;pathDelimiter</code>
+      <code>$this-&gt;serverEncoding</code>
+      <code>$this-&gt;imapSearchOption</code>
+      <code>$this-&gt;attachmentsIgnore</code>
+      <code>$this-&gt;imapLogin</code>
+      <code>$this-&gt;attachmentsDir</code>
+      <code>$this-&gt;imapStream</code>
+      <code>$str</code>
+      <code>$str</code>
+      <code>$this-&gt;imap('check')</code>
+      <code>$this-&gt;imap('status', [$this-&gt;imapPath, SA_ALL])</code>
+      <code>$folders</code>
+      <code>$this-&gt;imap('search', [$criteria, $this-&gt;imapSearchOption]) ?: []</code>
+      <code>$this-&gt;imap('search', [$criteria, $this-&gt;imapSearchOption, $this-&gt;getServerEncoding()]) ?: []</code>
+      <code>$mails</code>
+      <code>$this-&gt;imap('headers')</code>
+      <code>$this-&gt;imap('mailboxmsginfo')</code>
+      <code>$this-&gt;imap('sort', [$criteria, $reverse, $this-&gt;imapSearchOption, $searchCriteria])</code>
+      <code>$this-&gt;imap('num_msg')</code>
+      <code>$this-&gt;imap('get_quotaroot', $quota_root)</code>
+      <code>isset($quota['STORAGE']['limit']) ? $quota['STORAGE']['limit'] : 0</code>
+      <code>isset($quota['STORAGE']['usage']) ? $quota['STORAGE']['usage'] : 0</code>
+      <code>$this-&gt;imap('fetchbody', [$msgId, '', $options])</code>
+      <code>$this-&gt;imapPath</code>
+      <code>$this-&gt;imapPath</code>
+    </MixedReturnStatement>
+    <PossiblyFalseOperand occurrences="3">
+      <code>strpos($name, '}')</code>
+      <code>strpos($name, '}')</code>
+      <code>$posConnectionDefinitionEnd</code>
+    </PossiblyFalseOperand>
+    <PossiblyNullArgument occurrences="4">
+      <code>$this-&gt;getImapStream()</code>
+      <code>$this-&gt;getImapStream()</code>
+      <code>$this-&gt;getImapStream()</code>
+      <code>$this-&gt;getImapStream()</code>
+    </PossiblyNullArgument>
+    <PossiblyUndefinedVariable occurrences="5">
+      <code>$ccStrings</code>
+      <code>$bccStrings</code>
+      <code>$replyToStrings</code>
+      <code>$fileName</code>
+      <code>$fileName</code>
+    </PossiblyUndefinedVariable>
+    <PossiblyUnusedMethod occurrences="39">
+      <code>setOAuthToken</code>
+      <code>getOAuthToken</code>
+      <code>getAttachmentsDir</code>
+      <code>setConnectionRetry</code>
+      <code>setConnectionRetryDelay</code>
+      <code>switchMailbox</code>
+      <code>setExpungeOnDisconnect</code>
+      <code>checkMailbox</code>
+      <code>createMailbox</code>
+      <code>deleteMailbox</code>
+      <code>renameMailbox</code>
+      <code>statusMailbox</code>
+      <code>getListingFolders</code>
+      <code>searchMailbox</code>
+      <code>saveMail</code>
+      <code>deleteMail</code>
+      <code>moveMail</code>
+      <code>copyMail</code>
+      <code>markMailAsRead</code>
+      <code>markMailAsUnread</code>
+      <code>markMailAsImportant</code>
+      <code>markMailsAsRead</code>
+      <code>markMailsAsUnread</code>
+      <code>markMailsAsImportant</code>
+      <code>getMailsInfo</code>
+      <code>getMailboxHeaders</code>
+      <code>getMailboxInfo</code>
+      <code>sortMails</code>
+      <code>countMails</code>
+      <code>getQuotaLimit</code>
+      <code>getQuotaUsage</code>
+      <code>getRawMail</code>
+      <code>getMail</code>
+      <code>getImapPath</code>
+      <code>getMailMboxFormat</code>
+      <code>getMailboxes</code>
+      <code>getSubscribedMailboxes</code>
+      <code>subscribeMailbox</code>
+      <code>unsubscribeMailbox</code>
+    </PossiblyUnusedMethod>
+    <PossiblyUnusedParam occurrences="2">
+      <code>$mailId</code>
+      <code>$emlOrigin</code>
+    </PossiblyUnusedParam>
+    <RedundantConditionGivenDocblockType occurrences="5">
+      <code>!\is_int($retriesNum) or $retriesNum &lt; 0</code>
+      <code>\is_int($retriesNum)</code>
+      <code>null != $params and !empty($params)</code>
+      <code>\is_resource($imapStream)</code>
+      <code>$imapStream &amp;&amp; \is_resource($imapStream)</code>
+    </RedundantConditionGivenDocblockType>
+    <UndefinedDocblockClass occurrences="1">
+      <code>InvalidArgumentException</code>
+    </UndefinedDocblockClass>
+    <UnusedVariable occurrences="1">
+      <code>$value</code>
+    </UnusedVariable>
+  </file>
+  <file src="tests/unit/MailboxTest.php">
+    <DeprecatedMethod occurrences="8">
+      <code>assertAttributeEquals</code>
+      <code>assertAttributeEquals</code>
+      <code>assertAttributeEquals</code>
+      <code>assertAttributeEquals</code>
+      <code>assertAttributeEquals</code>
+      <code>assertAttributeEquals</code>
+      <code>assertAttributeEquals</code>
+      <code>assertAttributeEquals</code>
+    </DeprecatedMethod>
+    <DuplicateArrayKey occurrences="12">
+      <code>'ASCII' =&gt; [true, 'US-ASCII']</code>
+      <code>'Ўзбек' =&gt; ['Азәрбајҹан']</code>
+      <code>'Sun, 14 Aug 2005 16:13:03 +1000 (CEST)' =&gt; ['2005-08-14T06:13:03+00:00', '1123999983']</code>
+      <code>'Sun, 14 Aug 2005 16:13:03 +1000' =&gt; ['2005-08-14T06:13:03+00:00', '1123999983']</code>
+      <code>'Sun, 14 Aug 2005 16:13:03 -1000' =&gt; ['2005-08-15T02:13:03+00:00', '1124071983']</code>
+      <code>'array(IMAP_OPENTIMEOUT)' =&gt; ['expectException', 1, [OPENTIMEOUT]]</code>
+      <code>'array(IMAP_READTIMEOUT)' =&gt; ['expectException', 1, [READTIMEOUT]]</code>
+      <code>'array(IMAP_WRITETIMEOUT)' =&gt; ['expectException', 1, [WRITETIMEOUT]]</code>
+      <code>'array(IMAP_CLOSETIMEOUT)' =&gt; ['expectException', 1, [CLOSETIMEOUT]]</code>
+      <code>'array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT)' =&gt; ['expectException', 1, [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, WRITETIMEOUT, IMAP_CLOSETIMEOUT]]</code>
+      <code>'Some subject here 😘' =&gt; ['=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 'Some subject here 😘', 'US-ASCII']</code>
+      <code>'mountainguan测试' =&gt; ['=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 'mountainguan测试', 'US-ASCII']</code>
+    </DuplicateArrayKey>
+    <MissingParamType occurrences="22">
+      <code>$bool</code>
+      <code>$encoding</code>
+      <code>$str</code>
+      <code>$assertTest</code>
+      <code>$paramValue</code>
+      <code>$str</code>
+      <code>$str</code>
+      <code>$dateToParse</code>
+      <code>$epochToCompare</code>
+      <code>$dateToParse</code>
+      <code>$str</code>
+      <code>$expected</code>
+      <code>$assertMethod</code>
+      <code>$timeout</code>
+      <code>$types</code>
+      <code>$assertMethod</code>
+      <code>$option</code>
+      <code>$retriesNum</code>
+      <code>$param</code>
+      <code>$str</code>
+      <code>$expectedStr</code>
+      <code>$serverEncoding</code>
+    </MissingParamType>
+    <MissingReturnType occurrences="10">
+      <code>serverEncodingProvider</code>
+      <code>pathDelimiterProvider</code>
+      <code>attachmentsIgnoreProvider</code>
+      <code>encodingTestStringsProvider</code>
+      <code>datetimeProvider</code>
+      <code>invalidDatetimeProvider</code>
+      <code>mimeEncodingProvider</code>
+      <code>timeoutsProvider</code>
+      <code>connectionArgsProvider</code>
+      <code>mimeStrDecodingProvider</code>
+    </MissingReturnType>
+    <MixedArgument occurrences="19">
+      <code>$str</code>
+      <code>$paramValue</code>
+      <code>$paramValue</code>
+      <code>$str</code>
+      <code>$dateToParse</code>
+      <code>$dateToParse</code>
+      <code>$str</code>
+      <code>$str</code>
+      <code>$timeout</code>
+      <code>$types</code>
+      <code>$timeout</code>
+      <code>$types</code>
+      <code>$option</code>
+      <code>$retriesNum</code>
+      <code>$param</code>
+      <code>$option</code>
+      <code>$retriesNum</code>
+      <code>$param</code>
+      <code>$str</code>
+    </MixedArgument>
+    <PossiblyInvalidArgument occurrences="4">
+      <code>$this-&gt;login</code>
+      <code>$this-&gt;login</code>
+      <code>$this-&gt;login</code>
+      <code>$this-&gt;login</code>
+    </PossiblyInvalidArgument>
+    <RedundantConditionGivenDocblockType occurrences="1">
+      <code>assertInstanceOf</code>
+    </RedundantConditionGivenDocblockType>
+    <UndefinedConstant occurrences="7">
+      <code>OPENTIMEOUT</code>
+      <code>READTIMEOUT</code>
+      <code>WRITETIMEOUT</code>
+      <code>CLOSETIMEOUT</code>
+      <code>WRITETIMEOUT</code>
+      <code>DISABLE_AUTHENTICATOR</code>
+      <code>SOMETHING</code>
+    </UndefinedConstant>
+    <UndefinedDocblockClass occurrences="1">
+      <code>string|email</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/unit/RequirementsTest.php">
+    <MissingParamType occurrences="1">
+      <code>$extension</code>
+    </MissingParamType>
+    <MissingReturnType occurrences="1">
+      <code>extensionProvider</code>
+    </MissingReturnType>
+    <MixedArgument occurrences="1">
+      <code>$extension</code>
+    </MixedArgument>
+  </file>
+</files>
