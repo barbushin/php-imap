@@ -980,16 +980,12 @@ class Mailbox
 
         $header->subject = (isset($head->subject) and !empty(trim($head->subject))) ? $this->decodeMimeStr($head->subject, $this->getServerEncoding()) : null;
         if (isset($head->from) and !empty($head->from)) {
-            $header->fromHost = isset($head->from[0]->host) ? $head->from[0]->host : (isset($head->from[1]->host) ? $head->from[1]->host : null);
-            $header->fromName = (isset($head->from[0]->personal) and !empty(trim($head->from[0]->personal))) ? $this->decodeMimeStr($head->from[0]->personal, $this->getServerEncoding()) : ((isset($head->from[1]->personal) and (!empty(trim($head->from[1]->personal)))) ? $this->decodeMimeStr($head->from[1]->personal, $this->getServerEncoding()) : null);
-            $header->fromAddress = strtolower($head->from[0]->mailbox.'@'.$header->fromHost);
+            list($header->fromHost, $header->fromName, $header->fromAddress) = $this->possiblyGetHostNameAndAddress($head->from);
         } elseif (preg_match('/smtp.mailfrom=[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/', $headersRaw, $matches)) {
             $header->fromAddress = substr($matches[0], 14);
         }
         if (isset($head->sender) and !empty($head->sender)) {
-            $header->senderHost = isset($head->sender[0]->host) ? $head->sender[0]->host : (isset($head->sender[1]->host) ? $head->sender[1]->host : null);
-            $header->senderName = (isset($head->sender[0]->personal) and !empty(trim($head->sender[0]->personal))) ? $this->decodeMimeStr($head->sender[0]->personal, $this->getServerEncoding()) : ((isset($head->sender[1]->personal) and (!empty(trim($head->sender[1]->personal)))) ? $this->decodeMimeStr($head->sender[1]->personal, $this->getServerEncoding()) : null);
-            $header->senderAddress = strtolower($head->sender[0]->mailbox.'@'.$header->senderHost);
+            list($header->senderHost, $header->senderName, $header->senderAddress) = $this->possiblyGetHostNameAndAddress($head->sender);
         }
         if (isset($head->to)) {
             $toStrings = [];
@@ -1561,5 +1557,24 @@ class Mailbox
         }
 
         return $arr;
+    }
+
+    /**
+     * @param array $t
+     *
+     * @psalm-param non-empty-array $t
+     *
+     * @return array
+     *
+     * @psalm-return array{0:string|string, 1:string|null, 2:string}
+     */
+    protected function possiblyGetHostNameAndAddress($t)
+    {
+        $out = [];
+        $out[] = isset($t[0]->host) ? $t[0]->host : (isset($t[1]->host) ? $t[1]->host : null);
+        $out[] = (isset($t[0]->personal) and !empty(trim($t[0]->personal))) ? $this->decodeMimeStr($t[0]->personal, $this->getServerEncoding()) : ((isset($t[1]->personal) and (!empty(trim($t[1]->personal)))) ? $this->decodeMimeStr($t[1]->personal, $this->getServerEncoding()) : null);
+        $out[] = strtolower($t[0]->mailbox.'@'.$out[0]);
+
+        return $out;
     }
 }
