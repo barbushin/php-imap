@@ -994,9 +994,9 @@ class Mailbox
         if (isset($head->to)) {
             $toStrings = [];
             foreach ($head->to as $to) {
-                if (isset($to->mailbox) && !empty(trim($to->mailbox)) && isset($to->host) && !empty(trim($to->host))) {
-                    $toEmail = strtolower($to->mailbox.'@'.$to->host);
-                    $toName = (isset($to->personal) and !empty(trim($to->personal))) ? $this->decodeMimeStr($to->personal, $this->getServerEncoding()) : null;
+                $to_parsed = $this->possiblyGetEmailAndNameFromRecipient($to);
+                if ($to_parsed) {
+                    list($toEmail, $toName) = $to_parsed;
                     $toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
                     $header->to[$toEmail] = $toName;
                 }
@@ -1006,30 +1006,27 @@ class Mailbox
 
         if (isset($head->cc)) {
             foreach ($head->cc as $cc) {
-                if (isset($cc->mailbox) && !empty(trim($cc->mailbox)) && isset($cc->host) && !empty(trim($cc->host))) {
-                    $ccEmail = strtolower($cc->mailbox.'@'.$cc->host);
-                    $ccName = (isset($cc->personal) and !empty(trim($cc->personal))) ? $this->decodeMimeStr($cc->personal, $this->getServerEncoding()) : null;
-                    $header->cc[$ccEmail] = $ccName;
+                $cc_parsed = $this->possiblyGetEmailAndNameFromRecipient($cc);
+                if ($cc_parsed) {
+                    $header->cc[$cc_parsed[0]] = $cc_parsed[1];
                 }
             }
         }
 
         if (isset($head->bcc)) {
             foreach ($head->bcc as $bcc) {
-                if (isset($bcc->mailbox) && !empty(trim($bcc->mailbox)) && isset($bcc->host) && !empty(trim($bcc->host))) {
-                    $bccEmail = strtolower($bcc->mailbox.'@'.$bcc->host);
-                    $bccName = (isset($bcc->personal) and !empty(trim($bcc->personal))) ? $this->decodeMimeStr($bcc->personal, $this->getServerEncoding()) : null;
-                    $header->bcc[$bccEmail] = $bccName;
+                $bcc_parsed = $this->possiblyGetEmailAndNameFromRecipient($bcc);
+                if ($bcc_parsed) {
+                    $header->bcc[$bcc_parsed[0]] = $bcc_parsed[1];
                 }
             }
         }
 
         if (isset($head->reply_to)) {
             foreach ($head->reply_to as $replyTo) {
-                if (isset($replyTo->mailbox) && !empty(trim($replyTo->mailbox)) && isset($replyTo->host) && !empty(trim($replyTo->host))) {
-                    $replyToEmail = strtolower($replyTo->mailbox.'@'.$replyTo->host);
-                    $replyToName = (isset($replyTo->personal) and !empty(trim($replyTo->personal))) ? $this->decodeMimeStr($replyTo->personal, $this->getServerEncoding()) : null;
-                    $header->replyTo[$replyToEmail] = $replyToName;
+                $replyTo_parsed = $this->possiblyGetEmailAndNameFromRecipient($replyTo);
+                if ($replyTo_parsed) {
+                    $header->replyTo[$replyTo_parsed[0]] = $replyTo_parsed[1];
                 }
             }
         }
@@ -1548,5 +1545,25 @@ class Mailbox
         }
 
         return $this->imapPath.$this->getPathDelimiter().$folder;
+    }
+
+    /**
+     * @return array|null
+     *
+     * @psalm-return array{0:string, 1:string}|null
+     */
+    protected function possiblyGetEmailAndNameFromRecipient(object $recipient)
+    {
+        if (isset($recipient->mailbox) && !empty(trim($recipient->mailbox)) && isset($recipient->host) && !empty(trim($recipient->host))) {
+            $recipientEmail = strtolower($recipient->mailbox.'@'.$recipient->host);
+            $recipientName = (isset($recipient->personal) and !empty(trim($recipient->personal))) ? $this->decodeMimeStr($recipient->personal, $this->getServerEncoding()) : null;
+
+            return [
+                $recipientEmail,
+                $recipientName,
+            ];
+        }
+
+        return null;
     }
 }
