@@ -1398,21 +1398,7 @@ class Mailbox
      */
     public function getMailboxes($search = '*')
     {
-        $arr = [];
-        if ($t = imap_getmailboxes($this->getImapStream(), $this->imapPath, $search)) {
-            foreach ($t as $item) {
-                // https://github.com/barbushin/php-imap/issues/339
-                $name = $this->decodeStringFromUtf7ImapToUtf8($item->name);
-                $arr[] = [
-                    'fullpath' => $name,
-                    'attributes' => $item->attributes,
-                    'delimiter' => $item->delimiter,
-                    'shortpath' => substr($name, strpos($name, '}') + 1),
-                ];
-            }
-        }
-
-        return $arr;
+        return $this->possiblyGetMailboxes(imap_getmailboxes($this->getImapStream(), $this->imapPath, $search));
     }
 
     /**
@@ -1424,21 +1410,7 @@ class Mailbox
      */
     public function getSubscribedMailboxes($search = '*')
     {
-        $arr = [];
-        if ($t = imap_getsubscribed($this->getImapStream(), $this->imapPath, $search)) {
-            foreach ($t as $item) {
-                // https://github.com/barbushin/php-imap/issues/339
-                $name = $this->decodeStringFromUtf7ImapToUtf8($item->name);
-                $arr[] = [
-                    'fullpath' => $name,
-                    'attributes' => $item->attributes,
-                    'delimiter' => $item->delimiter,
-                    'shortpath' => substr($name, strpos($name, '}') + 1),
-                ];
-            }
-        }
-
-        return $arr;
+        return $this->possiblyGetMailboxes(imap_getsubscribed($this->getImapStream(), $this->imapPath, $search));
     }
 
     /**
@@ -1565,5 +1537,29 @@ class Mailbox
         }
 
         return null;
+    }
+
+    /**
+     * @param array $t
+     *
+     * @return array
+     */
+    protected function possiblyGetMailboxes($t)
+    {
+        $arr = [];
+        if ($t) {
+            foreach ($t as $item) {
+                // https://github.com/barbushin/php-imap/issues/339
+                $name = $this->decodeStringFromUtf7ImapToUtf8($item->name);
+                $arr[] = [
+                    'fullpath' => $name,
+                    'attributes' => $item->attributes,
+                    'delimiter' => $item->delimiter,
+                    'shortpath' => substr($name, strpos($name, '}') + 1),
+                ];
+            }
+        }
+
+        return $arr;
     }
 }
