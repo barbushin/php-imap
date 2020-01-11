@@ -191,11 +191,7 @@ class Mailbox
     {
         $serverEncoding = strtoupper(trim($serverEncoding));
 
-        // https://github.com/barbushin/php-imap/issues/336
-        $supported_encodings = [];
-        if (\extension_loaded('mbstring')) {
             $supported_encodings = mb_list_encodings();
-        }
 
         if (!\in_array($serverEncoding, $supported_encodings) && 'US-ASCII' != $serverEncoding) {
             throw new InvalidParameterException('"'.$serverEncoding.'" is not supported by setServerEncoding(). Your system only supports these encodings: US-ASCII, '.implode(', ', $supported_encodings));
@@ -1353,12 +1349,8 @@ class Mailbox
             return $string;
         }
         $convertedString = '';
-        $mbLoaded = \extension_loaded('mbstring');
-        $supportedEncodings = [];
-        if ($mbLoaded) {
             $supportedEncodings = array_map('strtolower', mb_list_encodings());
-        }
-        if ($mbLoaded && \in_array(strtolower($fromEncoding), $supportedEncodings) && \in_array(strtolower($toEncoding), $supportedEncodings)) {
+        if (\in_array(strtolower($fromEncoding), $supportedEncodings) && \in_array(strtolower($toEncoding), $supportedEncodings)) {
             $convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
         } elseif (\function_exists('iconv')) {
             $convertedString = @iconv($fromEncoding, $toEncoding.'//TRANSLIT//IGNORE', $string);
