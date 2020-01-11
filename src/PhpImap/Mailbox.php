@@ -1193,23 +1193,15 @@ class Mailbox
     public function downloadAttachment(DataPartInfo $dataInfo, $params, $partStructure, $mailId, $emlOrigin = false)
     {
         if ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
-            $fileExt = strtolower($partStructure->subtype).'.eml';
+            $fileName = $fileExt = strtolower($partStructure->subtype).'.eml';
         } elseif ('ALTERNATIVE' == $partStructure->subtype) {
-            $fileExt = strtolower($partStructure->subtype).'.eml';
+            $fileName = $fileExt = strtolower($partStructure->subtype).'.eml';
         } elseif ((!isset($params['filename']) or empty(trim($params['filename']))) && (!isset($params['name']) or empty(trim($params['name'])))) {
-            $fileExt = strtolower($partStructure->subtype);
+            $fileName = $fileExt = strtolower($partStructure->subtype);
         } else {
             $fileName = (isset($params['filename']) and !empty(trim($params['filename']))) ? $params['filename'] : $params['name'];
             $fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
-            $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
-        }
-
-        if (isset($fileExt) && isset($fileName)) {
-            $fileName = $fileName.'.'.$fileExt;
-        } elseif (isset($fileExt) && !isset($fileName)) {
-            $fileName = $fileExt;
-        } elseif (!isset($fileExt) && isset($fileName)) {
-            $fileName = $fileName;
+            $fileExt = $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
         }
 
         $attachmentId = sha1($fileName.($partStructure->ifid ? $partStructure->id : ''));
