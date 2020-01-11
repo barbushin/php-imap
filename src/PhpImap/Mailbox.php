@@ -4,6 +4,7 @@ namespace PhpImap;
 
 use DateTime;
 use Exception;
+use function iconv;
 use function mb_list_encodings;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
@@ -1343,7 +1344,7 @@ class Mailbox
         $supportedEncodings = array_map('strtolower', mb_list_encodings());
         if (\in_array(strtolower($fromEncoding), $supportedEncodings) && \in_array(strtolower($toEncoding), $supportedEncodings)) {
             $convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
-        } elseif (\function_exists('iconv')) {
+        } else {
             $convertedString = @iconv($fromEncoding, $toEncoding.'//TRANSLIT//IGNORE', $string);
         }
         if (('' == $convertedString) or (false === $convertedString)) {
