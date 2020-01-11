@@ -1165,9 +1165,11 @@ class Mailbox
 
         if (!empty($partStructure->parts)) {
             foreach ($partStructure->parts as $subPartNum => $subPartStructure) {
-                if (TYPEMESSAGE === $partStructure->type && 'RFC822' == $partStructure->subtype && (!isset($partStructure->disposition) || 'attachment' !== $partStructure->disposition)) {
+                $not_attachment = (!isset($partStructure->disposition) || 'attachment' !== $partStructure->disposition);
+
+                if (TYPEMESSAGE === $partStructure->type && 'RFC822' == $partStructure->subtype && $not_attachment) {
                     $this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
-                } elseif (TYPEMULTIPART === $partStructure->type && 'ALTERNATIVE' == $partStructure->subtype && (!isset($partStructure->disposition) || 'attachment' !== $partStructure->disposition)) {
+                } elseif (TYPEMULTIPART === $partStructure->type && 'ALTERNATIVE' == $partStructure->subtype && $not_attachment) {
                     // https://github.com/barbushin/php-imap/issues/198
                     $this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
                 } elseif ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
