@@ -191,7 +191,7 @@ class Mailbox
     {
         $serverEncoding = strtoupper(trim($serverEncoding));
 
-            $supported_encodings = mb_list_encodings();
+        $supported_encodings = mb_list_encodings();
 
         if (!\in_array($serverEncoding, $supported_encodings) && 'US-ASCII' != $serverEncoding) {
             throw new InvalidParameterException('"'.$serverEncoding.'" is not supported by setServerEncoding(). Your system only supports these encodings: US-ASCII, '.implode(', ', $supported_encodings));
@@ -1349,7 +1349,7 @@ class Mailbox
             return $string;
         }
         $convertedString = '';
-            $supportedEncodings = array_map('strtolower', mb_list_encodings());
+        $supportedEncodings = array_map('strtolower', mb_list_encodings());
         if (\in_array(strtolower($fromEncoding), $supportedEncodings) && \in_array(strtolower($toEncoding), $supportedEncodings)) {
             $convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
         } elseif (\function_exists('iconv')) {
