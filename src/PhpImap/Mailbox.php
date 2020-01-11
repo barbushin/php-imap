@@ -1204,10 +1204,8 @@ class Mailbox
             $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
         }
 
-        $attachmentId = sha1($fileName.($partStructure->ifid ? $partStructure->id : ''));
-
         $attachment = new IncomingMailAttachment();
-        $attachment->id = $attachmentId;
+        $attachment->id = sha1($fileName.($partStructure->ifid ? $partStructure->id : ''));
         $attachment->contentId = $partStructure->ifid ? trim($partStructure->id, ' <>') : null;
         $attachment->name = $fileName;
         $attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
@@ -1223,7 +1221,7 @@ class Mailbox
                 '/_+/' => '_',
                 '/(^_)|(_$)/' => '',
             ];
-            $fileSysName = preg_replace('~[\\\\/]~', '', $mailId.'_'.$attachmentId.'_'.preg_replace(array_keys($replace), $replace, $fileName));
+            $fileSysName = preg_replace('~[\\\\/]~', '', $mailId.'_'.$attachment->id.'_'.preg_replace(array_keys($replace), $replace, $fileName));
             $filePath = $this->getAttachmentsDir().\DIRECTORY_SEPARATOR.$fileSysName;
 
             if (\strlen($filePath) > 255) {
