@@ -4,6 +4,7 @@ namespace PhpImap;
 
 use DateTime;
 use Exception;
+use function mb_list_encodings;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
 use stdClass;
