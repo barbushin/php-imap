@@ -388,10 +388,7 @@ class Mailbox
     public function getImapStream($forceConnection = true)
     {
         if ($forceConnection) {
-            if ($this->imapStream && (!\is_resource($this->imapStream) || !imap_ping($this->imapStream))) {
-                $this->disconnect();
-                $this->imapStream = null;
-            }
+            $this->pingOrDisconnect();
             if (!$this->imapStream) {
                 $this->imapStream = $this->initImapStreamWithRetry();
             }
@@ -1577,5 +1574,16 @@ class Mailbox
         $out[] = strtolower($t[0]->mailbox.'@'.$out[0]);
 
         return $out;
+    }
+
+    /**
+     * @return void
+     */
+    protected function pingOrDisconnect()
+    {
+        if ($this->imapStream && (!\is_resource($this->imapStream) || !imap_ping($this->imapStream))) {
+            $this->disconnect();
+            $this->imapStream = null;
+        }
     }
 }
