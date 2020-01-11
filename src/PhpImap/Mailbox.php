@@ -1009,7 +1009,6 @@ class Mailbox
                 if (isset($cc->mailbox) && !empty(trim($cc->mailbox)) && isset($cc->host) && !empty(trim($cc->host))) {
                     $ccEmail = strtolower($cc->mailbox.'@'.$cc->host);
                     $ccName = (isset($cc->personal) and !empty(trim($cc->personal))) ? $this->decodeMimeStr($cc->personal, $this->getServerEncoding()) : null;
-                    $ccStrings[] = $ccName ? "$ccName <$ccEmail>" : $ccEmail;
                     $header->cc[$ccEmail] = $ccName;
                 }
             }
@@ -1020,7 +1019,6 @@ class Mailbox
                 if (isset($bcc->mailbox) && !empty(trim($bcc->mailbox)) && isset($bcc->host) && !empty(trim($bcc->host))) {
                     $bccEmail = strtolower($bcc->mailbox.'@'.$bcc->host);
                     $bccName = (isset($bcc->personal) and !empty(trim($bcc->personal))) ? $this->decodeMimeStr($bcc->personal, $this->getServerEncoding()) : null;
-                    $bccStrings[] = $bccName ? "$bccName <$bccEmail>" : $bccEmail;
                     $header->bcc[$bccEmail] = $bccName;
                 }
             }
@@ -1031,7 +1029,6 @@ class Mailbox
                 if (isset($replyTo->mailbox) && !empty(trim($replyTo->mailbox)) && isset($replyTo->host) && !empty(trim($replyTo->host))) {
                     $replyToEmail = strtolower($replyTo->mailbox.'@'.$replyTo->host);
                     $replyToName = (isset($replyTo->personal) and !empty(trim($replyTo->personal))) ? $this->decodeMimeStr($replyTo->personal, $this->getServerEncoding()) : null;
-                    $replyToStrings[] = $replyToName ? "$replyToName <$replyToEmail>" : $replyToEmail;
                     $header->replyTo[$replyToEmail] = $replyToName;
                 }
             }
