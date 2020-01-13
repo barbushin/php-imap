@@ -1,38 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="3.8.2@90d6b73fd8062432030ef39b7b6694b3902daa31">
   <file src="src/PhpImap/DataPartInfo.php">
-    <MissingParamType occurrences="5">
-      <code>$mail</code>
-      <code>$id</code>
-      <code>$part</code>
-      <code>$encoding</code>
-      <code>$options</code>
-    </MissingParamType>
-    <MissingPropertyType occurrences="7">
-      <code>$id</code>
-      <code>$encoding</code>
-      <code>$charset</code>
-      <code>$part</code>
-      <code>$mail</code>
-      <code>$options</code>
-      <code>$data</code>
-    </MissingPropertyType>
     <MissingReturnType occurrences="1">
       <code>fetch</code>
     </MissingReturnType>
-    <MixedArgument occurrences="5">
-      <code>$this-&gt;data</code>
-      <code>$this-&gt;data</code>
-      <code>$this-&gt;data</code>
-      <code>$this-&gt;data</code>
-      <code>$this-&gt;charset</code>
-    </MixedArgument>
-    <MixedMethodCall occurrences="4">
-      <code>imap</code>
-      <code>imap</code>
-      <code>convertStringEncoding</code>
-      <code>getServerEncoding</code>
-    </MixedMethodCall>
     <PossiblyUnusedMethod occurrences="1">
       <code>fetch</code>
     </PossiblyUnusedMethod>
@@ -216,7 +187,7 @@
     <MismatchingDocblockParamType occurrences="1">
       <code>string</code>
     </MismatchingDocblockParamType>
-    <MissingParamType occurrences="23">
+    <MissingParamType occurrences="20">
       <code>$delimiter</code>
       <code>$serverEncoding</code>
       <code>$imapSearchOption</code>
@@ -227,13 +198,10 @@
       <code>$mailId</code>
       <code>$mailId</code>
       <code>$mailId</code>
-      <code>$messageParts</code>
-      <code>$flattenedParts</code>
       <code>$prefix</code>
       <code>$index</code>
       <code>$fullPrefix</code>
       <code>$partStructure</code>
-      <code>$partNum</code>
       <code>$markAsSeen</code>
       <code>$emlParse</code>
       <code>$toCharset</code>
@@ -264,15 +232,14 @@
       <code>$pathDelimiter</code>
       <code>$imapStream</code>
     </MissingPropertyType>
-    <MissingReturnType occurrences="6">
+    <MissingReturnType occurrences="5">
       <code>initImapStreamWithRetry</code>
-      <code>flattenParts</code>
       <code>initMailPart</code>
       <code>isUrlEncoded</code>
       <code>decodeRFC2231</code>
       <code>imap</code>
     </MissingReturnType>
-    <MixedArgument occurrences="90">
+    <MixedArgument occurrences="89">
       <code>$this-&gt;imapStream</code>
       <code>$serverEncoding</code>
       <code>$imapSearchOption</code>
@@ -338,7 +305,6 @@
       <code>$partStructure-&gt;subtype</code>
       <code>$partStructure</code>
       <code>$emlParse</code>
-      <code>$params['charset']</code>
       <code>$partStructure-&gt;subtype</code>
       <code>$partStructure-&gt;disposition</code>
       <code>$partStructure-&gt;subtype</code>
@@ -368,7 +334,7 @@
       <code>$types</code>
       <code>$args</code>
     </MixedArgumentTypeCoercion>
-    <MixedArrayAccess occurrences="11">
+    <MixedArrayAccess occurrences="10">
       <code>$head-&gt;from[0]</code>
       <code>$head-&gt;from[1]</code>
       <code>$head-&gt;from[0]</code>
@@ -379,9 +345,8 @@
       <code>$head-&gt;sender[0]</code>
       <code>$head-&gt;sender[1]</code>
       <code>$head-&gt;sender[0]</code>
-      <code>$flattenedParts[$prefix.$index]</code>
     </MixedArrayAccess>
-    <MixedAssignment occurrences="35">
+    <MixedAssignment occurrences="29">
       <code>$mailbox_info</code>
       <code>$value</code>
       <code>$retry</code>
@@ -395,13 +360,7 @@
       <code>$cc</code>
       <code>$bcc</code>
       <code>$replyTo</code>
-      <code>$part</code>
-      <code>$flattenedParts[$prefix.$index]</code>
-      <code>$flattenedParts</code>
-      <code>$flattenedParts</code>
-      <code>$flattenedParts</code>
       <code>$mailStructure</code>
-      <code>$partStructure</code>
       <code>$param</code>
       <code>$param</code>
       <code>$params[$paramName]</code>
@@ -446,7 +405,7 @@
       <code>string</code>
       <code>string</code>
     </MixedInferredReturnType>
-    <MixedOperand occurrences="29">
+    <MixedOperand occurrences="27">
       <code>$retry</code>
       <code>$this-&gt;connectionRetryDelay</code>
       <code>$this-&gt;imapPath</code>
@@ -468,9 +427,7 @@
       <code>$prefix</code>
       <code>$index</code>
       <code>$params[$paramName]</code>
-      <code>$partNum</code>
       <code>$subPartNum</code>
-      <code>$partNum</code>
       <code>$subPartNum</code>
       <code>$fileName</code>
       <code>$fileExt</code>
@@ -483,7 +440,7 @@
       <code>$mail</code>
       <code>$mail</code>
     </MixedPropertyAssignment>
-    <MixedPropertyFetch occurrences="81">
+    <MixedPropertyFetch occurrences="75">
       <code>$mail-&gt;subject</code>
       <code>$mail-&gt;from</code>
       <code>$mail-&gt;sender</code>
@@ -514,12 +471,6 @@
       <code>$replyTo-&gt;mailbox</code>
       <code>$replyTo-&gt;host</code>
       <code>$replyTo-&gt;personal</code>
-      <code>$part-&gt;parts</code>
-      <code>$part-&gt;type</code>
-      <code>$part-&gt;parts</code>
-      <code>$part-&gt;parts</code>
-      <code>$part-&gt;parts</code>
-      <code>$flattenedParts[$prefix.$index]-&gt;parts</code>
       <code>$mailStructure-&gt;parts</code>
       <code>$mailStructure-&gt;parts</code>
       <code>$partStructure-&gt;encoding</code>
@@ -696,9 +647,6 @@
       <code>'Some subject here 😘' =&gt; ['=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 'Some subject here 😘', 'US-ASCII']</code>
       <code>'mountainguan测试' =&gt; ['=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 'mountainguan测试', 'US-ASCII']</code>
     </DuplicateArrayKey>
-    <MethodSignatureMismatch occurrences="1">
-      <code>public function setUp()</code>
-    </MethodSignatureMismatch>
     <MissingParamType occurrences="22">
       <code>$bool</code>
       <code>$encoding</code>

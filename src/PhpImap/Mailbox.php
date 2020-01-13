@@ -1034,24 +1034,38 @@ class Mailbox
 
     /**
      * taken from https://www.electrictoolbox.com/php-imap-message-parts/.
+     *
+     * @param \stdClass[] $messageParts
+     * @param \stdClass[] $flattenedParts
+     *
+     * @psalm-param array<string, \stdClass> $flattenedParts
+     *
+     * @return \stdClass[]
      */
     public function flattenParts($messageParts, $flattenedParts = [], $prefix = '', $index = 1, $fullPrefix = true)
     {
         foreach ($messageParts as $part) {
             $flattenedParts[$prefix.$index] = $part;
             if (isset($part->parts)) {
+                /** @var \stdClass[] */
+                $part_parts = $part->parts;
+
                 if (2 == $part->type) {
-                    $flattenedParts = $this->flattenParts($part->parts, $flattenedParts, $prefix.$index.'.', 0, false);
+                    /** @var array<string, \stdClass> */
+                    $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix.$index.'.', 0, false);
                 } elseif ($fullPrefix) {
-                    $flattenedParts = $this->flattenParts($part->parts, $flattenedParts, $prefix.$index.'.');
+                    /** @var array<string, \stdClass> */
+                    $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix.$index.'.');
                 } else {
-                    $flattenedParts = $this->flattenParts($part->parts, $flattenedParts, $prefix);
+                    /** @var array<string, \stdClass> */
+                    $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix);
                 }
                 unset($flattenedParts[$prefix.$index]->parts);
             }
             ++$index;
         }
 
+        /** @var array<string, \stdClass> */
         return $flattenedParts;
     }
 
@@ -1073,7 +1087,9 @@ class Mailbox
         if (empty($mailStructure->parts)) {
             $this->initMailPart($mail, $mailStructure, 0, $markAsSeen);
         } else {
-            foreach ($this->flattenParts($mailStructure->parts) as $partNum => $partStructure) {
+            /** @var array<string, \stdClass> */
+            $parts = $mailStructure->parts;
+            foreach ($this->flattenParts($parts) as $partNum => $partStructure) {
                 $this->initMailPart($mail, $partStructure, $partNum, $markAsSeen);
             }
         }
@@ -1081,6 +1097,9 @@ class Mailbox
         return $mail;
     }
 
+    /**
+     * @param string|int $partNum
+     */
     protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true, $emlParse = false)
     {
         $options = (SE_UID == $this->imapSearchOption) ? FT_UID : 0;
@@ -1143,7 +1162,7 @@ class Mailbox
             $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, $emlParse);
             $mail->addAttachment($attachment);
         } else {
-            if (isset($params['charset']) and !empty(trim($params['charset']))) {
+            if (isset($params['charset']) and \is_string($params['charset']) and !empty(trim($params['charset']))) {
                 $dataInfo->charset = $params['charset'];
             }
         }
