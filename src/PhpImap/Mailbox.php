@@ -235,9 +235,12 @@ class Mailbox
     /**
      * Set $this->attachmentsIgnore param. Allow to ignore attachments when they are not required and boost performance.
      *
-     * @param bool $attachmentsIgnore
+     * @param scalar $attachmentsIgnore
      *
      * @throws InvalidParameterException
+     *
+     * @todo drop support for php 5.6, set $attachmentsIgnore to literal bool
+     * @todo drop support for php 5.6, remove thrown exception
      */
     public function setAttachmentsIgnore($attachmentsIgnore)
     {

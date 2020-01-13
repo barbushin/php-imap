@@ -98,8 +98,7 @@
     </MissingPropertyType>
   </file>
   <file src="src/PhpImap/Mailbox.php">
-    <DocblockTypeContradiction occurrences="3">
-      <code>\is_bool($attachmentsIgnore)</code>
+    <DocblockTypeContradiction occurrences="2">
       <code>\is_int($retriesNum)</code>
       <code>\is_array($params)</code>
     </DocblockTypeContradiction>
@@ -578,62 +577,17 @@
     <MethodSignatureMismatch occurrences="1">
       <code>public function setUp()</code>
     </MethodSignatureMismatch>
-    <MissingParamType occurrences="22">
-      <code>$bool</code>
-      <code>$encoding</code>
-      <code>$str</code>
-      <code>$assertTest</code>
-      <code>$paramValue</code>
-      <code>$str</code>
-      <code>$str</code>
-      <code>$dateToParse</code>
-      <code>$epochToCompare</code>
-      <code>$dateToParse</code>
-      <code>$str</code>
-      <code>$expected</code>
-      <code>$assertMethod</code>
-      <code>$timeout</code>
-      <code>$types</code>
-      <code>$assertMethod</code>
-      <code>$option</code>
+    <MissingParamType occurrences="1">
       <code>$retriesNum</code>
-      <code>$param</code>
-      <code>$str</code>
-      <code>$expectedStr</code>
-      <code>$serverEncoding</code>
     </MissingParamType>
-    <MissingReturnType occurrences="10">
-      <code>serverEncodingProvider</code>
-      <code>pathDelimiterProvider</code>
-      <code>attachmentsIgnoreProvider</code>
-      <code>encodingTestStringsProvider</code>
-      <code>datetimeProvider</code>
-      <code>invalidDatetimeProvider</code>
-      <code>mimeEncodingProvider</code>
-      <code>timeoutsProvider</code>
+    <MissingReturnType occurrences="1">
       <code>connectionArgsProvider</code>
-      <code>mimeStrDecodingProvider</code>
     </MissingReturnType>
-    <MixedArgument occurrences="19">
-      <code>$str</code>
-      <code>$paramValue</code>
-      <code>$paramValue</code>
-      <code>$str</code>
-      <code>$dateToParse</code>
-      <code>$dateToParse</code>
-      <code>$str</code>
-      <code>$str</code>
-      <code>$timeout</code>
-      <code>$types</code>
-      <code>$timeout</code>
-      <code>$types</code>
-      <code>$option</code>
+    <MixedArgument occurrences="4">
       <code>$retriesNum</code>
       <code>$param</code>
-      <code>$option</code>
       <code>$retriesNum</code>
       <code>$param</code>
-      <code>$str</code>
     </MixedArgument>
     <PossiblyInvalidArgument occurrences="4">
       <code>$this-&gt;login</code>
@@ -656,16 +610,5 @@
     <UndefinedDocblockClass occurrences="1">
       <code>string|email</code>
     </UndefinedDocblockClass>
-  </file>
-  <file src="tests/unit/RequirementsTest.php">
-    <MissingParamType occurrences="1">
-      <code>$extension</code>
-    </MissingParamType>
-    <MissingReturnType occurrences="1">
-      <code>extensionProvider</code>
-    </MissingReturnType>
-    <MixedArgument occurrences="1">
-      <code>$extension</code>
-    </MixedArgument>
   </file>
 </files>
