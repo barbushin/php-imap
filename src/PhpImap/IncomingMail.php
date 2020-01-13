@@ -21,6 +21,12 @@ class IncomingMail extends IncomingMailHeader
 
     /** @var bool */
     protected $hasAttachments = false;
+
+    /**
+     * @var DataPartInfo[][]
+     *
+     * @psalm-var array{0:list<DataPartInfo>, 1:list<DataPartInfo>}
+     */
     protected $dataInfo = [[], []];
 
     public function setHeader(IncomingMailHeader $header)

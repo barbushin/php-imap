@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="3.8.2@90d6b73fd8062432030ef39b7b6694b3902daa31">
-  <file src="src/PhpImap/DataPartInfo.php">
-    <PossiblyUnusedMethod occurrences="1">
-      <code>fetch</code>
-    </PossiblyUnusedMethod>
-  </file>
   <file src="src/PhpImap/IncomingMail.php">
     <MissingParamType occurrences="3">
       <code>$name</code>
       <code>$name</code>
       <code>$baseUri</code>
     </MissingParamType>
-    <MissingPropertyType occurrences="7">
+    <MissingPropertyType occurrences="6">
       <code>$attachment-&gt;id</code>
       <code>$attachment-&gt;contentId</code>
       <code>$attachment-&gt;id</code>
       <code>$attachment-&gt;contentId</code>
       <code>$attachment-&gt;disposition</code>
       <code>$attachment-&gt;id</code>
-      <code>$dataInfo</code>
     </MissingPropertyType>
     <MissingReturnType occurrences="1">
       <code>replaceInternalLinks</code>
     </MissingReturnType>
-    <MixedArgument occurrences="7">
-      <code>$data-&gt;fetch()</code>
+    <MixedArgument occurrences="6">
       <code>$matches[2]</code>
       <code>$matches[1]</code>
       <code>$baseUri</code>
@@ -32,9 +25,7 @@
       <code>$match[0]</code>
       <code>$attachment-&gt;id</code>
     </MixedArgument>
-    <MixedArrayAccess occurrences="4">
-      <code>$this-&gt;dataInfo[$type]</code>
-      <code>$this-&gt;dataInfo[$type]</code>
+    <MixedArrayAccess occurrences="2">
       <code>$match[0]</code>
       <code>$match[0]</code>
     </MixedArrayAccess>
@@ -42,16 +33,12 @@
       <code>$this-&gt;attachments[$attachment-&gt;id]</code>
       <code>$this-&gt;attachments[$attachment-&gt;id]</code>
     </MixedArrayOffset>
-    <MixedAssignment occurrences="5">
+    <MixedAssignment occurrences="4">
       <code>$value</code>
-      <code>$data</code>
       <code>$placeholder</code>
       <code>$search[]</code>
       <code>$match</code>
     </MixedAssignment>
-    <MixedMethodCall occurrences="1">
-      <code>fetch</code>
-    </MixedMethodCall>
     <PossiblyUnusedMethod occurrences="3">
       <code>hasAttachments</code>
       <code>replaceInternalLinks</code>
