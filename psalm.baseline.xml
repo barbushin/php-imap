@@ -647,6 +647,9 @@
       <code>'Some subject here 😘' =&gt; ['=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 'Some subject here 😘', 'US-ASCII']</code>
       <code>'mountainguan测试' =&gt; ['=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 'mountainguan测试', 'US-ASCII']</code>
     </DuplicateArrayKey>
+    <MethodSignatureMismatch occurrences="1">
+      <code>public function setUp()</code>
+    </MethodSignatureMismatch>
     <MissingParamType occurrences="22">
       <code>$bool</code>
       <code>$encoding</code>
