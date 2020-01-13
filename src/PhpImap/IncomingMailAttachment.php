@@ -3,6 +3,7 @@
 namespace PhpImap;
 
 use finfo;
+use UnexpectedValueException;
 
 /**
  * @see https://github.com/barbushin/php-imap
@@ -15,11 +16,23 @@ class IncomingMailAttachment
 {
     public $id;
     public $contentId;
+
+    /** @var string|null */
     public $name;
+
+    /** @var string|null */
     public $disposition;
+
+    /** @var string|null */
     public $charset;
+
+    /** @var bool|null */
     public $emlOrigin;
+
+    /** @var string|null */
     private $file_path;
+
+    /** @var DataPartInfo|null */
     private $dataInfo;
 
     /**
@@ -95,6 +108,15 @@ class IncomingMailAttachment
      */
     public function getContents()
     {
+        if (is_null($this->dataInfo)) {
+            throw new UnexpectedValueException(
+                static::class .
+                '::$dataInfo has not been set by calling ' .
+                self::class .
+                '::addDataPartInfo()'
+            );
+        }
+
         return $this->dataInfo->fetch();
     }
 
