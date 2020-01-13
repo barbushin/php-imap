@@ -106,29 +106,7 @@
     <MissingConstructor occurrences="1">
       <code>$id</code>
     </MissingConstructor>
-    <MissingPropertyType occurrences="23">
-      <code>$isDraft</code>
-      <code>$date</code>
-      <code>$headersRaw</code>
-      <code>$headers</code>
-      <code>$priority</code>
-      <code>$importance</code>
-      <code>$sensitivity</code>
-      <code>$autoSubmitted</code>
-      <code>$precedence</code>
-      <code>$failedRecipients</code>
-      <code>$subject</code>
-      <code>$fromHost</code>
-      <code>$fromName</code>
-      <code>$fromAddress</code>
-      <code>$senderHost</code>
-      <code>$senderName</code>
-      <code>$senderAddress</code>
-      <code>$to</code>
-      <code>$toString</code>
-      <code>$cc</code>
-      <code>$bcc</code>
-      <code>$replyTo</code>
+    <MissingPropertyType occurrences="1">
       <code>$messageId</code>
     </MissingPropertyType>
   </file>
@@ -187,11 +165,7 @@
       <code>$string</code>
       <code>$charset</code>
     </MissingParamType>
-    <MissingPropertyType occurrences="21">
-      <code>$header-&gt;to</code>
-      <code>$header-&gt;cc</code>
-      <code>$header-&gt;bcc</code>
-      <code>$header-&gt;replyTo</code>
+    <MissingPropertyType occurrences="17">
       <code>$imapPath</code>
       <code>$imapLogin</code>
       <code>$imapPassword</code>
@@ -217,7 +191,7 @@
       <code>decodeRFC2231</code>
       <code>imap</code>
     </MissingReturnType>
-    <MixedArgument occurrences="89">
+    <MixedArgument occurrences="81">
       <code>$this-&gt;imapStream</code>
       <code>$serverEncoding</code>
       <code>$imapSearchOption</code>
@@ -236,13 +210,6 @@
       <code>$mail-&gt;sender</code>
       <code>$mail-&gt;to</code>
       <code>$mail-&gt;to</code>
-      <code>$headersRaw</code>
-      <code>$headersRaw</code>
-      <code>$headersRaw</code>
-      <code>$headersRaw</code>
-      <code>$headersRaw</code>
-      <code>$headersRaw</code>
-      <code>$headersRaw</code>
       <code>$head-&gt;date</code>
       <code>$head-&gt;date</code>
       <code>$head-&gt;Date</code>
@@ -253,7 +220,6 @@
       <code>$head-&gt;from[0]-&gt;personal</code>
       <code>$head-&gt;from[1]-&gt;personal</code>
       <code>$head-&gt;from[1]-&gt;personal</code>
-      <code>$headersRaw</code>
       <code>$head-&gt;sender[0]-&gt;personal</code>
       <code>$head-&gt;sender[0]-&gt;personal</code>
       <code>$head-&gt;sender[1]-&gt;personal</code>
@@ -324,7 +290,7 @@
       <code>$head-&gt;sender[1]</code>
       <code>$head-&gt;sender[0]</code>
     </MixedArrayAccess>
-    <MixedAssignment occurrences="29">
+    <MixedAssignment occurrences="28">
       <code>$mailbox_info</code>
       <code>$value</code>
       <code>$retry</code>
@@ -333,7 +299,6 @@
       <code>$folder</code>
       <code>$mails</code>
       <code>$mail</code>
-      <code>$headersRaw</code>
       <code>$to</code>
       <code>$cc</code>
       <code>$bcc</code>
@@ -383,14 +348,12 @@
       <code>string</code>
       <code>string</code>
     </MixedInferredReturnType>
-    <MixedOperand occurrences="27">
+    <MixedOperand occurrences="25">
       <code>$retry</code>
       <code>$this-&gt;connectionRetryDelay</code>
       <code>$this-&gt;imapPath</code>
       <code>$head-&gt;from[0]-&gt;mailbox</code>
-      <code>$header-&gt;fromHost</code>
       <code>$head-&gt;sender[0]-&gt;mailbox</code>
-      <code>$header-&gt;senderHost</code>
       <code>$to-&gt;mailbox</code>
       <code>$to-&gt;host</code>
       <code>$cc-&gt;mailbox</code>

@@ -947,6 +947,7 @@ class Mailbox
      */
     public function getMailHeader($mailId)
     {
+        /** @var string|false */
         $headersRaw = $this->imap('fetchheader', [$mailId, (SE_UID == $this->imapSearchOption) ? FT_UID : 0]);
 
         if (false === $headersRaw) {
