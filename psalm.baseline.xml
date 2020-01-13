@@ -44,6 +44,9 @@
       <code>replaceInternalLinks</code>
       <code>embedImageAttachments</code>
     </PossiblyUnusedMethod>
+    <PropertyTypeCoercion occurrences="1">
+      <code>$this-&gt;dataInfo</code>
+    </PropertyTypeCoercion>
     <UndefinedThisPropertyAssignment occurrences="1">
       <code>$this-&gt;textHtml</code>
     </UndefinedThisPropertyAssignment>
