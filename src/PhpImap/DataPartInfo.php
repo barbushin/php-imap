@@ -68,6 +68,9 @@ class DataPartInfo
         $this->options = $options;
     }
 
+    /**
+     * @return string|null
+     */
     public function fetch()
     {
         if (0 == $this->part) {

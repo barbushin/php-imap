@@ -18,6 +18,8 @@ class IncomingMail extends IncomingMailHeader
      * @var IncomingMailAttachment[]
      */
     protected $attachments = [];
+
+    /** @var bool */
     protected $hasAttachments = false;
     protected $dataInfo = [[], []];
 
@@ -28,6 +30,9 @@ class IncomingMail extends IncomingMailHeader
         }
     }
 
+    /**
+     * @param DataPartInfo::TEXT_PLAIN|DataPartInfo::TEXT_HTML $type
+     */
     public function addDataPartInfo(DataPartInfo $dataInfo, $type)
     {
         $this->dataInfo[$type][] = $dataInfo;

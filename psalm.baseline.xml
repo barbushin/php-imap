@@ -1,28 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="3.8.2@90d6b73fd8062432030ef39b7b6694b3902daa31">
   <file src="src/PhpImap/DataPartInfo.php">
-    <MissingReturnType occurrences="1">
-      <code>fetch</code>
-    </MissingReturnType>
     <PossiblyUnusedMethod occurrences="1">
       <code>fetch</code>
     </PossiblyUnusedMethod>
   </file>
   <file src="src/PhpImap/IncomingMail.php">
-    <MissingParamType occurrences="4">
-      <code>$type</code>
+    <MissingParamType occurrences="3">
       <code>$name</code>
       <code>$name</code>
       <code>$baseUri</code>
     </MissingParamType>
-    <MissingPropertyType occurrences="8">
+    <MissingPropertyType occurrences="7">
       <code>$attachment-&gt;id</code>
       <code>$attachment-&gt;contentId</code>
       <code>$attachment-&gt;id</code>
       <code>$attachment-&gt;contentId</code>
       <code>$attachment-&gt;disposition</code>
       <code>$attachment-&gt;id</code>
-      <code>$hasAttachments</code>
       <code>$dataInfo</code>
     </MissingPropertyType>
     <MissingReturnType occurrences="1">
@@ -43,8 +38,7 @@
       <code>$match[0]</code>
       <code>$match[0]</code>
     </MixedArrayAccess>
-    <MixedArrayOffset occurrences="3">
-      <code>$this-&gt;dataInfo[$type]</code>
+    <MixedArrayOffset occurrences="2">
       <code>$this-&gt;attachments[$attachment-&gt;id]</code>
       <code>$this-&gt;attachments[$attachment-&gt;id]</code>
     </MixedArrayOffset>
@@ -55,15 +49,9 @@
       <code>$search[]</code>
       <code>$match</code>
     </MixedAssignment>
-    <MixedInferredReturnType occurrences="1">
-      <code>bool</code>
-    </MixedInferredReturnType>
     <MixedMethodCall occurrences="1">
       <code>fetch</code>
     </MixedMethodCall>
-    <MixedReturnStatement occurrences="1">
-      <code>$this-&gt;hasAttachments</code>
-    </MixedReturnStatement>
     <PossiblyUnusedMethod occurrences="3">
       <code>hasAttachments</code>
       <code>replaceInternalLinks</code>
