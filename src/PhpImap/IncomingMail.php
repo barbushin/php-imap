@@ -50,7 +50,7 @@ class IncomingMail extends IncomingMailHeader
      *
      * @property $name Name of the property (eg. textPlain)
      *
-     * @return mixed Value of the property (eg. Plain text message)
+     * @return string Value of the property (eg. Plain text message)
      */
     public function __get($name)
     {
@@ -69,6 +69,7 @@ class IncomingMail extends IncomingMailHeader
             $this->$name .= trim($data->fetch());
         }
 
+        /** @var string */
         return $this->$name;
     }
 
