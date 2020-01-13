@@ -69,7 +69,7 @@ class DataPartInfo
     }
 
     /**
-     * @return string|null
+     * @return string
      */
     public function fetch()
     {
@@ -117,6 +117,6 @@ class DataPartInfo
             );
         }
 
-        return $this->data;
+        return (null === $this->data) ? '' : $this->data;
     }
 }
