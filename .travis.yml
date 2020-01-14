@@ -18,8 +18,8 @@ before_script:
   - ./cc-test-reporter before-build
 
 script:
-  - vendor/bin/phpunit
-  - ./vendor/bin/php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff -v
+  - vendor/bin/phpunit --coverage-clover=clover.xml
+  - ./php-cs-fixer.phar fix --allow-risky=yes --no-interaction --dry-run --diff -v
 
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT -t clover
