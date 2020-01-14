@@ -19,11 +19,14 @@
             "email": "barbushin@gmail.com"
         }
     ],
+    "config": {
+        "sort-packages": true
+    },
     "require": {
         "php": ">=5.6",
+        "ext-iconv": "*",
         "ext-imap": "*",
-        "ext-mbstring": "*",
-        "ext-iconv": "*"
+        "ext-mbstring": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7",
