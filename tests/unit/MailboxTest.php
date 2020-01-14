@@ -29,6 +29,8 @@ final class MailboxTest extends TestCase
      * Holds the imap username.
      *
      * @var string|email
+     *
+     * @psalm-var string
      */
     private $login = 'php-imap@example.com';
 
@@ -637,9 +639,12 @@ final class MailboxTest extends TestCase
 
     /**
      * Provides test data for testing connection args.
+     *
+     * @psalm-return list<array{0:'assertNull'|'expectException', 1:int, 2:int, 3:array}>
      */
     public function connectionArgsProvider()
     {
+        /** @psalm-var list<array{0:'assertNull'|'expectException', 1:int, 2:int, 3:array}> */
         return [
             ['assertNull', OP_READONLY, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
             ['assertNull', OP_READONLY, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
