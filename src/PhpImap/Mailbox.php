@@ -296,9 +296,11 @@ class Mailbox
      *
      * @param int   $options
      * @param int   $retriesNum
-     * @param array $params
+     * @param array|null $params
      *
      * @throws InvalidParameterException
+     *
+     * @todo drop support for php 5.6, set $param to `array $param = null`
      */
     public function setConnectionArgs($options = 0, $retriesNum = 0, $params = null)
     {

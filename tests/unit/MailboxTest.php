@@ -665,10 +665,7 @@ final class MailboxTest extends TestCase
             ['expectException', OP_READONLY, -12, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
             ['expectException', OP_READONLY, '-1', ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
             ['expectException', OP_READONLY, '1', ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['expectException', OP_READONLY, 0, DISABLE_AUTHENTICATOR],
-            ['expectException', OP_READONLY, 0, 'DISABLE_AUTHENTICATOR'],
-            ['expectException', OP_READONLY, 0, SOMETHING],
-            ['expectException', OP_READONLY, 0, 'SOMETHING'],
+            ['expectException', OP_READONLY, 0, [null]],
         ];
     }
 
@@ -679,7 +676,7 @@ final class MailboxTest extends TestCase
      *
      * @param string       $assertMethod
      * @param int          $option
-     * @param string|array $param
+     * @param array|null $param
      *
      * @return void
      */
