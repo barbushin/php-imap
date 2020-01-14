@@ -214,9 +214,6 @@ final class MailboxTest extends TestCase
         $this->assertEquals($this->mailbox->getImapSearchOption(), 2);
 
         $this->expectException(InvalidParameterException::class);
-        $this->mailbox->setImapSearchOption('SE_FREE');
-
-        $this->expectException(InvalidParameterException::class);
         $this->mailbox->setImapSearchOption(ANYTHING);
 
         $this->mailbox->setImapSearchOption(SE_UID);
@@ -594,7 +591,7 @@ final class MailboxTest extends TestCase
     /**
      * Provides test data for testing timeouts.
      *
-     * @psalm-return array<string, array{0:'assertNull'|'expectException', 1:int, 2:list<int>}>
+     * @psalm-return array<string, array{0:'assertNull'|'expectException', 1:int, 2:list<1|2|3|4>}>
      */
     public function timeoutsProvider()
     {
@@ -623,7 +620,7 @@ final class MailboxTest extends TestCase
      * @param int[]  $types
      *
      * @psalm-param 'assertNull'|'expectException' $assertMethod
-     * @psalm-param list<int> $types
+     * @psalm-param list<1|2|3|4> $types
      *
      * @return void
      */

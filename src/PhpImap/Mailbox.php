@@ -19,23 +19,59 @@ use UnexpectedValueException;
  */
 class Mailbox
 {
+    /** @var string */
     protected $imapPath;
+
+    /** @var string */
     protected $imapLogin;
+
+    /** @var string */
     protected $imapPassword;
+
+    /** @var string|null */
     protected $imapOAuthAccessToken = null;
+
+    /** @var int */
     protected $imapSearchOption = SE_UID;
+
+    /** @var int */
     protected $connectionRetry = 0;
+
+    /** @var int */
     protected $connectionRetryDelay = 100;
+
+    /** @var int */
     protected $imapOptions = 0;
+
+    /** @var int */
     protected $imapRetriesNum = 0;
+
+    /** @var array */
     protected $imapParams = [];
+
+    /** @var string */
     protected $serverEncoding = 'UTF-8';
+
     /** @var string|null */
     protected $attachmentsDir = null;
+
+    /** @var bool */
     protected $expungeOnDisconnect = true;
+
+    /**
+     * @var int[]
+     *
+     * @psalm-var array{1?:int, 2?:int, 3?:int, 4?:int}
+     */
     protected $timeouts = [];
+
+    /** @var bool */
     protected $attachmentsIgnore = false;
+
+    /** @var string */
     protected $pathDelimiter = '.';
+
+    /** @var resource|null */
     private $imapStream;
 
     /**
@@ -79,7 +115,7 @@ class Mailbox
     {
         $oauth_command = 'A AUTHENTICATE XOAUTH2 '.$this->_constructAuthString();
 
-        $oauth_result = fwrite($this->imapStream, $oauth_command);
+        $oauth_result = fwrite($this->getImapStream(), $oauth_command);
 
         if (false === $oauth_result) {
             throw new Exception('Could not authenticate using OAuth!');
@@ -124,7 +160,7 @@ class Mailbox
     /**
      * Gets the OAuth Token for the authentication.
      *
-     * @return string $access_token OAuth Access Token
+     * @return string|null $access_token OAuth Access Token
      */
     public function getOAuthToken()
     {
@@ -160,7 +196,7 @@ class Mailbox
     /**
      * Validates the given path delimiter character.
      *
-     * @param string Path delimiter
+     * @param string $delimiter Path delimiter
      *
      * @return bool true (supported) or false (unsupported)
      */
@@ -188,7 +224,7 @@ class Mailbox
     /**
      * Sets / Changes the server encoding.
      *
-     * @param string Server encoding (eg. 'UTF-8')
+     * @param string $serverEncoding Server encoding (eg. 'UTF-8')
      *
      * @throws InvalidParameterException
      */
@@ -208,7 +244,7 @@ class Mailbox
     /**
      * Returns the current set IMAP search option.
      *
-     * @return string IMAP search option (eg. 'SE_UID')
+     * @return int IMAP search option (eg. 'SE_UID')
      */
     public function getImapSearchOption()
     {
@@ -218,17 +254,17 @@ class Mailbox
     /**
      * Sets / Changes the IMAP search option.
      *
-     * @param string IMAP search option (eg. 'SE_UID')
+     * @param int $imapSearchOption IMAP search option (eg. 'SE_UID')
+     *
+     * @psalm-param 1|2 $imapSearchOptions
      *
      * @throws InvalidParameterException
      */
     public function setImapSearchOption($imapSearchOption)
     {
-        $imapSearchOption = strtoupper(trim($imapSearchOption));
-
         $supported_options = [SE_FREE, SE_UID];
 
-        if (!\in_array($imapSearchOption, $supported_options)) {
+        if (!\in_array($imapSearchOption, $supported_options, true)) {
             throw new InvalidParameterException('"'.$imapSearchOption.'" is not supported by setImapSearchOption(). Supported options are SE_FREE and SE_UID.');
         }
 
@@ -269,6 +305,8 @@ class Mailbox
      * @param int   $timeout Timeout in seconds
      * @param array $types   One of the following: IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT
      *
+     * @psalm-param list<1|2|3|4> $types
+     *
      * @throws InvalidParameterException
      */
     public function setTimeouts($timeout, $types = [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT])
@@ -281,6 +319,7 @@ class Mailbox
             throw new InvalidParameterException('You have provided at least one unsupported timeout type. Supported types are: IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT');
         }
 
+        /** @var array{1?:int, 2?:int, 3?:int, 4?:int} */
         $this->timeouts = array_fill_keys($types, $timeout);
     }
 
@@ -367,7 +406,7 @@ class Mailbox
         return $this->attachmentsDir;
     }
 
-    /*
+    /**
      * Sets / Changes the attempts / retries to connect
      * @param int $maxAttempts
      * @return void
@@ -377,7 +416,7 @@ class Mailbox
         $this->connectionRetry = $maxAttempts;
     }
 
-    /*
+    /**
      * Sets / Changes the delay between each attempt / retry to connect
      * @param int $milliseconds
      * @return void
@@ -392,7 +431,7 @@ class Mailbox
      *
      * @param bool $forceConnection Initialize connection if it's not initialized
      *
-     * @return resource|null
+     * @return resource
      */
     public function getImapStream($forceConnection = true)
     {
@@ -403,7 +442,13 @@ class Mailbox
             }
         }
 
+        /** @var resource */
         return $this->imapStream;
+    }
+
+    public function hasImapStream() : bool
+    {
+        return \is_resource($this->imapStream) && imap_ping($this->imapStream);
     }
 
     /**
@@ -454,6 +499,7 @@ class Mailbox
         $this->imap('reopen', $this->imapPath);
     }
 
+    /** @return resource */
     protected function initImapStreamWithRetry()
     {
         $retry = $this->connectionRetry;
@@ -471,7 +517,7 @@ class Mailbox
     /**
      * Open an IMAP stream to a mailbox.
      *
-     * @return object IMAP stream on success
+     * @return resource IMAP stream on success
      *
      * @throws Exception if an error occured
      */
@@ -507,9 +553,8 @@ class Mailbox
      */
     public function disconnect()
     {
-        $imapStream = $this->getImapStream(false);
-        if ($imapStream && \is_resource($imapStream)) {
-            $this->imap('close', [$imapStream, $this->expungeOnDisconnect ? CL_EXPUNGE : 0], false, null);
+        if ($this->hasImapStream()) {
+            $this->imap('close', [$this->getImapStream(false), $this->expungeOnDisconnect ? CL_EXPUNGE : 0], false, null);
         }
     }
 
@@ -539,6 +584,7 @@ class Mailbox
      */
     public function checkMailbox()
     {
+        /** @var stdClass */
         return $this->imap('check');
     }
 
@@ -559,11 +605,14 @@ class Mailbox
      *
      * @param string $name Name of mailbox, which you want to delete (eg. 'PhpImap')
      *
+     * @return bool
+     *
      * @see   imap_deletemailbox()
      */
     public function deleteMailbox($name)
     {
-        $this->imap('deletemailbox', $this->getCombinedPath($name));
+        /** @var bool */
+        return $this->imap('deletemailbox', $this->getCombinedPath($name));
     }
 
     /**
@@ -587,6 +636,7 @@ class Mailbox
      */
     public function statusMailbox()
     {
+        /** @var stdClass */
         return $this->imap('status', [$this->imapPath, SA_ALL]);
     }
 
@@ -602,12 +652,10 @@ class Mailbox
      */
     public function getListingFolders($pattern = '*')
     {
+        /** @var string[] */
         $folders = $this->imap('list', [$this->imapPath, $pattern]) ?: [];
-        foreach ($folders as &$folder) {
-            $folder = $this->decodeStringFromUtf7ImapToUtf8($folder);
-        }
 
-        return $folders;
+        return array_map([$this, 'decodeStringFromUtf7ImapToUtf8'], $folders);
     }
 
     /**
@@ -622,9 +670,11 @@ class Mailbox
     public function searchMailbox($criteria = 'ALL', $disableServerEncoding = false)
     {
         if ($disableServerEncoding) {
+            /** @var array */
             return $this->imap('search', [$criteria, $this->imapSearchOption]) ?: [];
         }
 
+        /** @var array */
         return $this->imap('search', [$criteria, $this->imapSearchOption, $this->getServerEncoding()]) ?: [];
     }
 
@@ -811,6 +861,7 @@ class Mailbox
             }
         }
 
+        /** @var array */
         return $mails;
     }
 
@@ -825,6 +876,7 @@ class Mailbox
      */
     public function getMailboxHeaders()
     {
+        /** @var array */
         return $this->imap('headers');
     }
 
@@ -847,6 +899,7 @@ class Mailbox
      */
     public function getMailboxInfo()
     {
+        /** @var object */
         return $this->imap('mailboxmsginfo');
     }
 
@@ -870,6 +923,7 @@ class Mailbox
      */
     public function sortMails($criteria = SORTARRIVAL, $reverse = true, $searchCriteria = 'ALL')
     {
+        /** @var array */
         return $this->imap('sort', [$criteria, $reverse, $this->imapSearchOption, $searchCriteria]);
     }
 
@@ -882,6 +936,7 @@ class Mailbox
      */
     public function countMails()
     {
+        /** @var int */
         return $this->imap('num_msg');
     }
 
@@ -896,6 +951,7 @@ class Mailbox
      */
     protected function getQuota($quota_root = 'INBOX')
     {
+        /** @var array */
         return $this->imap('get_quotaroot', $quota_root);
     }
 
@@ -918,7 +974,7 @@ class Mailbox
      *
      * @param string $quota_root Should normally be in the form of which mailbox (i.e. INBOX)
      *
-     * @return int FALSE in the case of call failure
+     * @return int|false FALSE in the case of call failure
      */
     public function getQuotaUsage($quota_root = 'INBOX')
     {
@@ -942,6 +998,7 @@ class Mailbox
             $options |= FT_PEEK;
         }
 
+        /** @var string */
         return $this->imap('fetchbody', [$msgId, '', $options]);
     }
 
@@ -1050,6 +1107,9 @@ class Mailbox
      *
      * @param \stdClass[] $messageParts
      * @param \stdClass[] $flattenedParts
+     * @param string $prefix
+     * @param int $index
+     * @param bool $fullPrefix
      *
      * @psalm-param array<string, \stdClass> $flattenedParts
      *
@@ -1111,7 +1171,12 @@ class Mailbox
     }
 
     /**
+     * @param object $partStructure
      * @param string|int $partNum
+     * @param bool $markAsSeen
+     * @param bool $emlParse
+     *
+     * @todo flesh out shape of $partStructure
      */
     protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true, $emlParse = false)
     {
@@ -1218,13 +1283,13 @@ class Mailbox
     /**
      * Download attachment.
      *
-     * @param string $dataInfo
+     * @param DataPartInfo $dataInfo
      * @param array  $params        Array of params of mail
      * @param object $partStructure Part of mail
      * @param int    $mailId        ID of mail
      * @param bool   $emlOrigin     True, if it indicates, that the attachment comes from an EML (mail) file
      *
-     * @return IncomingMailAttachment[] $attachment
+     * @return IncomingMailAttachment $attachment
      */
     public function downloadAttachment(DataPartInfo $dataInfo, $params, $partStructure, $mailId, $emlOrigin = false)
     {
@@ -1275,6 +1340,7 @@ class Mailbox
      * Decodes a mime string.
      *
      * @param string $string MIME string to decode
+     * @param string $toCharset
      *
      * @return string Converted string if conversion was successful, or the original string if not
      *
@@ -1289,6 +1355,7 @@ class Mailbox
         $newString = '';
         foreach (imap_mime_header_decode($string) as $element) {
             if (isset($element->text)) {
+                /** @var string */
                 $fromCharset = !isset($element->charset) ? 'iso-8859-1' : $element->charset;
                 // Convert to UTF-8, if string has UTF-8 characters to avoid broken strings. See https://github.com/barbushin/php-imap/issues/232
                 $toCharset = isset($element->charset) && preg_match('/(UTF\-8)|(default)/i', $element->charset) ? 'UTF-8' : $toCharset;
@@ -1299,6 +1366,11 @@ class Mailbox
         return $newString;
     }
 
+    /**
+     * @param string $string
+     *
+     * @return bool
+     */
     public function isUrlEncoded($string)
     {
         $hasInvalidChars = preg_match('#[^%a-zA-Z0-9\-_\.\+]#', $string);
@@ -1307,6 +1379,12 @@ class Mailbox
         return !$hasInvalidChars && $hasEscapedChars;
     }
 
+    /**
+     * @param string $string
+     * @param string $charset
+     *
+     * @return string
+     */
     protected function decodeRFC2231($string, $charset = 'utf-8')
     {
         if (preg_match("/^(.*?)'.*?'(.*?)$/", $string, $matches)) {
@@ -1450,6 +1528,8 @@ class Mailbox
      *
      * @param string $mailbox
      *
+     * @return void
+     *
      * @throws Exception
      */
     public function unsubscribeMailbox($mailbox)
@@ -1465,10 +1545,19 @@ class Mailbox
      * @param bool         $prependConnectionAsFirstArg Add 'resource $imap_stream' as first argument, if set to true
      * @param string|null  $throwExceptionClass         Name of exception class, which will be thrown in case of errors
      *
+     * @psalm-param list<scalar|array|object|resource|null>|string $args
+     * @psalm-param class-string<Exception>|null $throwExceptionClass
+     *
+     * @return scalar|array|object|resource|null
+     *
      * @throws Exception
      */
     public function imap($methodShortName, $args = [], $prependConnectionAsFirstArg = true, $throwExceptionClass = Exception::class)
     {
+        $method_name = 'imap_'.$methodShortName;
+        if (!\function_exists($method_name)) {
+            throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() did not correspond to a known imap_* function');
+        }
         if (!\is_array($args)) {
             $args = [$args];
         }
@@ -1497,13 +1586,15 @@ class Mailbox
         }
 
         imap_errors(); // flush errors
-        $result = @\call_user_func_array("imap_$methodShortName", $args);
+
+        /** @var scalar|array|object|resource|null */
+        $result = @\call_user_func_array($method_name, $args);
 
         if (!$result) {
             $errors = imap_errors();
             if ($errors) {
                 if ($throwExceptionClass) {
-                    throw new $throwExceptionClass("IMAP method imap_$methodShortName() failed with error: ".implode('. ', $errors));
+                    throw new $throwExceptionClass("IMAP method $method_name() failed with error: ".implode('. ', $errors));
                 } else {
                     return false;
                 }
@@ -1532,6 +1623,10 @@ class Mailbox
         } elseif (true === $absolute) {
             $folder = ('/' === $folder) ? '' : $folder;
             $posConnectionDefinitionEnd = strpos($this->imapPath, '}');
+
+            if (false === $posConnectionDefinitionEnd) {
+                throw new UnexpectedValueException('"}" was not present in IMAP path!');
+            }
 
             return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1).$folder;
         }
