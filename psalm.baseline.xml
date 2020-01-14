@@ -1,31 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="3.8.2@90d6b73fd8062432030ef39b7b6694b3902daa31">
   <file src="src/PhpImap/IncomingMail.php">
-    <MissingParamType occurrences="3">
-      <code>$name</code>
-      <code>$name</code>
-      <code>$baseUri</code>
-    </MissingParamType>
-    <MissingReturnType occurrences="1">
-      <code>replaceInternalLinks</code>
-    </MissingReturnType>
-    <MixedArgument occurrences="5">
-      <code>$matches[2]</code>
-      <code>$matches[1]</code>
-      <code>$baseUri</code>
-      <code>$match[0]</code>
-      <code>$match[0]</code>
-    </MixedArgument>
-    <MixedArrayAccess occurrences="2">
-      <code>$match[0]</code>
-      <code>$match[0]</code>
-    </MixedArrayAccess>
-    <MixedAssignment occurrences="4">
-      <code>$value</code>
-      <code>$placeholder</code>
-      <code>$search[]</code>
-      <code>$match</code>
-    </MixedAssignment>
     <PossiblyUnusedMethod occurrences="3">
       <code>hasAttachments</code>
       <code>replaceInternalLinks</code>
@@ -34,9 +9,6 @@
     <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;dataInfo</code>
     </PropertyTypeCoercion>
-    <UndefinedThisPropertyAssignment occurrences="1">
-      <code>$this-&gt;textHtml</code>
-    </UndefinedThisPropertyAssignment>
   </file>
   <file src="src/PhpImap/IncomingMailAttachment.php">
     <PossiblyUnusedMethod occurrences="3">

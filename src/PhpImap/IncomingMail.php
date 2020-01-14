@@ -31,9 +31,17 @@ class IncomingMail extends IncomingMailHeader
      */
     protected $dataInfo = [[], []];
 
+    /** @var string|null */
+    private $textPlain;
+
+    /** @var string|null */
+    private $textHtml;
+
     public function setHeader(IncomingMailHeader $header)
     {
-        foreach (get_object_vars($header) as $property => $value) {
+        /** @psalm-var array<string, scalar|array|object|null> */
+        $array = get_object_vars($header);
+        foreach ($array as $property => $value) {
             $this->$property = $value;
         }
     }
@@ -50,7 +58,7 @@ class IncomingMail extends IncomingMailHeader
      * __get() is utilized for reading data from inaccessible (protected
      * or private) or non-existing properties.
      *
-     * @property $name Name of the property (eg. textPlain)
+     * @param string $name Name of the property (eg. textPlain)
      *
      * @return string Value of the property (eg. Plain text message)
      */
@@ -79,7 +87,7 @@ class IncomingMail extends IncomingMailHeader
      * The method __isset() is triggered by calling isset() or empty()
      * on inaccessible (protected or private) or non-existing properties.
      *
-     * @property $name Name of the property (eg. textPlain)
+     * @param string $name Name of the property (eg. textPlain)
      *
      * @return bool True, if property is set or empty
      */
@@ -146,12 +154,24 @@ class IncomingMail extends IncomingMailHeader
      * Get array of internal HTML links placeholders.
      *
      * @return array attachmentId => link placeholder
+     *
+     * @psalm-return array<string, string>
      */
     public function getInternalLinksPlaceholders()
     {
-        return preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $this->textHtml, $matches) ? array_combine($matches[2], $matches[1]) : [];
+        $match = preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $this->textHtml, $matches);
+
+        /** @psalm-var array{1:list<string>, 2:list<string>} */
+        $matches = $matches;
+
+        return $match ? array_combine($matches[2], $matches[1]) : [];
     }
 
+    /**
+     * @param string $baseUri
+     *
+     * @return string
+     */
     public function replaceInternalLinks($baseUri)
     {
         $baseUri = rtrim($baseUri, '\\/').'/';
@@ -170,6 +190,7 @@ class IncomingMail extends IncomingMailHeader
             }
         }
 
+        /** @psalm-var string */
         return str_replace($search, $replace, $fetchedHtml);
     }
 
@@ -180,6 +201,9 @@ class IncomingMail extends IncomingMailHeader
     public function embedImageAttachments()
     {
         preg_match_all("/\bcid:[^'\"\s]{1,256}/mi", $this->textHtml, $matches);
+
+        /** @psalm-var list<list<string>> */
+        $matches = $matches;
 
         if (\count($matches)) {
             foreach ($matches as $match) {
