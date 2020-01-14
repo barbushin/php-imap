@@ -148,7 +148,7 @@ final class MailboxTest extends TestCase
             'UTF7-IMAP' => [true, 'UTF7-IMAP'],
             'UTF-8' => [true, 'UTF-8'],
             'ASCII' => [true, 'ASCII'],
-            'ASCII' => [true, 'US-ASCII'],
+            'US-ASCII' => [true, 'US-ASCII'],
             'ISO-8859-1' => [true, 'ISO-8859-1'],
             // NOT supported encodings
             'UTF7' => [false, 'UTF7'],
@@ -421,7 +421,7 @@ final class MailboxTest extends TestCase
             'ɔl-Maa' => ['ɔl-Maa'], // Masai
             'Ελληνικά' => ['Ελληνικά'], // Greek
             'Ўзбек' => ['Ўзбек'], // Uzbek (Cyrillic)
-            'Ўзбек' => ['Азәрбајҹан'], // Azerbaijani (Cyrillic)
+            'Азәрбајҹан' => ['Азәрбајҹан'], // Azerbaijani (Cyrillic)
             'Српски' => ['Српски'], // Serbian (Cyrillic)
             'русский' => ['русский'], // Russian
             'ѩзыкъ словѣньскъ' => ['ѩзыкъ словѣньскъ'], // Church Slavic
@@ -603,11 +603,11 @@ final class MailboxTest extends TestCase
             'array(IMAP_WRITETIMEOUT)' => ['assertNull', 1, [IMAP_WRITETIMEOUT]],
             'array(IMAP_CLOSETIMEOUT)' => ['assertNull', 1, [IMAP_CLOSETIMEOUT]],
             'array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT)' => ['assertNull', 1, [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT]],
-            'array(IMAP_OPENTIMEOUT)' => ['expectException', 1, [OPENTIMEOUT]],
-            'array(IMAP_READTIMEOUT)' => ['expectException', 1, [READTIMEOUT]],
-            'array(IMAP_WRITETIMEOUT)' => ['expectException', 1, [WRITETIMEOUT]],
-            'array(IMAP_CLOSETIMEOUT)' => ['expectException', 1, [CLOSETIMEOUT]],
-            'array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT)' => ['expectException', 1, [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, WRITETIMEOUT, IMAP_CLOSETIMEOUT]],
+            'array(OPENTIMEOUT)' => ['expectException', 1, [OPENTIMEOUT]],
+            'array(READTIMEOUT)' => ['expectException', 1, [READTIMEOUT]],
+            'array(WRITETIMEOUT)' => ['expectException', 1, [WRITETIMEOUT]],
+            'array(CLOSETIMEOUT)' => ['expectException', 1, [CLOSETIMEOUT]],
+            'array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, WRITETIMEOUT, IMAP_CLOSETIMEOUT)' => ['expectException', 1, [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, WRITETIMEOUT, IMAP_CLOSETIMEOUT]],
         ];
     }
 
@@ -702,8 +702,8 @@ final class MailboxTest extends TestCase
             'Some subject here 😘' => ['=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 'Some subject here 😘'],
             'mountainguan测试' => ['=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 'mountainguan测试'],
             "This is the Euro symbol ''." => ["This is the Euro symbol ''.", "This is the Euro symbol ''."],
-            'Some subject here 😘' => ['=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 'Some subject here 😘', 'US-ASCII'],
-            'mountainguan测试' => ['=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 'mountainguan测试', 'US-ASCII'],
+            'Some subject here 😘 US-ASCII' => ['=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 'Some subject here 😘', 'US-ASCII'],
+            'mountainguan测试 US-ASCII' => ['=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 'mountainguan测试', 'US-ASCII'],
             'مقتطفات من: صن تزو. "فن الحرب". كتب أبل. Something' => ['مقتطفات من: صن تزو. "فن الحرب". كتب أبل. Something', 'مقتطفات من: صن تزو. "فن الحرب". كتب أبل. Something'],
         ];
     }
