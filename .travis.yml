@@ -9,15 +9,13 @@ php:
   - 7.1
   - 7.2
   - 7.3
-  - 7.4snapshot
+  - 7.4
 
 before_script:
   - composer install --no-interaction
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
-  - curl https://cs.symfony.com/download/php-cs-fixer-v2.phar -o php-cs-fixer.phar
-  - chmod +x php-cs-fixer.phar
 
 script:
   - vendor/bin/phpunit --coverage-clover=clover.xml

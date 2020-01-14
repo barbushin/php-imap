@@ -18,7 +18,7 @@ Initially released in December 2012, the PHP IMAP Mailbox is a powerful and open
 * Mark emails as seen/unseen
 * Delete emails
 * Manage mailbox folders
- 
+
 ### Requirements
 
 * PHP 5.6, 7.0, 7.1, 7.2, 7.3 or 7.4
@@ -102,13 +102,13 @@ print_r($mail->getAttachments());
 Method imap() allows to call any imap function in a context of the the instance:
 
 ```php
-// Call imap_check(); 	
-// http://php.net/manual/en/function.imap-check.php	
-$info = $mailbox->imap('check'); // 
-	
+// Call imap_check();
+// http://php.net/manual/en/function.imap-check.php
+$info = $mailbox->imap('check'); //
+
 // Show current time for the mailbox
-$currentServerTime = isset($info->Date) && $info->Date ? date('Y-m-d H:i:s', strtotime($info->Date)) : 'Unknown';	
-	
+$currentServerTime = isset($info->Date) && $info->Date ? date('Y-m-d H:i:s', strtotime($info->Date)) : 'Unknown';
+
 echo $currentServerTime;
 ```
 
@@ -118,19 +118,19 @@ Some request require much time and resources:
 // If you don't need to grab attachments you can significantly increase performance of your application
 $mailbox->setAttachmentsIgnore(true);
 
-// get the list of folders/mailboxes	
-$folders = $mailbox->getMailboxes('*'); 	
-	
-// loop through mailboxs	
-foreach($folders as $folder) {	
-	
-	// switch to particular mailbox	
-	$mailbox->switchMailbox($folder['fullpath']); 	
-		
-	// search in particular mailbox	
-	$mails_ids[$folder['fullpath']] = $mailbox->searchMailbox('SINCE "1 Jan 2018" BEFORE "28 Jan 2018"');	
-}	
-	
+// get the list of folders/mailboxes
+$folders = $mailbox->getMailboxes('*');
+
+// loop through mailboxs
+foreach($folders as $folder) {
+
+	// switch to particular mailbox
+	$mailbox->switchMailbox($folder['fullpath']);
+
+	// search in particular mailbox
+	$mails_ids[$folder['fullpath']] = $mailbox->searchMailbox('SINCE "1 Jan 2018" BEFORE "28 Jan 2018"');
+}
+
 print_r($mails_ids);
 ```
 

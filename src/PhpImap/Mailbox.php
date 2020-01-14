@@ -4,6 +4,8 @@ namespace PhpImap;
 
 use DateTime;
 use Exception;
+use function iconv;
+use function mb_list_encodings;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
 use stdClass;
@@ -191,11 +193,7 @@ class Mailbox
     {
         $serverEncoding = strtoupper(trim($serverEncoding));
 
-        // https://github.com/barbushin/php-imap/issues/336
-        $supported_encodings = [];
-        if (\extension_loaded('mbstring')) {
-            $supported_encodings = mb_list_encodings();
-        }
+        $supported_encodings = mb_list_encodings();
 
         if (!\in_array($serverEncoding, $supported_encodings) && 'US-ASCII' != $serverEncoding) {
             throw new InvalidParameterException('"'.$serverEncoding.'" is not supported by setServerEncoding(). Your system only supports these encodings: US-ASCII, '.implode(', ', $supported_encodings));
@@ -390,10 +388,7 @@ class Mailbox
     public function getImapStream($forceConnection = true)
     {
         if ($forceConnection) {
-            if ($this->imapStream && (!\is_resource($this->imapStream) || !imap_ping($this->imapStream))) {
-                $this->disconnect();
-                $this->imapStream = null;
-            }
+            $this->pingOrDisconnect();
             if (!$this->imapStream) {
                 $this->imapStream = $this->initImapStreamWithRetry();
             }
@@ -983,23 +978,19 @@ class Mailbox
 
         $header->subject = (isset($head->subject) and !empty(trim($head->subject))) ? $this->decodeMimeStr($head->subject, $this->getServerEncoding()) : null;
         if (isset($head->from) and !empty($head->from)) {
-            $header->fromHost = isset($head->from[0]->host) ? $head->from[0]->host : (isset($head->from[1]->host) ? $head->from[1]->host : null);
-            $header->fromName = (isset($head->from[0]->personal) and !empty(trim($head->from[0]->personal))) ? $this->decodeMimeStr($head->from[0]->personal, $this->getServerEncoding()) : ((isset($head->from[1]->personal) and (!empty(trim($head->from[1]->personal)))) ? $this->decodeMimeStr($head->from[1]->personal, $this->getServerEncoding()) : null);
-            $header->fromAddress = strtolower($head->from[0]->mailbox.'@'.$header->fromHost);
+            list($header->fromHost, $header->fromName, $header->fromAddress) = $this->possiblyGetHostNameAndAddress($head->from);
         } elseif (preg_match('/smtp.mailfrom=[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/', $headersRaw, $matches)) {
             $header->fromAddress = substr($matches[0], 14);
         }
         if (isset($head->sender) and !empty($head->sender)) {
-            $header->senderHost = isset($head->sender[0]->host) ? $head->sender[0]->host : (isset($head->sender[1]->host) ? $head->sender[1]->host : null);
-            $header->senderName = (isset($head->sender[0]->personal) and !empty(trim($head->sender[0]->personal))) ? $this->decodeMimeStr($head->sender[0]->personal, $this->getServerEncoding()) : ((isset($head->sender[1]->personal) and (!empty(trim($head->sender[1]->personal)))) ? $this->decodeMimeStr($head->sender[1]->personal, $this->getServerEncoding()) : null);
-            $header->senderAddress = strtolower($head->sender[0]->mailbox.'@'.$header->senderHost);
+            list($header->senderHost, $header->senderName, $header->senderAddress) = $this->possiblyGetHostNameAndAddress($head->sender);
         }
         if (isset($head->to)) {
             $toStrings = [];
             foreach ($head->to as $to) {
-                if (isset($to->mailbox) && !empty(trim($to->mailbox)) && isset($to->host) && !empty(trim($to->host))) {
-                    $toEmail = strtolower($to->mailbox.'@'.$to->host);
-                    $toName = (isset($to->personal) and !empty(trim($to->personal))) ? $this->decodeMimeStr($to->personal, $this->getServerEncoding()) : null;
+                $to_parsed = $this->possiblyGetEmailAndNameFromRecipient($to);
+                if ($to_parsed) {
+                    list($toEmail, $toName) = $to_parsed;
                     $toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
                     $header->to[$toEmail] = $toName;
                 }
@@ -1009,33 +1000,27 @@ class Mailbox
 
         if (isset($head->cc)) {
             foreach ($head->cc as $cc) {
-                if (isset($cc->mailbox) && !empty(trim($cc->mailbox)) && isset($cc->host) && !empty(trim($cc->host))) {
-                    $ccEmail = strtolower($cc->mailbox.'@'.$cc->host);
-                    $ccName = (isset($cc->personal) and !empty(trim($cc->personal))) ? $this->decodeMimeStr($cc->personal, $this->getServerEncoding()) : null;
-                    $ccStrings[] = $ccName ? "$ccName <$ccEmail>" : $ccEmail;
-                    $header->cc[$ccEmail] = $ccName;
+                $cc_parsed = $this->possiblyGetEmailAndNameFromRecipient($cc);
+                if ($cc_parsed) {
+                    $header->cc[$cc_parsed[0]] = $cc_parsed[1];
                 }
             }
         }
 
         if (isset($head->bcc)) {
             foreach ($head->bcc as $bcc) {
-                if (isset($bcc->mailbox) && !empty(trim($bcc->mailbox)) && isset($bcc->host) && !empty(trim($bcc->host))) {
-                    $bccEmail = strtolower($bcc->mailbox.'@'.$bcc->host);
-                    $bccName = (isset($bcc->personal) and !empty(trim($bcc->personal))) ? $this->decodeMimeStr($bcc->personal, $this->getServerEncoding()) : null;
-                    $bccStrings[] = $bccName ? "$bccName <$bccEmail>" : $bccEmail;
-                    $header->bcc[$bccEmail] = $bccName;
+                $bcc_parsed = $this->possiblyGetEmailAndNameFromRecipient($bcc);
+                if ($bcc_parsed) {
+                    $header->bcc[$bcc_parsed[0]] = $bcc_parsed[1];
                 }
             }
         }
 
         if (isset($head->reply_to)) {
             foreach ($head->reply_to as $replyTo) {
-                if (isset($replyTo->mailbox) && !empty(trim($replyTo->mailbox)) && isset($replyTo->host) && !empty(trim($replyTo->host))) {
-                    $replyToEmail = strtolower($replyTo->mailbox.'@'.$replyTo->host);
-                    $replyToName = (isset($replyTo->personal) and !empty(trim($replyTo->personal))) ? $this->decodeMimeStr($replyTo->personal, $this->getServerEncoding()) : null;
-                    $replyToStrings[] = $replyToName ? "$replyToName <$replyToEmail>" : $replyToEmail;
-                    $header->replyTo[$replyToEmail] = $replyToName;
+                $replyTo_parsed = $this->possiblyGetEmailAndNameFromRecipient($replyTo);
+                if ($replyTo_parsed) {
+                    $header->replyTo[$replyTo_parsed[0]] = $replyTo_parsed[1];
                 }
             }
         }
@@ -1165,9 +1150,11 @@ class Mailbox
 
         if (!empty($partStructure->parts)) {
             foreach ($partStructure->parts as $subPartNum => $subPartStructure) {
-                if (TYPEMESSAGE === $partStructure->type && 'RFC822' == $partStructure->subtype && (!isset($partStructure->disposition) || 'attachment' !== $partStructure->disposition)) {
+                $not_attachment = (!isset($partStructure->disposition) || 'attachment' !== $partStructure->disposition);
+
+                if (TYPEMESSAGE === $partStructure->type && 'RFC822' == $partStructure->subtype && $not_attachment) {
                     $this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
-                } elseif (TYPEMULTIPART === $partStructure->type && 'ALTERNATIVE' == $partStructure->subtype && (!isset($partStructure->disposition) || 'attachment' !== $partStructure->disposition)) {
+                } elseif (TYPEMULTIPART === $partStructure->type && 'ALTERNATIVE' == $partStructure->subtype && $not_attachment) {
                     // https://github.com/barbushin/php-imap/issues/198
                     $this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
                 } elseif ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
@@ -1206,29 +1193,19 @@ class Mailbox
     public function downloadAttachment(DataPartInfo $dataInfo, $params, $partStructure, $mailId, $emlOrigin = false)
     {
         if ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
-            $fileExt = strtolower($partStructure->subtype).'.eml';
+            $fileName = strtolower($partStructure->subtype).'.eml';
         } elseif ('ALTERNATIVE' == $partStructure->subtype) {
-            $fileExt = strtolower($partStructure->subtype).'.eml';
+            $fileName = strtolower($partStructure->subtype).'.eml';
         } elseif ((!isset($params['filename']) or empty(trim($params['filename']))) && (!isset($params['name']) or empty(trim($params['name'])))) {
-            $fileExt = strtolower($partStructure->subtype);
+            $fileName = strtolower($partStructure->subtype);
         } else {
             $fileName = (isset($params['filename']) and !empty(trim($params['filename']))) ? $params['filename'] : $params['name'];
             $fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
             $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
         }
 
-        if (isset($fileExt) && isset($fileName)) {
-            $fileName = $fileName.'.'.$fileExt;
-        } elseif (isset($fileExt) && !isset($fileName)) {
-            $fileName = $fileExt;
-        } elseif (!isset($fileExt) && isset($fileName)) {
-            $fileName = $fileName;
-        }
-
-        $attachmentId = sha1($fileName.($partStructure->ifid ? $partStructure->id : ''));
-
         $attachment = new IncomingMailAttachment();
-        $attachment->id = $attachmentId;
+        $attachment->id = sha1($fileName.($partStructure->ifid ? $partStructure->id : ''));
         $attachment->contentId = $partStructure->ifid ? trim($partStructure->id, ' <>') : null;
         $attachment->name = $fileName;
         $attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
@@ -1244,7 +1221,7 @@ class Mailbox
                 '/_+/' => '_',
                 '/(^_)|(_$)/' => '',
             ];
-            $fileSysName = preg_replace('~[\\\\/]~', '', $mailId.'_'.$attachmentId.'_'.preg_replace(array_keys($replace), $replace, $fileName));
+            $fileSysName = preg_replace('~[\\\\/]~', '', $mailId.'_'.$attachment->id.'_'.preg_replace(array_keys($replace), $replace, $fileName));
             $filePath = $this->getAttachmentsDir().\DIRECTORY_SEPARATOR.$fileSysName;
 
             if (\strlen($filePath) > 255) {
@@ -1351,14 +1328,10 @@ class Mailbox
             return $string;
         }
         $convertedString = '';
-        $mbLoaded = \extension_loaded('mbstring');
-        $supportedEncodings = [];
-        if ($mbLoaded) {
-            $supportedEncodings = array_map('strtolower', mb_list_encodings());
-        }
-        if ($mbLoaded && \in_array(strtolower($fromEncoding), $supportedEncodings) && \in_array(strtolower($toEncoding), $supportedEncodings)) {
+        $supportedEncodings = array_map('strtolower', mb_list_encodings());
+        if (\in_array(strtolower($fromEncoding), $supportedEncodings) && \in_array(strtolower($toEncoding), $supportedEncodings)) {
             $convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
-        } elseif (\function_exists('iconv')) {
+        } else {
             $convertedString = @iconv($fromEncoding, $toEncoding.'//TRANSLIT//IGNORE', $string);
         }
         if (('' == $convertedString) or (false === $convertedString)) {
@@ -1409,21 +1382,7 @@ class Mailbox
      */
     public function getMailboxes($search = '*')
     {
-        $arr = [];
-        if ($t = imap_getmailboxes($this->getImapStream(), $this->imapPath, $search)) {
-            foreach ($t as $item) {
-                // https://github.com/barbushin/php-imap/issues/339
-                $name = $this->decodeStringFromUtf7ImapToUtf8($item->name);
-                $arr[] = [
-                    'fullpath' => $name,
-                    'attributes' => $item->attributes,
-                    'delimiter' => $item->delimiter,
-                    'shortpath' => substr($name, strpos($name, '}') + 1),
-                ];
-            }
-        }
-
-        return $arr;
+        return $this->possiblyGetMailboxes(imap_getmailboxes($this->getImapStream(), $this->imapPath, $search));
     }
 
     /**
@@ -1435,21 +1394,7 @@ class Mailbox
      */
     public function getSubscribedMailboxes($search = '*')
     {
-        $arr = [];
-        if ($t = imap_getsubscribed($this->getImapStream(), $this->imapPath, $search)) {
-            foreach ($t as $item) {
-                // https://github.com/barbushin/php-imap/issues/339
-                $name = $this->decodeStringFromUtf7ImapToUtf8($item->name);
-                $arr[] = [
-                    'fullpath' => $name,
-                    'attributes' => $item->attributes,
-                    'delimiter' => $item->delimiter,
-                    'shortpath' => substr($name, strpos($name, '}') + 1),
-                ];
-            }
-        }
-
-        return $arr;
+        return $this->possiblyGetMailboxes(imap_getsubscribed($this->getImapStream(), $this->imapPath, $search));
     }
 
     /**
@@ -1556,5 +1501,79 @@ class Mailbox
         }
 
         return $this->imapPath.$this->getPathDelimiter().$folder;
+    }
+
+    /**
+     * @return array|null
+     *
+     * @psalm-return array{0:string, 1:string}|null
+     */
+    protected function possiblyGetEmailAndNameFromRecipient(object $recipient)
+    {
+        if (isset($recipient->mailbox) && !empty(trim($recipient->mailbox)) && isset($recipient->host) && !empty(trim($recipient->host))) {
+            $recipientEmail = strtolower($recipient->mailbox.'@'.$recipient->host);
+            $recipientName = (isset($recipient->personal) and !empty(trim($recipient->personal))) ? $this->decodeMimeStr($recipient->personal, $this->getServerEncoding()) : null;
+
+            return [
+                $recipientEmail,
+                $recipientName,
+            ];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array $t
+     *
+     * @return array
+     */
+    protected function possiblyGetMailboxes($t)
+    {
+        $arr = [];
+        if ($t) {
+            foreach ($t as $item) {
+                // https://github.com/barbushin/php-imap/issues/339
+                $name = $this->decodeStringFromUtf7ImapToUtf8($item->name);
+                $arr[] = [
+                    'fullpath' => $name,
+                    'attributes' => $item->attributes,
+                    'delimiter' => $item->delimiter,
+                    'shortpath' => substr($name, strpos($name, '}') + 1),
+                ];
+            }
+        }
+
+        return $arr;
+    }
+
+    /**
+     * @param array $t
+     *
+     * @psalm-param non-empty-array $t
+     *
+     * @return array
+     *
+     * @psalm-return array{0:string|string, 1:string|null, 2:string}
+     */
+    protected function possiblyGetHostNameAndAddress($t)
+    {
+        $out = [];
+        $out[] = isset($t[0]->host) ? $t[0]->host : (isset($t[1]->host) ? $t[1]->host : null);
+        $out[] = (isset($t[0]->personal) and !empty(trim($t[0]->personal))) ? $this->decodeMimeStr($t[0]->personal, $this->getServerEncoding()) : ((isset($t[1]->personal) and (!empty(trim($t[1]->personal)))) ? $this->decodeMimeStr($t[1]->personal, $this->getServerEncoding()) : null);
+        $out[] = strtolower($t[0]->mailbox.'@'.$out[0]);
+
+        return $out;
+    }
+
+    /**
+     * @return void
+     */
+    protected function pingOrDisconnect()
+    {
+        if ($this->imapStream && (!\is_resource($this->imapStream) || !imap_ping($this->imapStream))) {
+            $this->disconnect();
+            $this->imapStream = null;
+        }
     }
 }
