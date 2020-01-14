@@ -5,10 +5,12 @@ namespace PhpImap;
 use DateTime;
 use Exception;
 use function iconv;
+use InvalidArgumentException;
 use function mb_list_encodings;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
 use stdClass;
+use UnexpectedValueException;
 
 /**
  * @see https://github.com/barbushin/php-imap
@@ -1034,6 +1036,9 @@ class Mailbox
         }
 
         if (isset($head->message_id)) {
+            if (!is_string($head->message_id)) {
+                throw new UnexpectedValueException('Message ID was expected to be a string, '.\gettype($head->message_id).' found!');
+            }
             $header->messageId = $head->message_id;
         }
 
@@ -1110,6 +1115,10 @@ class Mailbox
      */
     protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true, $emlParse = false)
     {
+        if (!isset($mail->id)) {
+            throw new InvalidArgumentException('Argument 1 passeed to '.__METHOD__.'() did not have the id property set!');
+        }
+
         $options = (SE_UID == $this->imapSearchOption) ? FT_UID : 0;
 
         if (!$markAsSeen) {

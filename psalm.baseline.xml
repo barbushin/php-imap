@@ -22,14 +22,6 @@
       <code>$emlOrigin</code>
     </PossiblyUnusedProperty>
   </file>
-  <file src="src/PhpImap/IncomingMailHeader.php">
-    <MissingConstructor occurrences="1">
-      <code>$id</code>
-    </MissingConstructor>
-    <MissingPropertyType occurrences="1">
-      <code>$messageId</code>
-    </MissingPropertyType>
-  </file>
   <file src="src/PhpImap/Mailbox.php">
     <DocblockTypeContradiction occurrences="2">
       <code>\is_int($retriesNum)</code>
@@ -473,9 +465,6 @@
       <code>\is_resource($imapStream)</code>
       <code>$imapStream &amp;&amp; \is_resource($imapStream)</code>
     </RedundantConditionGivenDocblockType>
-    <UndefinedDocblockClass occurrences="1">
-      <code>InvalidArgumentException</code>
-    </UndefinedDocblockClass>
     <UnusedVariable occurrences="1">
       <code>$value</code>
     </UnusedVariable>
