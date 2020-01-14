@@ -583,11 +583,9 @@
     <MissingReturnType occurrences="1">
       <code>connectionArgsProvider</code>
     </MissingReturnType>
-    <MixedArgument occurrences="4">
+    <MixedArgument occurrences="2">
       <code>$retriesNum</code>
-      <code>$param</code>
       <code>$retriesNum</code>
-      <code>$param</code>
     </MixedArgument>
     <PossiblyInvalidArgument occurrences="4">
       <code>$this-&gt;login</code>
@@ -598,14 +596,12 @@
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>assertInstanceOf</code>
     </RedundantConditionGivenDocblockType>
-    <UndefinedConstant occurrences="7">
+    <UndefinedConstant occurrences="5">
       <code>OPENTIMEOUT</code>
       <code>READTIMEOUT</code>
       <code>WRITETIMEOUT</code>
       <code>CLOSETIMEOUT</code>
       <code>WRITETIMEOUT</code>
-      <code>DISABLE_AUTHENTICATOR</code>
-      <code>SOMETHING</code>
     </UndefinedConstant>
     <UndefinedDocblockClass occurrences="1">
       <code>string|email</code>
