@@ -28,6 +28,7 @@ class Mailbox
     protected $imapRetriesNum = 0;
     protected $imapParams = [];
     protected $serverEncoding = 'UTF-8';
+    /** @var string|null */
     protected $attachmentsDir = null;
     protected $expungeOnDisconnect = true;
     protected $timeouts = [];
@@ -357,7 +358,7 @@ class Mailbox
     /**
      * Get current saving folder for attachments.
      *
-     * @return string Attachments dir
+     * @return string|null Attachments dir
      */
     public function getAttachmentsDir()
     {

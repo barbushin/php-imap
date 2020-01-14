@@ -14,7 +14,10 @@ use UnexpectedValueException;
  */
 class IncomingMailAttachment
 {
+    /** @var string|null */
     public $id;
+
+    /** @var string|null */
     public $contentId;
 
     /** @var string|null */
@@ -36,10 +39,16 @@ class IncomingMailAttachment
     private $dataInfo;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $mimeType;
 
+    /** @var string|null */
+    private $filePath;
+
+    /**
+     * @param string $name
+     */
     public function __get($name)
     {
         if ('filePath' !== $name) {

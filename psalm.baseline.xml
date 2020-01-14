@@ -6,32 +6,20 @@
       <code>$name</code>
       <code>$baseUri</code>
     </MissingParamType>
-    <MissingPropertyType occurrences="5">
-      <code>$attachment-&gt;id</code>
-      <code>$attachment-&gt;contentId</code>
-      <code>$attachment-&gt;id</code>
-      <code>$attachment-&gt;contentId</code>
-      <code>$attachment-&gt;id</code>
-    </MissingPropertyType>
     <MissingReturnType occurrences="1">
       <code>replaceInternalLinks</code>
     </MissingReturnType>
-    <MixedArgument occurrences="6">
+    <MixedArgument occurrences="5">
       <code>$matches[2]</code>
       <code>$matches[1]</code>
       <code>$baseUri</code>
       <code>$match[0]</code>
       <code>$match[0]</code>
-      <code>$attachment-&gt;id</code>
     </MixedArgument>
     <MixedArrayAccess occurrences="2">
       <code>$match[0]</code>
       <code>$match[0]</code>
     </MixedArrayAccess>
-    <MixedArrayOffset occurrences="2">
-      <code>$this-&gt;attachments[$attachment-&gt;id]</code>
-      <code>$this-&gt;attachments[$attachment-&gt;id]</code>
-    </MixedArrayOffset>
     <MixedAssignment occurrences="4">
       <code>$value</code>
       <code>$placeholder</code>
@@ -51,30 +39,6 @@
     </UndefinedThisPropertyAssignment>
   </file>
   <file src="src/PhpImap/IncomingMailAttachment.php">
-    <MissingConstructor occurrences="1">
-      <code>$mimeType</code>
-    </MissingConstructor>
-    <MissingParamType occurrences="1">
-      <code>$name</code>
-    </MissingParamType>
-    <MissingPropertyType occurrences="2">
-      <code>$id</code>
-      <code>$contentId</code>
-    </MissingPropertyType>
-    <MixedAssignment occurrences="2">
-      <code>$finfo</code>
-      <code>$this-&gt;mimeType</code>
-    </MixedAssignment>
-    <MixedInferredReturnType occurrences="1">
-      <code>string</code>
-      <code>string</code>
-    </MixedInferredReturnType>
-    <MixedMethodCall occurrences="1">
-      <code>buffer</code>
-    </MixedMethodCall>
-    <MixedReturnStatement occurrences="1">
-      <code>$this-&gt;mimeType</code>
-    </MixedReturnStatement>
     <PossiblyUnusedMethod occurrences="3">
       <code>setFilePath</code>
       <code>addDataPartInfo</code>
@@ -85,9 +49,6 @@
       <code>$charset</code>
       <code>$emlOrigin</code>
     </PossiblyUnusedProperty>
-    <UndefinedThisPropertyAssignment occurrences="1">
-      <code>$this-&gt;filePath</code>
-    </UndefinedThisPropertyAssignment>
   </file>
   <file src="src/PhpImap/IncomingMailHeader.php">
     <MissingConstructor occurrences="1">
@@ -151,7 +112,7 @@
       <code>$string</code>
       <code>$charset</code>
     </MissingParamType>
-    <MissingPropertyType occurrences="17">
+    <MissingPropertyType occurrences="16">
       <code>$imapPath</code>
       <code>$imapLogin</code>
       <code>$imapPassword</code>
@@ -163,7 +124,6 @@
       <code>$imapRetriesNum</code>
       <code>$imapParams</code>
       <code>$serverEncoding</code>
-      <code>$attachmentsDir</code>
       <code>$expungeOnDisconnect</code>
       <code>$timeouts</code>
       <code>$attachmentsIgnore</code>
@@ -306,7 +266,7 @@
       <code>$arg</code>
       <code>$result</code>
     </MixedAssignment>
-    <MixedInferredReturnType occurrences="26">
+    <MixedInferredReturnType occurrences="25">
       <code>string</code>
       <code>string</code>
       <code>string</code>
@@ -444,14 +404,13 @@
       <code>$item-&gt;attributes</code>
       <code>$item-&gt;delimiter</code>
     </MixedPropertyFetch>
-    <MixedReturnStatement occurrences="26">
+    <MixedReturnStatement occurrences="25">
       <code>$this-&gt;imapOAuthAccessToken</code>
       <code>$this-&gt;pathDelimiter</code>
       <code>$this-&gt;serverEncoding</code>
       <code>$this-&gt;imapSearchOption</code>
       <code>$this-&gt;attachmentsIgnore</code>
       <code>$this-&gt;imapLogin</code>
-      <code>$this-&gt;attachmentsDir</code>
       <code>$this-&gt;imapStream</code>
       <code>$str</code>
       <code>$str</code>
