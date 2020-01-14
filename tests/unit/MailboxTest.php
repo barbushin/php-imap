@@ -677,8 +677,8 @@ final class MailboxTest extends TestCase
      *
      * @dataProvider connectionArgsProvider
      *
-     * @param string $assertMethod
-     * @param int    $option
+     * @param string       $assertMethod
+     * @param int          $option
      * @param string|array $param
      *
      * @return void
