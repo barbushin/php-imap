@@ -679,6 +679,7 @@ final class MailboxTest extends TestCase
      *
      * @param string $assertMethod
      * @param int    $option
+     * @param string|array $param
      *
      * @return void
      */
