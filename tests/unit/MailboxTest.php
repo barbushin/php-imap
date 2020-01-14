@@ -168,7 +168,7 @@ final class MailboxTest extends TestCase
      *
      * @dataProvider serverEncodingProvider
      *
-     * @param bool $bool
+     * @param bool   $bool
      * @param string $encoding
      *
      * @return void
@@ -500,7 +500,7 @@ final class MailboxTest extends TestCase
      *
      * @dataProvider datetimeProvider
      *
-     * @param string $dateToParse
+     * @param string  $dateToParse
      * @param numeric $epochToCompare
      *
      * @return void
@@ -621,8 +621,8 @@ final class MailboxTest extends TestCase
      * @dataProvider timeoutsProvider
      *
      * @param string $assertMethod
-     * @param int $timeout
-     * @param int[] $types
+     * @param int    $timeout
+     * @param int[]  $types
      *
      * @psalm-param 'assertNull'|'expectException' $assertMethod
      * @psalm-param list<int> $types
@@ -678,8 +678,7 @@ final class MailboxTest extends TestCase
      * @dataProvider connectionArgsProvider
      *
      * @param string $assertMethod
-     * @param int $option
-     * @param mixed $param
+     * @param int    $option
      *
      * @return void
      */

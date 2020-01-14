@@ -108,13 +108,8 @@ class IncomingMailAttachment
      */
     public function getContents()
     {
-        if (is_null($this->dataInfo)) {
-            throw new UnexpectedValueException(
-                static::class .
-                '::$dataInfo has not been set by calling ' .
-                self::class .
-                '::addDataPartInfo()'
-            );
+        if (null === $this->dataInfo) {
+            throw new UnexpectedValueException(static::class.'::$dataInfo has not been set by calling '.self::class.'::addDataPartInfo()');
         }
 
         return $this->dataInfo->fetch();
