@@ -294,8 +294,8 @@ class Mailbox
     /**
      * Set custom connection arguments of imap_open method. See http://php.net/imap_open.
      *
-     * @param int   $options
-     * @param int   $retriesNum
+     * @param int        $options
+     * @param int        $retriesNum
      * @param array|null $params
      *
      * @throws InvalidParameterException
