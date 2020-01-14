@@ -407,20 +407,24 @@ class Mailbox
     }
 
     /**
-     * Sets / Changes the attempts / retries to connect
+     * Sets / Changes the attempts / retries to connect.
+     *
      * @param int $maxAttempts
+     *
      * @return void
-    */
+     */
     public function setConnectionRetry($maxAttempts)
     {
         $this->connectionRetry = $maxAttempts;
     }
 
     /**
-     * Sets / Changes the delay between each attempt / retry to connect
+     * Sets / Changes the delay between each attempt / retry to connect.
+     *
      * @param int $milliseconds
+     *
      * @return void
-    */
+     */
     public function setConnectionRetryDelay($milliseconds)
     {
         $this->connectionRetryDelay = $milliseconds;
@@ -446,7 +450,7 @@ class Mailbox
         return $this->imapStream;
     }
 
-    public function hasImapStream() : bool
+    public function hasImapStream(): bool
     {
         return \is_resource($this->imapStream) && imap_ping($this->imapStream);
     }
@@ -1093,7 +1097,7 @@ class Mailbox
         }
 
         if (isset($head->message_id)) {
-            if (!is_string($head->message_id)) {
+            if (!\is_string($head->message_id)) {
                 throw new UnexpectedValueException('Message ID was expected to be a string, '.\gettype($head->message_id).' found!');
             }
             $header->messageId = $head->message_id;
@@ -1107,9 +1111,9 @@ class Mailbox
      *
      * @param \stdClass[] $messageParts
      * @param \stdClass[] $flattenedParts
-     * @param string $prefix
-     * @param int $index
-     * @param bool $fullPrefix
+     * @param string      $prefix
+     * @param int         $index
+     * @param bool        $fullPrefix
      *
      * @psalm-param array<string, \stdClass> $flattenedParts
      *
@@ -1171,10 +1175,10 @@ class Mailbox
     }
 
     /**
-     * @param object $partStructure
+     * @param object     $partStructure
      * @param string|int $partNum
-     * @param bool $markAsSeen
-     * @param bool $emlParse
+     * @param bool       $markAsSeen
+     * @param bool       $emlParse
      *
      * @todo flesh out shape of $partStructure
      */
@@ -1283,7 +1287,6 @@ class Mailbox
     /**
      * Download attachment.
      *
-     * @param DataPartInfo $dataInfo
      * @param array  $params        Array of params of mail
      * @param object $partStructure Part of mail
      * @param int    $mailId        ID of mail
@@ -1339,7 +1342,7 @@ class Mailbox
     /**
      * Decodes a mime string.
      *
-     * @param string $string MIME string to decode
+     * @param string $string    MIME string to decode
      * @param string $toCharset
      *
      * @return string Converted string if conversion was successful, or the original string if not
