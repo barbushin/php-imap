@@ -92,8 +92,8 @@ class IncomingMail extends IncomingMailHeader
 
     public function addAttachment(IncomingMailAttachment $attachment)
     {
-        if ( ! is_string($attachment->id)) {
-            throw new InvalidArgumentException('Argument 1 passed to ' . __METHOD__ . '() does not have an id specified!');
+        if (!\is_string($attachment->id)) {
+            throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() does not have an id specified!');
         }
         $this->attachments[$attachment->id] = $attachment;
     }
@@ -161,8 +161,8 @@ class IncomingMail extends IncomingMailHeader
         foreach ($this->getInternalLinksPlaceholders() as $attachmentId => $placeholder) {
             foreach ($this->attachments as $attachment) {
                 if ($attachment->contentId == $attachmentId) {
-                    if ( ! is_string($attachment->id)) {
-                        throw new InvalidArgumentException('Argument 1 passed to ' . __METHOD__ . '() does not have an id specified!');
+                    if (!\is_string($attachment->id)) {
+                        throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() does not have an id specified!');
                     }
                     $search[] = $placeholder;
                     $replace[] = $baseUri.basename($this->attachments[$attachment->id]->filePath);
@@ -196,8 +196,8 @@ class IncomingMail extends IncomingMailHeader
 
                         if (!strstr($contentType, 'image')) {
                             continue;
-                        } elseif ( ! is_string($attachment->id)) {
-                            throw new InvalidArgumentException('Argument 1 passed to ' . __METHOD__ . '() does not have an id specified!');
+                        } elseif (!\is_string($attachment->id)) {
+                            throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() does not have an id specified!');
                         }
 
                         $base64encoded = base64_encode($contents);
