@@ -560,39 +560,9 @@
       <code>assertAttributeEquals</code>
       <code>assertAttributeEquals</code>
     </DeprecatedMethod>
-    <DuplicateArrayKey occurrences="12">
-      <code>'ASCII' =&gt; [true, 'US-ASCII']</code>
-      <code>'Ўзбек' =&gt; ['Азәрбајҹан']</code>
-      <code>'Sun, 14 Aug 2005 16:13:03 +1000 (CEST)' =&gt; ['2005-08-14T06:13:03+00:00', '1123999983']</code>
-      <code>'Sun, 14 Aug 2005 16:13:03 +1000' =&gt; ['2005-08-14T06:13:03+00:00', '1123999983']</code>
-      <code>'Sun, 14 Aug 2005 16:13:03 -1000' =&gt; ['2005-08-15T02:13:03+00:00', '1124071983']</code>
-      <code>'array(IMAP_OPENTIMEOUT)' =&gt; ['expectException', 1, [OPENTIMEOUT]]</code>
-      <code>'array(IMAP_READTIMEOUT)' =&gt; ['expectException', 1, [READTIMEOUT]]</code>
-      <code>'array(IMAP_WRITETIMEOUT)' =&gt; ['expectException', 1, [WRITETIMEOUT]]</code>
-      <code>'array(IMAP_CLOSETIMEOUT)' =&gt; ['expectException', 1, [CLOSETIMEOUT]]</code>
-      <code>'array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT)' =&gt; ['expectException', 1, [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, WRITETIMEOUT, IMAP_CLOSETIMEOUT]]</code>
-      <code>'Some subject here 😘' =&gt; ['=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 'Some subject here 😘', 'US-ASCII']</code>
-      <code>'mountainguan测试' =&gt; ['=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 'mountainguan测试', 'US-ASCII']</code>
-    </DuplicateArrayKey>
     <MethodSignatureMismatch occurrences="1">
       <code>public function setUp()</code>
     </MethodSignatureMismatch>
-    <MissingParamType occurrences="1">
-      <code>$retriesNum</code>
-    </MissingParamType>
-    <MissingReturnType occurrences="1">
-      <code>connectionArgsProvider</code>
-    </MissingReturnType>
-    <MixedArgument occurrences="2">
-      <code>$retriesNum</code>
-      <code>$retriesNum</code>
-    </MixedArgument>
-    <PossiblyInvalidArgument occurrences="4">
-      <code>$this-&gt;login</code>
-      <code>$this-&gt;login</code>
-      <code>$this-&gt;login</code>
-      <code>$this-&gt;login</code>
-    </PossiblyInvalidArgument>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>assertInstanceOf</code>
     </RedundantConditionGivenDocblockType>
@@ -603,8 +573,5 @@
       <code>CLOSETIMEOUT</code>
       <code>WRITETIMEOUT</code>
     </UndefinedConstant>
-    <UndefinedDocblockClass occurrences="1">
-      <code>string|email</code>
-    </UndefinedDocblockClass>
   </file>
 </files>
