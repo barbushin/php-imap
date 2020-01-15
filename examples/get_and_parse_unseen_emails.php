@@ -1,14 +1,13 @@
 <?php
 
-/**
- * Example: Get and parse all unseen emails with saving their attachments.
- *
- * @author Sebastian Krätzig <info@ts3-tools.info>
- */
-
-    require_once __DIR__ . '/../vendor/autoload.php';
-    use PhpImap\Mailbox;
+    /**
+     * Example: Get and parse all unseen emails with saving their attachments.
+     *
+     * @author Sebastian Krätzig <info@ts3-tools.info>
+     */
+    require_once __DIR__.'/../vendor/autoload.php';
     use PhpImap\Exceptions\ConnectionException;
+    use PhpImap\Mailbox;
 
     $mailbox = new Mailbox(
         '{imap.gmail.com:993/imap/ssl}INBOX', // IMAP server and mailbox folder
@@ -20,10 +19,10 @@
 
     try {
         $mail_ids = $mailbox->searchMailbox('UNSEEN');
-    } catch(ConnectionException $ex) {
-        die("IMAP connection failed: " . $ex->getMessage());
+    } catch (ConnectionException $ex) {
+        die('IMAP connection failed: '.$ex->getMessage());
     } catch (Exception $ex) {
-        die("An error occured: " . $ex->getMessage());
+        die('An error occured: '.$ex->getMessage());
     }
 
     foreach ($mail_ids as $mail_id) {
@@ -34,13 +33,13 @@
             false // Do NOT mark emails as seen (optional)
         );
 
-        echo "from-name: " . (isset($email->fromName)) ? $email->fromName : $email->fromAddress . "\n";
-        echo "from-email: " . $email->fromAddress . "\n";
-        echo "to: " . $email->to . "\n";
-        echo "subject: " . $email->subject . "\n";
-        echo "message_id: " . $email->messageId . "\n";
+        echo 'from-name: '.(isset($email->fromName)) ? $email->fromName : $email->fromAddress."\n";
+        echo 'from-email: '.$email->fromAddress."\n";
+        echo 'to: '.$email->to."\n";
+        echo 'subject: '.$email->subject."\n";
+        echo 'message_id: '.$email->messageId."\n";
 
-        echo "mail has attachments? ";
+        echo 'mail has attachments? ';
         if ($email->hasAttachments()) {
             echo "Yes\n";
         } else {
@@ -48,18 +47,18 @@
         }
 
         if (!empty($email->getAttachments())) {
-            echo count($email->getAttachments()) . " attachements\n";
+            echo count($email->getAttachments())." attachements\n";
         }
         if ($email->textHtml) {
-            echo "Message HTML:\n" . $email->textHtml;
+            echo "Message HTML:\n".$email->textHtml;
         } else {
-            echo "Message Plain:\n" . $email->textPlain;
+            echo "Message Plain:\n".$email->textPlain;
         }
 
         if (!empty($email->autoSubmitted)) {
             // Mark email as "read" / "seen"
             $mailbox->markMailAsRead($mail_id);
-                    echo "+------ IGNORING: Auto-Reply ------+\n";
+            echo "+------ IGNORING: Auto-Reply ------+\n";
         }
 
         if (!empty($email_content->precedence)) {
