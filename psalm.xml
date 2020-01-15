@@ -13,6 +13,7 @@
         <file name="./.php_cs.dist"/>
         <directory name="src"/>
         <directory name="tests"/>
+        <directory name="examples"/>
         <ignoreFiles>
             <directory name="vendor"/>
         </ignoreFiles>
