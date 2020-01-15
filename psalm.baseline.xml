@@ -10,28 +10,20 @@
       <code>$this-&gt;dataInfo</code>
     </PropertyTypeCoercion>
   </file>
-  <file src="src/PhpImap/IncomingMailAttachment.php">
-    <PossiblyUnusedMethod occurrences="3">
-      <code>setFilePath</code>
-      <code>addDataPartInfo</code>
-      <code>saveToDisk</code>
-    </PossiblyUnusedMethod>
-    <PossiblyUnusedProperty occurrences="3">
-      <code>$name</code>
-      <code>$charset</code>
-      <code>$emlOrigin</code>
-    </PossiblyUnusedProperty>
-  </file>
   <file src="src/PhpImap/Mailbox.php">
-    <DocblockTypeContradiction occurrences="2">
+    <DocblockTypeContradiction occurrences="3">
       <code>\is_int($retriesNum)</code>
       <code>\is_array($params)</code>
+      <code>\is_resource($this-&gt;imapStream)</code>
     </DocblockTypeContradiction>
     <InvalidScalarArgument occurrences="3">
       <code>$mail-&gt;id</code>
       <code>$mail-&gt;id</code>
       <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
     </InvalidScalarArgument>
+    <LessSpecificReturnStatement occurrences="2">
+      <code>$out</code>
+    </LessSpecificReturnStatement>
     <MissingParamType occurrences="5">
       <code>$str</code>
       <code>$str</code>
@@ -42,7 +34,7 @@
     <MissingReturnType occurrences="1">
       <code>initMailPart</code>
     </MissingReturnType>
-    <MixedArgument occurrences="61">
+    <MixedArgument occurrences="51">
       <code>$mail-&gt;subject</code>
       <code>$mail-&gt;subject</code>
       <code>$mail-&gt;from</code>
@@ -57,30 +49,12 @@
       <code>$head-&gt;Date</code>
       <code>$head-&gt;subject</code>
       <code>$head-&gt;subject</code>
-      <code>$head-&gt;from[0]-&gt;personal</code>
-      <code>$head-&gt;from[0]-&gt;personal</code>
-      <code>$head-&gt;from[1]-&gt;personal</code>
-      <code>$head-&gt;from[1]-&gt;personal</code>
-      <code>$head-&gt;sender[0]-&gt;personal</code>
-      <code>$head-&gt;sender[0]-&gt;personal</code>
-      <code>$head-&gt;sender[1]-&gt;personal</code>
-      <code>$head-&gt;sender[1]-&gt;personal</code>
-      <code>$to-&gt;mailbox</code>
-      <code>$to-&gt;host</code>
-      <code>$to-&gt;personal</code>
-      <code>$to-&gt;personal</code>
-      <code>$cc-&gt;mailbox</code>
-      <code>$cc-&gt;host</code>
-      <code>$cc-&gt;personal</code>
-      <code>$cc-&gt;personal</code>
-      <code>$bcc-&gt;mailbox</code>
-      <code>$bcc-&gt;host</code>
-      <code>$bcc-&gt;personal</code>
-      <code>$bcc-&gt;personal</code>
-      <code>$replyTo-&gt;mailbox</code>
-      <code>$replyTo-&gt;host</code>
-      <code>$replyTo-&gt;personal</code>
-      <code>$replyTo-&gt;personal</code>
+      <code>$head-&gt;from</code>
+      <code>$head-&gt;sender</code>
+      <code>$to</code>
+      <code>$cc</code>
+      <code>$bcc</code>
+      <code>$replyTo</code>
       <code>$param-&gt;value</code>
       <code>$param-&gt;value</code>
       <code>$param-&gt;attribute</code>
@@ -100,24 +74,20 @@
       <code>$partStructure-&gt;subtype</code>
       <code>$params['filename']</code>
       <code>$fileName</code>
-      <code>$fileName.($partStructure-&gt;ifid ? $partStructure-&gt;id : '')</code>
       <code>$partStructure-&gt;id</code>
+      <code>$params['charset']</code>
       <code>$element-&gt;charset</code>
       <code>$element-&gt;text</code>
+      <code>$recipient-&gt;mailbox</code>
+      <code>$recipient-&gt;host</code>
+      <code>$recipient-&gt;personal</code>
+      <code>$recipient-&gt;personal</code>
+      <code>$t[0]-&gt;personal</code>
+      <code>$t[0]-&gt;personal</code>
+      <code>$t[1]-&gt;personal</code>
+      <code>$t[1]-&gt;personal</code>
     </MixedArgument>
-    <MixedArrayAccess occurrences="10">
-      <code>$head-&gt;from[0]</code>
-      <code>$head-&gt;from[1]</code>
-      <code>$head-&gt;from[0]</code>
-      <code>$head-&gt;from[1]</code>
-      <code>$head-&gt;from[0]</code>
-      <code>$head-&gt;sender[0]</code>
-      <code>$head-&gt;sender[1]</code>
-      <code>$head-&gt;sender[0]</code>
-      <code>$head-&gt;sender[1]</code>
-      <code>$head-&gt;sender[0]</code>
-    </MixedArrayAccess>
-    <MixedAssignment occurrences="15">
+    <MixedAssignment occurrences="16">
       <code>$value</code>
       <code>$mail</code>
       <code>$to</code>
@@ -129,32 +99,25 @@
       <code>$params[$paramName]</code>
       <code>$subPartStructure</code>
       <code>$fileName</code>
-      <code>$fileName</code>
-      <code>$fileName</code>
+      <code>$attachment-&gt;disposition</code>
+      <code>$attachment-&gt;charset</code>
       <code>$element</code>
       <code>$item</code>
+      <code>$out[]</code>
     </MixedAssignment>
-    <MixedInferredReturnType occurrences="3">
+    <MixedInferredReturnType occurrences="2">
       <code>string</code>
       <code>string</code>
-      <code>IncomingMailAttachment</code>
     </MixedInferredReturnType>
-    <MixedOperand occurrences="15">
-      <code>$head-&gt;from[0]-&gt;mailbox</code>
-      <code>$head-&gt;sender[0]-&gt;mailbox</code>
-      <code>$to-&gt;mailbox</code>
-      <code>$to-&gt;host</code>
-      <code>$cc-&gt;mailbox</code>
-      <code>$cc-&gt;host</code>
-      <code>$bcc-&gt;mailbox</code>
-      <code>$bcc-&gt;host</code>
-      <code>$replyTo-&gt;mailbox</code>
-      <code>$replyTo-&gt;host</code>
+    <MixedOperand occurrences="8">
       <code>$params[$paramName]</code>
       <code>$subPartNum</code>
       <code>$subPartNum</code>
-      <code>$fileName</code>
-      <code>$fileExt</code>
+      <code>$partStructure-&gt;ifid ? $partStructure-&gt;id : ''</code>
+      <code>$recipient-&gt;mailbox</code>
+      <code>$recipient-&gt;host</code>
+      <code>$t[0]-&gt;mailbox</code>
+      <code>$out[0]</code>
     </MixedOperand>
     <MixedPropertyAssignment occurrences="4">
       <code>$mail</code>
@@ -162,37 +125,11 @@
       <code>$mail</code>
       <code>$mail</code>
     </MixedPropertyAssignment>
-    <MixedPropertyFetch occurrences="45">
+    <MixedPropertyFetch occurrences="24">
       <code>$mail-&gt;subject</code>
       <code>$mail-&gt;from</code>
       <code>$mail-&gt;sender</code>
       <code>$mail-&gt;to</code>
-      <code>$head-&gt;from[0]-&gt;host</code>
-      <code>$head-&gt;from[0]-&gt;host</code>
-      <code>$head-&gt;from[1]-&gt;host</code>
-      <code>$head-&gt;from[1]-&gt;host</code>
-      <code>$head-&gt;from[0]-&gt;personal</code>
-      <code>$head-&gt;from[1]-&gt;personal</code>
-      <code>$head-&gt;from[0]-&gt;mailbox</code>
-      <code>$head-&gt;sender[0]-&gt;host</code>
-      <code>$head-&gt;sender[0]-&gt;host</code>
-      <code>$head-&gt;sender[1]-&gt;host</code>
-      <code>$head-&gt;sender[1]-&gt;host</code>
-      <code>$head-&gt;sender[0]-&gt;personal</code>
-      <code>$head-&gt;sender[1]-&gt;personal</code>
-      <code>$head-&gt;sender[0]-&gt;mailbox</code>
-      <code>$to-&gt;mailbox</code>
-      <code>$to-&gt;host</code>
-      <code>$to-&gt;personal</code>
-      <code>$cc-&gt;mailbox</code>
-      <code>$cc-&gt;host</code>
-      <code>$cc-&gt;personal</code>
-      <code>$bcc-&gt;mailbox</code>
-      <code>$bcc-&gt;host</code>
-      <code>$bcc-&gt;personal</code>
-      <code>$replyTo-&gt;mailbox</code>
-      <code>$replyTo-&gt;host</code>
-      <code>$replyTo-&gt;personal</code>
       <code>$param-&gt;value</code>
       <code>$param-&gt;value</code>
       <code>$param-&gt;attribute</code>
@@ -208,28 +145,39 @@
       <code>$item-&gt;name</code>
       <code>$item-&gt;attributes</code>
       <code>$item-&gt;delimiter</code>
+      <code>$t[0]-&gt;host</code>
+      <code>$t[1]-&gt;host</code>
+      <code>$t[0]-&gt;personal</code>
+      <code>$t[1]-&gt;personal</code>
+      <code>$t[0]-&gt;mailbox</code>
     </MixedPropertyFetch>
     <MixedReturnStatement occurrences="2">
       <code>$str</code>
       <code>$str</code>
     </MixedReturnStatement>
+    <MoreSpecificReturnType occurrences="2">
+      <code>array{0:string, 1:string}|null</code>
+      <code>array{0:string|string, 1:string|null, 2:string}</code>
+    </MoreSpecificReturnType>
+    <PossiblyFalseOperand occurrences="1">
+      <code>strpos($name, '}')</code>
+    </PossiblyFalseOperand>
     <PossiblyInvalidArgument occurrences="1">
       <code>$mailStructure</code>
     </PossiblyInvalidArgument>
     <PossiblyInvalidPropertyFetch occurrences="1">
       <code>$mailStructure-&gt;parts</code>
     </PossiblyInvalidPropertyFetch>
-    <PossiblyUndefinedVariable occurrences="5">
-      <code>$ccStrings</code>
-      <code>$bccStrings</code>
-      <code>$replyToStrings</code>
-      <code>$fileName</code>
-      <code>$fileName</code>
-    </PossiblyUndefinedVariable>
-    <PossiblyUnusedMethod occurrences="39">
+    <PossiblyNullOperand occurrences="1">
+      <code>$this-&gt;getAttachmentsDir()</code>
+    </PossiblyNullOperand>
+    <PossiblyUndefinedArrayOffset occurrences="2">
+      <code>$t[0]</code>
+      <code>$t[1]</code>
+    </PossiblyUndefinedArrayOffset>
+    <PossiblyUnusedMethod occurrences="38">
       <code>setOAuthToken</code>
       <code>getOAuthToken</code>
-      <code>getAttachmentsDir</code>
       <code>setConnectionRetry</code>
       <code>setConnectionRetryDelay</code>
       <code>switchMailbox</code>
@@ -267,18 +215,15 @@
       <code>subscribeMailbox</code>
       <code>unsubscribeMailbox</code>
     </PossiblyUnusedMethod>
-    <PossiblyUnusedParam occurrences="3">
-      <code>$dataInfo</code>
-      <code>$mailId</code>
-      <code>$emlOrigin</code>
-    </PossiblyUnusedParam>
-    <RedundantConditionGivenDocblockType occurrences="3">
+    <RedundantConditionGivenDocblockType occurrences="4">
       <code>!\is_int($retriesNum) or $retriesNum &lt; 0</code>
       <code>\is_int($retriesNum)</code>
       <code>null != $params and !empty($params)</code>
+      <code>!\is_resource($this-&gt;imapStream) || !imap_ping($this-&gt;imapStream)</code>
     </RedundantConditionGivenDocblockType>
-    <UnusedVariable occurrences="1">
+    <UnusedVariable occurrences="2">
       <code>$value</code>
+      <code>$convertedString</code>
     </UnusedVariable>
   </file>
   <file src="tests/unit/MailboxTest.php">
