@@ -1307,6 +1307,8 @@ class Mailbox
      * @param int    $mailId        ID of mail
      * @param bool   $emlOrigin     True, if it indicates, that the attachment comes from an EML (mail) file
      *
+     * @psalm-param array<string, mixed> $params
+     *
      * @return IncomingMailAttachment $attachment
      */
     public function downloadAttachment(DataPartInfo $dataInfo, $params, $partStructure, $mailId, $emlOrigin = false)
@@ -1328,12 +1330,17 @@ class Mailbox
         $attachment->contentId = $partStructure->ifid ? trim($partStructure->id, ' <>') : null;
         $attachment->name = $fileName;
         $attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
+        if (isset($params['charset']) && !\is_string($params['charset'])) {
+            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must specify charset as a string when specified!');
+        }
         $attachment->charset = (isset($params['charset']) and !empty(trim($params['charset']))) ? $params['charset'] : null;
         $attachment->emlOrigin = $emlOrigin;
 
         $attachment->addDataPartInfo($dataInfo);
 
-        if (null != $this->getAttachmentsDir()) {
+        $attachmentsDir = $this->getAttachmentsDir();
+
+        if (null != $attachmentsDir) {
             $replace = [
                 '/\s/' => '_',
                 '/[^\w\.]/iu' => '',
@@ -1341,7 +1348,7 @@ class Mailbox
                 '/(^_)|(_$)/' => '',
             ];
             $fileSysName = preg_replace('~[\\\\/]~', '', $mailId.'_'.$attachment->id.'_'.preg_replace(array_keys($replace), $replace, $fileName));
-            $filePath = $this->getAttachmentsDir().\DIRECTORY_SEPARATOR.$fileSysName;
+            $filePath = $attachmentsDir.\DIRECTORY_SEPARATOR.$fileSysName;
 
             if (\strlen($filePath) > 255) {
                 $ext = pathinfo($filePath, PATHINFO_EXTENSION);
@@ -1459,7 +1466,6 @@ class Mailbox
         if (preg_match('/default|ascii/i', $fromEncoding) || !$string || $fromEncoding == $toEncoding) {
             return $string;
         }
-        $convertedString = '';
         $supportedEncodings = array_map('strtolower', mb_list_encodings());
         if (\in_array(strtolower($fromEncoding), $supportedEncodings) && \in_array(strtolower($toEncoding), $supportedEncodings)) {
             $convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
@@ -1655,7 +1661,7 @@ class Mailbox
     /**
      * @return array|null
      *
-     * @psalm-return array{0:string, 1:string}|null
+     * @psalm-return array{0:string, 1:string|null}|null
      */
     protected function possiblyGetEmailAndNameFromRecipient(object $recipient)
     {
@@ -1703,15 +1709,19 @@ class Mailbox
      *
      * @return array
      *
-     * @psalm-return array{0:string|string, 1:string|null, 2:string}
+     * @psalm-return array{0:string|null, 1:string|null, 2:string}
      */
     protected function possiblyGetHostNameAndAddress($t)
     {
         $out = [];
+        /** @var string|null */
         $out[] = isset($t[0]->host) ? $t[0]->host : (isset($t[1]->host) ? $t[1]->host : null);
+        /** @var string|null */
         $out[] = (isset($t[0]->personal) and !empty(trim($t[0]->personal))) ? $this->decodeMimeStr($t[0]->personal, $this->getServerEncoding()) : ((isset($t[1]->personal) and (!empty(trim($t[1]->personal)))) ? $this->decodeMimeStr($t[1]->personal, $this->getServerEncoding()) : null);
-        $out[] = strtolower($t[0]->mailbox.'@'.$out[0]);
+        /** @var string */
+        $out[] = strtolower($t[0]->mailbox.'@'.(string)$out[0]);
 
+        /** @var array{0:string|null, 1:string|null, 2:string} */
         return $out;
     }
 

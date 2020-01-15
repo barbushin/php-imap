@@ -21,9 +21,6 @@
       <code>$mail-&gt;id</code>
       <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
     </InvalidScalarArgument>
-    <LessSpecificReturnStatement occurrences="2">
-      <code>$out</code>
-    </LessSpecificReturnStatement>
     <MissingParamType occurrences="5">
       <code>$str</code>
       <code>$str</code>
@@ -34,7 +31,7 @@
     <MissingReturnType occurrences="1">
       <code>initMailPart</code>
     </MissingReturnType>
-    <MixedArgument occurrences="51">
+    <MixedArgument occurrences="50">
       <code>$mail-&gt;subject</code>
       <code>$mail-&gt;subject</code>
       <code>$mail-&gt;from</code>
@@ -75,7 +72,6 @@
       <code>$params['filename']</code>
       <code>$fileName</code>
       <code>$partStructure-&gt;id</code>
-      <code>$params['charset']</code>
       <code>$element-&gt;charset</code>
       <code>$element-&gt;text</code>
       <code>$recipient-&gt;mailbox</code>
@@ -87,7 +83,7 @@
       <code>$t[1]-&gt;personal</code>
       <code>$t[1]-&gt;personal</code>
     </MixedArgument>
-    <MixedAssignment occurrences="16">
+    <MixedAssignment occurrences="14">
       <code>$value</code>
       <code>$mail</code>
       <code>$to</code>
@@ -100,16 +96,14 @@
       <code>$subPartStructure</code>
       <code>$fileName</code>
       <code>$attachment-&gt;disposition</code>
-      <code>$attachment-&gt;charset</code>
       <code>$element</code>
       <code>$item</code>
-      <code>$out[]</code>
     </MixedAssignment>
     <MixedInferredReturnType occurrences="2">
       <code>string</code>
       <code>string</code>
     </MixedInferredReturnType>
-    <MixedOperand occurrences="8">
+    <MixedOperand occurrences="7">
       <code>$params[$paramName]</code>
       <code>$subPartNum</code>
       <code>$subPartNum</code>
@@ -117,7 +111,6 @@
       <code>$recipient-&gt;mailbox</code>
       <code>$recipient-&gt;host</code>
       <code>$t[0]-&gt;mailbox</code>
-      <code>$out[0]</code>
     </MixedOperand>
     <MixedPropertyAssignment occurrences="4">
       <code>$mail</code>
@@ -155,10 +148,6 @@
       <code>$str</code>
       <code>$str</code>
     </MixedReturnStatement>
-    <MoreSpecificReturnType occurrences="2">
-      <code>array{0:string, 1:string}|null</code>
-      <code>array{0:string|string, 1:string|null, 2:string}</code>
-    </MoreSpecificReturnType>
     <PossiblyFalseOperand occurrences="1">
       <code>strpos($name, '}')</code>
     </PossiblyFalseOperand>
@@ -168,9 +157,6 @@
     <PossiblyInvalidPropertyFetch occurrences="1">
       <code>$mailStructure-&gt;parts</code>
     </PossiblyInvalidPropertyFetch>
-    <PossiblyNullOperand occurrences="1">
-      <code>$this-&gt;getAttachmentsDir()</code>
-    </PossiblyNullOperand>
     <PossiblyUndefinedArrayOffset occurrences="2">
       <code>$t[0]</code>
       <code>$t[1]</code>
@@ -221,9 +207,8 @@
       <code>null != $params and !empty($params)</code>
       <code>!\is_resource($this-&gt;imapStream) || !imap_ping($this-&gt;imapStream)</code>
     </RedundantConditionGivenDocblockType>
-    <UnusedVariable occurrences="2">
+    <UnusedVariable occurrences="1">
       <code>$value</code>
-      <code>$convertedString</code>
     </UnusedVariable>
   </file>
   <file src="tests/unit/MailboxTest.php">
