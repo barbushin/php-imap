@@ -11,6 +11,7 @@ return PhpCsFixer\Config::create()
         'phpdoc_to_comment' => false,
         'no_superfluous_phpdoc_tags' => true,
         'declare_strict_types' => true,
+        'void_return' => true,
         'ordered_class_elements' => true,
         'global_namespace_import' => [
             'import_classes' => true,

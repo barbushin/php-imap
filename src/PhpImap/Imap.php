@@ -977,7 +977,7 @@ final class Imap
     public static function subscribe(
         $imap_stream,
         string $mailbox
-    ) {
+    ): void {
         $imap_stream = self::EnsureResource($imap_stream, __METHOD__, 1);
 
         $mailbox = static::encodeStringToUtf7Imap($mailbox);
@@ -1021,7 +1021,7 @@ final class Imap
     public static function unsubscribe(
         $imap_stream,
         string $mailbox
-    ) {
+    ): void {
         $imap_stream = self::EnsureResource($imap_stream, __METHOD__, 1);
 
         $mailbox = static::encodeStringToUtf7Imap($mailbox);
