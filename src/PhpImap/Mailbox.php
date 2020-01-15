@@ -689,16 +689,16 @@ class Mailbox
      * @param string $criteria              See http://php.net/imap_search for a complete list of available criteria
      * @param bool   $disableServerEncoding Disables server encoding while searching for mails (can be useful on Exchange servers)
      *
-     * @return array mailsIds (or empty array)
+     * @return int[] mailsIds (or empty array)
      */
     public function searchMailbox($criteria = 'ALL', $disableServerEncoding = false)
     {
         if ($disableServerEncoding) {
-            /** @var array */
+            /** @var int[] */
             return $this->imap('search', [$criteria, $this->imapSearchOption]) ?: [];
         }
 
-        /** @var array */
+        /** @var int[] */
         return $this->imap('search', [$criteria, $this->imapSearchOption, $this->getServerEncoding()]) ?: [];
     }
 

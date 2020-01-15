@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="3.8.3@389af1bfc739bfdff3f9e3dc7bd6499aee51a831">
   <file src="src/PhpImap/IncomingMail.php">
-    <PossiblyUnusedMethod occurrences="3">
-      <code>hasAttachments</code>
+    <PossiblyUnusedMethod occurrences="2">
       <code>replaceInternalLinks</code>
       <code>embedImageAttachments</code>
     </PossiblyUnusedMethod>
@@ -143,7 +142,7 @@
       <code>$t[0]</code>
       <code>$t[1]</code>
     </PossiblyUndefinedArrayOffset>
-    <PossiblyUnusedMethod occurrences="38">
+    <PossiblyUnusedMethod occurrences="35">
       <code>setOAuthToken</code>
       <code>getOAuthToken</code>
       <code>setConnectionRetry</code>
@@ -156,12 +155,10 @@
       <code>renameMailbox</code>
       <code>statusMailbox</code>
       <code>getListingFolders</code>
-      <code>searchMailbox</code>
       <code>saveMail</code>
       <code>deleteMail</code>
       <code>moveMail</code>
       <code>copyMail</code>
-      <code>markMailAsRead</code>
       <code>markMailAsUnread</code>
       <code>markMailAsImportant</code>
       <code>markMailsAsRead</code>
@@ -175,7 +172,6 @@
       <code>getQuotaLimit</code>
       <code>getQuotaUsage</code>
       <code>getRawMail</code>
-      <code>getMail</code>
       <code>getImapPath</code>
       <code>getMailMboxFormat</code>
       <code>getMailboxes</code>
