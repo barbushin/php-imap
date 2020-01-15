@@ -45,7 +45,7 @@ class IncomingMail extends IncomingMailHeader
      *
      * @return string Value of the property (eg. Plain text message)
      */
-    public function __get($name)
+    public function __get(string $name): string
     {
         $type = false;
         if ('textPlain' == $name) {
@@ -74,7 +74,7 @@ class IncomingMail extends IncomingMailHeader
      *
      * @return bool True, if property is set or empty
      */
-    public function __isset($name)
+    public function __isset(string $name): bool
     {
         self::__get($name);
 
@@ -93,7 +93,7 @@ class IncomingMail extends IncomingMailHeader
     /**
      * @param DataPartInfo::TEXT_PLAIN|DataPartInfo::TEXT_HTML $type
      */
-    public function addDataPartInfo(DataPartInfo $dataInfo, $type)
+    public function addDataPartInfo(DataPartInfo $dataInfo, int $type)
     {
         $this->dataInfo[$type][] = $dataInfo;
     }
@@ -115,7 +115,7 @@ class IncomingMail extends IncomingMailHeader
      *
      * @return void
      */
-    public function setHasAttachments($hasAttachments)
+    public function setHasAttachments(bool $hasAttachments)
     {
         $this->hasAttachments = $hasAttachments;
     }
@@ -125,7 +125,7 @@ class IncomingMail extends IncomingMailHeader
      *
      * @return bool true or false
      */
-    public function hasAttachments()
+    public function hasAttachments(): bool
     {
         return $this->hasAttachments;
     }
@@ -133,17 +133,15 @@ class IncomingMail extends IncomingMailHeader
     /**
      * @return IncomingMailAttachment[]
      */
-    public function getAttachments()
+    public function getAttachments(): array
     {
         return $this->attachments;
     }
 
     /**
      * @param string $id The attachment id
-     *
-     * @return bool
      */
-    public function removeAttachment($id)
+    public function removeAttachment(string $id): bool
     {
         if (!isset($this->attachments[$id])) {
             return false;
@@ -163,7 +161,7 @@ class IncomingMail extends IncomingMailHeader
      *
      * @psalm-return array<string, string>
      */
-    public function getInternalLinksPlaceholders()
+    public function getInternalLinksPlaceholders(): array
     {
         $match = \preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $this->textHtml, $matches);
 
@@ -173,12 +171,7 @@ class IncomingMail extends IncomingMailHeader
         return $match ? \array_combine($matches[2], $matches[1]) : [];
     }
 
-    /**
-     * @param string $baseUri
-     *
-     * @return string
-     */
-    public function replaceInternalLinks($baseUri)
+    public function replaceInternalLinks(string $baseUri): string
     {
         $baseUri = \rtrim($baseUri, '\\/').'/';
         $fetchedHtml = $this->textHtml;

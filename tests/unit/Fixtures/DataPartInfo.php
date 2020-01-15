@@ -6,13 +6,12 @@ use PhpImap\DataPartInfo as Base;
 
 class DataPartInfo extends Base
 {
-    public function fetch()
+    public function fetch(): string
     {
         return $this->decodeAfterFetch();
     }
 
-    /** @param string|null $data */
-    public function setData($data)
+    public function setData(string $data = null)
     {
         $this->data = $data;
     }

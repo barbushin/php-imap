@@ -47,11 +47,9 @@ class IncomingMailAttachment
     private $filePath;
 
     /**
-     * @param string $name
-     *
      * @return string|false|null
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         if ('filePath' !== $name) {
             \trigger_error("Undefined property: IncomingMailAttachment::$name");
@@ -77,7 +75,7 @@ class IncomingMailAttachment
      *
      * @return void
      */
-    public function setFilePath($filePath)
+    public function setFilePath(string $filePath)
     {
         $this->file_path = $filePath;
     }
@@ -96,10 +94,8 @@ class IncomingMailAttachment
 
     /**
      * Gets the MIME type.
-     *
-     * @return string
      */
-    public function getMimeType()
+    public function getMimeType(): string
     {
         if (!$this->mimeType) {
             $finfo = new finfo(FILEINFO_MIME);
@@ -112,10 +108,8 @@ class IncomingMailAttachment
 
     /**
      * Gets the file content.
-     *
-     * @return string
      */
-    public function getContents()
+    public function getContents(): string
     {
         if (null === $this->dataInfo) {
             throw new UnexpectedValueException(static::class.'::$dataInfo has not been set by calling '.self::class.'::addDataPartInfo()');
@@ -129,7 +123,7 @@ class IncomingMailAttachment
      *
      * @return bool True, if it could save the attachment on the disk
      */
-    public function saveToDisk()
+    public function saveToDisk(): bool
     {
         if (null === $this->dataInfo) {
             return false;
