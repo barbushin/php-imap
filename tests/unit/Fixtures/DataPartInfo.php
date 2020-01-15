@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PhpImap\Fixtures;
 
 use PhpImap\DataPartInfo as Base;
