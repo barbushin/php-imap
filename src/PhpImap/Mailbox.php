@@ -689,16 +689,16 @@ class Mailbox
      * @param string $criteria              See http://php.net/imap_search for a complete list of available criteria
      * @param bool   $disableServerEncoding Disables server encoding while searching for mails (can be useful on Exchange servers)
      *
-     * @return int[] mailsIds (or empty array)
+     * @return string[] mailsIds (or empty array)
      */
     public function searchMailbox($criteria = 'ALL', $disableServerEncoding = false)
     {
         if ($disableServerEncoding) {
-            /** @var int[] */
+            /** @var string[] */
             return $this->imap('search', [$criteria, $this->imapSearchOption]) ?: [];
         }
 
-        /** @var int[] */
+        /** @var string[] */
         return $this->imap('search', [$criteria, $this->imapSearchOption, $this->getServerEncoding()]) ?: [];
     }
 
@@ -1034,7 +1034,7 @@ class Mailbox
     /**
      * Get mail header.
      *
-     * @param int $mailId ID of the message
+     * @param string $mailId ID of the message
      *
      * @return IncomingMailHeader
      *
@@ -1174,7 +1174,7 @@ class Mailbox
     /**
      * Get mail data.
      *
-     * @param int  $mailId     ID of the mail
+     * @param string  $mailId     ID of the mail
      * @param bool $markAsSeen Mark the email as seen, when set to true
      *
      * @return IncomingMail
