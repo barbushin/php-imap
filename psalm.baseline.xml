@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="3.8.3@389af1bfc739bfdff3f9e3dc7bd6499aee51a831">
+  <file src="examples/get_and_parse_all_emails_without_saving_attachments.php">
+    <UnusedVariable occurrences="1">
+      <code>$mailbox</code>
+    </UnusedVariable>
+  </file>
   <file src="src/PhpImap/IncomingMail.php">
     <PossiblyUnusedMethod occurrences="2">
       <code>replaceInternalLinks</code>

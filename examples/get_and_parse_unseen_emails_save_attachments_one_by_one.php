@@ -31,11 +31,11 @@
             false // Do NOT mark emails as seen (optional)
         );
 
-        echo 'from-name: '.(isset($email->fromName)) ? $email->fromName : $email->fromAddress."\n";
-        echo 'from-email: '.$email->fromAddress."\n";
-        echo 'to: '.$email->to."\n";
-        echo 'subject: '.$email->subject."\n";
-        echo 'message_id: '.$email->messageId."\n";
+        echo 'from-name: '.(string) (isset($email->fromName) ? $email->fromName : $email->fromAddress)."\n";
+        echo 'from-email: '.(string) $email->fromAddress."\n";
+        echo 'to: '.(string) $email->toString."\n";
+        echo 'subject: '.(string) $email->subject."\n";
+        echo 'message_id: '.(string) $email->messageId."\n";
 
         echo 'mail has attachments? ';
         if ($email->hasAttachments()) {
@@ -49,11 +49,11 @@
         }
 
         // Save attachments one by one
-        if (!$mbox_connection->getAttachmentsIgnore()) {
-            $attachments = $email_content->getAttachments();
+        if (!$mailbox->getAttachmentsIgnore()) {
+            $attachments = $email->getAttachments();
 
             foreach ($attachments as $attachment) {
-                echo '--> Saving '.$attachment->name.'...';
+                echo '--> Saving '.(string) $attachment->name.'...';
 
                 // Set individually filePath for each single attachment
                 // In this case, every file will get the current Unix timestamp
