@@ -340,9 +340,14 @@ class Mailbox
      * @param int        $retriesNum
      * @param array|null $params
      *
+     * @psalm-param mixed $params
+     *
      * @throws InvalidParameterException
      *
+     * @todo drop support for php 5.6, set $options and $retriesNum to int
      * @todo drop support for php 5.6, set $param to `array $param = null`
+     * @todo drop support for php 5.6, remove @psalm-param entry
+     * @todo drop support for php 5.6, set `!empty($params)` to `count($params) > 0`
      */
     public function setConnectionArgs($options = 0, $retriesNum = 0, $params = null)
     {
@@ -481,6 +486,8 @@ class Mailbox
      * Returns the provided string in UTF-8 encoded format.
      *
      * @return string $str UTF-7 encoded string or same as before, when it's no string
+     *
+     * @todo revisit return issues pending fix of https://github.com/vimeo/psalm/issues/2625
      */
     public function decodeStringFromUtf7ImapToUtf8($str)
     {
@@ -857,9 +864,12 @@ class Mailbox
      *  draft - this mail is flagged as being a draft
      *
      * @return array $mailsIds Array of mail IDs
+     *
+     * @psalm-return list<object>
      */
     public function getMailsInfo(array $mailsIds)
     {
+        /** @var list<object>|false */
         $mails = $this->imap('fetch_overview', [implode(',', $mailsIds), (SE_UID == $this->imapSearchOption) ? FT_UID : 0]);
         if (\is_array($mails) && \count($mails)) {
             foreach ($mails as &$mail) {
@@ -878,7 +888,7 @@ class Mailbox
             }
         }
 
-        /** @var array */
+        /** @var list<object> */
         return $mails;
     }
 
@@ -1195,6 +1205,8 @@ class Mailbox
      * @param bool       $markAsSeen
      * @param bool       $emlParse
      *
+     * @return void
+     *
      * @todo flesh out shape of $partStructure
      */
     protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true, $emlParse = false)
@@ -1256,7 +1268,7 @@ class Mailbox
             && (TYPEMULTIPART !== $partStructure->type
             && (TYPETEXT !== $partStructure->type || !\in_array(strtolower($partStructure->subtype), ['plain', 'html'])))
         ) {
-            return false;
+            return;
         }
 
         if ($isAttachment) {
@@ -1731,6 +1743,8 @@ class Mailbox
 
     /**
      * @return void
+     *
+     * @todo revisit redundant condition issues pending fix of https://github.com/vimeo/psalm/issues/2626
      */
     protected function pingOrDisconnect()
     {
