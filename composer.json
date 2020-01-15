@@ -29,9 +29,9 @@
         "ext-mbstring": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.7",
+        "ext-fileinfo": "*",
         "friendsofphp/php-cs-fixer": "^2.16",
-        "ext-fileinfo": "*"
+        "phpunit/phpunit": "^5.7"
     },
     "suggest": {
         "ext-fileinfo": "To facilitate IncomingMailAttachment::getMimeType() auto-detection"
