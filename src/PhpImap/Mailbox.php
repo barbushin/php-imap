@@ -348,7 +348,7 @@ class Mailbox
      *
      * @return string|null Attachments dir
      */
-    public function getAttachmentsDir()
+    public function getAttachmentsDir(): ?string
     {
         return $this->attachmentsDir;
     }
@@ -893,7 +893,7 @@ class Mailbox
     public function sortMails(
         int $criteria = SORTARRIVAL,
         bool $reverse = true,
-        $searchCriteria = 'ALL',
+        ? string $searchCriteria = 'ALL',
         string $charset = null
     ): array {
         return Imap::sort(
@@ -1689,11 +1689,9 @@ class Mailbox
     /**
      * @param object $recipient
      *
-     * @return array|null
-     *
      * @psalm-return array{0:string, 1:string|null}|null
      */
-    protected function possiblyGetEmailAndNameFromRecipient($recipient)
+    protected function possiblyGetEmailAndNameFromRecipient($recipient): ?array
     {
         if (isset($recipient->mailbox, $recipient->host)) {
             /** @var mixed */
