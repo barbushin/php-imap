@@ -31,6 +31,10 @@
     "require-dev": {
         "phpunit/phpunit": "^5.7",
         "friendsofphp/php-cs-fixer": "^2.16"
+        "ext-fileinfo": "*"
+    },
+    "suggest": {
+        "ext-fileinfo": "To facilitate IncomingMailAttachment::getMimeType() auto-detection"
     },
     "autoload": {
         "psr-4": {
