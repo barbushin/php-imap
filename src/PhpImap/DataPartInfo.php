@@ -12,15 +12,54 @@ class DataPartInfo
     const TEXT_PLAIN = 0;
     const TEXT_HTML = 1;
 
+    /**
+     * @var string|int
+     *
+     * @readonly
+     */
     public $id;
+
+    /**
+     * @var int|mixed
+     *
+     * @readonly
+     */
     public $encoding;
+
+    /** @var string|null */
     public $charset;
+
+    /**
+     * @var string|int
+     *
+     * @readonly
+     */
     public $part;
+
+    /**
+     * @var Mailbox
+     *
+     * @readonly
+     */
     public $mail;
+
+    /**
+     * @var int
+     *
+     * @readonly
+     */
     public $options;
+
+    /** @var string|null */
     private $data;
 
-    public function __construct($mail, $id, $part, $encoding, $options)
+    /**
+     * @param string|int $id
+     * @param string|int $part
+     * @param int|mixed  $encoding
+     * @param int        $options
+     */
+    public function __construct(Mailbox $mail, $id, $part, $encoding, $options)
     {
         $this->mail = $mail;
         $this->id = $id;
@@ -29,16 +68,22 @@ class DataPartInfo
         $this->options = $options;
     }
 
+    /**
+     * @return string
+     */
     public function fetch()
     {
         if (0 == $this->part) {
+            /** @var string */
             $this->data = $this->mail->imap('body', [$this->id, $this->options]);
         } else {
+            /** @var string */
             $this->data = $this->mail->imap('fetchbody', [$this->id, $this->part, $this->options]);
         }
 
         switch ($this->encoding) {
             case ENC7BIT:
+                /** @var string|null */
                 $this->data = $this->data;
                 break;
             case ENC8BIT:
@@ -55,21 +100,23 @@ class DataPartInfo
                 $this->data = quoted_printable_decode($this->data);
                 break;
             case ENCOTHER:
+                /** @var string|null */
                 $this->data = $this->data;
                 break;
             default:
+                /** @var string|null */
                 $this->data = $this->data;
                 break;
         }
 
         if (isset($this->charset) and !empty(trim($this->charset))) {
             $this->data = $this->mail->convertStringEncoding(
-                $this->data, // Data to convert
+                (string) $this->data, // Data to convert
                 $this->charset, // FROM-Encoding (Charset)
                 $this->mail->getServerEncoding() // TO-Encoding (Charset)
             );
         }
 
-        return $this->data;
+        return (null === $this->data) ? '' : $this->data;
     }
 }

@@ -29,6 +29,8 @@ final class MailboxTest extends TestCase
      * Holds the imap username.
      *
      * @var string|email
+     *
+     * @psalm-var string
      */
     private $login = 'php-imap@example.com';
 
@@ -63,6 +65,8 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, that the constructor returns an instance of PhpImap\Mailbox::class.
+     *
+     * @return void
      */
     public function testConstructor()
     {
@@ -72,6 +76,8 @@ final class MailboxTest extends TestCase
     /**
      * Test, that the constructor trims possible variables
      * Leading and ending spaces are not even possible in some variables.
+     *
+     * @return void
      */
     public function testConstructorTrimsPossibleVariables()
     {
@@ -93,6 +99,8 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, that the server encoding can be set.
+     *
+     * @return void
      */
     public function testSetAndGetServerEncoding()
     {
@@ -103,6 +111,8 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, that server encoding is set to a default value.
+     *
+     * @return void
      */
     public function testServerEncodingHasDefaultSetting()
     {
@@ -113,6 +123,8 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, that server encoding that all functions uppers the server encoding setting.
+     *
+     * @return void
      */
     public function testServerEncodingUppersSetting()
     {
@@ -127,6 +139,8 @@ final class MailboxTest extends TestCase
 
     /**
      * Provides test data for testing server encodings.
+     *
+     * @return array<string, array{0:bool, 1:string}>
      */
     public function serverEncodingProvider()
     {
@@ -136,7 +150,7 @@ final class MailboxTest extends TestCase
             'UTF7-IMAP' => [true, 'UTF7-IMAP'],
             'UTF-8' => [true, 'UTF-8'],
             'ASCII' => [true, 'ASCII'],
-            'ASCII' => [true, 'US-ASCII'],
+            'US-ASCII' => [true, 'US-ASCII'],
             'ISO-8859-1' => [true, 'ISO-8859-1'],
             // NOT supported encodings
             'UTF7' => [false, 'UTF7'],
@@ -155,6 +169,11 @@ final class MailboxTest extends TestCase
      * Test, that server encoding only can use supported character encodings.
      *
      * @dataProvider serverEncodingProvider
+     *
+     * @param bool   $bool
+     * @param string $encoding
+     *
+     * @return void
      */
     public function testServerEncodingOnlyUseSupportedSettings($bool, $encoding)
     {
@@ -172,6 +191,8 @@ final class MailboxTest extends TestCase
      * Test, that the IMAP search option has a default value
      * 1 => SE_UID
      * 2 => SE_FREE.
+     *
+     * @return void
      */
     public function testImapSearchOptionHasADefault()
     {
@@ -182,6 +203,8 @@ final class MailboxTest extends TestCase
      * Test, that the IMAP search option can be changed
      * 1 => SE_UID
      * 2 => SE_FREE.
+     *
+     * @return void
      */
     public function testSetAndGetImapSearchOption()
     {
@@ -189,9 +212,6 @@ final class MailboxTest extends TestCase
 
         $this->mailbox->setImapSearchOption(SE_FREE);
         $this->assertEquals($this->mailbox->getImapSearchOption(), 2);
-
-        $this->expectException(InvalidParameterException::class);
-        $this->mailbox->setImapSearchOption('SE_FREE');
 
         $this->expectException(InvalidParameterException::class);
         $this->mailbox->setImapSearchOption(ANYTHING);
@@ -202,6 +222,8 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, that the imap login can be retrieved.
+     *
+     * @return void
      */
     public function testGetLogin()
     {
@@ -210,6 +232,8 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, that the path delimiter has a default value.
+     *
+     * @return void
      */
     public function testPathDelimiterHasADefault()
     {
@@ -218,6 +242,8 @@ final class MailboxTest extends TestCase
 
     /**
      * Provides test data for testing path delimiter.
+     *
+     * @psalm-return array{0:string}[]
      */
     public function pathDelimiterProvider()
     {
@@ -287,6 +313,10 @@ final class MailboxTest extends TestCase
      * Test, that the path delimiter is checked for supported chars.
      *
      * @dataProvider pathDelimiterProvider
+     *
+     * @param string $str
+     *
+     * @return void
      */
     public function testPathDelimiterIsBeingChecked($str)
     {
@@ -302,6 +332,8 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, that the path delimiter can be set.
+     *
+     * @return void
      */
     public function testSetAndGetPathDelimiter()
     {
@@ -314,6 +346,8 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, that the attachments are not ignored by default.
+     *
+     * @return void
      */
     public function testGetAttachmentsAreNotIgnoredByDefault()
     {
@@ -322,9 +356,12 @@ final class MailboxTest extends TestCase
 
     /**
      * Provides test data for testing attachments ignore.
+     *
+     * @psalm-return array<string, array{0:'assertEquals'|'expectException', 1:scalar}>
      */
     public function attachmentsIgnoreProvider()
     {
+        /** @psalm-var array<string, array{0:'assertEquals'|'expectException', 1:scalar}> */
         return [
             'true' => ['assertEquals', true],
             'false' => ['assertEquals', false],
@@ -339,6 +376,12 @@ final class MailboxTest extends TestCase
      * Test, that attachments can be ignored and only valid values are accepted.
      *
      * @dataProvider attachmentsIgnoreProvider
+     *
+     * @psalm-param 'expectException'|'assertEquals' $assertTest
+     *
+     * @param scalar $paramValue
+     *
+     * @return void
      */
     public function testSetAttachmentsIgnore($assertTest, $paramValue)
     {
@@ -346,13 +389,15 @@ final class MailboxTest extends TestCase
             $this->expectException(InvalidParameterException::class);
             $this->mailbox->setAttachmentsIgnore($paramValue);
         } else {
-            $this->mailbox->setAttachmentsIgnore($paramValue);
-            $this->$assertTest($this->mailbox->getAttachmentsIgnore(), $paramValue);
+            $this->mailbox->setAttachmentsIgnore((bool) $paramValue);
+            $this->assertEquals($this->mailbox->getAttachmentsIgnore(), (bool) $paramValue);
         }
     }
 
     /**
      * Provides test data for testing encoding.
+     *
+     * @psalm-return array<string, array{0:string}>
      */
     public function encodingTestStringsProvider()
     {
@@ -375,7 +420,7 @@ final class MailboxTest extends TestCase
             'ɔl-Maa' => ['ɔl-Maa'], // Masai
             'Ελληνικά' => ['Ελληνικά'], // Greek
             'Ўзбек' => ['Ўзбек'], // Uzbek (Cyrillic)
-            'Ўзбек' => ['Азәрбајҹан'], // Azerbaijani (Cyrillic)
+            'Азәрбајҹан' => ['Азәрбајҹан'], // Azerbaijani (Cyrillic)
             'Српски' => ['Српски'], // Serbian (Cyrillic)
             'русский' => ['русский'], // Russian
             'ѩзыкъ словѣньскъ' => ['ѩзыкъ словѣньскъ'], // Church Slavic
@@ -393,6 +438,10 @@ final class MailboxTest extends TestCase
      * Test, that strings encoded to UTF-7 can be decoded back to UTF-8.
      *
      * @dataProvider encodingTestStringsProvider
+     *
+     * @param string $str
+     *
+     * @return void
      */
     public function testEncodingToUtf7DecodeBackToUtf8($str)
     {
@@ -406,6 +455,10 @@ final class MailboxTest extends TestCase
      * Test, that strings encoded to UTF-7 can be decoded back to UTF-8.
      *
      * @dataProvider encodingTestStringsProvider
+     *
+     * @param string $str
+     *
+     * @return void
      */
     public function testMimeDecodingReturnsCorrectValues($str)
     {
@@ -414,16 +467,14 @@ final class MailboxTest extends TestCase
 
     /**
      * Provides test data for testing parsing datetimes.
+     *
+     * @psalm-return array<string, array{0:string, 1:numeric}>
      */
     public function datetimeProvider()
     {
         return [
             'Sun, 14 Aug 2005 16:13:03 +0000 (CEST)' => ['2005-08-14T16:13:03+00:00', '1124035983'],
             'Sun, 14 Aug 2005 16:13:03 +0000' => ['2005-08-14T16:13:03+00:00', '1124035983'],
-
-            'Sun, 14 Aug 2005 16:13:03 +1000 (CEST)' => ['2005-08-14T06:13:03+00:00', '1123999983'],
-            'Sun, 14 Aug 2005 16:13:03 +1000' => ['2005-08-14T06:13:03+00:00', '1123999983'],
-            'Sun, 14 Aug 2005 16:13:03 -1000' => ['2005-08-15T02:13:03+00:00', '1124071983'],
 
             'Sun, 14 Aug 2005 16:13:03 +1000 (CEST)' => ['2005-08-14T06:13:03+00:00', '1123999983'],
             'Sun, 14 Aug 2005 16:13:03 +1000' => ['2005-08-14T06:13:03+00:00', '1123999983'],
@@ -443,6 +494,11 @@ final class MailboxTest extends TestCase
      * Test, different datetimes conversions using differents timezones.
      *
      * @dataProvider datetimeProvider
+     *
+     * @param string  $dateToParse
+     * @param numeric $epochToCompare
+     *
+     * @return void
      */
     public function testParsedDateDifferentTimeZones($dateToParse, $epochToCompare)
     {
@@ -453,6 +509,8 @@ final class MailboxTest extends TestCase
 
     /**
      * Provides test data for testing parsing invalid / unparseable datetimes.
+     *
+     * @psalm-return array<string, array{0:string}>
      */
     public function invalidDatetimeProvider()
     {
@@ -467,6 +525,10 @@ final class MailboxTest extends TestCase
      * Test, different invalid / unparseable datetimes conversions.
      *
      * @dataProvider invalidDatetimeProvider
+     *
+     * @param string $dateToParse
+     *
+     * @return void
      */
     public function testParsedDateWithUnparseableDateTime($dateToParse)
     {
@@ -476,6 +538,8 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, parsed datetime being emtpy the header date.
+     *
+     * @return void
      */
     public function testParsedDateTimeWithEmptyHeaderDate()
     {
@@ -485,6 +549,10 @@ final class MailboxTest extends TestCase
 
     /**
      * Provides test data for testing mime encoding.
+     *
+     * @return string[][]
+     *
+     * @psalm-return list<array{0:string, 1:string}>
      */
     public function mimeEncodingProvider()
     {
@@ -504,6 +572,11 @@ final class MailboxTest extends TestCase
      * Test, that mime encoding returns correct strings.
      *
      * @dataProvider mimeEncodingProvider
+     *
+     * @param string $str
+     * @param string $expected
+     *
+     * @return void
      */
     public function testMimeEncoding($str, $expected)
     {
@@ -517,20 +590,23 @@ final class MailboxTest extends TestCase
 
     /**
      * Provides test data for testing timeouts.
+     *
+     * @psalm-return array<string, array{0:'assertNull'|'expectException', 1:int, 2:list<1|2|3|4>}>
      */
     public function timeoutsProvider()
     {
+        /** @psalm-var array<string, array{0:'assertNull'|'expectException', 1:int, 2:list<int>}> */
         return [
             'array(IMAP_OPENTIMEOUT)' => ['assertNull', 1, [IMAP_OPENTIMEOUT]],
             'array(IMAP_READTIMEOUT)' => ['assertNull', 1, [IMAP_READTIMEOUT]],
             'array(IMAP_WRITETIMEOUT)' => ['assertNull', 1, [IMAP_WRITETIMEOUT]],
             'array(IMAP_CLOSETIMEOUT)' => ['assertNull', 1, [IMAP_CLOSETIMEOUT]],
             'array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT)' => ['assertNull', 1, [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT]],
-            'array(IMAP_OPENTIMEOUT)' => ['expectException', 1, [OPENTIMEOUT]],
-            'array(IMAP_READTIMEOUT)' => ['expectException', 1, [READTIMEOUT]],
-            'array(IMAP_WRITETIMEOUT)' => ['expectException', 1, [WRITETIMEOUT]],
-            'array(IMAP_CLOSETIMEOUT)' => ['expectException', 1, [CLOSETIMEOUT]],
-            'array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT)' => ['expectException', 1, [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, WRITETIMEOUT, IMAP_CLOSETIMEOUT]],
+            'array(OPENTIMEOUT)' => ['expectException', 1, [OPENTIMEOUT]],
+            'array(READTIMEOUT)' => ['expectException', 1, [READTIMEOUT]],
+            'array(WRITETIMEOUT)' => ['expectException', 1, [WRITETIMEOUT]],
+            'array(CLOSETIMEOUT)' => ['expectException', 1, [CLOSETIMEOUT]],
+            'array(IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, WRITETIMEOUT, IMAP_CLOSETIMEOUT)' => ['expectException', 1, [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, WRITETIMEOUT, IMAP_CLOSETIMEOUT]],
         ];
     }
 
@@ -538,22 +614,34 @@ final class MailboxTest extends TestCase
      * Test, that only supported timeouts can be set.
      *
      * @dataProvider timeoutsProvider
+     *
+     * @param string $assertMethod
+     * @param int    $timeout
+     * @param int[]  $types
+     *
+     * @psalm-param 'assertNull'|'expectException' $assertMethod
+     * @psalm-param list<1|2|3|4> $types
+     *
+     * @return void
      */
     public function testSetTimeouts($assertMethod, $timeout, $types)
     {
         if ('expectException' == $assertMethod) {
             $this->expectException(InvalidParameterException::class);
             $this->mailbox->setTimeouts($timeout, $types);
-        } elseif ('assertNull' == $assertMethod) {
+        } else {
             $this->assertNull($this->mailbox->setTimeouts($timeout, $types));
         }
     }
 
     /**
      * Provides test data for testing connection args.
+     *
+     * @psalm-return list<array{0:'assertNull'|'expectException', 1:int, 2:int, 3:array}>
      */
     public function connectionArgsProvider()
     {
+        /** @psalm-var list<array{0:'assertNull'|'expectException', 1:int, 2:int, 3:array}> */
         return [
             ['assertNull', OP_READONLY, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
             ['assertNull', OP_READONLY, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
@@ -575,10 +663,7 @@ final class MailboxTest extends TestCase
             ['expectException', OP_READONLY, -12, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
             ['expectException', OP_READONLY, '-1', ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
             ['expectException', OP_READONLY, '1', ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['expectException', OP_READONLY, 0, DISABLE_AUTHENTICATOR],
-            ['expectException', OP_READONLY, 0, 'DISABLE_AUTHENTICATOR'],
-            ['expectException', OP_READONLY, 0, SOMETHING],
-            ['expectException', OP_READONLY, 0, 'SOMETHING'],
+            ['expectException', OP_READONLY, 0, [null]],
         ];
     }
 
@@ -586,6 +671,13 @@ final class MailboxTest extends TestCase
      * Test, that only supported and valid connection args can be set.
      *
      * @dataProvider connectionArgsProvider
+     *
+     * @param string     $assertMethod
+     * @param int        $option
+     * @param int        $retriesNum
+     * @param array|null $param
+     *
+     * @return void
      */
     public function testSetConnectionArgs($assertMethod, $option, $retriesNum, $param)
     {
@@ -599,6 +691,8 @@ final class MailboxTest extends TestCase
 
     /**
      * Provides test data for testing mime string decoding.
+     *
+     * @psalm-return array<string, array{0:string, 1:string, 2?:string}>
      */
     public function mimeStrDecodingProvider()
     {
@@ -610,8 +704,8 @@ final class MailboxTest extends TestCase
             'Some subject here 😘' => ['=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 'Some subject here 😘'],
             'mountainguan测试' => ['=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 'mountainguan测试'],
             "This is the Euro symbol ''." => ["This is the Euro symbol ''.", "This is the Euro symbol ''."],
-            'Some subject here 😘' => ['=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 'Some subject here 😘', 'US-ASCII'],
-            'mountainguan测试' => ['=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 'mountainguan测试', 'US-ASCII'],
+            'Some subject here 😘 US-ASCII' => ['=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 'Some subject here 😘', 'US-ASCII'],
+            'mountainguan测试 US-ASCII' => ['=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 'mountainguan测试', 'US-ASCII'],
             'مقتطفات من: صن تزو. "فن الحرب". كتب أبل. Something' => ['مقتطفات من: صن تزو. "فن الحرب". كتب أبل. Something', 'مقتطفات من: صن تزو. "فن الحرب". كتب أبل. Something'],
         ];
     }
@@ -620,6 +714,12 @@ final class MailboxTest extends TestCase
      * Test, that decoding mime strings return unchanged / not broken strings.
      *
      * @dataProvider mimeStrDecodingProvider
+     *
+     * @param string $str
+     * @param string $expectedStr
+     * @param string $serverEncoding
+     *
+     * @return void
      */
     public function testDecodeMimeStr($str, $expectedStr, $serverEncoding = 'utf-8')
     {

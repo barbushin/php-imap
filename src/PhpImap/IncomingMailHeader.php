@@ -9,32 +9,91 @@ namespace PhpImap;
  */
 class IncomingMailHeader
 {
-    /** @var int|string $id The IMAP message ID - not the "Message-ID:"-header of the email */
+    /** @var int|string|null $id The IMAP message ID - not the "Message-ID:"-header of the email */
     public $id;
+
+    /** @var bool */
     public $isDraft = false;
+
+    /** @var string|null */
     public $date;
+
+    /** @var string|null */
     public $headersRaw;
+
+    /** @var object|null */
     public $headers;
+
+    /** @var string|null */
     public $priority;
+
+    /** @var string|null */
     public $importance;
+
+    /** @var string|null */
     public $sensitivity;
+
+    /** @var string|null */
     public $autoSubmitted;
+
+    /** @var string|null */
     public $precedence;
+
+    /** @var string|null */
     public $failedRecipients;
+
+    /** @var string|null */
     public $subject;
 
+    /** @var string|null */
     public $fromHost;
+
+    /** @var string|null */
     public $fromName;
+
+    /** @var string|null */
     public $fromAddress;
+
+    /** @var string|null */
     public $senderHost;
+
+    /** @var string|null */
     public $senderName;
+
+    /** @var string|null */
     public $senderAddress;
 
+    /**
+     * @var (string|null)[]
+     *
+     * @psalm-var array<string, string|null>
+     */
     public $to = [];
+
+    /** @var string|null */
     public $toString;
+
+    /**
+     * @var (string|null)[]
+     *
+     * @psalm-var array<string, string|null>
+     */
     public $cc = [];
+
+    /**
+     * @var (string|null)[]
+     *
+     * @psalm-var array<string, string|null>
+     */
     public $bcc = [];
+
+    /**
+     * @var (string|null)[]
+     *
+     * @psalm-var array<string, string|null>
+     */
     public $replyTo = [];
 
+    /** @var string|null */
     public $messageId;
 }
