@@ -1690,11 +1690,15 @@ class Mailbox
             foreach ($t as $item) {
                 // https://github.com/barbushin/php-imap/issues/339
                 $name = $this->decodeStringFromUtf7ImapToUtf8($item->name);
+                $name_pos = strpos($name, '}');
+                if (false === $name_pos) {
+                    throw new UnexpectedValueException('Expected token "}" not found in subscription name!');
+                }
                 $arr[] = [
                     'fullpath' => $name,
                     'attributes' => $item->attributes,
                     'delimiter' => $item->delimiter,
-                    'shortpath' => substr($name, strpos($name, '}') + 1),
+                    'shortpath' => substr($name, $name_pos + 1),
                 ];
             }
         }
