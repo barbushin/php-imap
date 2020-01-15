@@ -664,7 +664,9 @@ class Mailbox
      *
      * @see Mailbox::searchMailboxFromWithOrWithoutDisablingServerEncoding()
      *
-     * @return list<int>
+     * @return int[]
+     *
+     * @psalm-return list<int>
      */
     public function searchMailboxFrom($criteria, $sender, ...$senders)
     {
@@ -680,7 +682,9 @@ class Mailbox
      *
      * @see Mailbox::searchMailboxFromWithOrWithoutDisablingServerEncoding()
      *
-     * @return list<int>
+     * @return int[]
+     *
+     * @psalm-return list<int>
      */
     public function searchMailboxFromDisableServerEncoding($criteria, $sender, ...$senders)
     {
@@ -1957,13 +1961,15 @@ class Mailbox
      *
      * This function wraps Mailbox::searchMailbox() to overcome a shortcoming in ext-imap
      *
-     * @return list<int>
+     * @return int[]
+     *
+     * @psalm-return list<int>
      */
     protected function searchMailboxFromWithOrWithoutDisablingServerEncoding($criteria, $disableServerEncoding, $sender, ...$senders)
     {
         array_unshift($senders, $sender);
 
-        /** @var list<string> */
+        /** @psalm-var list<string> */
         $senders = array_values(array_unique(array_map('mb_strtolower', $senders)));
 
         $out = [];
@@ -1972,7 +1978,7 @@ class Mailbox
             $out = array_merge($out, $this->searchMailbox($criteria.' FROM '.$sender, $disableServerEncoding));
         }
 
-        /** @var list<int> */
+        /** @psalm-var list<int> */
         return array_values(array_unique($out, SORT_NUMERIC));
     }
 }
