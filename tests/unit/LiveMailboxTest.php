@@ -98,9 +98,9 @@ class LiveMailboxTest extends TestCase
             $limit = \min(\count($mailboxes), self::RANDOM_MAILBOX_SAMPLE_SIZE);
 
             for ($i = 0; $i < $limit; ++$i) {
-                $this->assertInternalType('array', $mailboxes[$i]);
-                $this->assertTrue(isset($mailboxes[$i]['shortpath']));
-                $this->assertInternalType('string', $mailboxes[$i]['shortpath']);
+                static::assertIsArray($mailboxes[$i]);
+                static::assertTrue(isset($mailboxes[$i]['shortpath']));
+                static::assertIsString($mailboxes[$i]['shortpath']);
                 $mailbox->switchMailbox($mailboxes[$i]['shortpath']);
 
                 $check = $mailbox->checkMailbox();
@@ -115,7 +115,7 @@ class LiveMailboxTest extends TestCase
                     $this->assertTrue(\property_exists($check, $expectedProperty));
                 }
 
-                $this->assertInternalType('string', $check->Date, 'Date property of Mailbox::checkMailbox() result was not a string!');
+                $this->assertIsString($check->Date, 'Date property of Mailbox::checkMailbox() result was not a string!');
 
                 $unix = \strtotime($check->Date);
 
@@ -127,10 +127,10 @@ class LiveMailboxTest extends TestCase
                     $unix = \strtotime(\substr($check->Date, 0, $pos));
                 }
 
-                $this->assertInternalType('int', $unix, 'Date property of Mailbox::checkMailbox() result was not a valid date!');
+                $this->assertIsInt($unix, 'Date property of Mailbox::checkMailbox() result was not a valid date!');
                 $this->assertTrue(\in_array($check->Driver, ['POP3', 'IMAP', 'NNTP', 'pop3', 'imap', 'nntp'], true), 'Driver property of Mailbox::checkMailbox() result was not of an expected value!');
-                $this->assertInternalType('int', $check->Nmsgs, 'Nmsgs property of Mailbox::checkMailbox() result was not of an expected type!');
-                $this->assertInternalType('int', $check->Recent, 'Recent property of Mailbox::checkMailbox() result was not of an expected type!');
+                $this->assertIsInt($check->Nmsgs, 'Nmsgs property of Mailbox::checkMailbox() result was not of an expected type!');
+                $this->assertIsInt($check->Recent, 'Recent property of Mailbox::checkMailbox() result was not of an expected type!');
 
                 $status = $mailbox->statusMailbox();
 
