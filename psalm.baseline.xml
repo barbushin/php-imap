@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="3.8.2@90d6b73fd8062432030ef39b7b6694b3902daa31">
+<files psalm-version="3.8.3@389af1bfc739bfdff3f9e3dc7bd6499aee51a831">
   <file src="src/PhpImap/IncomingMail.php">
     <PossiblyUnusedMethod occurrences="3">
       <code>hasAttachments</code>
@@ -134,11 +134,9 @@
       <code>$element</code>
       <code>$item</code>
     </MixedAssignment>
-    <MixedInferredReturnType occurrences="5">
+    <MixedInferredReturnType occurrences="3">
       <code>string</code>
       <code>string</code>
-      <code>int</code>
-      <code>int|false</code>
       <code>IncomingMailAttachment</code>
     </MixedInferredReturnType>
     <MixedOperand occurrences="15">
@@ -211,11 +209,9 @@
       <code>$item-&gt;attributes</code>
       <code>$item-&gt;delimiter</code>
     </MixedPropertyFetch>
-    <MixedReturnStatement occurrences="4">
+    <MixedReturnStatement occurrences="2">
       <code>$str</code>
       <code>$str</code>
-      <code>isset($quota['STORAGE']['limit']) ? $quota['STORAGE']['limit'] : 0</code>
-      <code>isset($quota['STORAGE']['usage']) ? $quota['STORAGE']['usage'] : 0</code>
     </MixedReturnStatement>
     <PossiblyInvalidArgument occurrences="1">
       <code>$mailStructure</code>
@@ -281,9 +277,6 @@
       <code>\is_int($retriesNum)</code>
       <code>null != $params and !empty($params)</code>
     </RedundantConditionGivenDocblockType>
-    <ReservedWord occurrences="1">
-      <code>list&lt;scalar|array|object|resource|null&gt;|string</code>
-    </ReservedWord>
     <UnusedVariable occurrences="1">
       <code>$value</code>
     </UnusedVariable>

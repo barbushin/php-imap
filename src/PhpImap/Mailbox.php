@@ -464,7 +464,13 @@ class Mailbox
     public function encodeStringToUtf7Imap($str)
     {
         if (\is_string($str)) {
-            return mb_convert_encoding($str, 'UTF7-IMAP', mb_detect_encoding($str, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
+            $out = mb_convert_encoding($str, 'UTF7-IMAP', mb_detect_encoding($str, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
+
+            if (!\is_string($out)) {
+                throw new UnexpectedValueException('mb_convert_encoding($str, \'UTF-8\', {detected}) could not convert $str');
+            }
+
+            return $out;
         }
 
         // Return $str as it is, when it is no string
@@ -479,7 +485,13 @@ class Mailbox
     public function decodeStringFromUtf7ImapToUtf8($str)
     {
         if (\is_string($str)) {
-            return mb_convert_encoding($str, 'UTF-8', 'UTF7-IMAP');
+            $out = mb_convert_encoding($str, 'UTF-8', 'UTF7-IMAP');
+
+            if (!\is_string($out)) {
+                throw new UnexpectedValueException('mb_convert_encoding($str, \'UTF-8\', \'UTF7-IMAP\') could not convert $str');
+            }
+
+            return $out;
         }
 
         // Return $str as it is, when it is no string
@@ -971,6 +983,7 @@ class Mailbox
     {
         $quota = $this->getQuota($quota_root);
 
+        /** @var int */
         return isset($quota['STORAGE']['limit']) ? $quota['STORAGE']['limit'] : 0;
     }
 
@@ -985,6 +998,7 @@ class Mailbox
     {
         $quota = $this->getQuota($quota_root);
 
+        /** @var int|false */
         return isset($quota['STORAGE']['usage']) ? $quota['STORAGE']['usage'] : 0;
     }
 
