@@ -512,8 +512,7 @@ class Mailbox
     /**
      * Deletes a specific mailbox.
      *
-     * @param string $name     Name of mailbox, which you want to delete (eg. 'PhpImap')
-     * @param bool   $absolute
+     * @param string $name Name of mailbox, which you want to delete (eg. 'PhpImap')
      *
      * @see   imap_deletemailbox()
      */
