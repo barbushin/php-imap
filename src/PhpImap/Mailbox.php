@@ -1735,7 +1735,7 @@ class Mailbox
         /** @var string|null */
         $out[] = (isset($t[0]->personal) and !empty(trim($t[0]->personal))) ? $this->decodeMimeStr($t[0]->personal, $this->getServerEncoding()) : ((isset($t[1]->personal) and (!empty(trim($t[1]->personal)))) ? $this->decodeMimeStr($t[1]->personal, $this->getServerEncoding()) : null);
         /** @var string */
-        $out[] = strtolower($t[0]->mailbox.'@'.(string)$out[0]);
+        $out[] = strtolower($t[0]->mailbox.'@'.(string) $out[0]);
 
         /** @var array{0:string|null, 1:string|null, 2:string} */
         return $out;
