@@ -1713,12 +1713,22 @@ class Mailbox
      * @param array $t
      *
      * @return array
+     *
+     * @todo revisit implementation pending resolution of https://github.com/vimeo/psalm/issues/2619
      */
     protected function possiblyGetMailboxes($t)
     {
         $arr = [];
         if ($t) {
-            foreach ($t as $item) {
+            foreach ($t as $index => $item) {
+                if (!\is_object($item)) {
+                    throw new UnexpectedValueException('Index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() corresponds to a non-object value, '.\gettype($item).' given!');
+                } elseif (!isset($item->name, $item->attributes, $item->delimiter)) {
+                    throw new UnexpectedValueException('The object at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() was missing one or more of the required properties "name", "attributes", "delimiter"!');
+                } elseif (!\is_string($item->name)) {
+                    throw new UnexpectedValueException('The object at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() has a non-string value for the name property!');
+                }
+
                 // https://github.com/barbushin/php-imap/issues/339
                 $name = $this->decodeStringFromUtf7ImapToUtf8($item->name);
                 $name_pos = strpos($name, '}');

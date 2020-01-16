@@ -105,7 +105,7 @@
       <code>$partStructure-&gt;ifid ? $partStructure-&gt;id : ''</code>
       <code>$t[0]-&gt;mailbox</code>
     </MixedOperand>
-    <MixedPropertyFetch occurrences="20">
+    <MixedPropertyFetch occurrences="17">
       <code>$param-&gt;value</code>
       <code>$param-&gt;value</code>
       <code>$param-&gt;attribute</code>
@@ -118,9 +118,6 @@
       <code>$element-&gt;charset</code>
       <code>$element-&gt;charset</code>
       <code>$element-&gt;text</code>
-      <code>$item-&gt;name</code>
-      <code>$item-&gt;attributes</code>
-      <code>$item-&gt;delimiter</code>
       <code>$t[0]-&gt;host</code>
       <code>$t[1]-&gt;host</code>
       <code>$t[0]-&gt;personal</code>
