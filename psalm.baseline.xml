@@ -19,9 +19,7 @@
       <code>\is_int($retriesNum)</code>
       <code>\is_resource($this-&gt;imapStream)</code>
     </DocblockTypeContradiction>
-    <InvalidScalarArgument occurrences="3">
-      <code>$mail-&gt;id</code>
-      <code>$mail-&gt;id</code>
+    <InvalidScalarArgument occurrences="1">
       <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
     </InvalidScalarArgument>
     <MissingParamType occurrences="5">

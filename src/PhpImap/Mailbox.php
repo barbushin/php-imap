@@ -1316,7 +1316,7 @@ class Mailbox
      *
      * @param array  $params        Array of params of mail
      * @param object $partStructure Part of mail
-     * @param int    $mailId        ID of mail
+     * @param string $mailId        ID of mail
      * @param bool   $emlOrigin     True, if it indicates, that the attachment comes from an EML (mail) file
      *
      * @psalm-param array<string, mixed> $params
