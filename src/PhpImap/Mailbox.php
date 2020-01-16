@@ -1692,12 +1692,12 @@ class Mailbox
 
             if ('' !== trim($recipientMailbox) && '' !== trim($recipientHost)) {
                 $recipientEmail = strtolower($recipientMailbox.'@'.$recipientHost);
-            $recipientName = (isset($recipient->personal) and !empty(trim($recipient->personal))) ? $this->decodeMimeStr($recipient->personal, $this->getServerEncoding()) : null;
+                $recipientName = (isset($recipient->personal) and !empty(trim($recipient->personal))) ? $this->decodeMimeStr($recipient->personal, $this->getServerEncoding()) : null;
 
-            return [
-                $recipientEmail,
-                $recipientName,
-            ];
+                return [
+                    $recipientEmail,
+                    $recipientName,
+                ];
             }
         }
 
