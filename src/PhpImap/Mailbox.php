@@ -1532,7 +1532,10 @@ class Mailbox
      */
     public function getMailboxes($search = '*')
     {
-        return $this->possiblyGetMailboxes(imap_getmailboxes($this->getImapStream(), $this->imapPath, $search));
+        /** @psalm-var (scalar|array|object|resource|null)[] */
+        $mailboxes = (array) imap_getmailboxes($this->getImapStream(), $this->imapPath, $search);
+
+        return $this->possiblyGetMailboxes($mailboxes);
     }
 
     /**
@@ -1544,7 +1547,10 @@ class Mailbox
      */
     public function getSubscribedMailboxes($search = '*')
     {
-        return $this->possiblyGetMailboxes(imap_getsubscribed($this->getImapStream(), $this->imapPath, $search));
+        /** @psalm-var (scalar|array|object|resource|null)[] */
+        $mailboxes = (array) imap_getsubscribed($this->getImapStream(), $this->imapPath, $search);
+
+        return $this->possiblyGetMailboxes($mailboxes);
     }
 
     /**
@@ -1711,6 +1717,8 @@ class Mailbox
 
     /**
      * @param array $t
+     *
+     * @psalm-param (scalar|array|object|resource|null)[] $t
      *
      * @return array
      *

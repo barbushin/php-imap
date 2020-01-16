@@ -79,7 +79,7 @@
       <code>$t[1]-&gt;personal</code>
       <code>$t[1]-&gt;personal</code>
     </MixedArgument>
-    <MixedAssignment occurrences="13">
+    <MixedAssignment occurrences="12">
       <code>$value</code>
       <code>$to</code>
       <code>$cc</code>
@@ -92,7 +92,6 @@
       <code>$fileName</code>
       <code>$attachment-&gt;disposition</code>
       <code>$element</code>
-      <code>$item</code>
     </MixedAssignment>
     <MixedInferredReturnType occurrences="2">
       <code>string</code>
