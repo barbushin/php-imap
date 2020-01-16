@@ -1332,6 +1332,7 @@ class Mailbox
         } elseif ((!isset($params['filename']) or empty(trim($params['filename']))) && (!isset($params['name']) or empty(trim($params['name'])))) {
             $fileName = strtolower($partStructure->subtype);
         } else {
+            /** @var string */
             $fileName = (isset($params['filename']) and !empty(trim($params['filename']))) ? $params['filename'] : $params['name'];
             $fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
             $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
@@ -1341,7 +1342,7 @@ class Mailbox
         $attachment->id = sha1($fileName.($partStructure->ifid ? $partStructure->id : ''));
         $attachment->contentId = $partStructure->ifid ? trim($partStructure->id, ' <>') : null;
         $attachment->name = $fileName;
-        $attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
+        $attachment->disposition = (isset($partStructure->disposition) && \is_string($partStructure->disposition)) ? $partStructure->disposition : null;
         if (isset($params['charset']) && !\is_string($params['charset'])) {
             throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must specify charset as a string when specified!');
         }

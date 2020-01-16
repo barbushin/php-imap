@@ -31,7 +31,7 @@
       <code>$mailId</code>
       <code>$mailId</code>
     </MissingParamType>
-    <MixedArgument occurrences="46">
+    <MixedArgument occurrences="45">
       <code>$mail-&gt;subject</code>
       <code>$mail-&gt;subject</code>
       <code>$mail-&gt;from</code>
@@ -70,7 +70,6 @@
       <code>$params['name']</code>
       <code>$partStructure-&gt;subtype</code>
       <code>$params['filename']</code>
-      <code>$fileName</code>
       <code>$partStructure-&gt;id</code>
       <code>$element-&gt;charset</code>
       <code>$element-&gt;text</code>
@@ -79,7 +78,7 @@
       <code>$t[1]-&gt;personal</code>
       <code>$t[1]-&gt;personal</code>
     </MixedArgument>
-    <MixedAssignment occurrences="11">
+    <MixedAssignment occurrences="9">
       <code>$value</code>
       <code>$to</code>
       <code>$cc</code>
@@ -89,8 +88,6 @@
       <code>$param</code>
       <code>$params[$paramName]</code>
       <code>$subPartStructure</code>
-      <code>$fileName</code>
-      <code>$attachment-&gt;disposition</code>
     </MixedAssignment>
     <MixedInferredReturnType occurrences="2">
       <code>string</code>
