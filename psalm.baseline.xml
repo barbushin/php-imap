@@ -151,7 +151,7 @@
       <code>assertAttributeEquals</code>
     </DeprecatedMethod>
     <InvalidArgument occurrences="1">
-      <code>constant('ANYTHING')</code>
+      <code>self::ANYTHING</code>
     </InvalidArgument>
     <MethodSignatureMismatch occurrences="1">
       <code>public function setUp()</code>

@@ -32,7 +32,9 @@ class IncomingMailTest extends TestCase
                 'date',
             ] as $property
         ) {
-            $this->assertSame($header->$property, $mail->$property);
+            /** @var scalar|array|object|resource|null */
+            $headerPropertyValue = $header->$property;
+            $this->assertSame($headerPropertyValue, $mail->$property);
         }
     }
 
@@ -65,7 +67,7 @@ class IncomingMailTest extends TestCase
         ];
 
         foreach ($attachments as $i => $attachment) {
-            $attachment->id = $i;
+            $attachment->id = (string) $i;
             $mail->addAttachment($attachment);
         }
 
@@ -73,6 +75,7 @@ class IncomingMailTest extends TestCase
         $this->assertSame($attachments, $mail->getAttachments());
 
         foreach ($attachments as $attachment) {
+            $this->assertIsString($attachment->id);
             $this->assertTrue($mail->removeAttachment($attachment->id));
         }
 
@@ -80,6 +83,7 @@ class IncomingMailTest extends TestCase
         $this->assertSame([], $mail->getAttachments());
 
         foreach ($attachments as $attachment) {
+            $this->assertIsString($attachment->id);
             $this->assertFalse($mail->removeAttachment($attachment->id));
         }
     }

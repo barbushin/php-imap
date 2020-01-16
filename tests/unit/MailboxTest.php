@@ -15,6 +15,8 @@ use PHPUnit\Framework\TestCase;
 
 final class MailboxTest extends TestCase
 {
+    const ANYTHING = 0;
+
     /**
      * Holds a PhpImap\Mailbox instance.
      *
@@ -214,13 +216,11 @@ final class MailboxTest extends TestCase
      */
     public function testSetAndGetImapSearchOption()
     {
-        \define('ANYTHING', 0);
-
         $this->mailbox->setImapSearchOption(SE_FREE);
         $this->assertEquals($this->mailbox->getImapSearchOption(), 2);
 
         $this->expectException(InvalidParameterException::class);
-        $this->mailbox->setImapSearchOption(\constant('ANYTHING'));
+        $this->mailbox->setImapSearchOption(self::ANYTHING);
 
         $this->mailbox->setImapSearchOption(SE_UID);
         $this->assertEquals($this->mailbox->getImapSearchOption(), 1);
