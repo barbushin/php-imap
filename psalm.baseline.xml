@@ -22,13 +22,6 @@
     <InvalidScalarArgument occurrences="1">
       <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
     </InvalidScalarArgument>
-    <MissingParamType occurrences="5">
-      <code>$str</code>
-      <code>$str</code>
-      <code>$mailId</code>
-      <code>$mailId</code>
-      <code>$mailId</code>
-    </MissingParamType>
     <MixedArgument occurrences="45">
       <code>$mail-&gt;subject</code>
       <code>$mail-&gt;subject</code>
@@ -87,10 +80,6 @@
       <code>$params[$paramName]</code>
       <code>$subPartStructure</code>
     </MixedAssignment>
-    <MixedInferredReturnType occurrences="2">
-      <code>string</code>
-      <code>string</code>
-    </MixedInferredReturnType>
     <MixedOperand occurrences="5">
       <code>$params[$paramName]</code>
       <code>$subPartNum</code>
@@ -112,10 +101,6 @@
       <code>$t[1]-&gt;personal</code>
       <code>$t[0]-&gt;mailbox</code>
     </MixedPropertyFetch>
-    <MixedReturnStatement occurrences="2">
-      <code>$str</code>
-      <code>$str</code>
-    </MixedReturnStatement>
     <PossiblyInvalidArgument occurrences="1">
       <code>$mailStructure</code>
     </PossiblyInvalidArgument>

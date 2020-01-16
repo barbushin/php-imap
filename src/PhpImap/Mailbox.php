@@ -464,7 +464,9 @@ class Mailbox
     /**
      * Returns the provided string in UTF7-IMAP encoded format.
      *
-     * @return string $str UTF-7 encoded string or same as before, when it's no string
+     * @param scalar|array|object|resource|null $str
+     *
+     * @return string $str UTF-7 encoded string
      */
     public function encodeStringToUtf7Imap($str)
     {
@@ -478,12 +480,13 @@ class Mailbox
             return $out;
         }
 
-        // Return $str as it is, when it is no string
-        return $str;
+        throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() must be a string!');
     }
 
     /**
      * Returns the provided string in UTF-8 encoded format.
+     *
+     * @param scalar|array|object|resource|null $str
      *
      * @return string $str UTF-7 encoded string or same as before, when it's no string
      *
@@ -501,8 +504,7 @@ class Mailbox
             return $out;
         }
 
-        // Return $str as it is, when it is no string
-        return $str;
+        throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() must be a string!');
     }
 
     /**
@@ -768,7 +770,9 @@ class Mailbox
     /**
      * Add the flag \Seen to a mail.
      *
-     * @param $mailId
+     * @param string $mailId
+     *
+     * @return void
      */
     public function markMailAsRead($mailId)
     {
@@ -778,7 +782,9 @@ class Mailbox
     /**
      * Remove the flag \Seen from a mail.
      *
-     * @param $mailId
+     * @param string $mailId
+     *
+     * @return void
      */
     public function markMailAsUnread($mailId)
     {
@@ -788,7 +794,9 @@ class Mailbox
     /**
      * Add the flag \Flagged to a mail.
      *
-     * @param $mailId
+     * @param string $mailId
+     *
+     * @return void
      */
     public function markMailAsImportant($mailId)
     {
@@ -1742,16 +1750,19 @@ class Mailbox
         $arr = [];
         if ($t) {
             foreach ($t as $index => $item) {
+                /** @var scalar|array|object|resource|null */
+                $item_name = \is_object($item) && isset($item->name) ? $item->name : null;
+
                 if (!\is_object($item)) {
                     throw new UnexpectedValueException('Index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() corresponds to a non-object value, '.\gettype($item).' given!');
                 } elseif (!isset($item->name, $item->attributes, $item->delimiter)) {
                     throw new UnexpectedValueException('The object at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() was missing one or more of the required properties "name", "attributes", "delimiter"!');
-                } elseif (!\is_string($item->name)) {
+                } elseif (!\is_string($item_name)) {
                     throw new UnexpectedValueException('The object at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() has a non-string value for the name property!');
                 }
 
                 // https://github.com/barbushin/php-imap/issues/339
-                $name = $this->decodeStringFromUtf7ImapToUtf8($item->name);
+                $name = $this->decodeStringFromUtf7ImapToUtf8($item_name);
                 $name_pos = strpos($name, '}');
                 if (false === $name_pos) {
                     throw new UnexpectedValueException('Expected token "}" not found in subscription name!');
