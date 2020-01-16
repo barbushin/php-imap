@@ -1382,6 +1382,8 @@ class Mailbox
      * @return string Converted string if conversion was successful, or the original string if not
      *
      * @throws Exception
+     *
+     * @todo update implementation pending resolution of https://github.com/vimeo/psalm/issues/2619 & https://github.com/vimeo/psalm/issues/2620
      */
     public function decodeMimeStr($string, $toCharset = 'utf-8')
     {
@@ -1390,7 +1392,9 @@ class Mailbox
         }
 
         $newString = '';
-        foreach (imap_mime_header_decode($string) as $element) {
+        /** @var list<object> */
+        $elements = imap_mime_header_decode($string);
+        foreach ($elements as $element) {
             if (isset($element->text)) {
                 /** @var string */
                 $fromCharset = !isset($element->charset) ? 'iso-8859-1' : $element->charset;

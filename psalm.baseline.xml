@@ -79,7 +79,7 @@
       <code>$t[1]-&gt;personal</code>
       <code>$t[1]-&gt;personal</code>
     </MixedArgument>
-    <MixedAssignment occurrences="12">
+    <MixedAssignment occurrences="11">
       <code>$value</code>
       <code>$to</code>
       <code>$cc</code>
@@ -91,7 +91,6 @@
       <code>$subPartStructure</code>
       <code>$fileName</code>
       <code>$attachment-&gt;disposition</code>
-      <code>$element</code>
     </MixedAssignment>
     <MixedInferredReturnType occurrences="2">
       <code>string</code>
@@ -104,7 +103,7 @@
       <code>$partStructure-&gt;ifid ? $partStructure-&gt;id : ''</code>
       <code>$t[0]-&gt;mailbox</code>
     </MixedOperand>
-    <MixedPropertyFetch occurrences="17">
+    <MixedPropertyFetch occurrences="12">
       <code>$param-&gt;value</code>
       <code>$param-&gt;value</code>
       <code>$param-&gt;attribute</code>
@@ -112,11 +111,6 @@
       <code>$param-&gt;attribute</code>
       <code>$param-&gt;value</code>
       <code>$param-&gt;value</code>
-      <code>$element-&gt;text</code>
-      <code>$element-&gt;charset</code>
-      <code>$element-&gt;charset</code>
-      <code>$element-&gt;charset</code>
-      <code>$element-&gt;text</code>
       <code>$t[0]-&gt;host</code>
       <code>$t[1]-&gt;host</code>
       <code>$t[0]-&gt;personal</code>
