@@ -1677,14 +1677,28 @@ class Mailbox
      */
     protected function possiblyGetEmailAndNameFromRecipient(object $recipient)
     {
-        if (isset($recipient->mailbox, $recipient->host) && '' !== trim($recipient->mailbox) && '' !== trim($recipient->host)) {
-            $recipientEmail = strtolower($recipient->mailbox.'@'.$recipient->host);
+        if (isset($recipient->mailbox, $recipient->host)) {
+            /** @var mixed */
+            $recipientMailbox = $recipient->mailbox;
+
+            /** @var mixed */
+            $recipientHost = $recipient->host;
+
+            if (!\is_string($recipientMailbox)) {
+                throw new UnexpectedValueException('mailbox was present on argument 1 passed to '.__METHOD__.'() but was not a string!');
+            } elseif (!\is_string($recipientHost)) {
+                throw new UnexpectedValueException('host was present on argument 1 passed to '.__METHOD__.'() but was not a string!');
+            }
+
+            if ('' !== trim($recipientMailbox) && '' !== trim($recipientHost)) {
+                $recipientEmail = strtolower($recipientMailbox.'@'.$recipientHost);
             $recipientName = (isset($recipient->personal) and !empty(trim($recipient->personal))) ? $this->decodeMimeStr($recipient->personal, $this->getServerEncoding()) : null;
 
             return [
                 $recipientEmail,
                 $recipientName,
             ];
+            }
         }
 
         return null;

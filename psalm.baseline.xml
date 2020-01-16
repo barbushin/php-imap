@@ -31,7 +31,7 @@
       <code>$mailId</code>
       <code>$mailId</code>
     </MissingParamType>
-    <MixedArgument occurrences="50">
+    <MixedArgument occurrences="48">
       <code>$mail-&gt;subject</code>
       <code>$mail-&gt;subject</code>
       <code>$mail-&gt;from</code>
@@ -74,8 +74,6 @@
       <code>$partStructure-&gt;id</code>
       <code>$element-&gt;charset</code>
       <code>$element-&gt;text</code>
-      <code>$recipient-&gt;mailbox</code>
-      <code>$recipient-&gt;host</code>
       <code>$recipient-&gt;personal</code>
       <code>$recipient-&gt;personal</code>
       <code>$t[0]-&gt;personal</code>
@@ -102,13 +100,11 @@
       <code>string</code>
       <code>string</code>
     </MixedInferredReturnType>
-    <MixedOperand occurrences="7">
+    <MixedOperand occurrences="5">
       <code>$params[$paramName]</code>
       <code>$subPartNum</code>
       <code>$subPartNum</code>
       <code>$partStructure-&gt;ifid ? $partStructure-&gt;id : ''</code>
-      <code>$recipient-&gt;mailbox</code>
-      <code>$recipient-&gt;host</code>
       <code>$t[0]-&gt;mailbox</code>
     </MixedOperand>
     <MixedPropertyFetch occurrences="20">
