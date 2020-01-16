@@ -874,13 +874,28 @@ class Mailbox
      * @return array $mailsIds Array of mail IDs
      *
      * @psalm-return list<object>
+     *
+     * @todo adjust types & conditionals pending resolution of https://github.com/vimeo/psalm/issues/2619
      */
     public function getMailsInfo(array $mailsIds)
     {
         /** @var list<object>|false */
         $mails = $this->imap('fetch_overview', [implode(',', $mailsIds), (SE_UID == $this->imapSearchOption) ? FT_UID : 0]);
         if (\is_array($mails) && \count($mails)) {
-            foreach ($mails as &$mail) {
+            foreach ($mails as $index => &$mail) {
+                if (isset($mail->subject) && !\is_string($mail->subject)) {
+                    throw new UnexpectedValueException('subject property at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() was not a string!');
+                }
+                if (isset($mail->from) && !\is_string($mail->from)) {
+                    throw new UnexpectedValueException('from property at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() was not a string!');
+                }
+                if (isset($mail->sender) && !\is_string($mail->sender)) {
+                    throw new UnexpectedValueException('sender property at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() was not a string!');
+                }
+                if (isset($mail->to) && !\is_string($mail->to)) {
+                    throw new UnexpectedValueException('to property at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() was not a string!');
+                }
+
                 if (isset($mail->subject) and !empty(trim($mail->subject))) {
                     $mail->subject = $this->decodeMimeStr($mail->subject, $this->getServerEncoding());
                 }
@@ -1047,6 +1062,8 @@ class Mailbox
      * @return IncomingMailHeader
      *
      * @throws Exception
+     *
+     * @todo update type checking pending resolution of https://github.com/vimeo/psalm/issues/2619
      */
     public function getMailHeader($mailId)
     {
@@ -1058,6 +1075,22 @@ class Mailbox
         }
 
         $head = imap_rfc822_parse_headers($headersRaw);
+
+        if (isset($head->date) && !\is_string($head->date)) {
+            throw new UnexpectedValueException('date property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not a string!');
+        }
+        if (isset($head->Date) && !\is_string($head->Date)) {
+            throw new UnexpectedValueException('Date property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not a string!');
+        }
+        if (isset($head->subject) && !\is_string($head->subject)) {
+            throw new UnexpectedValueException('subject property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not a string!');
+        }
+        if (isset($head->from) && !\is_array($head->from)) {
+            throw new UnexpectedValueException('from property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not an array!');
+        }
+        if (isset($head->sender) && !\is_array($head->sender)) {
+            throw new UnexpectedValueException('sender property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not an array!');
+        }
 
         $header = new IncomingMailHeader();
         $header->headersRaw = $headersRaw;

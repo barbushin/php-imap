@@ -22,23 +22,7 @@
     <InvalidScalarArgument occurrences="1">
       <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
     </InvalidScalarArgument>
-    <MixedArgument occurrences="45">
-      <code>$mail-&gt;subject</code>
-      <code>$mail-&gt;subject</code>
-      <code>$mail-&gt;from</code>
-      <code>$mail-&gt;from</code>
-      <code>$mail-&gt;sender</code>
-      <code>$mail-&gt;sender</code>
-      <code>$mail-&gt;to</code>
-      <code>$mail-&gt;to</code>
-      <code>$head-&gt;date</code>
-      <code>$head-&gt;date</code>
-      <code>$head-&gt;Date</code>
-      <code>$head-&gt;Date</code>
-      <code>$head-&gt;subject</code>
-      <code>$head-&gt;subject</code>
-      <code>$head-&gt;from</code>
-      <code>$head-&gt;sender</code>
+    <MixedArgument occurrences="29">
       <code>$to</code>
       <code>$cc</code>
       <code>$bcc</code>
