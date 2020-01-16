@@ -1677,7 +1677,7 @@ class Mailbox
      */
     protected function possiblyGetEmailAndNameFromRecipient(object $recipient)
     {
-        if (isset($recipient->mailbox) && !empty(trim($recipient->mailbox)) && isset($recipient->host) && !empty(trim($recipient->host))) {
+        if (isset($recipient->mailbox, $recipient->host) && '' !== trim($recipient->mailbox) && '' !== trim($recipient->host)) {
             $recipientEmail = strtolower($recipient->mailbox.'@'.$recipient->host);
             $recipientName = (isset($recipient->personal) and !empty(trim($recipient->personal))) ? $this->decodeMimeStr($recipient->personal, $this->getServerEncoding()) : null;
 
