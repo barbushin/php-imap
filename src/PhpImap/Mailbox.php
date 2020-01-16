@@ -1684,15 +1684,20 @@ class Mailbox
             /** @var mixed */
             $recipientHost = $recipient->host;
 
+            /** @var mixed */
+            $recipientPersonal = isset($recipient->personal) ? $recipient->personal : null;
+
             if (!\is_string($recipientMailbox)) {
                 throw new UnexpectedValueException('mailbox was present on argument 1 passed to '.__METHOD__.'() but was not a string!');
             } elseif (!\is_string($recipientHost)) {
                 throw new UnexpectedValueException('host was present on argument 1 passed to '.__METHOD__.'() but was not a string!');
+            } elseif (null !== $recipientPersonal && !\is_string($recipientPersonal)) {
+                throw new UnexpectedValueException('personal was present on argument 1 passed to '.__METHOD__.'() but was not a string!');
             }
 
             if ('' !== trim($recipientMailbox) && '' !== trim($recipientHost)) {
                 $recipientEmail = strtolower($recipientMailbox.'@'.$recipientHost);
-                $recipientName = (isset($recipient->personal) and !empty(trim($recipient->personal))) ? $this->decodeMimeStr($recipient->personal, $this->getServerEncoding()) : null;
+                $recipientName = (\is_string($recipientPersonal) and '' !== trim($recipientPersonal)) ? $this->decodeMimeStr($recipientPersonal, $this->getServerEncoding()) : null;
 
                 return [
                     $recipientEmail,

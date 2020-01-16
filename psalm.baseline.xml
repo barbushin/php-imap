@@ -31,7 +31,7 @@
       <code>$mailId</code>
       <code>$mailId</code>
     </MissingParamType>
-    <MixedArgument occurrences="48">
+    <MixedArgument occurrences="46">
       <code>$mail-&gt;subject</code>
       <code>$mail-&gt;subject</code>
       <code>$mail-&gt;from</code>
@@ -74,8 +74,6 @@
       <code>$partStructure-&gt;id</code>
       <code>$element-&gt;charset</code>
       <code>$element-&gt;text</code>
-      <code>$recipient-&gt;personal</code>
-      <code>$recipient-&gt;personal</code>
       <code>$t[0]-&gt;personal</code>
       <code>$t[0]-&gt;personal</code>
       <code>$t[1]-&gt;personal</code>
