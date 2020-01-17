@@ -19,7 +19,8 @@
       <code>\is_int($retriesNum)</code>
       <code>\is_resource($this-&gt;imapStream)</code>
     </DocblockTypeContradiction>
-    <InvalidScalarArgument occurrences="1">
+    <InvalidScalarArgument occurrences="2">
+      <code>$partStructure-&gt;id</code>
       <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
     </InvalidScalarArgument>
     <MixedArgument occurrences="9">
