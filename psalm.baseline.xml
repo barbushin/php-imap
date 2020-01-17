@@ -23,26 +23,14 @@
       <code>$partStructure-&gt;id</code>
       <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
     </InvalidScalarArgument>
-    <MixedArgument occurrences="9">
-      <code>$param-&gt;value</code>
-      <code>$param-&gt;value</code>
+    <MixedArgument occurrences="3">
       <code>$params['filename']</code>
       <code>$params['name']</code>
       <code>$params['filename']</code>
-      <code>$t[0]-&gt;personal</code>
-      <code>$t[0]-&gt;personal</code>
-      <code>$t[1]-&gt;personal</code>
-      <code>$t[1]-&gt;personal</code>
     </MixedArgument>
     <MixedAssignment occurrences="1">
       <code>$value</code>
     </MixedAssignment>
-    <PossiblyInvalidArgument occurrences="1">
-      <code>$mailStructure</code>
-    </PossiblyInvalidArgument>
-    <PossiblyInvalidPropertyFetch occurrences="1">
-      <code>$mailStructure-&gt;parts</code>
-    </PossiblyInvalidPropertyFetch>
     <PossiblyUnusedMethod occurrences="35">
       <code>setOAuthToken</code>
       <code>getOAuthToken</code>
