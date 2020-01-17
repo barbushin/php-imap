@@ -9,7 +9,7 @@ namespace PhpImap;
  */
 class IncomingMailHeader
 {
-    /** @var int|string|null $id The IMAP message ID - not the "Message-ID:"-header of the email */
+    /** @var string|null $id The IMAP message ID - not the "Message-ID:"-header of the email */
     public $id;
 
     /** @var bool */

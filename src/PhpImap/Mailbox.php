@@ -464,7 +464,9 @@ class Mailbox
     /**
      * Returns the provided string in UTF7-IMAP encoded format.
      *
-     * @return string $str UTF-7 encoded string or same as before, when it's no string
+     * @param scalar|array|object|resource|null $str
+     *
+     * @return string $str UTF-7 encoded string
      */
     public function encodeStringToUtf7Imap($str)
     {
@@ -478,12 +480,13 @@ class Mailbox
             return $out;
         }
 
-        // Return $str as it is, when it is no string
-        return $str;
+        throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() must be a string!');
     }
 
     /**
      * Returns the provided string in UTF-8 encoded format.
+     *
+     * @param scalar|array|object|resource|null $str
      *
      * @return string $str UTF-7 encoded string or same as before, when it's no string
      *
@@ -501,8 +504,7 @@ class Mailbox
             return $out;
         }
 
-        // Return $str as it is, when it is no string
-        return $str;
+        throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() must be a string!');
     }
 
     /**
@@ -689,16 +691,16 @@ class Mailbox
      * @param string $criteria              See http://php.net/imap_search for a complete list of available criteria
      * @param bool   $disableServerEncoding Disables server encoding while searching for mails (can be useful on Exchange servers)
      *
-     * @return array mailsIds (or empty array)
+     * @return string[] mailsIds (or empty array)
      */
     public function searchMailbox($criteria = 'ALL', $disableServerEncoding = false)
     {
         if ($disableServerEncoding) {
-            /** @var array */
+            /** @var string[] */
             return $this->imap('search', [$criteria, $this->imapSearchOption]) ?: [];
         }
 
-        /** @var array */
+        /** @var string[] */
         return $this->imap('search', [$criteria, $this->imapSearchOption, $this->getServerEncoding()]) ?: [];
     }
 
@@ -768,7 +770,9 @@ class Mailbox
     /**
      * Add the flag \Seen to a mail.
      *
-     * @param $mailId
+     * @param string $mailId
+     *
+     * @return void
      */
     public function markMailAsRead($mailId)
     {
@@ -778,7 +782,9 @@ class Mailbox
     /**
      * Remove the flag \Seen from a mail.
      *
-     * @param $mailId
+     * @param string $mailId
+     *
+     * @return void
      */
     public function markMailAsUnread($mailId)
     {
@@ -788,7 +794,9 @@ class Mailbox
     /**
      * Add the flag \Flagged to a mail.
      *
-     * @param $mailId
+     * @param string $mailId
+     *
+     * @return void
      */
     public function markMailAsImportant($mailId)
     {
@@ -866,13 +874,28 @@ class Mailbox
      * @return array $mailsIds Array of mail IDs
      *
      * @psalm-return list<object>
+     *
+     * @todo adjust types & conditionals pending resolution of https://github.com/vimeo/psalm/issues/2619
      */
     public function getMailsInfo(array $mailsIds)
     {
         /** @var list<object>|false */
         $mails = $this->imap('fetch_overview', [implode(',', $mailsIds), (SE_UID == $this->imapSearchOption) ? FT_UID : 0]);
         if (\is_array($mails) && \count($mails)) {
-            foreach ($mails as &$mail) {
+            foreach ($mails as $index => &$mail) {
+                if (isset($mail->subject) && !\is_string($mail->subject)) {
+                    throw new UnexpectedValueException('subject property at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() was not a string!');
+                }
+                if (isset($mail->from) && !\is_string($mail->from)) {
+                    throw new UnexpectedValueException('from property at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() was not a string!');
+                }
+                if (isset($mail->sender) && !\is_string($mail->sender)) {
+                    throw new UnexpectedValueException('sender property at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() was not a string!');
+                }
+                if (isset($mail->to) && !\is_string($mail->to)) {
+                    throw new UnexpectedValueException('to property at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() was not a string!');
+                }
+
                 if (isset($mail->subject) and !empty(trim($mail->subject))) {
                     $mail->subject = $this->decodeMimeStr($mail->subject, $this->getServerEncoding());
                 }
@@ -1034,11 +1057,13 @@ class Mailbox
     /**
      * Get mail header.
      *
-     * @param int $mailId ID of the message
+     * @param string $mailId ID of the message
      *
      * @return IncomingMailHeader
      *
      * @throws Exception
+     *
+     * @todo update type checking pending resolution of https://github.com/vimeo/psalm/issues/2619
      */
     public function getMailHeader($mailId)
     {
@@ -1050,6 +1075,22 @@ class Mailbox
         }
 
         $head = imap_rfc822_parse_headers($headersRaw);
+
+        if (isset($head->date) && !\is_string($head->date)) {
+            throw new UnexpectedValueException('date property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not a string!');
+        }
+        if (isset($head->Date) && !\is_string($head->Date)) {
+            throw new UnexpectedValueException('Date property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not a string!');
+        }
+        if (isset($head->subject) && !\is_string($head->subject)) {
+            throw new UnexpectedValueException('subject property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not a string!');
+        }
+        if (isset($head->from) && !\is_array($head->from)) {
+            throw new UnexpectedValueException('from property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not an array!');
+        }
+        if (isset($head->sender) && !\is_array($head->sender)) {
+            throw new UnexpectedValueException('sender property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not an array!');
+        }
 
         $header = new IncomingMailHeader();
         $header->headersRaw = $headersRaw;
@@ -1174,8 +1215,8 @@ class Mailbox
     /**
      * Get mail data.
      *
-     * @param int  $mailId     ID of the mail
-     * @param bool $markAsSeen Mark the email as seen, when set to true
+     * @param string $mailId     ID of the mail
+     * @param bool   $markAsSeen Mark the email as seen, when set to true
      *
      * @return IncomingMail
      */
@@ -1316,7 +1357,7 @@ class Mailbox
      *
      * @param array  $params        Array of params of mail
      * @param object $partStructure Part of mail
-     * @param int    $mailId        ID of mail
+     * @param string $mailId        ID of mail
      * @param bool   $emlOrigin     True, if it indicates, that the attachment comes from an EML (mail) file
      *
      * @psalm-param array<string, mixed> $params
@@ -1332,6 +1373,7 @@ class Mailbox
         } elseif ((!isset($params['filename']) or empty(trim($params['filename']))) && (!isset($params['name']) or empty(trim($params['name'])))) {
             $fileName = strtolower($partStructure->subtype);
         } else {
+            /** @var string */
             $fileName = (isset($params['filename']) and !empty(trim($params['filename']))) ? $params['filename'] : $params['name'];
             $fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
             $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
@@ -1341,7 +1383,7 @@ class Mailbox
         $attachment->id = sha1($fileName.($partStructure->ifid ? $partStructure->id : ''));
         $attachment->contentId = $partStructure->ifid ? trim($partStructure->id, ' <>') : null;
         $attachment->name = $fileName;
-        $attachment->disposition = (isset($partStructure->disposition) ? $partStructure->disposition : null);
+        $attachment->disposition = (isset($partStructure->disposition) && \is_string($partStructure->disposition)) ? $partStructure->disposition : null;
         if (isset($params['charset']) && !\is_string($params['charset'])) {
             throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must specify charset as a string when specified!');
         }
@@ -1382,6 +1424,8 @@ class Mailbox
      * @return string Converted string if conversion was successful, or the original string if not
      *
      * @throws Exception
+     *
+     * @todo update implementation pending resolution of https://github.com/vimeo/psalm/issues/2619 & https://github.com/vimeo/psalm/issues/2620
      */
     public function decodeMimeStr($string, $toCharset = 'utf-8')
     {
@@ -1390,7 +1434,9 @@ class Mailbox
         }
 
         $newString = '';
-        foreach (imap_mime_header_decode($string) as $element) {
+        /** @var list<object> */
+        $elements = imap_mime_header_decode($string);
+        foreach ($elements as $element) {
             if (isset($element->text)) {
                 /** @var string */
                 $fromCharset = !isset($element->charset) ? 'iso-8859-1' : $element->charset;
@@ -1532,7 +1578,14 @@ class Mailbox
      */
     public function getMailboxes($search = '*')
     {
-        return $this->possiblyGetMailboxes(imap_getmailboxes($this->getImapStream(), $this->imapPath, $search));
+        /** @psalm-var (scalar|array|object|resource|null)[]|false */
+        $mailboxes = imap_getmailboxes($this->getImapStream(), $this->imapPath, $search);
+
+        if (!\is_array($mailboxes)) {
+            throw new UnexpectedValueException('Call to imap_getmailboxes() with supplied arguments returned false, not array!');
+        }
+
+        return $this->possiblyGetMailboxes($mailboxes);
     }
 
     /**
@@ -1544,7 +1597,14 @@ class Mailbox
      */
     public function getSubscribedMailboxes($search = '*')
     {
-        return $this->possiblyGetMailboxes(imap_getsubscribed($this->getImapStream(), $this->imapPath, $search));
+        /** @psalm-var (scalar|array|object|resource|null)[]|false */
+        $mailboxes = (array) imap_getsubscribed($this->getImapStream(), $this->imapPath, $search);
+
+        if (!\is_array($mailboxes)) {
+            throw new UnexpectedValueException('Call to imap_getmailboxes() with supplied arguments returned false, not array!');
+        }
+
+        return $this->possiblyGetMailboxes($mailboxes);
     }
 
     /**
@@ -1677,14 +1737,33 @@ class Mailbox
      */
     protected function possiblyGetEmailAndNameFromRecipient(object $recipient)
     {
-        if (isset($recipient->mailbox) && !empty(trim($recipient->mailbox)) && isset($recipient->host) && !empty(trim($recipient->host))) {
-            $recipientEmail = strtolower($recipient->mailbox.'@'.$recipient->host);
-            $recipientName = (isset($recipient->personal) and !empty(trim($recipient->personal))) ? $this->decodeMimeStr($recipient->personal, $this->getServerEncoding()) : null;
+        if (isset($recipient->mailbox, $recipient->host)) {
+            /** @var mixed */
+            $recipientMailbox = $recipient->mailbox;
 
-            return [
-                $recipientEmail,
-                $recipientName,
-            ];
+            /** @var mixed */
+            $recipientHost = $recipient->host;
+
+            /** @var mixed */
+            $recipientPersonal = isset($recipient->personal) ? $recipient->personal : null;
+
+            if (!\is_string($recipientMailbox)) {
+                throw new UnexpectedValueException('mailbox was present on argument 1 passed to '.__METHOD__.'() but was not a string!');
+            } elseif (!\is_string($recipientHost)) {
+                throw new UnexpectedValueException('host was present on argument 1 passed to '.__METHOD__.'() but was not a string!');
+            } elseif (null !== $recipientPersonal && !\is_string($recipientPersonal)) {
+                throw new UnexpectedValueException('personal was present on argument 1 passed to '.__METHOD__.'() but was not a string!');
+            }
+
+            if ('' !== trim($recipientMailbox) && '' !== trim($recipientHost)) {
+                $recipientEmail = strtolower($recipientMailbox.'@'.$recipientHost);
+                $recipientName = (\is_string($recipientPersonal) and '' !== trim($recipientPersonal)) ? $this->decodeMimeStr($recipientPersonal, $this->getServerEncoding()) : null;
+
+                return [
+                    $recipientEmail,
+                    $recipientName,
+                ];
+            }
         }
 
         return null;
@@ -1693,15 +1772,30 @@ class Mailbox
     /**
      * @param array $t
      *
+     * @psalm-param (scalar|array|object|resource|null)[] $t
+     *
      * @return array
+     *
+     * @todo revisit implementation pending resolution of https://github.com/vimeo/psalm/issues/2619
      */
     protected function possiblyGetMailboxes($t)
     {
         $arr = [];
         if ($t) {
-            foreach ($t as $item) {
+            foreach ($t as $index => $item) {
+                /** @var scalar|array|object|resource|null */
+                $item_name = \is_object($item) && isset($item->name) ? $item->name : null;
+
+                if (!\is_object($item)) {
+                    throw new UnexpectedValueException('Index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() corresponds to a non-object value, '.\gettype($item).' given!');
+                } elseif (!isset($item->name, $item->attributes, $item->delimiter)) {
+                    throw new UnexpectedValueException('The object at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() was missing one or more of the required properties "name", "attributes", "delimiter"!');
+                } elseif (!\is_string($item_name)) {
+                    throw new UnexpectedValueException('The object at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() has a non-string value for the name property!');
+                }
+
                 // https://github.com/barbushin/php-imap/issues/339
-                $name = $this->decodeStringFromUtf7ImapToUtf8($item->name);
+                $name = $this->decodeStringFromUtf7ImapToUtf8($item_name);
                 $name_pos = strpos($name, '}');
                 if (false === $name_pos) {
                     throw new UnexpectedValueException('Expected token "}" not found in subscription name!');
