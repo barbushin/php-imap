@@ -28,9 +28,6 @@
       <code>$params['name']</code>
       <code>$params['filename']</code>
     </MixedArgument>
-    <MixedAssignment occurrences="1">
-      <code>$value</code>
-    </MixedAssignment>
     <PossiblyUnusedMethod occurrences="35">
       <code>setOAuthToken</code>
       <code>getOAuthToken</code>
@@ -76,9 +73,6 @@
       <code>\is_int($retriesNum)</code>
       <code>!\is_resource($this-&gt;imapStream) || !imap_ping($this-&gt;imapStream)</code>
     </RedundantConditionGivenDocblockType>
-    <UnusedVariable occurrences="1">
-      <code>$value</code>
-    </UnusedVariable>
   </file>
   <file src="tests/unit/MailboxTest.php">
     <DeprecatedMethod occurrences="8">

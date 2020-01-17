@@ -387,7 +387,7 @@ class Mailbox
                 throw new InvalidParameterException('setConnectionArgs() requires $params to be an array!');
             }
 
-            foreach ($params as $key => $value) {
+            foreach (array_keys($params) as $key) {
                 if (!\in_array($key, $supported_params, true)) {
                     throw new InvalidParameterException('Invalid array key of params provided for setConnectionArgs()! Only DISABLE_AUTHENTICATOR is currently valid.');
                 }
