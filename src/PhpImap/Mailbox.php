@@ -16,6 +16,18 @@ use UnexpectedValueException;
  * @see https://github.com/barbushin/php-imap
  *
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
+ *
+ * @psalm-type PARTSTRUCTURE = object{
+ *  id?:string,
+ *  encoding:int|mixed,
+ *  partStructure:object[],
+ *  parameters:object{attribute:string, value?:string}[],
+ *  dparameters:object{attribute:string, value:string}[],
+ *  parts:array<int, object{disposition?:string}>,
+ *  type:int,
+ *  subtype:string
+ * }
+ * @psalm-type HOSTNAMEANDADDRESS = non-empty-array<int, object{host?:string, personal?:string, mailbox:string}>
  */
 class Mailbox
 {
@@ -1074,6 +1086,18 @@ class Mailbox
             throw new Exception('Empty mail header - fetchheader failed. Invalid mail ID?');
         }
 
+        /** @var object{
+         * date?:scalar,
+         * Date?:scalar,
+         * subject?:scalar,
+         * from?:HOSTNAMEANDADDRESS,
+         * to?:HOSTNAMEANDADDRESS,
+         * cc?:HOSTNAMEANDADDRESS,
+         * bcc?:HOSTNAMEANDADDRESS,
+         * reply_to?:HOSTNAMEANDADDRESS,
+         * sender?:HOSTNAMEANDADDRESS
+         * }
+         */
         $head = imap_rfc822_parse_headers($headersRaw);
 
         if (isset($head->date) && !\is_string($head->date)) {
@@ -1090,6 +1114,18 @@ class Mailbox
         }
         if (isset($head->sender) && !\is_array($head->sender)) {
             throw new UnexpectedValueException('sender property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not an array!');
+        }
+        if (isset($head->to) && !\is_array($head->to)) {
+            throw new UnexpectedValueException('to property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not an array!');
+        }
+        if (isset($head->cc) && !\is_array($head->cc)) {
+            throw new UnexpectedValueException('cc property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not an array!');
+        }
+        if (isset($head->bcc) && !\is_array($head->bcc)) {
+            throw new UnexpectedValueException('bcc property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not an array!');
+        }
+        if (isset($head->reply_to) && !\is_array($head->reply_to)) {
+            throw new UnexpectedValueException('reply_to property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not an array!');
         }
 
         $header = new IncomingMailHeader();
@@ -1181,9 +1217,11 @@ class Mailbox
      * @param int         $index
      * @param bool        $fullPrefix
      *
-     * @psalm-param array<string, \stdClass> $flattenedParts
+     * @psalm-param array<string, PARTSTRUCTURE> $flattenedParts
      *
      * @return \stdClass[]
+     *
+     * @psalm-return array<string, PARTSTRUCTURE>
      */
     public function flattenParts($messageParts, $flattenedParts = [], $prefix = '', $index = 1, $fullPrefix = true)
     {
@@ -1246,9 +1284,11 @@ class Mailbox
      * @param bool       $markAsSeen
      * @param bool       $emlParse
      *
+     * @psalm-param PARTSTRUCTURE $partStructure
+     *
      * @return void
      *
-     * @todo flesh out shape of $partStructure
+     * @todo refactor type checking pending resolution of https://github.com/vimeo/psalm/issues/2619
      */
     protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true, $emlParse = false)
     {
@@ -1263,10 +1303,14 @@ class Mailbox
         }
         $dataInfo = new DataPartInfo($this, $mail->id, $partNum, $partStructure->encoding, $options);
 
+        /** @var array<string, string> */
         $params = [];
         if (!empty($partStructure->parameters)) {
             foreach ($partStructure->parameters as $param) {
-                $params[strtolower($param->attribute)] = (!isset($param->value) || empty(trim($param->value))) ? '' : $this->decodeMimeStr($param->value);
+                $params[strtolower($param->attribute)] = '';
+                if (isset($param->value) && '' !== trim($param->value)) {
+                    $params[strtolower($param->attribute)] = $this->decodeMimeStr($param->value);
+                }
             }
         }
         if (!empty($partStructure->dparameters)) {
@@ -1316,7 +1360,7 @@ class Mailbox
             $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, $emlParse);
             $mail->addAttachment($attachment);
         } else {
-            if (isset($params['charset']) and \is_string($params['charset']) and !empty(trim($params['charset']))) {
+            if (isset($params['charset']) and !empty(trim($params['charset']))) {
                 $dataInfo->charset = $params['charset'];
             }
         }
@@ -1343,6 +1387,8 @@ class Mailbox
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
                 } elseif (!$partStructure->ifdisposition) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
+                } elseif (!\is_string($partStructure->disposition)) {
+                    throw new InvalidArgumentException('disposition property of object passed as argument 2 to '.__METHOD__.'() was present but not a string!');
                 } elseif ('attachment' != strtolower($partStructure->disposition)) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
                 }
@@ -1361,8 +1407,11 @@ class Mailbox
      * @param bool   $emlOrigin     True, if it indicates, that the attachment comes from an EML (mail) file
      *
      * @psalm-param array<string, mixed> $params
+     * @psalm-param PARTSTRUCTURE $partStructure
      *
      * @return IncomingMailAttachment $attachment
+     *
+     * @todo consider "requiring" psalm (suggest + conflict) then setting $params to array<string, string>
      */
     public function downloadAttachment(DataPartInfo $dataInfo, $params, $partStructure, $mailId, $emlOrigin = false)
     {
@@ -1434,11 +1483,10 @@ class Mailbox
         }
 
         $newString = '';
-        /** @var list<object> */
+        /** @var list<object{charset?:string, text?:string}> */
         $elements = imap_mime_header_decode($string);
         foreach ($elements as $element) {
             if (isset($element->text)) {
-                /** @var string */
                 $fromCharset = !isset($element->charset) ? 'iso-8859-1' : $element->charset;
                 // Convert to UTF-8, if string has UTF-8 characters to avoid broken strings. See https://github.com/barbushin/php-imap/issues/232
                 $toCharset = isset($element->charset) && preg_match('/(UTF\-8)|(default)/i', $element->charset) ? 'UTF-8' : $toCharset;
@@ -1815,7 +1863,7 @@ class Mailbox
     /**
      * @param array $t
      *
-     * @psalm-param non-empty-array $t
+     * @psalm-param HOSTNAMEANDADDRESS $t
      *
      * @return array
      *
