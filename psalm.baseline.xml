@@ -86,12 +86,5 @@
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>assertInstanceOf</code>
     </RedundantConditionGivenDocblockType>
-    <UndefinedConstant occurrences="5">
-      <code>OPENTIMEOUT</code>
-      <code>READTIMEOUT</code>
-      <code>WRITETIMEOUT</code>
-      <code>CLOSETIMEOUT</code>
-      <code>WRITETIMEOUT</code>
-    </UndefinedConstant>
   </file>
 </files>
