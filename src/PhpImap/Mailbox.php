@@ -1432,9 +1432,11 @@ class Mailbox
             $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
         }
 
+        $partStructure_id = ($partStructure->ifid && isset($partStructure->id)) ? $partStructure->id : null;
+
         $attachment = new IncomingMailAttachment();
-        $attachment->id = sha1($fileName.($partStructure->ifid ? $partStructure->id : ''));
-        $attachment->contentId = $partStructure->ifid ? trim($partStructure->id, ' <>') : null;
+        $attachment->id = sha1($fileName.(isset($partStructure_id) ? $partStructure_id : ''));
+        $attachment->contentId = isset($partStructure_id) ? trim($partStructure_id, ' <>') : null;
         $attachment->name = $fileName;
         $attachment->disposition = (isset($partStructure->disposition) && \is_string($partStructure->disposition)) ? $partStructure->disposition : null;
 
