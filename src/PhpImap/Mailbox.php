@@ -1436,6 +1436,11 @@ class Mailbox
         $newString = '';
         /** @var list<object> */
         $elements = imap_mime_header_decode($string);
+
+        if (false === $elements) {
+            return $newString;
+        }
+
         foreach ($elements as $element) {
             if (isset($element->text)) {
                 /** @var string */
