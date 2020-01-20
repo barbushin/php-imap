@@ -1411,7 +1411,7 @@ class Mailbox
      * @param string $mailId        ID of mail
      * @param bool   $emlOrigin     True, if it indicates, that the attachment comes from an EML (mail) file
      *
-     * @psalm-param array<string, mixed> $params
+     * @psalm-param array<string, string> $params
      * @psalm-param PARTSTRUCTURE $partStructure
      *
      * @return IncomingMailAttachment $attachment
@@ -1427,7 +1427,6 @@ class Mailbox
         } elseif ((!isset($params['filename']) or empty(trim($params['filename']))) && (!isset($params['name']) or empty(trim($params['name'])))) {
             $fileName = strtolower($partStructure->subtype);
         } else {
-            /** @var string */
             $fileName = (isset($params['filename']) and !empty(trim($params['filename']))) ? $params['filename'] : $params['name'];
             $fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
             $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
@@ -1438,10 +1437,14 @@ class Mailbox
         $attachment->contentId = $partStructure->ifid ? trim($partStructure->id, ' <>') : null;
         $attachment->name = $fileName;
         $attachment->disposition = (isset($partStructure->disposition) && \is_string($partStructure->disposition)) ? $partStructure->disposition : null;
-        if (isset($params['charset']) && !\is_string($params['charset'])) {
+
+        /** @var scalar|array|object|resource|null */
+        $charset = isset($params['charset']) ? $params['charset'] : null;
+
+        if (isset($charset) && !\is_string($charset)) {
             throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must specify charset as a string when specified!');
         }
-        $attachment->charset = (isset($params['charset']) and !empty(trim($params['charset']))) ? $params['charset'] : null;
+        $attachment->charset = (isset($charset) and !empty(trim($charset))) ? $charset : null;
         $attachment->emlOrigin = $emlOrigin;
 
         $attachment->addDataPartInfo($dataInfo);

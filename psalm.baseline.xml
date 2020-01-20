@@ -23,11 +23,6 @@
       <code>$partStructure-&gt;id</code>
       <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
     </InvalidScalarArgument>
-    <MixedArgument occurrences="3">
-      <code>$params['filename']</code>
-      <code>$params['name']</code>
-      <code>$params['filename']</code>
-    </MixedArgument>
     <PossiblyUnusedMethod occurrences="35">
       <code>setOAuthToken</code>
       <code>getOAuthToken</code>
