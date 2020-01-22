@@ -22,79 +22,6 @@
     <InvalidScalarArgument occurrences="1">
       <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
     </InvalidScalarArgument>
-    <MixedArgument occurrences="29">
-      <code>$to</code>
-      <code>$cc</code>
-      <code>$bcc</code>
-      <code>$replyTo</code>
-      <code>$param-&gt;value</code>
-      <code>$param-&gt;value</code>
-      <code>$param-&gt;attribute</code>
-      <code>$param-&gt;attribute</code>
-      <code>preg_match('~^(.*?)\*~', $param-&gt;attribute, $matches) ? $matches[1] : $param-&gt;attribute</code>
-      <code>$partStructure-&gt;subtype</code>
-      <code>$subPartStructure</code>
-      <code>$subPartStructure</code>
-      <code>$subPartStructure</code>
-      <code>$subPartStructure</code>
-      <code>$partStructure-&gt;subtype</code>
-      <code>$partStructure-&gt;disposition</code>
-      <code>$partStructure-&gt;subtype</code>
-      <code>$partStructure-&gt;subtype</code>
-      <code>$params['filename']</code>
-      <code>$params['name']</code>
-      <code>$partStructure-&gt;subtype</code>
-      <code>$params['filename']</code>
-      <code>$partStructure-&gt;id</code>
-      <code>$element-&gt;charset</code>
-      <code>$element-&gt;text</code>
-      <code>$t[0]-&gt;personal</code>
-      <code>$t[0]-&gt;personal</code>
-      <code>$t[1]-&gt;personal</code>
-      <code>$t[1]-&gt;personal</code>
-    </MixedArgument>
-    <MixedAssignment occurrences="9">
-      <code>$value</code>
-      <code>$to</code>
-      <code>$cc</code>
-      <code>$bcc</code>
-      <code>$replyTo</code>
-      <code>$param</code>
-      <code>$param</code>
-      <code>$params[$paramName]</code>
-      <code>$subPartStructure</code>
-    </MixedAssignment>
-    <MixedOperand occurrences="5">
-      <code>$params[$paramName]</code>
-      <code>$subPartNum</code>
-      <code>$subPartNum</code>
-      <code>$partStructure-&gt;ifid ? $partStructure-&gt;id : ''</code>
-      <code>$t[0]-&gt;mailbox</code>
-    </MixedOperand>
-    <MixedPropertyFetch occurrences="12">
-      <code>$param-&gt;value</code>
-      <code>$param-&gt;value</code>
-      <code>$param-&gt;attribute</code>
-      <code>$param-&gt;attribute</code>
-      <code>$param-&gt;attribute</code>
-      <code>$param-&gt;value</code>
-      <code>$param-&gt;value</code>
-      <code>$t[0]-&gt;host</code>
-      <code>$t[1]-&gt;host</code>
-      <code>$t[0]-&gt;personal</code>
-      <code>$t[1]-&gt;personal</code>
-      <code>$t[0]-&gt;mailbox</code>
-    </MixedPropertyFetch>
-    <PossiblyInvalidArgument occurrences="1">
-      <code>$mailStructure</code>
-    </PossiblyInvalidArgument>
-    <PossiblyInvalidPropertyFetch occurrences="1">
-      <code>$mailStructure-&gt;parts</code>
-    </PossiblyInvalidPropertyFetch>
-    <PossiblyUndefinedArrayOffset occurrences="2">
-      <code>$t[0]</code>
-      <code>$t[1]</code>
-    </PossiblyUndefinedArrayOffset>
     <PossiblyUnusedMethod occurrences="35">
       <code>setOAuthToken</code>
       <code>getOAuthToken</code>
@@ -140,9 +67,6 @@
       <code>\is_int($retriesNum)</code>
       <code>!\is_resource($this-&gt;imapStream) || !imap_ping($this-&gt;imapStream)</code>
     </RedundantConditionGivenDocblockType>
-    <UnusedVariable occurrences="1">
-      <code>$value</code>
-    </UnusedVariable>
   </file>
   <file src="tests/unit/MailboxTest.php">
     <DeprecatedMethod occurrences="8">
@@ -161,12 +85,5 @@
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>assertInstanceOf</code>
     </RedundantConditionGivenDocblockType>
-    <UndefinedConstant occurrences="5">
-      <code>OPENTIMEOUT</code>
-      <code>READTIMEOUT</code>
-      <code>WRITETIMEOUT</code>
-      <code>CLOSETIMEOUT</code>
-      <code>WRITETIMEOUT</code>
-    </UndefinedConstant>
   </file>
 </files>

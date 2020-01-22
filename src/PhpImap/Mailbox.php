@@ -16,6 +16,21 @@ use UnexpectedValueException;
  * @see https://github.com/barbushin/php-imap
  *
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
+ *
+ * @psalm-type PARTSTRUCTURE_PARAM = object{attribute:string, value?:string}
+ *
+ * @psalm-type PARTSTRUCTURE = object{
+ *  id?:string,
+ *  encoding:int|mixed,
+ *  partStructure:object[],
+ *  parameters:PARTSTRUCTURE_PARAM[],
+ *  dparameters:object{attribute:string, value:string}[],
+ *  parts:array<int, object{disposition?:string}>,
+ *  type:int,
+ *  subtype:string
+ * }
+ * @psalm-type HOSTNAMEANDADDRESS_ENTRY = object{host?:string, personal?:string, mailbox:string}
+ * @psalm-type HOSTNAMEANDADDRESS = array{0:HOSTNAMEANDADDRESS_ENTRY, 1?:HOSTNAMEANDADDRESS_ENTRY}
  */
 class Mailbox
 {
@@ -372,7 +387,7 @@ class Mailbox
                 throw new InvalidParameterException('setConnectionArgs() requires $params to be an array!');
             }
 
-            foreach ($params as $key => $value) {
+            foreach (array_keys($params) as $key) {
                 if (!\in_array($key, $supported_params, true)) {
                     throw new InvalidParameterException('Invalid array key of params provided for setConnectionArgs()! Only DISABLE_AUTHENTICATOR is currently valid.');
                 }
@@ -1074,6 +1089,18 @@ class Mailbox
             throw new Exception('Empty mail header - fetchheader failed. Invalid mail ID?');
         }
 
+        /** @var object{
+         * date?:scalar,
+         * Date?:scalar,
+         * subject?:scalar,
+         * from?:HOSTNAMEANDADDRESS,
+         * to?:HOSTNAMEANDADDRESS,
+         * cc?:HOSTNAMEANDADDRESS,
+         * bcc?:HOSTNAMEANDADDRESS,
+         * reply_to?:HOSTNAMEANDADDRESS,
+         * sender?:HOSTNAMEANDADDRESS
+         * }
+         */
         $head = imap_rfc822_parse_headers($headersRaw);
 
         if (isset($head->date) && !\is_string($head->date)) {
@@ -1090,6 +1117,18 @@ class Mailbox
         }
         if (isset($head->sender) && !\is_array($head->sender)) {
             throw new UnexpectedValueException('sender property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not an array!');
+        }
+        if (isset($head->to) && !\is_array($head->to)) {
+            throw new UnexpectedValueException('to property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not an array!');
+        }
+        if (isset($head->cc) && !\is_array($head->cc)) {
+            throw new UnexpectedValueException('cc property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not an array!');
+        }
+        if (isset($head->bcc) && !\is_array($head->bcc)) {
+            throw new UnexpectedValueException('bcc property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not an array!');
+        }
+        if (isset($head->reply_to) && !\is_array($head->reply_to)) {
+            throw new UnexpectedValueException('reply_to property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not an array!');
         }
 
         $header = new IncomingMailHeader();
@@ -1181,9 +1220,11 @@ class Mailbox
      * @param int         $index
      * @param bool        $fullPrefix
      *
-     * @psalm-param array<string, \stdClass> $flattenedParts
+     * @psalm-param array<string, PARTSTRUCTURE> $flattenedParts
      *
      * @return \stdClass[]
+     *
+     * @psalm-return array<string, PARTSTRUCTURE>
      */
     public function flattenParts($messageParts, $flattenedParts = [], $prefix = '', $index = 1, $fullPrefix = true)
     {
@@ -1225,6 +1266,7 @@ class Mailbox
         $mail = new IncomingMail();
         $mail->setHeader($this->getMailHeader($mailId));
 
+        /** @psalm-var PARTSTRUCTURE */
         $mailStructure = $this->imap('fetchstructure', [$mailId, (SE_UID == $this->imapSearchOption) ? FT_UID : 0]);
 
         if (empty($mailStructure->parts)) {
@@ -1246,9 +1288,11 @@ class Mailbox
      * @param bool       $markAsSeen
      * @param bool       $emlParse
      *
+     * @psalm-param PARTSTRUCTURE $partStructure
+     *
      * @return void
      *
-     * @todo flesh out shape of $partStructure
+     * @todo refactor type checking pending resolution of https://github.com/vimeo/psalm/issues/2619
      */
     protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true, $emlParse = false)
     {
@@ -1263,10 +1307,15 @@ class Mailbox
         }
         $dataInfo = new DataPartInfo($this, $mail->id, $partNum, $partStructure->encoding, $options);
 
+        /** @var array<string, string> */
         $params = [];
         if (!empty($partStructure->parameters)) {
             foreach ($partStructure->parameters as $param) {
-                $params[strtolower($param->attribute)] = (!isset($param->value) || empty(trim($param->value))) ? '' : $this->decodeMimeStr($param->value);
+                $params[strtolower($param->attribute)] = '';
+                $value = isset($param->value) ? $param->value : null;
+                if (isset($value) && '' !== trim($value)) {
+                    $params[strtolower($param->attribute)] = $this->decodeMimeStr($value);
+                }
             }
         }
         if (!empty($partStructure->dparameters)) {
@@ -1316,7 +1365,7 @@ class Mailbox
             $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, $emlParse);
             $mail->addAttachment($attachment);
         } else {
-            if (isset($params['charset']) and \is_string($params['charset']) and !empty(trim($params['charset']))) {
+            if (isset($params['charset']) and !empty(trim($params['charset']))) {
                 $dataInfo->charset = $params['charset'];
             }
         }
@@ -1343,6 +1392,8 @@ class Mailbox
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
                 } elseif (!$partStructure->ifdisposition) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
+                } elseif (!\is_string($partStructure->disposition)) {
+                    throw new InvalidArgumentException('disposition property of object passed as argument 2 to '.__METHOD__.'() was present but not a string!');
                 } elseif ('attachment' != strtolower($partStructure->disposition)) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
                 }
@@ -1360,9 +1411,12 @@ class Mailbox
      * @param string $mailId        ID of mail
      * @param bool   $emlOrigin     True, if it indicates, that the attachment comes from an EML (mail) file
      *
-     * @psalm-param array<string, mixed> $params
+     * @psalm-param array<string, string> $params
+     * @psalm-param PARTSTRUCTURE $partStructure
      *
      * @return IncomingMailAttachment $attachment
+     *
+     * @todo consider "requiring" psalm (suggest + conflict) then setting $params to array<string, string>
      */
     public function downloadAttachment(DataPartInfo $dataInfo, $params, $partStructure, $mailId, $emlOrigin = false)
     {
@@ -1373,21 +1427,26 @@ class Mailbox
         } elseif ((!isset($params['filename']) or empty(trim($params['filename']))) && (!isset($params['name']) or empty(trim($params['name'])))) {
             $fileName = strtolower($partStructure->subtype);
         } else {
-            /** @var string */
             $fileName = (isset($params['filename']) and !empty(trim($params['filename']))) ? $params['filename'] : $params['name'];
             $fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
             $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
         }
 
+        $partStructure_id = ($partStructure->ifid && isset($partStructure->id)) ? $partStructure->id : null;
+
         $attachment = new IncomingMailAttachment();
-        $attachment->id = sha1($fileName.($partStructure->ifid ? $partStructure->id : ''));
-        $attachment->contentId = $partStructure->ifid ? trim($partStructure->id, ' <>') : null;
+        $attachment->id = sha1($fileName.(isset($partStructure_id) ? $partStructure_id : ''));
+        $attachment->contentId = isset($partStructure_id) ? trim($partStructure_id, ' <>') : null;
         $attachment->name = $fileName;
         $attachment->disposition = (isset($partStructure->disposition) && \is_string($partStructure->disposition)) ? $partStructure->disposition : null;
-        if (isset($params['charset']) && !\is_string($params['charset'])) {
+
+        /** @var scalar|array|object|resource|null */
+        $charset = isset($params['charset']) ? $params['charset'] : null;
+
+        if (isset($charset) && !\is_string($charset)) {
             throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must specify charset as a string when specified!');
         }
-        $attachment->charset = (isset($params['charset']) and !empty(trim($params['charset']))) ? $params['charset'] : null;
+        $attachment->charset = (isset($charset) and !empty(trim($charset))) ? $charset : null;
         $attachment->emlOrigin = $emlOrigin;
 
         $attachment->addDataPartInfo($dataInfo);
@@ -1434,7 +1493,7 @@ class Mailbox
         }
 
         $newString = '';
-        /** @var list<object> */
+        /** @var list<object{charset?:string, text?:string}> */
         $elements = imap_mime_header_decode($string);
 
         if (false === $elements) {
@@ -1443,7 +1502,6 @@ class Mailbox
 
         foreach ($elements as $element) {
             if (isset($element->text)) {
-                /** @var string */
                 $fromCharset = !isset($element->charset) ? 'iso-8859-1' : $element->charset;
                 // Convert to UTF-8, if string has UTF-8 characters to avoid broken strings. See https://github.com/barbushin/php-imap/issues/232
                 $toCharset = isset($element->charset) && preg_match('/(UTF\-8)|(default)/i', $element->charset) ? 'UTF-8' : $toCharset;
@@ -1820,7 +1878,7 @@ class Mailbox
     /**
      * @param array $t
      *
-     * @psalm-param non-empty-array $t
+     * @psalm-param HOSTNAMEANDADDRESS $t
      *
      * @return array
      *
@@ -1828,11 +1886,19 @@ class Mailbox
      */
     protected function possiblyGetHostNameAndAddress($t)
     {
-        $out = [];
-        /** @var string|null */
-        $out[] = isset($t[0]->host) ? $t[0]->host : (isset($t[1]->host) ? $t[1]->host : null);
-        /** @var string|null */
-        $out[] = (isset($t[0]->personal) and !empty(trim($t[0]->personal))) ? $this->decodeMimeStr($t[0]->personal, $this->getServerEncoding()) : ((isset($t[1]->personal) and (!empty(trim($t[1]->personal)))) ? $this->decodeMimeStr($t[1]->personal, $this->getServerEncoding()) : null);
+        $out = [
+            isset($t[0]->host) ? $t[0]->host : (isset($t[1], $t[1]->host) ? $t[1]->host : null),
+            1 => null,
+        ];
+        foreach ([0, 1] as $index) {
+            $maybe = isset($t[$index], $t[$index]->personal) ? $t[$index]->personal : null;
+            if (\is_string($maybe) && '' !== trim($maybe)) {
+                $out[1] = $this->decodeMimeStr($maybe, $this->getServerEncoding());
+
+                break;
+            }
+        }
+
         /** @var string */
         $out[] = strtolower($t[0]->mailbox.'@'.(string) $out[0]);
 
