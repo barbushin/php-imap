@@ -53,7 +53,7 @@ class LiveMailboxTest extends TestCase
      */
     public function testGetImapStream(HiddenString $imapPath, HiddenString $login, HiddenString $password, $attachmentsDir, $serverEncoding = 'UTF-8')
     {
-        $mailbox = new Mailbox($imapPath, $login, $password->getString(), $attachmentsDir, $serverEncoding);
+        $mailbox = new Mailbox($imapPath->getString(), $login->getString(), $password->getString(), $attachmentsDir, $serverEncoding);
 
         /** @var Exception|null */
         $exception = null;
