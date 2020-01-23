@@ -53,8 +53,6 @@ class LiveMailboxTest extends TestCase
      * Provides constructor arguments for a live mailbox.
      *
      * @psalm-return MAILBOX_ARGS[]
-     *
-     * @todo drop php 5.6, add paragonie/hidden-string to require-dev
      */
     public function MailBoxProvider(): array
     {
