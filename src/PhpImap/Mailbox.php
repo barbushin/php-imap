@@ -9,7 +9,6 @@ use InvalidArgumentException;
 use function mb_list_encodings;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
-use stdClass;
 use UnexpectedValueException;
 
 /**
@@ -613,13 +612,13 @@ class Mailbox
      *  Nmsgs - number of mails in the mailbox
      *  Recent - number of recent mails in the mailbox
      *
-     * @return stdClass|false
+     * @return object|false
      *
      * @see    imap_check
      */
     public function checkMailbox()
     {
-        /** @var stdClass|false */
+        /** @var object|false */
         return $this->imap('check');
     }
 
@@ -667,11 +666,11 @@ class Mailbox
      * This function returns an object containing status information.
      * The object has the following properties: messages, recent, unseen, uidnext, and uidvalidity.
      *
-     * @return stdClass
+     * @return object
      */
     public function statusMailbox()
     {
-        /** @var stdClass */
+        /** @var object */
         return $this->imap('status', [$this->imapPath, SA_ALL]);
     }
 
