@@ -24,6 +24,8 @@ final class RequirementsTest extends TestCase
      * @dataProvider extensionProvider
      *
      * @param string $extension
+     *
+     * @return void
      */
     public function testRequiredExtensionsAreEnabled($extension)
     {

@@ -48,6 +48,8 @@ class IncomingMailAttachment
 
     /**
      * @param string $name
+     *
+     * @return string|false|null
      */
     public function __get($name)
     {

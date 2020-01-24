@@ -37,6 +37,7 @@ class IncomingMail extends IncomingMailHeader
     /** @var string|null */
     private $textHtml;
 
+    /** @return void */
     public function setHeader(IncomingMailHeader $header)
     {
         /** @psalm-var array<string, scalar|array|object|null> */
@@ -48,6 +49,8 @@ class IncomingMail extends IncomingMailHeader
 
     /**
      * @param DataPartInfo::TEXT_PLAIN|DataPartInfo::TEXT_HTML $type
+     *
+     * @return void
      */
     public function addDataPartInfo(DataPartInfo $dataInfo, $type)
     {
@@ -98,6 +101,7 @@ class IncomingMail extends IncomingMailHeader
         return isset($this->$name);
     }
 
+    /** @return void */
     public function addAttachment(IncomingMailAttachment $attachment)
     {
         if (!\is_string($attachment->id)) {
@@ -110,6 +114,8 @@ class IncomingMail extends IncomingMailHeader
      * Sets property $hasAttachments.
      *
      * @param bool $hasAttachments True, if IncomingMail[] has one or more attachments
+     *
+     * @return void
      */
     public function setHasAttachments($hasAttachments)
     {
@@ -197,6 +203,8 @@ class IncomingMail extends IncomingMailHeader
     /**
      * Embed inline image attachments as base64 to allow for
      * email html to display inline images automatically.
+     *
+     * @return void
      */
     public function embedImageAttachments()
     {
