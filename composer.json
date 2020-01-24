@@ -32,6 +32,7 @@
     "require-dev": {
         "ext-fileinfo": "*",
         "friendsofphp/php-cs-fixer": "^2.16",
+        "jakub-onderka/php-parallel-lint": "^1.0",
         "phpunit/phpunit": "^5.7"
     },
     "suggest": {
