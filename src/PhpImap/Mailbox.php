@@ -351,9 +351,8 @@ class Mailbox
     /**
      * Set custom connection arguments of imap_open method. See http://php.net/imap_open.
      *
-     * @param int        $options
-     * @param int        $retriesNum
-     * @param array|null $params
+     * @param int $options
+     * @param int $retriesNum
      *
      * @psalm-param mixed $params
      *
@@ -1846,8 +1845,6 @@ class Mailbox
     }
 
     /**
-     * @param array $t
-     *
      * @psalm-param (scalar|array|object|resource|null)[] $t
      *
      * @return array
@@ -1889,8 +1886,6 @@ class Mailbox
     }
 
     /**
-     * @param array $t
-     *
      * @psalm-param HOSTNAMEANDADDRESS $t
      *
      * @return array
