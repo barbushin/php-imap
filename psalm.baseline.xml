@@ -54,9 +54,6 @@
       <code>subscribeMailbox</code>
       <code>unsubscribeMailbox</code>
     </PossiblyUnusedMethod>
-    <RedundantCondition occurrences="1">
-      <code>null != $params and !empty($params)</code>
-    </RedundantCondition>
     <RedundantConditionGivenDocblockType occurrences="3">
       <code>!\is_int($retriesNum) or $retriesNum &lt; 0</code>
       <code>\is_int($retriesNum)</code>
