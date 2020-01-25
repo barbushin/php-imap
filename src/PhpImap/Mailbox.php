@@ -89,11 +89,11 @@ class Mailbox
     private $imapStream;
 
     /**
-     * @param string $imapPath
-     * @param string $login
-     * @param string $password
+     * @param string      $imapPath
+     * @param string      $login
+     * @param string      $password
      * @param string|null $attachmentsDir
-     * @param string $serverEncoding
+     * @param string      $serverEncoding
      *
      * @throws InvalidParameterException
      */
