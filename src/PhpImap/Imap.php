@@ -1,10 +1,9 @@
 <?php
-
-declare(strict_types=1);
 /**
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
  * @author BAPCLTD-Marv
  */
+declare(strict_types=1);
 
 namespace PhpImap;
 
@@ -128,10 +127,8 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     *
-     * @return object
      */
-    public static function check($imap_stream)
+    public static function check($imap_stream): object
     {
         \imap_errors(); // flush errors
 
@@ -395,15 +392,13 @@ final class Imap
     /**
      * @param false|resource $imap_stream
      *
-     * @return object
-     *
      * @psalm-return PARTSTRUCTURE
      */
     public static function fetchstructure(
         $imap_stream,
         int $msg_number,
         int $options = 0
-    ) {
+    ): object {
         \imap_errors(); // flush errors
 
         $result = \imap_fetchstructure(
@@ -647,10 +642,8 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     *
-     * @return object
      */
-    public static function mailboxmsginfo($imap_stream)
+    public static function mailboxmsginfo($imap_stream): object
     {
         \imap_errors(); // flush errors
 
@@ -948,14 +941,12 @@ final class Imap
      * @param false|resource $imap_stream
      *
      * @psalm-param SA_MESSAGES|SA_RECENT|SA_UNSEEN|SA_UIDNEXT|SA_UIDVALIDITY|SA_ALL $flags
-     *
-     * @return object
      */
     public static function status(
         $imap_stream,
         string $mailbox,
         int $options
-    ) {
+    ): object {
         $imap_stream = self::EnsureResource($imap_stream, __METHOD__, 1);
 
         $mailbox = static::encodeStringToUtf7Imap($mailbox);

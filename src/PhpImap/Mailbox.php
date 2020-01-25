@@ -471,10 +471,8 @@ class Mailbox
      *  Recent - number of recent mails in the mailbox
      *
      * @see imap_check
-     *
-     * @return object
      */
-    public function checkMailbox()
+    public function checkMailbox(): object
     {
         return Imap::check($this->getImapStream());
     }
@@ -519,10 +517,8 @@ class Mailbox
      *
      * This function returns an object containing status information.
      * The object has the following properties: messages, recent, unseen, uidnext, and uidvalidity.
-     *
-     * @return object
      */
-    public function statusMailbox()
+    public function statusMailbox(): object
     {
         return Imap::status($this->getImapStream(), $this->imapPath, SA_ALL);
     }
@@ -864,7 +860,7 @@ class Mailbox
      *
      * @see mailboxmsginfo
      */
-    public function getMailboxInfo()
+    public function getMailboxInfo(): object
     {
         return Imap::mailboxmsginfo($this->getImapStream());
     }
@@ -1185,7 +1181,7 @@ class Mailbox
      *
      * @todo consider "requiring" psalm (suggest + conflict) then setting $params to array<string, string>
      */
-    public function downloadAttachment(DataPartInfo $dataInfo, array $params, $partStructure, int $_mailId, bool $emlOrigin = false): IncomingMailAttachment
+    public function downloadAttachment(DataPartInfo $dataInfo, array $params, object $partStructure, int $_mailId, bool $emlOrigin = false): IncomingMailAttachment
     {
         if ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
             $fileName = \strtolower($partStructure->subtype).'.eml';
@@ -1527,14 +1523,13 @@ class Mailbox
     }
 
     /**
-     * @param object   $partStructure
      * @param string|0 $partNum
      *
      * @psalm-param PARTSTRUCTURE $partStructure
      *
      * @todo refactor type checking pending resolution of https://github.com/vimeo/psalm/issues/2619
      */
-    protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, bool $markAsSeen = true, bool $emlParse = false): void
+    protected function initMailPart(IncomingMail $mail, object $partStructure, $partNum, bool $markAsSeen = true, bool $emlParse = false): void
     {
         if (!isset($mail->id)) {
             throw new InvalidArgumentException('Argument 1 passeed to '.__METHOD__.'() did not have the id property set!');
@@ -1687,11 +1682,9 @@ class Mailbox
     }
 
     /**
-     * @param object $recipient
-     *
      * @psalm-return array{0:string, 1:string|null}|null
      */
-    protected function possiblyGetEmailAndNameFromRecipient($recipient): ?array
+    protected function possiblyGetEmailAndNameFromRecipient(object $recipient): ?array
     {
         if (isset($recipient->mailbox, $recipient->host)) {
             /** @var mixed */
