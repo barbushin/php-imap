@@ -37,26 +37,6 @@ class IncomingMail extends IncomingMailHeader
     /** @var string|null */
     private $textHtml;
 
-    /** @return void */
-    public function setHeader(IncomingMailHeader $header)
-    {
-        /** @psalm-var array<string, scalar|array|object|null> */
-        $array = get_object_vars($header);
-        foreach ($array as $property => $value) {
-            $this->$property = $value;
-        }
-    }
-
-    /**
-     * @param DataPartInfo::TEXT_PLAIN|DataPartInfo::TEXT_HTML $type
-     *
-     * @return void
-     */
-    public function addDataPartInfo(DataPartInfo $dataInfo, $type)
-    {
-        $this->dataInfo[$type][] = $dataInfo;
-    }
-
     /**
      * __get() is utilized for reading data from inaccessible (protected
      * or private) or non-existing properties.
@@ -101,7 +81,23 @@ class IncomingMail extends IncomingMailHeader
         return isset($this->$name);
     }
 
-    /** @return void */
+    public function setHeader(IncomingMailHeader $header)
+    {
+        /** @psalm-var array<string, scalar|array|object|null> */
+        $array = get_object_vars($header);
+        foreach ($array as $property => $value) {
+            $this->$property = $value;
+        }
+    }
+
+    /**
+     * @param DataPartInfo::TEXT_PLAIN|DataPartInfo::TEXT_HTML $type
+     */
+    public function addDataPartInfo(DataPartInfo $dataInfo, $type)
+    {
+        $this->dataInfo[$type][] = $dataInfo;
+    }
+
     public function addAttachment(IncomingMailAttachment $attachment)
     {
         if (!\is_string($attachment->id)) {

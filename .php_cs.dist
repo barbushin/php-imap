@@ -9,7 +9,8 @@ return PhpCsFixer\Config::create()
         ],
         'ordered_imports' => true,
         'phpdoc_to_comment' => false,
-        'no_superfluous_phpdoc_tags' => true
+        'no_superfluous_phpdoc_tags' => true,
+        'ordered_class_elements' => true,
     ])
     ->setRiskyAllowed(true)
     ->setFinder(
