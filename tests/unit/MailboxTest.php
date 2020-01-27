@@ -57,6 +57,8 @@ final class MailboxTest extends TestCase
 
     /**
      * Run before each test is started.
+     *
+     * @return void
      */
     public function setUp()
     {

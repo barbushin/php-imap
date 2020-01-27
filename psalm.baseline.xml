@@ -22,18 +22,15 @@
     <InvalidScalarArgument occurrences="1">
       <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
     </InvalidScalarArgument>
-    <PossiblyUnusedMethod occurrences="35">
+    <PossiblyUnusedMethod occurrences="30">
       <code>setOAuthToken</code>
       <code>getOAuthToken</code>
       <code>setConnectionRetry</code>
       <code>setConnectionRetryDelay</code>
-      <code>switchMailbox</code>
       <code>setExpungeOnDisconnect</code>
-      <code>checkMailbox</code>
       <code>createMailbox</code>
       <code>deleteMailbox</code>
       <code>renameMailbox</code>
-      <code>statusMailbox</code>
       <code>getListingFolders</code>
       <code>saveMail</code>
       <code>deleteMail</code>
@@ -48,20 +45,15 @@
       <code>getMailboxHeaders</code>
       <code>getMailboxInfo</code>
       <code>sortMails</code>
-      <code>countMails</code>
       <code>getQuotaLimit</code>
       <code>getQuotaUsage</code>
       <code>getRawMail</code>
       <code>getImapPath</code>
       <code>getMailMboxFormat</code>
-      <code>getMailboxes</code>
       <code>getSubscribedMailboxes</code>
       <code>subscribeMailbox</code>
       <code>unsubscribeMailbox</code>
     </PossiblyUnusedMethod>
-    <RedundantCondition occurrences="1">
-      <code>null != $params and !empty($params)</code>
-    </RedundantCondition>
     <RedundantConditionGivenDocblockType occurrences="3">
       <code>!\is_int($retriesNum) or $retriesNum &lt; 0</code>
       <code>\is_int($retriesNum)</code>
