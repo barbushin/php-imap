@@ -109,41 +109,11 @@ class Mailbox
     }
 
     /**
-     * Builds an OAuth2 authentication string for the given email address and access token.
-     *
-     * @return string $access_token Formatted OAuth access token
+     * Disconnects from the IMAP server / mailbox.
      */
-    protected function _constructAuthString()
+    public function __destruct()
     {
-        return base64_encode("user=$this->imapLogin\1auth=Bearer $this->imapOAuthAccessToken\1\1");
-    }
-
-    /**
-     * Authenticates the IMAP client with the OAuth access token.
-     *
-     * @return void
-     *
-     * @throws Exception If any error occured
-     */
-    protected function _oauthAuthentication()
-    {
-        $oauth_command = 'A AUTHENTICATE XOAUTH2 '.$this->_constructAuthString();
-
-        $oauth_result = fwrite($this->getImapStream(), $oauth_command);
-
-        if (false === $oauth_result) {
-            throw new Exception('Could not authenticate using OAuth!');
-        }
-
-        try {
-            $mailbox_info = $this->imap('check');
-        } catch (Exception $ex) {
-            throw new Exception('OAuth authentication failed! IMAP Error: '.$ex->getMessage());
-        }
-
-        if (false === $mailbox_info) {
-            throw new Exception('OAuth authentication failed! imap_check() could not gather any mailbox information.');
-        }
+        $this->disconnect();
     }
 
     /**
@@ -547,55 +517,6 @@ class Mailbox
         }
 
         $this->imap('reopen', $this->imapPath);
-    }
-
-    /** @return resource */
-    protected function initImapStreamWithRetry()
-    {
-        $retry = $this->connectionRetry;
-
-        do {
-            try {
-                return $this->initImapStream();
-            } catch (ConnectionException $exception) {
-            }
-        } while (--$retry > 0 && (!$this->connectionRetryDelay || !usleep($this->connectionRetryDelay * 1000)));
-
-        throw $exception;
-    }
-
-    /**
-     * Open an IMAP stream to a mailbox.
-     *
-     * @return resource IMAP stream on success
-     *
-     * @throws Exception if an error occured
-     */
-    protected function initImapStream()
-    {
-        foreach ($this->timeouts as $type => $timeout) {
-            $this->imap('timeout', [$type, $timeout], false);
-        }
-
-        $imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
-
-        if (!$imapStream) {
-            $lastError = imap_last_error();
-
-            // this function is called multiple times and imap keeps errors around.
-            // Let's clear them out to avoid it tripping up future calls.
-            @imap_errors();
-
-            if (!empty(trim($lastError))) {
-                // imap error = report imap error
-                throw new Exception('IMAP error: '.$lastError);
-            } else {
-                // no imap error = connectivity issue
-                throw new Exception('Connection error: Unable to connect to '.$this->imapPath);
-            }
-        }
-
-        return $imapStream;
     }
 
     /**
@@ -1055,21 +976,6 @@ class Mailbox
     }
 
     /**
-     * Retrieve the quota settings per user.
-     *
-     * @param string $quota_root Should normally be in the form of which mailbox (i.e. INBOX)
-     *
-     * @return array
-     *
-     * @see    imap_get_quotaroot()
-     */
-    protected function getQuota($quota_root = 'INBOX')
-    {
-        /** @var array */
-        return $this->imap('get_quotaroot', $quota_root);
-    }
-
-    /**
      * Return quota limit in KB.
      *
      * @param string $quota_root Should normally be in the form of which mailbox (i.e. INBOX)
@@ -1332,127 +1238,6 @@ class Mailbox
     }
 
     /**
-     * @param object     $partStructure
-     * @param string|int $partNum
-     * @param bool       $markAsSeen
-     * @param bool       $emlParse
-     *
-     * @psalm-param PARTSTRUCTURE $partStructure
-     *
-     * @return void
-     *
-     * @todo refactor type checking pending resolution of https://github.com/vimeo/psalm/issues/2619
-     */
-    protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true, $emlParse = false)
-    {
-        if (!isset($mail->id)) {
-            throw new InvalidArgumentException('Argument 1 passeed to '.__METHOD__.'() did not have the id property set!');
-        }
-
-        $options = (SE_UID == $this->imapSearchOption) ? FT_UID : 0;
-
-        if (!$markAsSeen) {
-            $options |= FT_PEEK;
-        }
-        $dataInfo = new DataPartInfo($this, $mail->id, $partNum, $partStructure->encoding, $options);
-
-        /** @var array<string, string> */
-        $params = [];
-        if (!empty($partStructure->parameters)) {
-            foreach ($partStructure->parameters as $param) {
-                $params[strtolower($param->attribute)] = '';
-                $value = isset($param->value) ? $param->value : null;
-                if (isset($value) && '' !== trim($value)) {
-                    $params[strtolower($param->attribute)] = $this->decodeMimeStr($value);
-                }
-            }
-        }
-        if (!empty($partStructure->dparameters)) {
-            foreach ($partStructure->dparameters as $param) {
-                $paramName = strtolower(preg_match('~^(.*?)\*~', $param->attribute, $matches) ? $matches[1] : $param->attribute);
-                if (isset($params[$paramName])) {
-                    $params[$paramName] .= $param->value;
-                } else {
-                    $params[$paramName] = $param->value;
-                }
-            }
-        }
-
-        $isAttachment = isset($params['filename']) || isset($params['name']);
-
-        // ignore contentId on body when mail isn't multipart (https://github.com/barbushin/php-imap/issues/71)
-        if (!$partNum && TYPETEXT === $partStructure->type) {
-            $isAttachment = false;
-        }
-
-        if ($isAttachment) {
-            $mail->setHasAttachments(true);
-        }
-
-        // check if the part is a subpart of another attachment part (RFC822)
-        if ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
-            // Although we are downloading each part separately, we are going to download the EML to a single file
-            //incase someone wants to process or parse in another process
-            $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, false);
-            $mail->addAttachment($attachment);
-        }
-
-        // If it comes from an EML file it is an attachment
-        if ($emlParse) {
-            $isAttachment = true;
-        }
-
-        // Do NOT parse attachments, when getAttachmentsIgnore() is true
-        if ($this->getAttachmentsIgnore()
-            && (TYPEMULTIPART !== $partStructure->type
-            && (TYPETEXT !== $partStructure->type || !\in_array(strtolower($partStructure->subtype), ['plain', 'html'])))
-        ) {
-            return;
-        }
-
-        if ($isAttachment) {
-            $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, $emlParse);
-            $mail->addAttachment($attachment);
-        } else {
-            if (isset($params['charset']) and !empty(trim($params['charset']))) {
-                $dataInfo->charset = $params['charset'];
-            }
-        }
-
-        if (!empty($partStructure->parts)) {
-            foreach ($partStructure->parts as $subPartNum => $subPartStructure) {
-                $not_attachment = (!isset($partStructure->disposition) || 'attachment' !== $partStructure->disposition);
-
-                if (TYPEMESSAGE === $partStructure->type && 'RFC822' == $partStructure->subtype && $not_attachment) {
-                    $this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
-                } elseif (TYPEMULTIPART === $partStructure->type && 'ALTERNATIVE' == $partStructure->subtype && $not_attachment) {
-                    // https://github.com/barbushin/php-imap/issues/198
-                    $this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
-                } elseif ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
-                    //If it comes from am EML attachment, download each part separately as a file
-                    $this->initMailPart($mail, $subPartStructure, $partNum.'.'.($subPartNum + 1), $markAsSeen, true);
-                } else {
-                    $this->initMailPart($mail, $subPartStructure, $partNum.'.'.($subPartNum + 1), $markAsSeen);
-                }
-            }
-        } else {
-            if (TYPETEXT === $partStructure->type) {
-                if ('plain' == strtolower($partStructure->subtype)) {
-                    $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
-                } elseif (!$partStructure->ifdisposition) {
-                    $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
-                } elseif (!\is_string($partStructure->disposition)) {
-                    throw new InvalidArgumentException('disposition property of object passed as argument 2 to '.__METHOD__.'() was present but not a string!');
-                } elseif ('attachment' != strtolower($partStructure->disposition)) {
-                    $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
-                }
-            } elseif (TYPEMESSAGE === $partStructure->type) {
-                $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
-            }
-        }
-    }
-
-    /**
      * Download attachment.
      *
      * @param array  $params        Array of params of mail
@@ -1575,25 +1360,6 @@ class Mailbox
     }
 
     /**
-     * @param string $string
-     * @param string $charset
-     *
-     * @return string
-     */
-    protected function decodeRFC2231($string, $charset = 'utf-8')
-    {
-        if (preg_match("/^(.*?)'.*?'(.*?)$/", $string, $matches)) {
-            $encoding = $matches[1];
-            $data = $matches[2];
-            if ($this->isUrlEncoded($data)) {
-                $string = $this->convertStringEncoding(urldecode($data), $encoding, $charset);
-            }
-        }
-
-        return $string;
-    }
-
-    /**
      * Converts the datetime to a RFC 3339 compliant format.
      *
      * @param string $dateHeader Header datetime
@@ -1647,14 +1413,6 @@ class Mailbox
         }
 
         return $convertedString;
-    }
-
-    /**
-     * Disconnects from the IMAP server / mailbox.
-     */
-    public function __destruct()
-    {
-        $this->disconnect();
     }
 
     /**
@@ -1812,6 +1570,248 @@ class Mailbox
         }
 
         return $result;
+    }
+
+    /**
+     * Builds an OAuth2 authentication string for the given email address and access token.
+     *
+     * @return string $access_token Formatted OAuth access token
+     */
+    protected function _constructAuthString()
+    {
+        return base64_encode("user=$this->imapLogin\1auth=Bearer $this->imapOAuthAccessToken\1\1");
+    }
+
+    /**
+     * Authenticates the IMAP client with the OAuth access token.
+     *
+     * @return void
+     *
+     * @throws Exception If any error occured
+     */
+    protected function _oauthAuthentication()
+    {
+        $oauth_command = 'A AUTHENTICATE XOAUTH2 '.$this->_constructAuthString();
+
+        $oauth_result = fwrite($this->getImapStream(), $oauth_command);
+
+        if (false === $oauth_result) {
+            throw new Exception('Could not authenticate using OAuth!');
+        }
+
+        try {
+            $mailbox_info = $this->imap('check');
+        } catch (Exception $ex) {
+            throw new Exception('OAuth authentication failed! IMAP Error: '.$ex->getMessage());
+        }
+
+        if (false === $mailbox_info) {
+            throw new Exception('OAuth authentication failed! imap_check() could not gather any mailbox information.');
+        }
+    }
+
+    /** @return resource */
+    protected function initImapStreamWithRetry()
+    {
+        $retry = $this->connectionRetry;
+
+        do {
+            try {
+                return $this->initImapStream();
+            } catch (ConnectionException $exception) {
+            }
+        } while (--$retry > 0 && (!$this->connectionRetryDelay || !usleep($this->connectionRetryDelay * 1000)));
+
+        throw $exception;
+    }
+
+    /**
+     * Open an IMAP stream to a mailbox.
+     *
+     * @return resource IMAP stream on success
+     *
+     * @throws Exception if an error occured
+     */
+    protected function initImapStream()
+    {
+        foreach ($this->timeouts as $type => $timeout) {
+            $this->imap('timeout', [$type, $timeout], false);
+        }
+
+        $imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
+
+        if (!$imapStream) {
+            $lastError = imap_last_error();
+
+            // this function is called multiple times and imap keeps errors around.
+            // Let's clear them out to avoid it tripping up future calls.
+            @imap_errors();
+
+            if (!empty(trim($lastError))) {
+                // imap error = report imap error
+                throw new Exception('IMAP error: '.$lastError);
+            } else {
+                // no imap error = connectivity issue
+                throw new Exception('Connection error: Unable to connect to '.$this->imapPath);
+            }
+        }
+
+        return $imapStream;
+    }
+
+    /**
+     * Retrieve the quota settings per user.
+     *
+     * @param string $quota_root Should normally be in the form of which mailbox (i.e. INBOX)
+     *
+     * @return array
+     *
+     * @see    imap_get_quotaroot()
+     */
+    protected function getQuota($quota_root = 'INBOX')
+    {
+        /** @var array */
+        return $this->imap('get_quotaroot', $quota_root);
+    }
+
+    /**
+     * @param object     $partStructure
+     * @param string|int $partNum
+     * @param bool       $markAsSeen
+     * @param bool       $emlParse
+     *
+     * @psalm-param PARTSTRUCTURE $partStructure
+     *
+     * @return void
+     *
+     * @todo refactor type checking pending resolution of https://github.com/vimeo/psalm/issues/2619
+     */
+    protected function initMailPart(IncomingMail $mail, $partStructure, $partNum, $markAsSeen = true, $emlParse = false)
+    {
+        if (!isset($mail->id)) {
+            throw new InvalidArgumentException('Argument 1 passeed to '.__METHOD__.'() did not have the id property set!');
+        }
+
+        $options = (SE_UID == $this->imapSearchOption) ? FT_UID : 0;
+
+        if (!$markAsSeen) {
+            $options |= FT_PEEK;
+        }
+        $dataInfo = new DataPartInfo($this, $mail->id, $partNum, $partStructure->encoding, $options);
+
+        /** @var array<string, string> */
+        $params = [];
+        if (!empty($partStructure->parameters)) {
+            foreach ($partStructure->parameters as $param) {
+                $params[strtolower($param->attribute)] = '';
+                $value = isset($param->value) ? $param->value : null;
+                if (isset($value) && '' !== trim($value)) {
+                    $params[strtolower($param->attribute)] = $this->decodeMimeStr($value);
+                }
+            }
+        }
+        if (!empty($partStructure->dparameters)) {
+            foreach ($partStructure->dparameters as $param) {
+                $paramName = strtolower(preg_match('~^(.*?)\*~', $param->attribute, $matches) ? $matches[1] : $param->attribute);
+                if (isset($params[$paramName])) {
+                    $params[$paramName] .= $param->value;
+                } else {
+                    $params[$paramName] = $param->value;
+                }
+            }
+        }
+
+        $isAttachment = isset($params['filename']) || isset($params['name']);
+
+        // ignore contentId on body when mail isn't multipart (https://github.com/barbushin/php-imap/issues/71)
+        if (!$partNum && TYPETEXT === $partStructure->type) {
+            $isAttachment = false;
+        }
+
+        if ($isAttachment) {
+            $mail->setHasAttachments(true);
+        }
+
+        // check if the part is a subpart of another attachment part (RFC822)
+        if ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
+            // Although we are downloading each part separately, we are going to download the EML to a single file
+            //incase someone wants to process or parse in another process
+            $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, false);
+            $mail->addAttachment($attachment);
+        }
+
+        // If it comes from an EML file it is an attachment
+        if ($emlParse) {
+            $isAttachment = true;
+        }
+
+        // Do NOT parse attachments, when getAttachmentsIgnore() is true
+        if ($this->getAttachmentsIgnore()
+            && (TYPEMULTIPART !== $partStructure->type
+            && (TYPETEXT !== $partStructure->type || !\in_array(strtolower($partStructure->subtype), ['plain', 'html'])))
+        ) {
+            return;
+        }
+
+        if ($isAttachment) {
+            $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, $emlParse);
+            $mail->addAttachment($attachment);
+        } else {
+            if (isset($params['charset']) and !empty(trim($params['charset']))) {
+                $dataInfo->charset = $params['charset'];
+            }
+        }
+
+        if (!empty($partStructure->parts)) {
+            foreach ($partStructure->parts as $subPartNum => $subPartStructure) {
+                $not_attachment = (!isset($partStructure->disposition) || 'attachment' !== $partStructure->disposition);
+
+                if (TYPEMESSAGE === $partStructure->type && 'RFC822' == $partStructure->subtype && $not_attachment) {
+                    $this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
+                } elseif (TYPEMULTIPART === $partStructure->type && 'ALTERNATIVE' == $partStructure->subtype && $not_attachment) {
+                    // https://github.com/barbushin/php-imap/issues/198
+                    $this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
+                } elseif ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
+                    //If it comes from am EML attachment, download each part separately as a file
+                    $this->initMailPart($mail, $subPartStructure, $partNum.'.'.($subPartNum + 1), $markAsSeen, true);
+                } else {
+                    $this->initMailPart($mail, $subPartStructure, $partNum.'.'.($subPartNum + 1), $markAsSeen);
+                }
+            }
+        } else {
+            if (TYPETEXT === $partStructure->type) {
+                if ('plain' == strtolower($partStructure->subtype)) {
+                    $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
+                } elseif (!$partStructure->ifdisposition) {
+                    $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
+                } elseif (!\is_string($partStructure->disposition)) {
+                    throw new InvalidArgumentException('disposition property of object passed as argument 2 to '.__METHOD__.'() was present but not a string!');
+                } elseif ('attachment' != strtolower($partStructure->disposition)) {
+                    $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
+                }
+            } elseif (TYPEMESSAGE === $partStructure->type) {
+                $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
+            }
+        }
+    }
+
+    /**
+     * @param string $string
+     * @param string $charset
+     *
+     * @return string
+     */
+    protected function decodeRFC2231($string, $charset = 'utf-8')
+    {
+        if (preg_match("/^(.*?)'.*?'(.*?)$/", $string, $matches)) {
+            $encoding = $matches[1];
+            $data = $matches[2];
+            if ($this->isUrlEncoded($data)) {
+                $string = $this->convertStringEncoding(urldecode($data), $encoding, $charset);
+            }
+        }
+
+        return $string;
     }
 
     /**
