@@ -660,6 +660,30 @@ class Mailbox
     }
 
     /**
+     * Search the mailbox for emails from multiple, specific senders.
+     *
+     * @see Mailbox::searchMailboxFromWithOrWithoutDisablingServerEncoding()
+     *
+     * @return list<int>
+     */
+    public function searchMailboxFrom(string $criteria, string $sender, string ...$senders)
+    {
+        return $this->searchMailboxFromWithOrWithoutDisablingServerEncoding($criteria, false, $sender, ...$senders);
+    }
+
+    /**
+     * Search the mailbox for emails from multiple, specific senders whilst not using server encoding.
+     *
+     * @see Mailbox::searchMailboxFromWithOrWithoutDisablingServerEncoding()
+     *
+     * @return list<int>
+     */
+    public function searchMailboxFromDisableServerEncoding(string $criteria, string $sender, string ...$senders)
+    {
+        return $this->searchMailboxFromWithOrWithoutDisablingServerEncoding($criteria, true, $sender, ...$senders);
+    }
+
+    /**
      * Save a specific body section to a file.
      *
      * @param int    $mailId   message number
@@ -1966,5 +1990,29 @@ class Mailbox
             $this->disconnect();
             $this->imapStream = null;
         }
+    }
+
+    /**
+     * Search the mailbox for emails from multiple, specific senders.
+     *
+     * This function wraps Mailbox::searchMailbox() to overcome a shortcoming in ext-imap
+     *
+     * @return list<int>
+     */
+    protected function searchMailboxFromWithOrWithoutDisablingServerEncoding(string $criteria, bool $disableServerEncoding, string $sender, string ...$senders)
+    {
+        array_unshift($senders, $sender);
+
+        /** @var list<string> */
+        $senders = array_values(array_unique(array_map('mb_strtolower', $senders)));
+
+        $out = [];
+
+        foreach ($senders as $sender) {
+            $out = array_merge($out, $this->searchMailbox($criteria.' FROM '.$sender, $disableServerEncoding));
+        }
+
+        /** @var list<int> */
+        return array_values(array_unique($out, SORT_NUMERIC));
     }
 }

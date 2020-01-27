@@ -22,7 +22,7 @@
     <InvalidScalarArgument occurrences="1">
       <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
     </InvalidScalarArgument>
-    <PossiblyUnusedMethod occurrences="30">
+    <PossiblyUnusedMethod occurrences="32">
       <code>setOAuthToken</code>
       <code>getOAuthToken</code>
       <code>setConnectionRetry</code>
@@ -32,6 +32,8 @@
       <code>deleteMailbox</code>
       <code>renameMailbox</code>
       <code>getListingFolders</code>
+      <code>searchMailboxFrom</code>
+      <code>searchMailboxFromDisableServerEncoding</code>
       <code>saveMail</code>
       <code>deleteMail</code>
       <code>moveMail</code>
