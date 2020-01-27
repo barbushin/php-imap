@@ -888,7 +888,7 @@ class Mailbox
      * returns an array of string formatted with header info,
      * one element per mail message.
      *
-     * @see    imap_headers()
+     * @see	imap_headers()
      */
     public function getMailboxHeaders(): array
     {
@@ -957,7 +957,7 @@ class Mailbox
     /**
      * Get mails count in mail box.
      *
-     * @see    imap_num_msg()
+     * @see	imap_num_msg()
      */
     public function countMails(): int
     {
@@ -1547,8 +1547,6 @@ class Mailbox
      * @param string $quota_root Should normally be in the form of which mailbox (i.e. INBOX)
      *
      * @see	imap_get_quotaroot()
-     *
-     * @return array[]
      */
     protected function getQuota(string $quota_root = 'INBOX'): array
     {
