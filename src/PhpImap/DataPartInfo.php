@@ -13,7 +13,7 @@ class DataPartInfo
     const TEXT_HTML = 1;
 
     /**
-     * @var string|int
+     * @var int
      *
      * @readonly
      */
@@ -30,7 +30,7 @@ class DataPartInfo
     public $charset;
 
     /**
-     * @var string|int
+     * @var 0|string
      *
      * @readonly
      */
@@ -54,10 +54,10 @@ class DataPartInfo
     private $data;
 
     /**
-     * @param string|int $id
-     * @param string|int $part
-     * @param int|mixed  $encoding
-     * @param int        $options
+     * @param int       $id
+     * @param 0|string  $part
+     * @param int|mixed $encoding
+     * @param int       $options
      */
     public function __construct(Mailbox $mail, $id, $part, $encoding, $options)
     {
@@ -73,12 +73,10 @@ class DataPartInfo
      */
     public function fetch()
     {
-        if (0 == $this->part) {
-            /** @var string */
-            $this->data = $this->mail->imap('body', [$this->id, $this->options]);
+        if (0 === $this->part) {
+            $this->data = Imap::body($this->mail->getImapStream(), $this->id, $this->options);
         } else {
-            /** @var string */
-            $this->data = $this->mail->imap('fetchbody', [$this->id, $this->part, $this->options]);
+            $this->data = Imap::fetchbody($this->mail->getImapStream(), $this->id, $this->part, $this->options);
         }
 
         switch ($this->encoding) {
