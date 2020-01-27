@@ -5,6 +5,11 @@
       <code>$mailbox</code>
     </UnusedVariable>
   </file>
+  <file src="src/PhpImap/Imap.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>\is_resource($maybe)</code>
+    </DocblockTypeContradiction>
+  </file>
   <file src="src/PhpImap/IncomingMail.php">
     <PossiblyUnusedMethod occurrences="2">
       <code>replaceInternalLinks</code>
@@ -16,7 +21,7 @@
   </file>
   <file src="src/PhpImap/Mailbox.php">
     <DocblockTypeContradiction occurrences="2">
-      <code>\is_int($retriesNum)</code>
+      <code>$imapStream</code>
       <code>\is_resource($this-&gt;imapStream)</code>
     </DocblockTypeContradiction>
     <InvalidScalarArgument occurrences="1">
