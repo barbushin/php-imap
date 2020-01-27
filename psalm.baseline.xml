@@ -11,10 +11,6 @@
       <code>!\is_string($section) &amp;&amp; !\is_int($section)</code>
       <code>\is_resource($maybe)</code>
     </DocblockTypeContradiction>
-    <MixedReturnTypeCoercion occurrences="2">
-      <code>$result</code>
-      <code>array[]</code>
-    </MixedReturnTypeCoercion>
   </file>
   <file src="src/PhpImap/IncomingMail.php">
     <PossiblyUnusedMethod occurrences="2">
@@ -27,6 +23,8 @@
   </file>
   <file src="src/PhpImap/Mailbox.php">
     <DocblockTypeContradiction occurrences="2">
+      <code>\in_array($imapSearchOption, $supported_options, true)</code>
+      <code>\in_array($key, $supported_params, true)</code>
       <code>\in_array($imapSearchOption, $supported_options, true)</code>
       <code>\in_array($key, $supported_params, true)</code>
     </DocblockTypeContradiction>
