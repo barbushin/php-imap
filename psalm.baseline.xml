@@ -72,10 +72,15 @@
       <code>\is_int($argument)</code>
       <code>\is_bool($allow_sequence)</code>
     </DocblockTypeContradiction>
+    <InvalidArgument occurrences="1"/>
     <MixedReturnTypeCoercion occurrences="2">
       <code>$result</code>
       <code>array[]</code>
     </MixedReturnTypeCoercion>
+    <PossiblyNullArgument occurrences="2">
+      <code>null === $search_criteria ? null : self::encodeStringToUtf7Imap($search_criteria)</code>
+      <code>null === $charset ? null : self::encodeStringToUtf7Imap($charset)</code>
+    </PossiblyNullArgument>
   </file>
   <file src="src/PhpImap/IncomingMail.php">
     <PossiblyUnusedMethod occurrences="2">
