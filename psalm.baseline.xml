@@ -101,9 +101,6 @@
       <code>\is_int($retriesNum)</code>
       <code>\in_array($key, $supported_params, true)</code>
     </DocblockTypeContradiction>
-    <InvalidScalarArgument occurrences="1">
-      <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
-    </InvalidScalarArgument>
     <PossiblyUnusedMethod occurrences="32">
       <code>setOAuthToken</code>
       <code>getOAuthToken</code>
