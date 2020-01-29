@@ -507,7 +507,7 @@ final class Imap
      *
      * @psalm-return list<string>
      */
-    public static function list($imap_stream, $ref, $pattern)
+    public static function listOfMailboxes($imap_stream, $ref, $pattern)
     {
         if (!\is_string($ref)) {
             throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be a string, '.\gettype($ref).' given!');
