@@ -92,12 +92,11 @@
     </PropertyTypeCoercion>
   </file>
   <file src="src/PhpImap/Mailbox.php">
-    <DocblockTypeContradiction occurrences="5">
+    <DocblockTypeContradiction occurrences="4">
       <code>\in_array($imapSearchOption, $supported_options, true)</code>
       <code>\is_int($retriesNum)</code>
       <code>\in_array($key, $supported_params, true)</code>
       <code>$imapStream</code>
-      <code>\is_resource($this-&gt;imapStream)</code>
     </DocblockTypeContradiction>
     <InvalidScalarArgument occurrences="1">
       <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
@@ -136,10 +135,9 @@
       <code>subscribeMailbox</code>
       <code>unsubscribeMailbox</code>
     </PossiblyUnusedMethod>
-    <RedundantConditionGivenDocblockType occurrences="3">
+    <RedundantConditionGivenDocblockType occurrences="2">
       <code>!\is_int($retriesNum) or $retriesNum &lt; 0</code>
       <code>\is_int($retriesNum)</code>
-      <code>!\is_resource($this-&gt;imapStream) || !imap_ping($this-&gt;imapStream)</code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="tests/unit/MailboxTest.php">

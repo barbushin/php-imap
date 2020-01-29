@@ -718,6 +718,16 @@ final class Imap
     }
 
     /**
+     * @param resource|false $imap_stream
+     *
+     * @return bool
+     */
+    public static function ping($imap_stream)
+    {
+        return \is_resource($imap_stream) && imap_ping($imap_stream);
+    }
+
+    /**
      * @param false|resource $imap_stream
      * @param string         $old_mbox
      * @param string         $new_mbox
