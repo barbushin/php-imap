@@ -479,6 +479,80 @@ final class Imap
     }
 
     /**
+     * @param resource|false $imap_stream
+     * @param string         $ref
+     * @param string         $pattern
+     *
+     * @return object[]
+     *
+     * @psalm-return list<object>
+     */
+    public static function getmailboxes(
+        $imap_stream,
+        $ref,
+        $pattern
+    ) {
+        if (!\is_string($ref)) {
+            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be a string, '.\gettype($ref).' given!');
+        }
+        if (!\is_string($pattern)) {
+            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be a string, '.\gettype($pattern).' given!');
+        }
+
+        imap_errors(); // flush errors
+
+        $result = imap_getmailboxes(
+            self::EnsureResource($imap_stream, __METHOD__, 1),
+            $ref,
+            $pattern
+        );
+
+        if (false === $result) {
+            throw new UnexpectedValueException('Call to imap_getmailboxes() with supplied arguments returned false, not array!', 0, self::HandleErrors(imap_errors(), 'imap_headers'));
+        }
+
+        /** @psalm-var list<object> */
+        return $result;
+    }
+
+    /**
+     * @param resource|false $imap_stream
+     * @param string         $ref
+     * @param string         $pattern
+     *
+     * @return object[]
+     *
+     * @psalm-return list<object>
+     */
+    public static function getsubscribed(
+        $imap_stream,
+        $ref,
+        $pattern
+    ) {
+        if (!\is_string($ref)) {
+            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be a string, '.\gettype($ref).' given!');
+        }
+        if (!\is_string($pattern)) {
+            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be a string, '.\gettype($pattern).' given!');
+        }
+
+        imap_errors(); // flush errors
+
+        $result = imap_getsubscribed(
+            self::EnsureResource($imap_stream, __METHOD__, 1),
+            $ref,
+            $pattern
+        );
+
+        if (false === $result) {
+            throw new UnexpectedValueException('Call to imap_getsubscribed() with supplied arguments returned false, not array!', 0, self::HandleErrors(imap_errors(), 'imap_headers'));
+        }
+
+        /** @psalm-var list<object> */
+        return $result;
+    }
+
+    /**
      * @param false|resource $imap_stream
      *
      * @return array

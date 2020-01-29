@@ -1491,12 +1491,8 @@ class Mailbox
      */
     public function getMailboxes($search = '*')
     {
-        /** @psalm-var (scalar|array|object|resource|null)[]|false */
-        $mailboxes = imap_getmailboxes($this->getImapStream(), $this->imapPath, $search);
-
-        if (!\is_array($mailboxes)) {
-            throw new UnexpectedValueException('Call to imap_getmailboxes() with supplied arguments returned false, not array!');
-        }
+        /** @psalm-var array<int, scalar|array|object{name?:string}|resource|null> */
+        $mailboxes = Imap::getmailboxes($this->getImapStream(), $this->imapPath, $search);
 
         return $this->possiblyGetMailboxes($mailboxes);
     }
@@ -1510,12 +1506,8 @@ class Mailbox
      */
     public function getSubscribedMailboxes($search = '*')
     {
-        /** @psalm-var (scalar|array|object|resource|null)[]|false */
-        $mailboxes = (array) imap_getsubscribed($this->getImapStream(), $this->imapPath, $search);
-
-        if (!\is_array($mailboxes)) {
-            throw new UnexpectedValueException('Call to imap_getmailboxes() with supplied arguments returned false, not array!');
-        }
+        /** @psalm-var array<int, scalar|array|object{name?:string}|resource|null> */
+        $mailboxes = Imap::getsubscribed($this->getImapStream(), $this->imapPath, $search);
 
         return $this->possiblyGetMailboxes($mailboxes);
     }
