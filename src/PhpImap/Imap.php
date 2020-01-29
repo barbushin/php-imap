@@ -1177,11 +1177,12 @@ final class Imap
     }
 
     /**
-     * @param string $method
+     * @param array|false $errors
+     * @param string      $method
      *
      * @return UnexpectedValueException
      */
-    private static function HandleErrors(array $errors, $method)
+    private static function HandleErrors($errors, $method)
     {
         if (!\is_string($method)) {
             throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.' must be a string, '.\gettype($method).' given!');
