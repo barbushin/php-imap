@@ -965,7 +965,7 @@ final class Imap
         }
 
         if (!$result) {
-            throw new UnexpectedValueException('Could not reopen mailbox!', 0, self::HandleErrors(imap_errors(), 'imap_reopen'));
+            throw new UnexpectedValueException('Could not search mailbox!', 0, self::HandleErrors(imap_errors(), 'imap_search'));
         }
 
         /** @psalm-var list<int> */
