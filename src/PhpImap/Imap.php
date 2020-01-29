@@ -965,7 +965,17 @@ final class Imap
         }
 
         if (!$result) {
-            throw new UnexpectedValueException('Could not search mailbox!', 0, self::HandleErrors(imap_errors(), 'imap_search'));
+            $errors = imap_errors();
+
+            if (false === $errors) {
+                /*
+                * if there were no errors then there were no matches,
+                *  rather than a failure to parse criteria.
+                */
+                return [];
+            }
+
+            throw new UnexpectedValueException('Could not search mailbox!', 0, self::HandleErrors($errors, 'imap_search'));
         }
 
         /** @psalm-var list<int> */
