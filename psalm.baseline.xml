@@ -6,7 +6,7 @@
     </UnusedVariable>
   </file>
   <file src="src/PhpImap/Imap.php">
-    <DocblockTypeContradiction occurrences="68">
+    <DocblockTypeContradiction occurrences="67">
       <code>\is_int($msg_number)</code>
       <code>\is_int($options)</code>
       <code>\is_string($flag)</code>
@@ -17,7 +17,6 @@
       <code>\is_string($mailbox)</code>
       <code>\is_int($options)</code>
       <code>\is_int($msg_number)</code>
-      <code>\is_string($section)</code>
       <code>\is_int($options)</code>
       <code>\is_int($msg_number)</code>
       <code>\is_int($options)</code>

@@ -342,7 +342,7 @@ final class Imap
     /**
      * @param false|resource $imap_stream
      * @param int            $msg_number
-     * @param string         $section
+     * @param string|int     $section
      * @param int            $options
      *
      * @return string
@@ -368,7 +368,7 @@ final class Imap
         $result = imap_fetchbody(
             self::EnsureResource($imap_stream, __METHOD__, 1),
             $msg_number,
-            self::encodeStringToUtf7Imap($section),
+            self::encodeStringToUtf7Imap((string) $section),
             $options
         );
 
