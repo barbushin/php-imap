@@ -1639,21 +1639,6 @@ class Mailbox
             $this->imapParams
         );
 
-        if (!$imapStream) {
-            $lastError = imap_last_error();
-
-            // this function is called multiple times and imap keeps errors around.
-            // Let's clear them out to avoid it tripping up future calls.
-            @imap_errors();
-
-            if (!empty(trim($lastError))) {
-                // imap error = report imap error
-                throw new Exception('IMAP error: '.$lastError);
-            }
-            // no imap error = connectivity issue
-            throw new Exception('Connection error: Unable to connect to '.$this->imapPath);
-        }
-
         return $imapStream;
     }
 

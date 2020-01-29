@@ -92,11 +92,10 @@
     </PropertyTypeCoercion>
   </file>
   <file src="src/PhpImap/Mailbox.php">
-    <DocblockTypeContradiction occurrences="4">
+    <DocblockTypeContradiction occurrences="3">
       <code>\in_array($imapSearchOption, $supported_options, true)</code>
       <code>\is_int($retriesNum)</code>
       <code>\in_array($key, $supported_params, true)</code>
-      <code>$imapStream</code>
     </DocblockTypeContradiction>
     <InvalidScalarArgument occurrences="1">
       <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
