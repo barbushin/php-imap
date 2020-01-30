@@ -216,7 +216,7 @@ final class MailboxTest extends TestCase
         $this->assertEquals($this->mailbox->getImapSearchOption(), 2);
 
         $this->expectException(InvalidParameterException::class);
-        $this->mailbox->setImapSearchOption(ANYTHING);
+        $this->mailbox->setImapSearchOption(constant('ANYTHING'));
 
         $this->mailbox->setImapSearchOption(SE_UID);
         $this->assertEquals($this->mailbox->getImapSearchOption(), 1);
@@ -639,11 +639,11 @@ final class MailboxTest extends TestCase
     /**
      * Provides test data for testing connection args.
      *
-     * @psalm-return list<array{0:'assertNull'|'expectException', 1:int, 2:int, 3:array}>
+     * @psalm-return list<array{0:'assertNull'|'expectException', 1:int, 2:int, 3:array{DISABLE_AUTHENTICATOR?:string}|array<empty, empty>}>
      */
     public function connectionArgsProvider()
     {
-        /** @psalm-var list<array{0:'assertNull'|'expectException', 1:int, 2:int, 3:array}> */
+        /** @psalm-var list<array{0:'assertNull'|'expectException', 1:int, 2:int, 3:array{DISABLE_AUTHENTICATOR?:string}|array<empty, empty>}> */
         return [
             ['assertNull', OP_READONLY, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
             ['assertNull', OP_READONLY, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
@@ -678,6 +678,8 @@ final class MailboxTest extends TestCase
      * @param int        $option
      * @param int        $retriesNum
      * @param array|null $param
+     *
+     * @psalm-param array{DISABLE_AUTHENTICATOR?:string}|array<empty, empty> $param
      *
      * @return void
      */

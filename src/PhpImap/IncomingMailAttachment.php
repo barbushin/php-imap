@@ -135,9 +135,8 @@ class IncomingMailAttachment
             return false;
         }
 
-        if (false === file_put_contents($this->filePath, $this->dataInfo->fetch())) {
-            unset($this->filePath);
-            unset($this->file_path);
+        if (false === file_put_contents($this->__get('filePath'), $this->dataInfo->fetch())) {
+            unset($this->filePath, $this->file_path);
 
             return false;
         }

@@ -5,6 +5,86 @@
       <code>$mailbox</code>
     </UnusedVariable>
   </file>
+  <file src="src/PhpImap/Imap.php">
+    <DocblockTypeContradiction occurrences="67">
+      <code>\is_int($msg_number)</code>
+      <code>\is_int($options)</code>
+      <code>\is_string($flag)</code>
+      <code>\is_int($options)</code>
+      <code>\is_int($flag)</code>
+      <code>\is_string($mailbox)</code>
+      <code>\is_int($options)</code>
+      <code>\is_string($mailbox)</code>
+      <code>\is_int($options)</code>
+      <code>\is_int($msg_number)</code>
+      <code>\is_int($options)</code>
+      <code>\is_int($msg_number)</code>
+      <code>\is_int($options)</code>
+      <code>\is_int($msg_number)</code>
+      <code>\is_int($options)</code>
+      <code>\is_string($quota_root)</code>
+      <code>\is_string($ref)</code>
+      <code>\is_string($pattern)</code>
+      <code>\is_string($ref)</code>
+      <code>\is_string($pattern)</code>
+      <code>\is_string($ref)</code>
+      <code>\is_string($pattern)</code>
+      <code>\is_string($mailbox)</code>
+      <code>\is_int($options)</code>
+      <code>\is_string($mailbox)</code>
+      <code>\is_int($options)</code>
+      <code>\is_string($mailbox)</code>
+      <code>\is_string($username)</code>
+      <code>\is_string($password)</code>
+      <code>\is_int($options)</code>
+      <code>\is_int($n_retries)</code>
+      <code>\is_string($old_mbox)</code>
+      <code>\is_string($new_mbox)</code>
+      <code>\is_string($mailbox)</code>
+      <code>\is_int($options)</code>
+      <code>\is_int($n_retries)</code>
+      <code>\is_int($msg_number)</code>
+      <code>\is_string($part_number)</code>
+      <code>\is_int($options)</code>
+      <code>\is_string($criteria)</code>
+      <code>\is_int($options)</code>
+      <code>\is_string($charset)</code>
+      <code>null !== $charset &amp;&amp; !\is_string($charset)</code>
+      <code>\is_string($flag)</code>
+      <code>\is_int($options)</code>
+      <code>\is_int($criteria)</code>
+      <code>\is_bool($reverse)</code>
+      <code>\is_int($options)</code>
+      <code>\is_string($search_criteria)</code>
+      <code>null !== $search_criteria &amp;&amp; !\is_string($search_criteria)</code>
+      <code>\is_string($charset)</code>
+      <code>null !== $charset &amp;&amp; !\is_string($charset)</code>
+      <code>\is_string($mailbox)</code>
+      <code>\is_int($options)</code>
+      <code>\is_string($mailbox)</code>
+      <code>\is_int($timeout_type)</code>
+      <code>\is_int($timeout)</code>
+      <code>\is_string($mailbox)</code>
+      <code>\is_string($str)</code>
+      <code>\is_string($str)</code>
+      <code>\is_string($method)</code>
+      <code>\is_int($argument)</code>
+      <code>\is_resource($maybe)</code>
+      <code>\is_string($method)</code>
+      <code>\is_string($method)</code>
+      <code>\is_int($argument)</code>
+      <code>\is_bool($allow_sequence)</code>
+    </DocblockTypeContradiction>
+    <InvalidArgument occurrences="1"/>
+    <MixedReturnTypeCoercion occurrences="2">
+      <code>$result</code>
+      <code>array[]</code>
+    </MixedReturnTypeCoercion>
+    <PossiblyNullArgument occurrences="2">
+      <code>null === $search_criteria ? null : self::encodeStringToUtf7Imap($search_criteria)</code>
+      <code>null === $charset ? null : self::encodeStringToUtf7Imap($charset)</code>
+    </PossiblyNullArgument>
+  </file>
   <file src="src/PhpImap/IncomingMail.php">
     <PossiblyUnusedMethod occurrences="2">
       <code>replaceInternalLinks</code>
@@ -15,13 +95,11 @@
     </PropertyTypeCoercion>
   </file>
   <file src="src/PhpImap/Mailbox.php">
-    <DocblockTypeContradiction occurrences="2">
+    <DocblockTypeContradiction occurrences="3">
+      <code>\in_array($imapSearchOption, $supported_options, true)</code>
       <code>\is_int($retriesNum)</code>
-      <code>\is_resource($this-&gt;imapStream)</code>
+      <code>\in_array($key, $supported_params, true)</code>
     </DocblockTypeContradiction>
-    <InvalidScalarArgument occurrences="1">
-      <code>$option &amp;&amp; FT_PREFETCHTEXT</code>
-    </InvalidScalarArgument>
     <PossiblyUnusedMethod occurrences="32">
       <code>setOAuthToken</code>
       <code>getOAuthToken</code>
@@ -56,10 +134,9 @@
       <code>subscribeMailbox</code>
       <code>unsubscribeMailbox</code>
     </PossiblyUnusedMethod>
-    <RedundantConditionGivenDocblockType occurrences="3">
+    <RedundantConditionGivenDocblockType occurrences="2">
       <code>!\is_int($retriesNum) or $retriesNum &lt; 0</code>
       <code>\is_int($retriesNum)</code>
-      <code>!\is_resource($this-&gt;imapStream) || !imap_ping($this-&gt;imapStream)</code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="tests/unit/MailboxTest.php">
@@ -73,6 +150,9 @@
       <code>assertAttributeEquals</code>
       <code>assertAttributeEquals</code>
     </DeprecatedMethod>
+    <InvalidArgument occurrences="1">
+      <code>constant('ANYTHING')</code>
+    </InvalidArgument>
     <MethodSignatureMismatch occurrences="1">
       <code>public function setUp()</code>
     </MethodSignatureMismatch>
