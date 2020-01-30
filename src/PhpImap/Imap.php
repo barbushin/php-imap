@@ -1427,7 +1427,7 @@ final class Imap
             return sprintf('%1$s:%1$s', $msg_number);
         } elseif (
             $allow_sequence &&
-            1 !== preg_match('/^\d(?:(?:,\d+)+|:\d+)$/', $msg_number)
+            1 !== preg_match('/^\d+(?:(?:,\d+)+|:\d+)$/', $msg_number)
         ) {
             throw new InvalidArgumentException('Argument '.(string) $argument.' passed to '.$method.'() did not appear to be a valid message id range or sequence!');
         } elseif (1 !== preg_match('/^\d+:\d+$/', $msg_number)) {
