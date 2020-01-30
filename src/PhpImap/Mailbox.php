@@ -32,6 +32,19 @@ use UnexpectedValueException;
  * }
  * @psalm-type HOSTNAMEANDADDRESS_ENTRY = object{host?:string, personal?:string, mailbox:string}
  * @psalm-type HOSTNAMEANDADDRESS = array{0:HOSTNAMEANDADDRESS_ENTRY, 1?:HOSTNAMEANDADDRESS_ENTRY}
+ * @psalm-type COMPOSE_ENVELOPE = array{
+ *	subject?:string
+ * }
+ * @psalm-type COMPOSE_BODY = list<array{
+ *	type?:int,
+ *	encoding?:int,
+ *	charset?:string,
+ *	subtype?:string,
+ *	description?:string,
+ *	disposition?:array{filename:string}
+ * }>
+ *
+ * @todo see @todo of Imap::mail_compose()
  */
 class Mailbox
 {
@@ -1543,6 +1556,47 @@ class Mailbox
         Imap::unsubscribe(
             $this->getImapStream(),
             $this->getCombinedPath($mailbox)
+        );
+    }
+
+    /**
+     * Appends $message to $mailbox.
+     *
+     * @param string|array $message
+     * @param string       $mailbox
+     * @param string|null  $options
+     * @param string|null  $internal_date
+     *
+     * @psalm-param string|array{0:COMPOSE_ENVELOPE, 1:COMPOSE_BODY} $message
+     *
+     * @return true
+     *
+     * @see Imap::append()
+     */
+    public function appendMessageToMailbox(
+        $message,
+        $mailbox = '',
+        $options = null,
+        $internal_date = null
+    ) {
+        if (
+            \is_array($message) &&
+            2 === \count($message) &&
+            isset($message[0], $message[1])
+        ) {
+            $message = Imap::mail_compose($message[0], $message[1]);
+        }
+
+        if (!\is_string($message)) {
+            throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.' must be a string or envelope/body pair.');
+        }
+
+        return Imap::append(
+            $this->getImapStream(),
+            $this->getCombinedPath($mailbox),
+            $message,
+            $options,
+            $internal_date
         );
     }
 
