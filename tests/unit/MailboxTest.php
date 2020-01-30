@@ -146,6 +146,8 @@ final class MailboxTest extends TestCase
     {
         $this->mailbox->setServerEncoding($encoding);
 
+        $encoding = strtoupper(trim($encoding));
+
         $this->assertEquals($this->mailbox->getServerEncoding(), $encoding);
     }
 
