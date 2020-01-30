@@ -102,6 +102,9 @@
       <code>\is_int($retriesNum)</code>
       <code>\in_array($key, $supported_params, true)</code>
     </DocblockTypeContradiction>
+    <InvalidArgument occurrences="1">
+      <code>random_bytes(16)</code>
+    </InvalidArgument>
     <PossiblyUnusedMethod occurrences="27">
       <code>setOAuthToken</code>
       <code>getOAuthToken</code>
@@ -143,7 +146,15 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="tests/unit/LiveMailboxTest.php">
-    <PossiblyNullArgument occurrences="2">
+    <InvalidArgument occurrences="3">
+      <code>random_bytes(16)</code>
+      <code>random_bytes(16)</code>
+      <code>random_bytes(16)</code>
+    </InvalidArgument>
+    <PossiblyNullArgument occurrences="5">
+      <code>$envelope['subject']</code>
+      <code>$envelope['subject']</code>
+      <code>$envelope['subject']</code>
       <code>$envelope['subject']</code>
       <code>$envelope['subject']</code>
     </PossiblyNullArgument>
