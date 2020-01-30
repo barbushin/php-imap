@@ -80,10 +80,6 @@
       <code>$result</code>
       <code>array[]</code>
     </MixedReturnTypeCoercion>
-    <PossiblyNullArgument occurrences="2">
-      <code>null === $search_criteria ? null : self::encodeStringToUtf7Imap($search_criteria)</code>
-      <code>null === $charset ? null : self::encodeStringToUtf7Imap($charset)</code>
-    </PossiblyNullArgument>
   </file>
   <file src="src/PhpImap/IncomingMail.php">
     <PossiblyUnusedMethod occurrences="2">
@@ -100,7 +96,7 @@
       <code>\is_int($retriesNum)</code>
       <code>\in_array($key, $supported_params, true)</code>
     </DocblockTypeContradiction>
-    <PossiblyUnusedMethod occurrences="31">
+    <PossiblyUnusedMethod occurrences="27">
       <code>setOAuthToken</code>
       <code>getOAuthToken</code>
       <code>setConnectionRetry</code>
@@ -120,15 +116,11 @@
       <code>markMailsAsRead</code>
       <code>markMailsAsUnread</code>
       <code>markMailsAsImportant</code>
-      <code>getMailsInfo</code>
       <code>getMailboxHeaders</code>
       <code>getMailboxInfo</code>
-      <code>sortMails</code>
       <code>getQuotaLimit</code>
       <code>getQuotaUsage</code>
-      <code>getRawMail</code>
       <code>getImapPath</code>
-      <code>getMailMboxFormat</code>
       <code>getSubscribedMailboxes</code>
       <code>subscribeMailbox</code>
       <code>unsubscribeMailbox</code>
