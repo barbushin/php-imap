@@ -19,8 +19,9 @@ before_script:
 
 script:
   - vendor/bin/parallel-lint .php_cs.dist src tests examples
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} != "5.6" ]]; then composer require --dev --update-with-dependencies paragonie/hidden-string; fi
-  - vendor/bin/phpunit --coverage-clover=clover.xml --stop-on-failure
+  - vendor/bin/phpunit --coverage-clover=clover.xml --stop-on-failure --exclude-group=live
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.2" ]]; then composer require --dev --update-with-dependencies paragonie/hidden-string; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.2" ]]; then vendor/bin/phpunit --coverage-clover=clover.xml --stop-on-failure --group=live; fi
   - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.2" ]]; then composer require ext-fileinfo:* maglnet/composer-require-checker && ./vendor/bin/composer-require-checker check ./composer.json; fi
   - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.2" ]]; then composer require --dev --update-with-dependencies friendsofphp/php-cs-fixer phpunit/phpunit vimeo/psalm psalm/plugin-phpunit && ./vendor/bin/psalm --show-info=false --shepherd; fi
   - vendor/bin/php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff-format=udiff -v

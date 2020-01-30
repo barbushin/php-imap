@@ -76,6 +76,8 @@ class LiveMailboxTest extends TestCase
     /**
      * @dataProvider MailBoxProvider
      *
+     * @group live
+     *
      * @param string $attachmentsDir
      * @param string $serverEncoding
      *
@@ -293,6 +295,8 @@ class LiveMailboxTest extends TestCase
     /**
      * @dataProvider AppendProvider
      *
+     * @group live
+     *
      * @depends testGetImapStream
      * @depends test_mail_compose
      *
@@ -384,6 +388,8 @@ class LiveMailboxTest extends TestCase
 
     /**
      * @dataProvider AppendProvider
+     *
+     * @group live
      *
      * @depends test_append
      *
@@ -487,6 +493,8 @@ class LiveMailboxTest extends TestCase
 
     /**
      * @dataProvider AppendProvider
+     *
+     * @group live
      *
      * @depends test_append
      *
@@ -599,6 +607,8 @@ class LiveMailboxTest extends TestCase
 
     /**
      * @dataProvider AppendProvider
+     *
+     * @group live
      *
      * @depends test_append
      *
