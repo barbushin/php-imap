@@ -1146,14 +1146,34 @@ final class Imap
 
         imap_errors(); // flush errors
 
-        $result = imap_sort(
-            self::EnsureResource($imap_stream, __METHOD__, 1),
-            $criteria,
-            (int) $reverse,
-            $options,
-            null === $search_criteria ? null : self::encodeStringToUtf7Imap($search_criteria),
-            null === $charset ? null : self::encodeStringToUtf7Imap($charset)
-        );
+        $imap_stream = self::EnsureResource($imap_stream, __METHOD__, 1);
+        $reverse = (int) $reverse;
+
+        if (null !== $search_criteria && null !== $charset) {
+            $result = imap_sort(
+                $imap_stream,
+                $criteria,
+                $reverse,
+                $options,
+                self::encodeStringToUtf7Imap($search_criteria),
+                self::encodeStringToUtf7Imap($charset)
+            );
+        } elseif (null !== $search_criteria) {
+            $result = imap_sort(
+                $imap_stream,
+                $criteria,
+                $reverse,
+                $options,
+                self::encodeStringToUtf7Imap($search_criteria)
+            );
+        } else {
+            $result = imap_sort(
+                $imap_stream,
+                $criteria,
+                $reverse,
+                $options
+            );
+        }
 
         if (!$result) {
             throw new UnexpectedValueException('Could not sort messages!', 0, self::HandleErrors(imap_errors(), 'imap_sort'));
