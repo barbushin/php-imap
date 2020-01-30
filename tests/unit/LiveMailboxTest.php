@@ -530,8 +530,6 @@ class LiveMailboxTest extends TestCase
 
         $search_criteria = sprintf('SUBJECT "%s"', $envelope['subject']);
 
-        $count = $mailbox->countMails();
-
         $message = [$envelope, $body];
 
         if ($pre_compose) {
@@ -643,8 +641,6 @@ class LiveMailboxTest extends TestCase
         );
 
         $search_criteria = sprintf('SUBJECT "%s"', $envelope['subject']);
-
-        $count = $mailbox->countMails();
 
         $message = [$envelope, $body];
 
