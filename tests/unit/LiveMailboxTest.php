@@ -180,6 +180,34 @@ class LiveMailboxTest extends TestCase
                     'test'."\r\n"
                 ),
             ],
+            [
+                ['subject' => $random_subject],
+                [
+                    [
+                        'type' => TYPETEXT,
+                        'encoding' => ENCBASE64,
+                        'description' => '.gitignore',
+                        'disposition.type' => 'attachment',
+                        'disposition' => ['filename' => '.gitignore'],
+                        'type.parameters' => ['name' => '.gitignore'],
+                        'contents.data' => base64_encode(
+                            file_get_contents(__DIR__.'/../../.gitignore')
+                        ),
+                    ],
+                ],
+                (
+                    'Subject: '.$random_subject."\r\n".
+                    'MIME-Version: 1.0'."\r\n".
+                    'Content-Type: TEXT/PLAIN; name=.gitignore'."\r\n".
+                    'Content-Transfer-Encoding: BASE64'."\r\n".
+                    'Content-Description: .gitignore'."\r\n".
+                    'Content-Disposition: attachment; filename=.gitignore'."\r\n".
+                    "\r\n".
+                    base64_encode(
+                        file_get_contents(__DIR__.'/../../.gitignore')
+                    )."\r\n"
+                ),
+            ],
         ];
     }
 
