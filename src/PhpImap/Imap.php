@@ -1423,7 +1423,7 @@ final class Imap
             throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.' must be a boolean, '.\gettype($allow_sequence).' given!');
         }
 
-        if (\is_int($msg_number)) {
+        if (\is_int($msg_number) || preg_match('/^\d+$/', $msg_number)) {
             return sprintf('%1$s:%1$s', $msg_number);
         } elseif (
             $allow_sequence &&
