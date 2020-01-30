@@ -296,7 +296,7 @@ class LiveMailboxTest extends TestCase
      * @depends testGetImapStream
      * @depends test_mail_compose
      *
-     * @param string $expected_compose_result
+     * @param string $_expected_compose_result
      * @param bool   $pre_compose
      *
      * @psalm-param MAILBOX_ARGS $mailbox_args
@@ -309,7 +309,7 @@ class LiveMailboxTest extends TestCase
         array $mailbox_args,
         array $envelope,
         array $body,
-        $expected_compose_result,
+        $_expected_compose_result,
         $pre_compose
     ) {
         if (!isset($envelope['subject'])) {
@@ -387,7 +387,7 @@ class LiveMailboxTest extends TestCase
      *
      * @depends test_append
      *
-     * @param string $expected_compose_result
+     * @param string $_expected_compose_result
      * @param bool   $pre_compose
      *
      * @psalm-param MAILBOX_ARGS $mailbox_args
@@ -400,7 +400,7 @@ class LiveMailboxTest extends TestCase
         array $mailbox_args,
         array $envelope,
         array $body,
-        $expected_compose_result,
+        $_expected_compose_result,
         $pre_compose
     ) {
         if (!isset($envelope['subject'])) {
@@ -490,7 +490,7 @@ class LiveMailboxTest extends TestCase
      *
      * @depends test_append
      *
-     * @param string $expected_compose_result
+     * @param string $_expected_compose_result
      * @param bool   $pre_compose
      *
      * @psalm-param MAILBOX_ARGS $mailbox_args
@@ -503,7 +503,7 @@ class LiveMailboxTest extends TestCase
         array $mailbox_args,
         array $envelope,
         array $body,
-        $expected_compose_result,
+        $_expected_compose_result,
         $pre_compose
     ) {
         if (!isset($envelope['subject'])) {
