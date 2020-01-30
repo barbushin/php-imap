@@ -14,6 +14,7 @@ use Exception;
 use Generator;
 use ParagonIE\HiddenString\HiddenString;
 use PHPUnit\Framework\TestCase;
+use function random_int;
 use const TYPETEXT;
 use function usleep;
 
@@ -38,6 +39,7 @@ use function usleep;
  * }>
  *
  * @todo see @todo of Imap::mail_compose()
+ * @todo drop php 5.6, remove paragonie/random_compat
  */
 class LiveMailboxTest extends TestCase
 {
@@ -312,7 +314,7 @@ class LiveMailboxTest extends TestCase
             return;
         }
 
-        usleep(100);
+        usleep(random_int(100, 1000));
 
         static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null));
 

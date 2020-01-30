@@ -33,6 +33,7 @@
         "ext-fileinfo": "*",
         "friendsofphp/php-cs-fixer": "^2.16",
         "jakub-onderka/php-parallel-lint": "^1.0",
+        "paragonie/random_compat": "^1",
         "phpunit/phpunit": "^5.7"
     },
     "suggest": {
