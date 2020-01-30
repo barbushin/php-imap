@@ -253,6 +253,8 @@ class LiveMailboxTest extends TestCase
     /**
      * @dataProvider ComposeProvider
      *
+     * @group compose
+     *
      * @param string $expected_result
      *
      * @psalm-param COMPOSE_ENVELOPE $envelope
