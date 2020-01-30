@@ -38,6 +38,11 @@
     "suggest": {
         "ext-fileinfo": "To facilitate IncomingMailAttachment::getMimeType() auto-detection"
     },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpImap\\": "tests/unit"
+        }
+    },
     "autoload": {
         "psr-4": {
             "PhpImap\\": "src/PhpImap"

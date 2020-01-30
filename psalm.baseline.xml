@@ -139,6 +139,12 @@
       <code>\is_int($retriesNum)</code>
     </RedundantConditionGivenDocblockType>
   </file>
+  <file src="tests/unit/IncomingMailTest.php">
+    <RedundantConditionGivenDocblockType occurrences="2">
+      <code>\is_string($attachment-&gt;id)</code>
+      <code>assertTrue</code>
+    </RedundantConditionGivenDocblockType>
+  </file>
   <file src="tests/unit/MailboxTest.php">
     <DeprecatedMethod occurrences="8">
       <code>assertAttributeEquals</code>
@@ -151,7 +157,7 @@
       <code>assertAttributeEquals</code>
     </DeprecatedMethod>
     <InvalidArgument occurrences="1">
-      <code>constant('ANYTHING')</code>
+      <code>self::ANYTHING</code>
     </InvalidArgument>
     <MethodSignatureMismatch occurrences="1">
       <code>public function setUp()</code>

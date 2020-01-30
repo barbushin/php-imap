@@ -51,7 +51,7 @@ class DataPartInfo
     public $options;
 
     /** @var string|null */
-    private $data;
+    protected $data;
 
     /**
      * @param int       $id
@@ -79,34 +79,38 @@ class DataPartInfo
             $this->data = Imap::fetchbody($this->mail->getImapStream(), $this->id, $this->part, $this->options);
         }
 
+        return $this->decodeAfterFetch();
+    }
+
+    /**
+     * @return string
+     */
+    protected function decodeAfterFetch()
+    {
         switch ($this->encoding) {
-            case ENC7BIT:
-                /** @var string|null */
-                $this->data = $this->data;
-                break;
             case ENC8BIT:
-                $this->data = imap_utf8($this->data);
+                $this->data = imap_utf8((string) $this->data);
                 break;
             case ENCBINARY:
-                $this->data = imap_binary($this->data);
+                $this->data = imap_binary((string) $this->data);
                 break;
             case ENCBASE64:
-                $this->data = preg_replace('~[^a-zA-Z0-9+=/]+~s', '', $this->data); // https://github.com/barbushin/php-imap/issues/88
-                $this->data = imap_base64($this->data);
+                $this->data = preg_replace('~[^a-zA-Z0-9+=/]+~s', '', (string) $this->data); // https://github.com/barbushin/php-imap/issues/88
+                $this->data = imap_base64((string) $this->data);
                 break;
             case ENCQUOTEDPRINTABLE:
-                $this->data = quoted_printable_decode($this->data);
-                break;
-            case ENCOTHER:
-                /** @var string|null */
-                $this->data = $this->data;
-                break;
-            default:
-                /** @var string|null */
-                $this->data = $this->data;
+                $this->data = quoted_printable_decode((string) $this->data);
                 break;
         }
 
+        return $this->convertEncodingAfterFetch();
+    }
+
+    /**
+     * @return string
+     */
+    protected function convertEncodingAfterFetch()
+    {
         if (isset($this->charset) and !empty(trim($this->charset))) {
             $this->data = $this->mail->convertStringEncoding(
                 (string) $this->data, // Data to convert
