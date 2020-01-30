@@ -108,7 +108,7 @@ final class MailboxTest extends TestCase
     /**
      * @psalm-return list<array{0:string}>
      */
-    public function SetAndGetServerEncodingProvider(): array
+    public function SetAndGetServerEncodingProvider()
     {
         $data = [
             ['UTF-8'],
