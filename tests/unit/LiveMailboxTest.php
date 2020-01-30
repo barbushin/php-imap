@@ -203,7 +203,8 @@ class LiveMailboxTest extends TestCase
      *	0:MAILBOX_ARGS,
      *	1:COMPOSE_ENVELOPE,
      *	2:COMPOSE_BODY,
-     *	3:bool
+     *	3:string,
+     *	4:bool
      * }, mixed, void>
      */
     public function AppendProvider()
