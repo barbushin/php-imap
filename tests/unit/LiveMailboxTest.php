@@ -180,14 +180,15 @@ class LiveMailboxTest extends TestCase
             ),
         ];
 
-        $random_subject = 'test: '.bin2hex(random_bytes(16));
+        $random_subject = 'barbushin/php-imap#448: dot first:'.bin2hex(random_bytes(16));
 
         yield [
             ['subject' => $random_subject],
             [
                 [
-                    'type' => TYPETEXT,
+                    'type' => TYPEAPPLICATION,
                     'encoding' => ENCBASE64,
+                    'subtype' => 'octet-stream',
                     'description' => '.gitignore',
                     'disposition.type' => 'attachment',
                     'disposition' => ['filename' => '.gitignore'],
@@ -200,10 +201,42 @@ class LiveMailboxTest extends TestCase
             (
                 'Subject: '.$random_subject."\r\n".
                 'MIME-Version: 1.0'."\r\n".
-                'Content-Type: TEXT/PLAIN; name=.gitignore'."\r\n".
+                'Content-Type: APPLICATION/octet-stream; name=.gitignore'."\r\n".
                 'Content-Transfer-Encoding: BASE64'."\r\n".
                 'Content-Description: .gitignore'."\r\n".
                 'Content-Disposition: attachment; filename=.gitignore'."\r\n".
+                "\r\n".
+                base64_encode(
+                    file_get_contents(__DIR__.'/../../.gitignore')
+                )."\r\n"
+            ),
+        ];
+
+        $random_subject = 'barbushin/php-imap#448: dot last: '.bin2hex(random_bytes(16));
+
+        yield [
+            ['subject' => $random_subject],
+            [
+                [
+                    'type' => TYPEAPPLICATION,
+                    'encoding' => ENCBASE64,
+                    'subtype' => 'octet-stream',
+                    'description' => 'gitignore.',
+                    'disposition.type' => 'attachment',
+                    'disposition' => ['filename' => 'gitignore.'],
+                    'type.parameters' => ['name' => 'gitignore.'],
+                    'contents.data' => base64_encode(
+                        file_get_contents(__DIR__.'/../../.gitignore')
+                    ),
+                ],
+            ],
+            (
+                'Subject: '.$random_subject."\r\n".
+                'MIME-Version: 1.0'."\r\n".
+                'Content-Type: APPLICATION/octet-stream; name=gitignore.'."\r\n".
+                'Content-Transfer-Encoding: BASE64'."\r\n".
+                'Content-Description: gitignore.'."\r\n".
+                'Content-Disposition: attachment; filename=gitignore.'."\r\n".
                 "\r\n".
                 base64_encode(
                     file_get_contents(__DIR__.'/../../.gitignore')
@@ -390,6 +423,17 @@ class LiveMailboxTest extends TestCase
                 ' then something has gone wrong.'
             )
         );
+
+        if (1 === preg_match(
+            '/^barbushin\/php-imap#448:/',
+            $envelope['subject']
+        )) {
+            static::assertTrue($mail->hasAttachments());
+
+            $attachments = $mail->getAttachments();
+
+            static::assertCount(1, $attachments);
+        }
 
         $mailbox->deleteMail($search[0]);
 
