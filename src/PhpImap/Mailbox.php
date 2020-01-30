@@ -998,23 +998,29 @@ class Mailbox
      *  SORTCC - mailbox in first cc address
      *  SORTSIZE - size of mail in octets
      *
-     * @param int    $criteria       Sorting criteria (eg. SORTARRIVAL)
-     * @param bool   $reverse        Sort reverse or not
-     * @param string $searchCriteria See http://php.net/imap_search for a complete list of available criteria
+     * @param int         $criteria       Sorting criteria (eg. SORTARRIVAL)
+     * @param bool        $reverse        Sort reverse or not
+     * @param string|null $searchCriteria See http://php.net/imap_search for a complete list of available criteria
+     * @param string|null $charset
      *
      * @psalm-param value-of<Imap::SORT_CRITERIA> $criteria
      * @psalm-param 1|5|0|2|6|3|4 $criteria
      *
      * @return array Mails ids
      */
-    public function sortMails($criteria = SORTARRIVAL, $reverse = true, $searchCriteria = 'ALL')
-    {
+    public function sortMails(
+        $criteria = SORTARRIVAL,
+        $reverse = true,
+        $searchCriteria = 'ALL',
+        $charset = null
+    ) {
         return Imap::sort(
             $this->getImapStream(),
             $criteria,
             $reverse,
             $this->imapSearchOption,
-            $searchCriteria
+            $searchCriteria,
+            $charset
         );
     }
 
