@@ -110,9 +110,27 @@ final class MailboxTest extends TestCase
      */
     public function SetAndGetServerEncodingProvider(): array
     {
-        return [
+        $data = [
             ['UTF-8'],
         ];
+
+        $supported = mb_list_encodings();
+
+        foreach (
+            [
+                'Windows-1251',
+                'Windows-1252',
+            ] as $perhaps
+        ) {
+            if (
+                \in_array(trim($perhaps), $supported, true) ||
+                \in_array(strtoupper(trim($perhaps)), $supported, true)
+            ) {
+                $data[] = [$perhaps];
+            }
+        }
+
+        return $data;
     }
 
     /**
