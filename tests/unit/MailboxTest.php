@@ -79,11 +79,43 @@ final class MailboxTest extends TestCase
     }
 
     /**
+     * @psalm-return list<array{0:string}>
+     */
+    public function SetAndGetServerEncodingProvider()
+    {
+        $data = [
+            ['UTF-8'],
+        ];
+
+        $supported = mb_list_encodings();
+
+        foreach (
+            [
+                'Windows-1251',
+                'Windows-1252',
+            ] as $perhaps
+        ) {
+            if (
+                \in_array(trim($perhaps), $supported, true) ||
+                \in_array(strtoupper(trim($perhaps)), $supported, true)
+            ) {
+                $data[] = [$perhaps];
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * Test, that the server encoding can be set.
+     *
+     * @dataProvider SetAndGetServerEncodingProvider
+     *
+     * @param string $encoding
      *
      * @return void
      */
-    public function testSetAndGetServerEncoding()
+    public function testSetAndGetServerEncoding($encoding)
     {
         $mailbox = $this->getMailbox();
 

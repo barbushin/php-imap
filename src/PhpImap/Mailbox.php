@@ -237,7 +237,7 @@ class Mailbox
     {
         $serverEncoding = strtoupper(trim($serverEncoding));
 
-        $supported_encodings = mb_list_encodings();
+        $supported_encodings = array_map('strtoupper', mb_list_encodings());
 
         if (!\in_array($serverEncoding, $supported_encodings) && 'US-ASCII' != $serverEncoding) {
             throw new InvalidParameterException('"'.$serverEncoding.'" is not supported by setServerEncoding(). Your system only supports these encodings: US-ASCII, '.implode(', ', $supported_encodings));
