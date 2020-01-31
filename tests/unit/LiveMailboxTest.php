@@ -10,13 +10,13 @@
 
 namespace PhpImap;
 
+use function date;
 use Exception;
 use Generator;
 use ParagonIE\HiddenString\HiddenString;
 use PHPUnit\Framework\TestCase;
-use function random_int;
+use function random_bytes;
 use const TYPETEXT;
-use function usleep;
 
 /**
  * @psalm-type MAILBOX_ARGS = array{
@@ -85,7 +85,13 @@ class LiveMailboxTest extends TestCase
      */
     public function testGetImapStream(HiddenString $imapPath, HiddenString $login, HiddenString $password, $attachmentsDir, $serverEncoding = 'UTF-8')
     {
-        $mailbox = new Mailbox($imapPath->getString(), $login->getString(), $password->getString(), $attachmentsDir, $serverEncoding);
+        list($mailbox, $remove_mailbox) = $this->getMailbox(
+            $imapPath,
+            $login,
+            $password,
+            $attachmentsDir,
+            $serverEncoding
+        );
 
         /** @var Exception|null */
         $exception = null;
@@ -153,6 +159,8 @@ class LiveMailboxTest extends TestCase
         } catch (Exception $ex) {
             $exception = $ex;
         } finally {
+            $mailbox->switchMailbox($imapPath->getString());
+            $mailbox->deleteMailbox($remove_mailbox);
             $mailbox->disconnect();
         }
 
@@ -325,16 +333,14 @@ class LiveMailboxTest extends TestCase
             return;
         }
 
-        usleep(random_int(100, 1000));
-
         static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null));
 
         list($path, $username, $password, $attachments_dir) = $mailbox_args;
 
-        $mailbox = new Mailbox(
-            $path->getString(),
-            $username->getString(),
-            $password->getString(),
+        list($mailbox, $remove_mailbox) = $this->getMailbox(
+            $path,
+            $username,
+            $password,
             $attachments_dir,
             isset($mailbox_args[4]) ? $mailbox_args[4] : 'UTF-8'
         );
@@ -377,6 +383,9 @@ class LiveMailboxTest extends TestCase
 
         $mailbox->expungeDeletedMails();
 
+        $mailbox->switchMailbox($path->getString());
+        $mailbox->deleteMailbox($remove_mailbox);
+
         static::assertCount(
             0,
             $mailbox->searchMailbox($search_criteria),
@@ -418,16 +427,14 @@ class LiveMailboxTest extends TestCase
             return;
         }
 
-        usleep(random_int(100, 1000));
-
         static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null));
 
         list($path, $username, $password, $attachments_dir) = $mailbox_args;
 
-        $mailbox = new Mailbox(
-            $path->getString(),
-            $username->getString(),
-            $password->getString(),
+        list($mailbox, $remove_mailbox) = $this->getMailbox(
+            $path,
+            $username,
+            $password,
             $attachments_dir,
             isset($mailbox_args[4]) ? $mailbox_args[4] : 'UTF-8'
         );
@@ -482,6 +489,9 @@ class LiveMailboxTest extends TestCase
 
         $mailbox->expungeDeletedMails();
 
+        $mailbox->switchMailbox($path->getString());
+        $mailbox->deleteMailbox($remove_mailbox);
+
         static::assertCount(
             0,
             $mailbox->searchMailbox($search_criteria),
@@ -523,16 +533,14 @@ class LiveMailboxTest extends TestCase
             return;
         }
 
-        usleep(random_int(100, 1000));
-
         static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null));
 
         list($path, $username, $password, $attachments_dir) = $mailbox_args;
 
-        $mailbox = new Mailbox(
-            $path->getString(),
-            $username->getString(),
-            $password->getString(),
+        list($mailbox, $remove_mailbox) = $this->getMailbox(
+            $path,
+            $username,
+            $password,
             $attachments_dir,
             isset($mailbox_args[4]) ? $mailbox_args[4] : 'UTF-8'
         );
@@ -596,6 +604,9 @@ class LiveMailboxTest extends TestCase
 
         $mailbox->expungeDeletedMails();
 
+        $mailbox->switchMailbox($path->getString());
+        $mailbox->deleteMailbox($remove_mailbox);
+
         static::assertCount(
             0,
             $mailbox->searchMailbox($search_criteria),
@@ -637,16 +648,14 @@ class LiveMailboxTest extends TestCase
             return;
         }
 
-        usleep(random_int(100, 1000));
-
         static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null));
 
         list($path, $username, $password, $attachments_dir) = $mailbox_args;
 
-        $mailbox = new Mailbox(
-            $path->getString(),
-            $username->getString(),
-            $password->getString(),
+        list($mailbox, $remove_mailbox) = $this->getMailbox(
+            $path,
+            $username,
+            $password,
             $attachments_dir,
             isset($mailbox_args[4]) ? $mailbox_args[4] : 'UTF-8'
         );
@@ -741,6 +750,9 @@ class LiveMailboxTest extends TestCase
 
         $mailbox->expungeDeletedMails();
 
+        $mailbox->switchMailbox($path->getString());
+        $mailbox->deleteMailbox($remove_mailbox);
+
         static::assertCount(
             0,
             $mailbox->searchMailbox($search_criteria),
@@ -749,5 +761,28 @@ class LiveMailboxTest extends TestCase
                 ' then the message is was not expunged as requested.'
             )
         );
+    }
+
+    /**
+     * Get instance of Mailbox, pre-set to a random mailbox.
+     *
+     * @param string $attachmentsDir
+     * @param string $serverEncoding
+     *
+     * @return mixed[]
+     *
+     * @psalm-return array{0:Mailbox, 1:string}
+     */
+    protected function getMailbox(HiddenString $imapPath, HiddenString $login, HiddenString $password, $attachmentsDir, $serverEncoding = 'UTF-8')
+    {
+        $mailbox = new Mailbox($imapPath->getString(), $login->getString(), $password->getString(), $attachmentsDir, $serverEncoding);
+
+        $random = 'test-box-'.date('c').bin2hex(random_bytes(4));
+
+        $mailbox->createMailbox($random);
+
+        $mailbox->switchMailbox($random, false);
+
+        return [$mailbox, $random];
     }
 }

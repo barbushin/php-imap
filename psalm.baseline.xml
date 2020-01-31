@@ -150,10 +150,11 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="tests/unit/LiveMailboxTest.php">
-    <InvalidArgument occurrences="3">
+    <InvalidArgument occurrences="4">
       <code>random_bytes(16)</code>
       <code>random_bytes(16)</code>
       <code>random_bytes(16)</code>
+      <code>random_bytes(4)</code>
     </InvalidArgument>
     <PossiblyNullArgument occurrences="5">
       <code>$envelope['subject']</code>

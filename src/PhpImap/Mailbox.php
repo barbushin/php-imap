@@ -521,17 +521,18 @@ class Mailbox
      * Switch mailbox without opening a new connection.
      *
      * @param string $imapPath
+     * @param bool   $absolute
      *
      * @return void
      *
      * @throws Exception
      */
-    public function switchMailbox($imapPath)
+    public function switchMailbox($imapPath, $absolute = true)
     {
         if (strpos($imapPath, '}') > 0) {
             $this->imapPath = $imapPath;
         } else {
-            $this->imapPath = $this->getCombinedPath($imapPath, true);
+            $this->imapPath = $this->getCombinedPath($imapPath, $absolute);
         }
 
         Imap::reopen($this->getImapStream(), $this->imapPath);
@@ -597,15 +598,16 @@ class Mailbox
     /**
      * Deletes a specific mailbox.
      *
-     * @param string $name Name of mailbox, which you want to delete (eg. 'PhpImap')
+     * @param string $name     Name of mailbox, which you want to delete (eg. 'PhpImap')
+     * @param bool   $absolute
      *
      * @return bool
      *
      * @see   imap_deletemailbox()
      */
-    public function deleteMailbox($name)
+    public function deleteMailbox($name, $absolute = false)
     {
-        return Imap::deletemailbox($this->getImapStream(), $this->getCombinedPath($name));
+        return Imap::deletemailbox($this->getImapStream(), $this->getCombinedPath($name, $absolute));
     }
 
     /**
