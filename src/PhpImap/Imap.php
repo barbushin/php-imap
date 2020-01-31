@@ -423,7 +423,7 @@ final class Imap
     /**
      * @param false|resource $imap_stream
      *
-     * @return array[]
+     * @todo add return array shape pending resolution of https://github.com/vimeo/psalm/issues/2620
      */
     public static function get_quotaroot(
         $imap_stream,
