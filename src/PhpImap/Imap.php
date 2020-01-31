@@ -564,6 +564,16 @@ final class Imap
         );
 
         if (false === $result) {
+            $errors = imap_errors();
+
+            if (false === $errors) {
+                /*
+                * if there were no errors then there were no mailboxes,
+                *  rather than a failure to get mailboxes.
+                */
+                return [];
+            }
+
             throw new UnexpectedValueException('Call to imap_getmailboxes() with supplied arguments returned false, not array!', 0, self::HandleErrors(imap_errors(), 'imap_headers'));
         }
 
