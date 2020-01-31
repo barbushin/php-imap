@@ -412,8 +412,8 @@ final class Imap
         if (!\is_int($msg_number)) {
             throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be an integer, '.\gettype($msg_number).' given!');
         }
-        if (!\is_string($section)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be a string, '.\gettype($section).' given!');
+        if (!\is_string($section) && !\is_int($section)) {
+            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be a string or an integer, '.\gettype($section).' given!');
         }
         if (!\is_int($options)) {
             throw new InvalidArgumentException('Argument 4 passed to '.__METHOD__.'() must be an integer, '.\gettype($options).' given!');
