@@ -175,11 +175,5 @@
     <InvalidArgument occurrences="1">
       <code>self::ANYTHING</code>
     </InvalidArgument>
-    <MethodSignatureMismatch occurrences="1">
-      <code>public function setUp()</code>
-    </MethodSignatureMismatch>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>assertInstanceOf</code>
-    </RedundantConditionGivenDocblockType>
   </file>
 </files>
