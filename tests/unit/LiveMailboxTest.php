@@ -15,9 +15,8 @@ use Exception;
 use Generator;
 use ParagonIE\HiddenString\HiddenString;
 use PHPUnit\Framework\TestCase;
-use function random_int;
+use function random_bytes;
 use const TYPETEXT;
-use function usleep;
 
 /**
  * @psalm-type MAILBOX_ARGS = array{
@@ -334,8 +333,6 @@ class LiveMailboxTest extends TestCase
             return;
         }
 
-        usleep(random_int(100, 1000));
-
         static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null));
 
         list($path, $username, $password, $attachments_dir) = $mailbox_args;
@@ -429,8 +426,6 @@ class LiveMailboxTest extends TestCase
 
             return;
         }
-
-        usleep(random_int(100, 1000));
 
         static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null));
 
@@ -537,8 +532,6 @@ class LiveMailboxTest extends TestCase
 
             return;
         }
-
-        usleep(random_int(100, 1000));
 
         static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null));
 
@@ -654,8 +647,6 @@ class LiveMailboxTest extends TestCase
 
             return;
         }
-
-        usleep(random_int(100, 1000));
 
         static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null));
 
