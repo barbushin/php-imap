@@ -107,7 +107,7 @@
     <InvalidArgument occurrences="1">
       <code>random_bytes(16)</code>
     </InvalidArgument>
-    <PossiblyUnusedMethod occurrences="27">
+    <PossiblyUnusedMethod occurrences="29">
       <code>setOAuthToken</code>
       <code>getOAuthToken</code>
       <code>setConnectionRetry</code>
@@ -119,6 +119,8 @@
       <code>getListingFolders</code>
       <code>searchMailboxFrom</code>
       <code>searchMailboxFromDisableServerEncoding</code>
+      <code>searchMailboxMergeResults</code>
+      <code>searchMailboxMergeResultsDisableServerEncoding</code>
       <code>saveMail</code>
       <code>moveMail</code>
       <code>copyMail</code>
