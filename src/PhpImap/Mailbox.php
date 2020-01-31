@@ -2,6 +2,7 @@
 
 namespace PhpImap;
 
+use function bin2hex;
 use function count;
 use DateTime;
 use Exception;
@@ -10,6 +11,7 @@ use InvalidArgumentException;
 use function mb_list_encodings;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
+use function random_bytes;
 use Throwable;
 use UnexpectedValueException;
 
@@ -32,6 +34,19 @@ use UnexpectedValueException;
  * }
  * @psalm-type HOSTNAMEANDADDRESS_ENTRY = object{host?:string, personal?:string, mailbox:string}
  * @psalm-type HOSTNAMEANDADDRESS = array{0:HOSTNAMEANDADDRESS_ENTRY, 1?:HOSTNAMEANDADDRESS_ENTRY}
+ * @psalm-type COMPOSE_ENVELOPE = array{
+ *	subject?:string
+ * }
+ * @psalm-type COMPOSE_BODY = list<array{
+ *	type?:int,
+ *	encoding?:int,
+ *	charset?:string,
+ *	subtype?:string,
+ *	description?:string,
+ *	disposition?:array{filename:string}
+ * }>
+ *
+ * @todo see @todo of Imap::mail_compose()
  */
 class Mailbox
 {
@@ -985,23 +1000,29 @@ class Mailbox
      *  SORTCC - mailbox in first cc address
      *  SORTSIZE - size of mail in octets
      *
-     * @param int    $criteria       Sorting criteria (eg. SORTARRIVAL)
-     * @param bool   $reverse        Sort reverse or not
-     * @param string $searchCriteria See http://php.net/imap_search for a complete list of available criteria
+     * @param int         $criteria       Sorting criteria (eg. SORTARRIVAL)
+     * @param bool        $reverse        Sort reverse or not
+     * @param string|null $searchCriteria See http://php.net/imap_search for a complete list of available criteria
+     * @param string|null $charset
      *
      * @psalm-param value-of<Imap::SORT_CRITERIA> $criteria
      * @psalm-param 1|5|0|2|6|3|4 $criteria
      *
      * @return array Mails ids
      */
-    public function sortMails($criteria = SORTARRIVAL, $reverse = true, $searchCriteria = 'ALL')
-    {
+    public function sortMails(
+        $criteria = SORTARRIVAL,
+        $reverse = true,
+        $searchCriteria = 'ALL',
+        $charset = null
+    ) {
         return Imap::sort(
             $this->getImapStream(),
             $criteria,
             $reverse,
             $this->imapSearchOption,
-            $searchCriteria
+            $searchCriteria,
+            $charset
         );
     }
 
@@ -1285,7 +1306,7 @@ class Mailbox
      *
      * @param array  $params        Array of params of mail
      * @param object $partStructure Part of mail
-     * @param int    $mailId        ID of mail
+     * @param int    $_mailId       ID of mail
      * @param bool   $emlOrigin     True, if it indicates, that the attachment comes from an EML (mail) file
      *
      * @psalm-param array<string, string> $params
@@ -1295,7 +1316,7 @@ class Mailbox
      *
      * @todo consider "requiring" psalm (suggest + conflict) then setting $params to array<string, string>
      */
-    public function downloadAttachment(DataPartInfo $dataInfo, array $params, $partStructure, $mailId, $emlOrigin = false)
+    public function downloadAttachment(DataPartInfo $dataInfo, array $params, $partStructure, $_mailId, $emlOrigin = false)
     {
         if ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
             $fileName = strtolower($partStructure->subtype).'.eml';
@@ -1331,13 +1352,7 @@ class Mailbox
         $attachmentsDir = $this->getAttachmentsDir();
 
         if (null != $attachmentsDir) {
-            $replace = [
-                '/\s/' => '_',
-                '/[^\w\.]/iu' => '',
-                '/_+/' => '_',
-                '/(^_)|(_$)/' => '',
-            ];
-            $fileSysName = preg_replace('~[\\\\/]~', '', (string) $mailId.'_'.$attachment->id.'_'.preg_replace(array_keys($replace), $replace, $fileName));
+            $fileSysName = bin2hex(random_bytes(16)).'.bin';
             $filePath = $attachmentsDir.\DIRECTORY_SEPARATOR.$fileSysName;
 
             if (\strlen($filePath) > 255) {
@@ -1543,6 +1558,47 @@ class Mailbox
         Imap::unsubscribe(
             $this->getImapStream(),
             $this->getCombinedPath($mailbox)
+        );
+    }
+
+    /**
+     * Appends $message to $mailbox.
+     *
+     * @param string|array $message
+     * @param string       $mailbox
+     * @param string|null  $options
+     * @param string|null  $internal_date
+     *
+     * @psalm-param string|array{0:COMPOSE_ENVELOPE, 1:COMPOSE_BODY} $message
+     *
+     * @return true
+     *
+     * @see Imap::append()
+     */
+    public function appendMessageToMailbox(
+        $message,
+        $mailbox = '',
+        $options = null,
+        $internal_date = null
+    ) {
+        if (
+            \is_array($message) &&
+            2 === \count($message) &&
+            isset($message[0], $message[1])
+        ) {
+            $message = Imap::mail_compose($message[0], $message[1]);
+        }
+
+        if (!\is_string($message)) {
+            throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.' must be a string or envelope/body pair.');
+        }
+
+        return Imap::append(
+            $this->getImapStream(),
+            $this->getCombinedPath($mailbox),
+            $message,
+            $options,
+            $internal_date
         );
     }
 

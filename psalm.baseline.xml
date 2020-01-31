@@ -6,7 +6,13 @@
     </UnusedVariable>
   </file>
   <file src="src/PhpImap/Imap.php">
-    <DocblockTypeContradiction occurrences="67">
+    <DocblockTypeContradiction occurrences="73">
+      <code>\is_string($mailbox)</code>
+      <code>\is_string($message)</code>
+      <code>\is_string($options)</code>
+      <code>null !== $options &amp;&amp; !\is_string($options)</code>
+      <code>\is_string($internal_date)</code>
+      <code>null !== $internal_date &amp;&amp; !\is_string($internal_date)</code>
       <code>\is_int($msg_number)</code>
       <code>\is_int($options)</code>
       <code>\is_string($flag)</code>
@@ -80,10 +86,6 @@
       <code>$result</code>
       <code>array[]</code>
     </MixedReturnTypeCoercion>
-    <PossiblyNullArgument occurrences="2">
-      <code>null === $search_criteria ? null : self::encodeStringToUtf7Imap($search_criteria)</code>
-      <code>null === $charset ? null : self::encodeStringToUtf7Imap($charset)</code>
-    </PossiblyNullArgument>
   </file>
   <file src="src/PhpImap/IncomingMail.php">
     <PossiblyUnusedMethod occurrences="2">
@@ -100,7 +102,10 @@
       <code>\is_int($retriesNum)</code>
       <code>\in_array($key, $supported_params, true)</code>
     </DocblockTypeContradiction>
-    <PossiblyUnusedMethod occurrences="32">
+    <InvalidArgument occurrences="1">
+      <code>random_bytes(16)</code>
+    </InvalidArgument>
+    <PossiblyUnusedMethod occurrences="27">
       <code>setOAuthToken</code>
       <code>getOAuthToken</code>
       <code>setConnectionRetry</code>
@@ -113,7 +118,6 @@
       <code>searchMailboxFrom</code>
       <code>searchMailboxFromDisableServerEncoding</code>
       <code>saveMail</code>
-      <code>deleteMail</code>
       <code>moveMail</code>
       <code>copyMail</code>
       <code>markMailAsUnread</code>
@@ -121,15 +125,11 @@
       <code>markMailsAsRead</code>
       <code>markMailsAsUnread</code>
       <code>markMailsAsImportant</code>
-      <code>getMailsInfo</code>
       <code>getMailboxHeaders</code>
       <code>getMailboxInfo</code>
-      <code>sortMails</code>
       <code>getQuotaLimit</code>
       <code>getQuotaUsage</code>
-      <code>getRawMail</code>
       <code>getImapPath</code>
-      <code>getMailMboxFormat</code>
       <code>getSubscribedMailboxes</code>
       <code>subscribeMailbox</code>
       <code>unsubscribeMailbox</code>
@@ -144,6 +144,20 @@
       <code>\is_string($attachment-&gt;id)</code>
       <code>assertTrue</code>
     </RedundantConditionGivenDocblockType>
+  </file>
+  <file src="tests/unit/LiveMailboxTest.php">
+    <InvalidArgument occurrences="3">
+      <code>random_bytes(16)</code>
+      <code>random_bytes(16)</code>
+      <code>random_bytes(16)</code>
+    </InvalidArgument>
+    <PossiblyNullArgument occurrences="5">
+      <code>$envelope['subject']</code>
+      <code>$envelope['subject']</code>
+      <code>$envelope['subject']</code>
+      <code>$envelope['subject']</code>
+      <code>$envelope['subject']</code>
+    </PossiblyNullArgument>
   </file>
   <file src="tests/unit/MailboxTest.php">
     <DeprecatedMethod occurrences="8">

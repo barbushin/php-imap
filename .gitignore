@@ -3,6 +3,7 @@ vendor/
 composer.lock
 *.phar
 .php_cs.cache
+coverage/
 
 #################
 ## Eclipse
