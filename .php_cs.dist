@@ -12,13 +12,11 @@ return PhpCsFixer\Config::create()
         'no_superfluous_phpdoc_tags' => true,
         'declare_strict_types' => true,
         'ordered_class_elements' => true,
-        /*
         'global_namespace_import' => [
             'import_classes' => true,
             'import_constants' => true,
             'import_functions' => false,
         ],
-        */
         'native_function_invocation' => true,
     ])
     ->setRiskyAllowed(true)

@@ -10,12 +10,12 @@ declare(strict_types=1);
 
 namespace PhpImap;
 
+use function date;
 use Exception;
 use Generator;
 use ParagonIE\HiddenString\HiddenString;
 use PHPUnit\Framework\TestCase;
 use const TYPETEXT;
-use function date;
 
 /**
  * @psalm-type MAILBOX_ARGS = array{

@@ -8,13 +8,12 @@ declare(strict_types=1);
 
 namespace PhpImap;
 
-use InvalidArgumentException;
-use UnexpectedValueException;
 use const CL_EXPUNGE;
 use const IMAP_CLOSETIMEOUT;
 use const IMAP_OPENTIMEOUT;
 use const IMAP_READTIMEOUT;
 use const IMAP_WRITETIMEOUT;
+use InvalidArgumentException;
 use const NIL;
 use const SORTARRIVAL;
 use const SORTCC;
@@ -23,6 +22,7 @@ use const SORTFROM;
 use const SORTSIZE;
 use const SORTSUBJECT;
 use const SORTTO;
+use UnexpectedValueException;
 
 /**
  * @psalm-type PARTSTRUCTURE_PARAM = object{attribute:string, value?:string}
