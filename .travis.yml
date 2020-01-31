@@ -17,7 +17,7 @@ env:
 matrix:
   fast_finish: true
   include:
-    - php: 7.0.0
+    - php: 7.0.8
       dist: xenial
       env:
         - lint="php-cs-fixer"
