@@ -114,8 +114,6 @@ class IncomingMail extends IncomingMailHeader
      * Sets property $hasAttachments.
      *
      * @param bool $hasAttachments True, if IncomingMail[] has one or more attachments
-     *
-     * @return void
      */
     public function setHasAttachments(bool $hasAttachments)
     {
@@ -198,8 +196,6 @@ class IncomingMail extends IncomingMailHeader
     /**
      * Embed inline image attachments as base64 to allow for
      * email html to display inline images automatically.
-     *
-     * @return void
      */
     public function embedImageAttachments()
     {

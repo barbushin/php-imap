@@ -74,8 +74,6 @@ class IncomingMailAttachment
      * Sets the file path.
      *
      * @param string $filePath File path incl. file name and optional extension
-     *
-     * @return void
      */
     public function setFilePath(string $filePath)
     {
@@ -86,8 +84,6 @@ class IncomingMailAttachment
      * Sets the data part info.
      *
      * @param DataPartInfo $dataInfo Date info (file content)
-     *
-     * @return void
      */
     public function addDataPartInfo(DataPartInfo $dataInfo)
     {

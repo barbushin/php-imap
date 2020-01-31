@@ -26,8 +26,6 @@ final class RequirementsTest extends TestCase
      * Test, that required modules are enabled.
      *
      * @dataProvider extensionProvider
-     *
-     * @return void
      */
     public function testRequiredExtensionsAreEnabled(string $extension)
     {

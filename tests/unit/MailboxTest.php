@@ -57,8 +57,6 @@ final class MailboxTest extends TestCase
     /**
      * Test, that the constructor trims possible variables
      * Leading and ending spaces are not even possible in some variables.
-     *
-     * @return void
      */
     public function testConstructorTrimsPossibleVariables()
     {
@@ -110,8 +108,6 @@ final class MailboxTest extends TestCase
      * Test, that the server encoding can be set.
      *
      * @dataProvider SetAndGetServerEncodingProvider
-     *
-     * @return void
      */
     public function testSetAndGetServerEncoding(string $encoding)
     {
@@ -126,8 +122,6 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, that server encoding is set to a default value.
-     *
-     * @return void
      */
     public function testServerEncodingHasDefaultSetting()
     {
@@ -138,8 +132,6 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, that server encoding that all functions uppers the server encoding setting.
-     *
-     * @return void
      */
     public function testServerEncodingUppersSetting()
     {
@@ -184,8 +176,6 @@ final class MailboxTest extends TestCase
      * Test, that server encoding only can use supported character encodings.
      *
      * @dataProvider serverEncodingProvider
-     *
-     * @return void
      */
     public function testServerEncodingOnlyUseSupportedSettings(bool $bool, string $encoding)
     {
@@ -205,8 +195,6 @@ final class MailboxTest extends TestCase
      * Test, that the IMAP search option has a default value
      * 1 => SE_UID
      * 2 => SE_FREE.
-     *
-     * @return void
      */
     public function testImapSearchOptionHasADefault()
     {
@@ -217,8 +205,6 @@ final class MailboxTest extends TestCase
      * Test, that the IMAP search option can be changed
      * 1 => SE_UID
      * 2 => SE_FREE.
-     *
-     * @return void
      */
     public function testSetAndGetImapSearchOption()
     {
@@ -236,8 +222,6 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, that the imap login can be retrieved.
-     *
-     * @return void
      */
     public function testGetLogin()
     {
@@ -246,8 +230,6 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, that the path delimiter has a default value.
-     *
-     * @return void
      */
     public function testPathDelimiterHasADefault()
     {
@@ -327,8 +309,6 @@ final class MailboxTest extends TestCase
      * Test, that the path delimiter is checked for supported chars.
      *
      * @dataProvider pathDelimiterProvider
-     *
-     * @return void
      */
     public function testPathDelimiterIsBeingChecked(string $str)
     {
@@ -346,8 +326,6 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, that the path delimiter can be set.
-     *
-     * @return void
      */
     public function testSetAndGetPathDelimiter()
     {
@@ -362,8 +340,6 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, that the attachments are not ignored by default.
-     *
-     * @return void
      */
     public function testGetAttachmentsAreNotIgnoredByDefault()
     {
@@ -388,8 +364,6 @@ final class MailboxTest extends TestCase
      * Test, that attachments can be ignored and only valid values are accepted.
      *
      * @dataProvider attachmentsIgnoreProvider
-     *
-     * @return void
      */
     public function testSetAttachmentsIgnore(bool $paramValue)
     {
@@ -442,8 +416,6 @@ final class MailboxTest extends TestCase
      * Test, that strings encoded to UTF-7 can be decoded back to UTF-8.
      *
      * @dataProvider encodingTestStringsProvider
-     *
-     * @return void
      */
     public function testEncodingToUtf7DecodeBackToUtf8(string $str)
     {
@@ -459,8 +431,6 @@ final class MailboxTest extends TestCase
      * Test, that strings encoded to UTF-7 can be decoded back to UTF-8.
      *
      * @dataProvider encodingTestStringsProvider
-     *
-     * @return void
      */
     public function testMimeDecodingReturnsCorrectValues(string $str)
     {
@@ -527,8 +497,6 @@ final class MailboxTest extends TestCase
      * Test, different invalid / unparseable datetimes conversions.
      *
      * @dataProvider invalidDatetimeProvider
-     *
-     * @return void
      */
     public function testParsedDateWithUnparseableDateTime(string $dateToParse)
     {
@@ -538,8 +506,6 @@ final class MailboxTest extends TestCase
 
     /**
      * Test, parsed datetime being emtpy the header date.
-     *
-     * @return void
      */
     public function testParsedDateTimeWithEmptyHeaderDate()
     {
@@ -572,8 +538,6 @@ final class MailboxTest extends TestCase
      * Test, that mime encoding returns correct strings.
      *
      * @dataProvider mimeEncodingProvider
-     *
-     * @return void
      */
     public function testMimeEncoding(string $str, string $expected)
     {
@@ -618,8 +582,6 @@ final class MailboxTest extends TestCase
      *
      * @psalm-param 'assertNull'|'expectException' $assertMethod
      * @psalm-param list<1|2|3|4> $types
-     *
-     * @return void
      */
     public function testSetTimeouts(string $assertMethod, int $timeout, array $types)
     {
@@ -671,8 +633,6 @@ final class MailboxTest extends TestCase
      * @dataProvider connectionArgsProvider
      *
      * @psalm-param array{DISABLE_AUTHENTICATOR?:string}|array<empty, empty> $param
-     *
-     * @return void
      */
     public function testSetConnectionArgs(string $assertMethod, int $option, int $retriesNum, array $param = null)
     {
@@ -712,8 +672,6 @@ final class MailboxTest extends TestCase
      * Test, that decoding mime strings return unchanged / not broken strings.
      *
      * @dataProvider mimeStrDecodingProvider
-     *
-     * @return void
      */
     public function testDecodeMimeStr(string $str, string $expectedStr, string $serverEncoding = 'utf-8')
     {
@@ -790,8 +748,6 @@ final class MailboxTest extends TestCase
      * @dataProvider attachmentDirFailureProvider
      *
      * @psalm-param class-string<\Exception> $expectedException
-     *
-     * @return void
      */
     public function testAttachmentDirFailure(string $initialDir, string $attachmentsDir, string $expectedException, string $expectedExceptionMessage)
     {
