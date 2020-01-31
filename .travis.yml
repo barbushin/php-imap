@@ -12,31 +12,38 @@ matrix:
       env:
         - analysis=no
         - coverage=no
+        - hiddenstring=no
+        - phpunitflags="--stop-on-failure --exclude-group=live"
     - php: 7.0
       dist: xenial
       env:
         - analysis=no
         - coverage=no
+        - phpunitflags="--stop-on-failure"
     - php: 7.1
       dist: xenial
       env:
         - analysis=no
         - coverage=no
+        - phpunitflags="--stop-on-failure"
     - php: 7.2
       dist: xenial
       env:
         - analysis=yes
         - coverage=no
+        - phpunitflags="--stop-on-failure"
     - php: 7.3
       dist: xenial
       env:
         - analysis=yes
         - coverage=no
+        - phpunitflags="--stop-on-failure"
     - php: 7.4
       dist: bionic
       env:
         - analysis=yes
         - coverage=yes
+        - phpunitflags="--stop-on-failure --coverage-clover=clover.xml"
 
 cache:
   directories:
@@ -48,12 +55,12 @@ before_script:
   - if [[ "$coverage" = "yes" ]]; then curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter; fi
   - if [[ "$coverage" = "yes" ]]; then chmod +x ./cc-test-reporter; fi
   - if [[ "$coverage" = "yes" ]]; then ./cc-test-reporter before-build; fi
-  - if [[ "$analysis" = "yes" ]]; then composer require --dev --update-with-dependencies friendsofphp/php-cs-fixer phpunit/phpunit vimeo/psalm psalm/plugin-phpunit maglnet/composer-require-checker:^2.0 paragonie/hidden-string; fi
+  - if [[ "$hiddenstring" != "no" ]]; then composer require --dev paragonie/hidden-string; fi
+  - if [[ "$analysis" = "yes" ]]; then composer require --dev --update-with-dependencies friendsofphp/php-cs-fixer phpunit/phpunit vimeo/psalm psalm/plugin-phpunit maglnet/composer-require-checker:^2.0; fi
 
 script:
   - vendor/bin/parallel-lint .php_cs.dist src tests examples
-  - if [[ "$coverage" = "no" ]]; then vendor/bin/phpunit --stop-on-failure --exclude-group=live; fi
-  - if [[ "$coverage" = "yes" ]]; then vendor/bin/phpunit --coverage-clover=clover.xml --stop-on-failure; fi
+  - vendor/bin/phpunit $phpunitflags
   - if [[ "$analysis" = "yes" ]]; then vendor/bin/composer-require-checker check ./composer.json; fi
   - if [[ "$analysis" = "yes" ]]; then vendor/bin/psalm --show-info=false --shepherd; fi
   - if [[ "$analysis" = "yes" ]]; then vendor/bin/php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff-format=udiff -v; fi
