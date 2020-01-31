@@ -119,9 +119,11 @@ final class MailboxTest extends TestCase
     {
         $mailbox = $this->getMailbox();
 
-        $mailbox->setServerEncoding('UTF-8');
+        $mailbox->setServerEncoding($encoding);
 
-        $this->assertEquals($mailbox->getServerEncoding(), 'UTF-8');
+        $encoding = strtoupper(trim($encoding));
+
+        $this->assertEquals($mailbox->getServerEncoding(), $encoding);
     }
 
     /**
