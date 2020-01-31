@@ -349,7 +349,7 @@ class Mailbox
      *
      * @param int      $options
      * @param int      $retriesNum
-     * @param string[] $params
+     * @param string[]|null $params
      *
      * @psalm-param array{DISABLE_AUTHENTICATOR?:string}|array<empty, empty>|null $params
      *
