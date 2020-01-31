@@ -107,14 +107,12 @@
     <InvalidArgument occurrences="1">
       <code>random_bytes(16)</code>
     </InvalidArgument>
-    <PossiblyUnusedMethod occurrences="29">
+    <PossiblyUnusedMethod occurrences="27">
       <code>setOAuthToken</code>
       <code>getOAuthToken</code>
       <code>setConnectionRetry</code>
       <code>setConnectionRetryDelay</code>
       <code>setExpungeOnDisconnect</code>
-      <code>createMailbox</code>
-      <code>deleteMailbox</code>
       <code>renameMailbox</code>
       <code>getListingFolders</code>
       <code>searchMailboxFrom</code>
