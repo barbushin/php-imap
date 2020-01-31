@@ -5,6 +5,7 @@ env:
 language: php
 
 php:
+  - 7.0.0
   - 7.0
   - 7.1
   - 7.2
@@ -16,7 +17,7 @@ env:
 matrix:
   fast_finish: true
   include:
-    - php: 7.0
+    - php: 7.0.0
       dist: xenial
       env:
         - lint="php-cs-fixer"
