@@ -3,7 +3,6 @@
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
  * @author BAPCLTD-Marv
  */
-declare(strict_types=1);
 
 namespace PhpImap;
 
