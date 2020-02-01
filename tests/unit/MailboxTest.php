@@ -74,7 +74,7 @@ final class MailboxTest extends TestCase
         $this->assertAttributeEquals('{imap.example.com:993/imap/ssl}INBOX', 'imapPath', $mailbox);
         $this->assertAttributeEquals('php-imap@example.com', 'imapLogin', $mailbox);
         $this->assertAttributeEquals('  v3rY!53cEt&P4sSWöRd$', 'imapPassword', $mailbox);
-        $this->assertAttributeEquals(realpath('.'), 'attachmentsDir', $mailbox);
+        $this->assertAttributeEquals(\realpath('.'), 'attachmentsDir', $mailbox);
         $this->assertAttributeEquals('UTF-8', 'serverEncoding', $mailbox);
     }
 
@@ -87,7 +87,7 @@ final class MailboxTest extends TestCase
             ['UTF-8'],
         ];
 
-        $supported = mb_list_encodings();
+        $supported = \mb_list_encodings();
 
         foreach (
             [
@@ -96,8 +96,8 @@ final class MailboxTest extends TestCase
             ] as $perhaps
         ) {
             if (
-                \in_array(trim($perhaps), $supported, true) ||
-                \in_array(strtoupper(trim($perhaps)), $supported, true)
+                \in_array(\trim($perhaps), $supported, true) ||
+                \in_array(\strtoupper(\trim($perhaps)), $supported, true)
             ) {
                 $data[] = [$perhaps];
             }
@@ -121,7 +121,7 @@ final class MailboxTest extends TestCase
 
         $mailbox->setServerEncoding($encoding);
 
-        $encoding = strtoupper(trim($encoding));
+        $encoding = \strtoupper(\trim($encoding));
 
         $this->assertEquals($mailbox->getServerEncoding(), $encoding);
     }
@@ -809,7 +809,7 @@ final class MailboxTest extends TestCase
     {
         $mailbox = new Mailbox('', '', '', $initialDir);
 
-        $this->assertSame(trim($initialDir), $mailbox->getAttachmentsDir());
+        $this->assertSame(\trim($initialDir), $mailbox->getAttachmentsDir());
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);

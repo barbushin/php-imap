@@ -45,7 +45,7 @@
         }
 
         if (!empty($email->getAttachments())) {
-            echo count($email->getAttachments())." attachements\n";
+            echo \count($email->getAttachments())." attachements\n";
         }
 
         // Save attachments one by one
@@ -57,7 +57,7 @@
 
                 // Set individually filePath for each single attachment
                 // In this case, every file will get the current Unix timestamp
-                $attachment->setFilePath(__DIR__.'/files/'.time());
+                $attachment->setFilePath(__DIR__.'/files/'.\time());
 
                 if ($attachment->saveToDisk()) {
                     echo "OK, saved!\n";

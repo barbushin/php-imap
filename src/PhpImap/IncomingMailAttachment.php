@@ -54,7 +54,7 @@ class IncomingMailAttachment
     public function __get($name)
     {
         if ('filePath' !== $name) {
-            trigger_error("Undefined property: IncomingMailAttachment::$name");
+            \trigger_error("Undefined property: IncomingMailAttachment::$name");
         }
 
         if (!isset($this->file_path)) {
@@ -63,7 +63,7 @@ class IncomingMailAttachment
 
         $this->filePath = $this->file_path;
 
-        if (@file_exists($this->file_path)) {
+        if (@\file_exists($this->file_path)) {
             return $this->filePath;
         }
 
@@ -135,7 +135,7 @@ class IncomingMailAttachment
             return false;
         }
 
-        if (false === file_put_contents($this->__get('filePath'), $this->dataInfo->fetch())) {
+        if (false === \file_put_contents($this->__get('filePath'), $this->dataInfo->fetch())) {
             unset($this->filePath, $this->file_path);
 
             return false;

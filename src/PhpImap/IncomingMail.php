@@ -55,11 +55,11 @@ class IncomingMail extends IncomingMailHeader
             $type = DataPartInfo::TEXT_HTML;
         }
         if (false === $type) {
-            trigger_error("Undefined property: IncomingMail::$name");
+            \trigger_error("Undefined property: IncomingMail::$name");
         }
         $this->$name = '';
         foreach ($this->dataInfo[$type] as $data) {
-            $this->$name .= trim($data->fetch());
+            $this->$name .= \trim($data->fetch());
         }
 
         /** @var string */
@@ -84,7 +84,7 @@ class IncomingMail extends IncomingMailHeader
     public function setHeader(IncomingMailHeader $header)
     {
         /** @psalm-var array<string, scalar|array|object|null> */
-        $array = get_object_vars($header);
+        $array = \get_object_vars($header);
         foreach ($array as $property => $value) {
             $this->$property = $value;
         }
@@ -165,12 +165,12 @@ class IncomingMail extends IncomingMailHeader
      */
     public function getInternalLinksPlaceholders()
     {
-        $match = preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $this->textHtml, $matches);
+        $match = \preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $this->textHtml, $matches);
 
         /** @psalm-var array{1:list<string>, 2:list<string>} */
         $matches = $matches;
 
-        return $match ? array_combine($matches[2], $matches[1]) : [];
+        return $match ? \array_combine($matches[2], $matches[1]) : [];
     }
 
     /**
@@ -180,7 +180,7 @@ class IncomingMail extends IncomingMailHeader
      */
     public function replaceInternalLinks($baseUri)
     {
-        $baseUri = rtrim($baseUri, '\\/').'/';
+        $baseUri = \rtrim($baseUri, '\\/').'/';
         $fetchedHtml = $this->textHtml;
         $search = [];
         $replace = [];
@@ -191,13 +191,13 @@ class IncomingMail extends IncomingMailHeader
                         throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() does not have an id specified!');
                     }
                     $search[] = $placeholder;
-                    $replace[] = $baseUri.basename($this->attachments[$attachment->id]->filePath);
+                    $replace[] = $baseUri.\basename($this->attachments[$attachment->id]->filePath);
                 }
             }
         }
 
         /** @psalm-var string */
-        return str_replace($search, $replace, $fetchedHtml);
+        return \str_replace($search, $replace, $fetchedHtml);
     }
 
     /**
@@ -208,7 +208,7 @@ class IncomingMail extends IncomingMailHeader
      */
     public function embedImageAttachments()
     {
-        preg_match_all("/\bcid:[^'\"\s]{1,256}/mi", $this->textHtml, $matches);
+        \preg_match_all("/\bcid:[^'\"\s]{1,256}/mi", $this->textHtml, $matches);
 
         /** @psalm-var list<list<string>> */
         $matches = $matches;
@@ -219,23 +219,23 @@ class IncomingMail extends IncomingMailHeader
                     continue;
                 }
 
-                $cid = str_replace('cid:', '', $match[0]);
+                $cid = \str_replace('cid:', '', $match[0]);
 
                 foreach ($this->getAttachments() as $attachment) {
                     if ($attachment->contentId == $cid && 'inline' == $attachment->disposition) {
                         $contents = $attachment->getContents();
                         $contentType = $attachment->getMimeType();
 
-                        if (!strstr($contentType, 'image')) {
+                        if (!\strstr($contentType, 'image')) {
                             continue;
                         } elseif (!\is_string($attachment->id)) {
                             throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() does not have an id specified!');
                         }
 
-                        $base64encoded = base64_encode($contents);
+                        $base64encoded = \base64_encode($contents);
                         $replacement = 'data:'.$contentType.';base64, '.$base64encoded;
 
-                        $this->textHtml = str_replace($match[0], $replacement, $this->textHtml);
+                        $this->textHtml = \str_replace($match[0], $replacement, $this->textHtml);
 
                         $this->removeAttachment($attachment->id);
                     }
