@@ -291,15 +291,22 @@ final class Imap
             throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be an integer, '.\gettype($options).' given!');
         }
 
+        /**
+         * @var int
+         *
+         * @todo remove docblock pending resolution of https://github.com/vimeo/psalm/issues/2620
+         */
+        $msg_number = self::encodeStringToUtf7Imap(self::EnsureRange(
+            $msg_number,
+            __METHOD__,
+            1
+        ));
+
         imap_errors(); // flush errors
 
         $result = imap_delete(
             self::EnsureResource($imap_stream, __METHOD__, 1),
-            self::encodeStringToUtf7Imap(self::EnsureRange(
-                $msg_number,
-                __METHOD__,
-                1
-            )),
+            $msg_number,
             $options
         );
 

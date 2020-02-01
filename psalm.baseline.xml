@@ -83,7 +83,6 @@
       <code>\is_int($argument)</code>
       <code>\is_bool($allow_sequence)</code>
     </DocblockTypeContradiction>
-    <InvalidArgument occurrences="1"/>
     <MixedReturnTypeCoercion occurrences="2">
       <code>$result</code>
       <code>array[]</code>
