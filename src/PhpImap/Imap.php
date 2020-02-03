@@ -578,7 +578,7 @@ final class Imap
                 return [];
             }
 
-            throw new UnexpectedValueException('Call to imap_getmailboxes() with supplied arguments returned false, not array!', 0, self::HandleErrors(\imap_errors(), 'imap_headers'));
+            throw new UnexpectedValueException('Call to imap_getmailboxes() with supplied arguments returned false, not array!', 0, self::HandleErrors(imap_errors(), 'imap_getmailboxes'));
         }
 
         /** @psalm-var list<object> */
@@ -615,7 +615,7 @@ final class Imap
         );
 
         if (false === $result) {
-            throw new UnexpectedValueException('Call to imap_getsubscribed() with supplied arguments returned false, not array!', 0, self::HandleErrors(\imap_errors(), 'imap_headers'));
+            throw new UnexpectedValueException('Call to imap_getsubscribed() with supplied arguments returned false, not array!', 0, self::HandleErrors(imap_errors(), 'imap_getsubscribed'));
         }
 
         /** @psalm-var list<object> */
