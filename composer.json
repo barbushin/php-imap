@@ -35,6 +35,15 @@
         "paragonie/random_compat": "^1",
         "phpunit/phpunit": "^5.7"
     },
+    "scripts": {
+        "tests": [
+            "parallel-lint .php_cs.dist src tests examples",
+            "phpunit",
+            "composer-require-checker check ./composer.json",
+            "psalm --show-info=false",
+            "php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff-format=udiff -v"
+        ]
+    },
     "suggest": {
         "ext-fileinfo": "To facilitate IncomingMailAttachment::getMimeType() auto-detection"
     },
