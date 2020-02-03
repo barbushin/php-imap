@@ -13,6 +13,7 @@ matrix:
         - analysis=no
         - coverage=no
         - phpunitflags="--stop-on-failure --exclude-group=live"
+        - lint="php-cs-fixer"
     - php: 7.0
       dist: xenial
       env:
@@ -55,14 +56,14 @@ before_script:
   - if [[ "$coverage" = "yes" ]]; then chmod +x ./cc-test-reporter; fi
   - if [[ "$coverage" = "yes" ]]; then ./cc-test-reporter before-build; fi
   - if [[ "$analysis" = "yes" ]]; then composer require --dev paragonie/hidden-string; fi
-  - if [[ "$analysis" = "yes" ]]; then composer require --dev --update-with-dependencies friendsofphp/php-cs-fixer phpunit/phpunit vimeo/psalm psalm/plugin-phpunit maglnet/composer-require-checker:^2.0; fi
+  - if [[ "$analysis" = "yes" ]]; then composer require --dev --update-with-dependencies phpunit/phpunit vimeo/psalm psalm/plugin-phpunit maglnet/composer-require-checker:^2.0; fi
 
 script:
   - vendor/bin/parallel-lint .php_cs.dist src tests examples
   - vendor/bin/phpunit $phpunitflags
   - if [[ "$analysis" = "yes" ]]; then vendor/bin/composer-require-checker check ./composer.json; fi
   - if [[ "$analysis" = "yes" ]]; then vendor/bin/psalm --show-info=false --shepherd; fi
-  - if [[ "$analysis" = "yes" ]]; then vendor/bin/php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff-format=udiff -v; fi
+  - if [[ "$lint" = "php-cs-fixer" ]]; then vendor/bin/php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff-format=udiff -v; fi
 
 after_script:
   - if [[ "$coverage" = "yes" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT -t clover; fi

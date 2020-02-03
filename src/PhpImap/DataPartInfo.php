@@ -89,17 +89,17 @@ class DataPartInfo
     {
         switch ($this->encoding) {
             case ENC8BIT:
-                $this->data = imap_utf8((string) $this->data);
+                $this->data = \imap_utf8((string) $this->data);
                 break;
             case ENCBINARY:
-                $this->data = imap_binary((string) $this->data);
+                $this->data = \imap_binary((string) $this->data);
                 break;
             case ENCBASE64:
-                $this->data = preg_replace('~[^a-zA-Z0-9+=/]+~s', '', (string) $this->data); // https://github.com/barbushin/php-imap/issues/88
-                $this->data = imap_base64((string) $this->data);
+                $this->data = \preg_replace('~[^a-zA-Z0-9+=/]+~s', '', (string) $this->data); // https://github.com/barbushin/php-imap/issues/88
+                $this->data = \imap_base64((string) $this->data);
                 break;
             case ENCQUOTEDPRINTABLE:
-                $this->data = quoted_printable_decode((string) $this->data);
+                $this->data = \quoted_printable_decode((string) $this->data);
                 break;
         }
 
@@ -111,7 +111,7 @@ class DataPartInfo
      */
     protected function convertEncodingAfterFetch()
     {
-        if (isset($this->charset) and !empty(trim($this->charset))) {
+        if (isset($this->charset) and !empty(\trim($this->charset))) {
             $this->data = $this->mail->convertStringEncoding(
                 (string) $this->data, // Data to convert
                 $this->charset, // FROM-Encoding (Charset)

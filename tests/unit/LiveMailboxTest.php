@@ -15,7 +15,6 @@ use Exception;
 use Generator;
 use ParagonIE\HiddenString\HiddenString;
 use PHPUnit\Framework\TestCase;
-use function random_bytes;
 use const TYPETEXT;
 
 /**
@@ -54,7 +53,7 @@ class LiveMailboxTest extends TestCase
      */
     public function MailBoxProvider()
     {
-        if (!class_exists(HiddenString::class)) {
+        if (!\class_exists(HiddenString::class)) {
             $this->markTestSkipped('paragonie/hidden-string not installed!');
 
             return [];
@@ -62,12 +61,12 @@ class LiveMailboxTest extends TestCase
 
         $sets = [];
 
-        $imapPath = getenv('PHPIMAP_IMAP_PATH');
-        $login = getenv('PHPIMAP_LOGIN');
-        $password = getenv('PHPIMAP_PASSWORD');
+        $imapPath = \getenv('PHPIMAP_IMAP_PATH');
+        $login = \getenv('PHPIMAP_LOGIN');
+        $password = \getenv('PHPIMAP_PASSWORD');
 
         if (\is_string($imapPath) && \is_string($login) && \is_string($password)) {
-            $sets['CI ENV'] = [new HiddenString($imapPath), new HiddenString($login), new HiddenString($password, true, true), sys_get_temp_dir()];
+            $sets['CI ENV'] = [new HiddenString($imapPath), new HiddenString($login), new HiddenString($password, true, true), \sys_get_temp_dir()];
         }
 
         return $sets;
@@ -101,11 +100,11 @@ class LiveMailboxTest extends TestCase
             $this->assertTrue($mailbox->hasImapStream());
 
             $mailboxes = $mailbox->getMailboxes();
-            shuffle($mailboxes);
+            \shuffle($mailboxes);
 
-            $mailboxes = array_values($mailboxes);
+            $mailboxes = \array_values($mailboxes);
 
-            $limit = min(\count($mailboxes), self::RANDOM_MAILBOX_SAMPLE_SIZE);
+            $limit = \min(\count($mailboxes), self::RANDOM_MAILBOX_SAMPLE_SIZE);
 
             for ($i = 0; $i < $limit; ++$i) {
                 static::assertTrue(\is_array($mailboxes[$i]));
@@ -122,19 +121,19 @@ class LiveMailboxTest extends TestCase
                     'Nmsgs',
                     'Recent',
                 ] as $expectedProperty) {
-                    $this->assertTrue(property_exists($check, $expectedProperty));
+                    $this->assertTrue(\property_exists($check, $expectedProperty));
                 }
 
                 $this->assertTrue(\is_string($check->Date), 'Date property of Mailbox::checkMailbox() result was not a string!');
 
-                $unix = strtotime($check->Date);
+                $unix = \strtotime($check->Date);
 
-                if (false === $unix && preg_match('/[+-]\d{1,2}:?\d{2} \([^\)]+\)$/', $check->Date)) {
+                if (false === $unix && \preg_match('/[+-]\d{1,2}:?\d{2} \([^\)]+\)$/', $check->Date)) {
                     /** @var int */
-                    $pos = strrpos($check->Date, '(');
+                    $pos = \strrpos($check->Date, '(');
 
                     // Although the date property is likely RFC2822-compliant, it will not be parsed by strtotime()
-                    $unix = strtotime(substr($check->Date, 0, $pos));
+                    $unix = \strtotime(\substr($check->Date, 0, $pos));
                 }
 
                 $this->assertTrue(\is_int($unix), 'Date property of Mailbox::checkMailbox() result was not a valid date!');
@@ -151,7 +150,7 @@ class LiveMailboxTest extends TestCase
                     'uidnext',
                     'uidvalidity',
                 ] as $expectedProperty) {
-                    $this->assertTrue(property_exists($status, $expectedProperty));
+                    $this->assertTrue(\property_exists($status, $expectedProperty));
                 }
 
                 $this->assertSame($check->Nmsgs, $mailbox->countMails(), 'Mailbox::checkMailbox()->Nmsgs did not match Mailbox::countMails()!');
@@ -174,7 +173,7 @@ class LiveMailboxTest extends TestCase
      */
     public function ComposeProvider()
     {
-        $random_subject = 'test: '.bin2hex(random_bytes(16));
+        $random_subject = 'test: '.\bin2hex(\random_bytes(16));
 
         yield [
             ['subject' => $random_subject],
@@ -193,7 +192,7 @@ class LiveMailboxTest extends TestCase
             ),
         ];
 
-        $random_subject = 'barbushin/php-imap#448: dot first:'.bin2hex(random_bytes(16));
+        $random_subject = 'barbushin/php-imap#448: dot first:'.\bin2hex(\random_bytes(16));
 
         yield [
             ['subject' => $random_subject],
@@ -206,8 +205,8 @@ class LiveMailboxTest extends TestCase
                     'disposition.type' => 'attachment',
                     'disposition' => ['filename' => '.gitignore'],
                     'type.parameters' => ['name' => '.gitignore'],
-                    'contents.data' => base64_encode(
-                        file_get_contents(__DIR__.'/../../.gitignore')
+                    'contents.data' => \base64_encode(
+                        \file_get_contents(__DIR__.'/../../.gitignore')
                     ),
                 ],
             ],
@@ -219,13 +218,13 @@ class LiveMailboxTest extends TestCase
                 'Content-Description: .gitignore'."\r\n".
                 'Content-Disposition: attachment; filename=.gitignore'."\r\n".
                 "\r\n".
-                base64_encode(
-                    file_get_contents(__DIR__.'/../../.gitignore')
+                \base64_encode(
+                    \file_get_contents(__DIR__.'/../../.gitignore')
                 )."\r\n"
             ),
         ];
 
-        $random_subject = 'barbushin/php-imap#448: dot last: '.bin2hex(random_bytes(16));
+        $random_subject = 'barbushin/php-imap#448: dot last: '.\bin2hex(\random_bytes(16));
 
         yield [
             ['subject' => $random_subject],
@@ -238,8 +237,8 @@ class LiveMailboxTest extends TestCase
                     'disposition.type' => 'attachment',
                     'disposition' => ['filename' => 'gitignore.'],
                     'type.parameters' => ['name' => 'gitignore.'],
-                    'contents.data' => base64_encode(
-                        file_get_contents(__DIR__.'/../../.gitignore')
+                    'contents.data' => \base64_encode(
+                        \file_get_contents(__DIR__.'/../../.gitignore')
                     ),
                 ],
             ],
@@ -251,8 +250,8 @@ class LiveMailboxTest extends TestCase
                 'Content-Description: gitignore.'."\r\n".
                 'Content-Disposition: attachment; filename=gitignore.'."\r\n".
                 "\r\n".
-                base64_encode(
-                    file_get_contents(__DIR__.'/../../.gitignore')
+                \base64_encode(
+                    \file_get_contents(__DIR__.'/../../.gitignore')
                 )."\r\n"
             ),
         ];
@@ -345,7 +344,7 @@ class LiveMailboxTest extends TestCase
             isset($mailbox_args[4]) ? $mailbox_args[4] : 'UTF-8'
         );
 
-        $search_criteria = sprintf('SUBJECT "%s"', $envelope['subject']);
+        $search_criteria = \sprintf('SUBJECT "%s"', $envelope['subject']);
 
         $search = $mailbox->searchMailbox($search_criteria);
 
@@ -439,7 +438,7 @@ class LiveMailboxTest extends TestCase
             isset($mailbox_args[4]) ? $mailbox_args[4] : 'UTF-8'
         );
 
-        $search_criteria = sprintf('SUBJECT "%s"', $envelope['subject']);
+        $search_criteria = \sprintf('SUBJECT "%s"', $envelope['subject']);
 
         $count = $mailbox->countMails();
 
@@ -545,7 +544,7 @@ class LiveMailboxTest extends TestCase
             isset($mailbox_args[4]) ? $mailbox_args[4] : 'UTF-8'
         );
 
-        $search_criteria = sprintf('SUBJECT "%s"', $envelope['subject']);
+        $search_criteria = \sprintf('SUBJECT "%s"', $envelope['subject']);
 
         $message = [$envelope, $body];
 
@@ -660,7 +659,7 @@ class LiveMailboxTest extends TestCase
             isset($mailbox_args[4]) ? $mailbox_args[4] : 'UTF-8'
         );
 
-        $search_criteria = sprintf('SUBJECT "%s"', $envelope['subject']);
+        $search_criteria = \sprintf('SUBJECT "%s"', $envelope['subject']);
 
         $message = [$envelope, $body];
 
@@ -730,7 +729,7 @@ class LiveMailboxTest extends TestCase
             )
         );
 
-        if (1 === preg_match(
+        if (1 === \preg_match(
             '/^barbushin\/php-imap#448:/',
             $envelope['subject']
         )) {
@@ -741,8 +740,8 @@ class LiveMailboxTest extends TestCase
             static::assertCount(1, $attachments);
 
             static::assertSame(
-                file_get_contents(__DIR__.'/../../.gitignore'),
-                current($attachments)->getContents()
+                \file_get_contents(__DIR__.'/../../.gitignore'),
+                \current($attachments)->getContents()
             );
         }
 
@@ -777,7 +776,7 @@ class LiveMailboxTest extends TestCase
     {
         $mailbox = new Mailbox($imapPath->getString(), $login->getString(), $password->getString(), $attachmentsDir, $serverEncoding);
 
-        $random = 'test-box-'.date('c').bin2hex(random_bytes(4));
+        $random = 'test-box-'.\date('c').\bin2hex(\random_bytes(4));
 
         $mailbox->createMailbox($random);
 

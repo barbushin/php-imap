@@ -57,7 +57,7 @@
         }
 
         if (!empty($email->getAttachments())) {
-            echo count($email->getAttachments())." attachements\n";
+            echo \count($email->getAttachments())." attachements\n";
         }
         if ($email->textHtml) {
             echo "Message HTML:\n".$email->textHtml;

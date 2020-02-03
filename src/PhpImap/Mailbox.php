@@ -2,17 +2,14 @@
 
 namespace PhpImap;
 
-use function bin2hex;
 use function count;
 use DateTime;
+use const DIRECTORY_SEPARATOR;
 use Exception;
-use function iconv;
 use InvalidArgumentException;
-use function mb_list_encodings;
-use function mb_strtolower;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
-use function random_bytes;
+use stdClass;
 use Throwable;
 use UnexpectedValueException;
 
@@ -117,8 +114,8 @@ class Mailbox
      */
     public function __construct($imapPath, $login, $password, $attachmentsDir = null, $serverEncoding = 'UTF-8')
     {
-        $this->imapPath = trim($imapPath);
-        $this->imapLogin = trim($login);
+        $this->imapPath = \trim($imapPath);
+        $this->imapLogin = \trim($login);
         $this->imapPassword = $password;
         $this->setServerEncoding($serverEncoding);
         if (null != $attachmentsDir) {
@@ -146,11 +143,11 @@ class Mailbox
      */
     public function setOAuthToken($access_token)
     {
-        if (empty(trim($access_token))) {
+        if (empty(\trim($access_token))) {
             throw new InvalidParameterException('setOAuthToken() requires an access token as parameter!');
         }
 
-        $this->imapOAuthAccessToken = trim($access_token);
+        $this->imapOAuthAccessToken = \trim($access_token);
 
         try {
             $this->_oauthAuthentication();
@@ -236,12 +233,12 @@ class Mailbox
      */
     public function setServerEncoding($serverEncoding)
     {
-        $serverEncoding = strtoupper(trim($serverEncoding));
+        $serverEncoding = \strtoupper(\trim($serverEncoding));
 
-        $supported_encodings = array_map('strtoupper', mb_list_encodings());
+        $supported_encodings = \array_map('strtoupper', \mb_list_encodings());
 
         if (!\in_array($serverEncoding, $supported_encodings) && 'US-ASCII' != $serverEncoding) {
-            throw new InvalidParameterException('"'.$serverEncoding.'" is not supported by setServerEncoding(). Your system only supports these encodings: US-ASCII, '.implode(', ', $supported_encodings));
+            throw new InvalidParameterException('"'.$serverEncoding.'" is not supported by setServerEncoding(). Your system only supports these encodings: US-ASCII, '.\implode(', ', $supported_encodings));
         }
 
         $this->serverEncoding = $serverEncoding;
@@ -325,14 +322,14 @@ class Mailbox
     {
         $supported_types = [IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT];
 
-        $found_types = array_intersect($types, $supported_types);
+        $found_types = \array_intersect($types, $supported_types);
 
         if (\count($types) != \count($found_types)) {
             throw new InvalidParameterException('You have provided at least one unsupported timeout type. Supported types are: IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT');
         }
 
         /** @var array{1?:int, 2?:int, 3?:int, 4?:int} */
-        $this->timeouts = array_fill_keys($types, $timeout);
+        $this->timeouts = \array_fill_keys($types, $timeout);
     }
 
     /**
@@ -380,7 +377,7 @@ class Mailbox
         if (\is_array($params) and \count($params) > 0) {
             $supported_params = ['DISABLE_AUTHENTICATOR'];
 
-            foreach (array_keys($params) as $key) {
+            foreach (\array_keys($params) as $key) {
                 if (!\in_array($key, $supported_params, true)) {
                     throw new InvalidParameterException('Invalid array key of params provided for setConnectionArgs()! Only DISABLE_AUTHENTICATOR is currently valid.');
                 }
@@ -402,13 +399,13 @@ class Mailbox
      */
     public function setAttachmentsDir($attachmentsDir)
     {
-        if (empty(trim($attachmentsDir))) {
+        if (empty(\trim($attachmentsDir))) {
             throw new InvalidParameterException('setAttachmentsDir() expects a string as first parameter!');
         }
-        if (!is_dir($attachmentsDir)) {
+        if (!\is_dir($attachmentsDir)) {
             throw new InvalidParameterException('Directory "'.$attachmentsDir.'" not found');
         }
-        $this->attachmentsDir = rtrim(realpath($attachmentsDir), '\\/');
+        $this->attachmentsDir = \rtrim(\realpath($attachmentsDir), '\\/');
     }
 
     /**
@@ -468,7 +465,7 @@ class Mailbox
     /** @return bool */
     public function hasImapStream()
     {
-        return \is_resource($this->imapStream) && imap_ping($this->imapStream);
+        return \is_resource($this->imapStream) && \imap_ping($this->imapStream);
     }
 
     /**
@@ -481,7 +478,7 @@ class Mailbox
     public function encodeStringToUtf7Imap($str)
     {
         if (\is_string($str)) {
-            $out = mb_convert_encoding($str, 'UTF7-IMAP', mb_detect_encoding($str, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
+            $out = \mb_convert_encoding($str, 'UTF7-IMAP', \mb_detect_encoding($str, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
 
             if (!\is_string($out)) {
                 throw new UnexpectedValueException('mb_convert_encoding($str, \'UTF-8\', {detected}) could not convert $str');
@@ -505,7 +502,7 @@ class Mailbox
     public function decodeStringFromUtf7ImapToUtf8($str)
     {
         if (\is_string($str)) {
-            $out = mb_convert_encoding($str, 'UTF-8', 'UTF7-IMAP');
+            $out = \mb_convert_encoding($str, 'UTF-8', 'UTF7-IMAP');
 
             if (!\is_string($out)) {
                 throw new UnexpectedValueException('mb_convert_encoding($str, \'UTF-8\', \'UTF7-IMAP\') could not convert $str');
@@ -529,7 +526,7 @@ class Mailbox
      */
     public function switchMailbox($imapPath, $absolute = true)
     {
-        if (strpos($imapPath, '}') > 0) {
+        if (\strpos($imapPath, '}') > 0) {
             $this->imapPath = $imapPath;
         } else {
             $this->imapPath = $this->getCombinedPath($imapPath, $absolute);
@@ -900,7 +897,7 @@ class Mailbox
      */
     public function setFlag(array $mailsIds, $flag)
     {
-        Imap::setflag_full($this->getImapStream(), implode(',', $mailsIds), $flag, ST_UID);
+        Imap::setflag_full($this->getImapStream(), \implode(',', $mailsIds), $flag, ST_UID);
     }
 
     /**
@@ -913,7 +910,7 @@ class Mailbox
      */
     public function clearFlag(array $mailsIds, $flag)
     {
-        Imap::clearflag_full($this->getImapStream(), implode(',', $mailsIds), $flag, ST_UID);
+        Imap::clearflag_full($this->getImapStream(), \implode(',', $mailsIds), $flag, ST_UID);
     }
 
     /**
@@ -948,7 +945,7 @@ class Mailbox
     {
         $mails = Imap::fetch_overview(
             $this->getImapStream(),
-            implode(',', $mailsIds),
+            \implode(',', $mailsIds),
             (SE_UID === $this->imapSearchOption) ? FT_UID : 0
         );
         if (\count($mails)) {
@@ -966,16 +963,16 @@ class Mailbox
                     throw new UnexpectedValueException('to property at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() was not a string!');
                 }
 
-                if (isset($mail->subject) and !empty(trim($mail->subject))) {
+                if (isset($mail->subject) and !empty(\trim($mail->subject))) {
                     $mail->subject = $this->decodeMimeStr($mail->subject, $this->getServerEncoding());
                 }
-                if (isset($mail->from) and !empty(trim($mail->from))) {
+                if (isset($mail->from) and !empty(\trim($mail->from))) {
                     $mail->from = $this->decodeMimeStr($mail->from, $this->getServerEncoding());
                 }
-                if (isset($mail->sender) and !empty(trim($mail->sender))) {
+                if (isset($mail->sender) and !empty(\trim($mail->sender))) {
                     $mail->sender = $this->decodeMimeStr($mail->sender, $this->getServerEncoding());
                 }
-                if (isset($mail->to) and !empty(trim($mail->to))) {
+                if (isset($mail->to) and !empty(\trim($mail->to))) {
                     $mail->to = $this->decodeMimeStr($mail->to, $this->getServerEncoding());
                 }
             }
@@ -1150,7 +1147,7 @@ class Mailbox
          * sender?:HOSTNAMEANDADDRESS
          * }
          */
-        $head = imap_rfc822_parse_headers($headersRaw);
+        $head = \imap_rfc822_parse_headers($headersRaw);
 
         if (isset($head->date) && !\is_string($head->date)) {
             throw new UnexpectedValueException('date property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not a string!');
@@ -1185,27 +1182,27 @@ class Mailbox
         $header->headers = $head;
         $header->id = $mailId;
         $header->isDraft = (!isset($head->date)) ? true : false;
-        $header->priority = (preg_match("/Priority\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : '';
-        $header->importance = (preg_match("/Importance\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : '';
-        $header->sensitivity = (preg_match("/Sensitivity\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : '';
-        $header->autoSubmitted = (preg_match("/Auto-Submitted\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : '';
-        $header->precedence = (preg_match("/Precedence\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : '';
-        $header->failedRecipients = (preg_match("/Failed-Recipients\:(.*)/i", $headersRaw, $matches)) ? trim($matches[1]) : '';
+        $header->priority = (\preg_match("/Priority\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->importance = (\preg_match("/Importance\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->sensitivity = (\preg_match("/Sensitivity\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->autoSubmitted = (\preg_match("/Auto-Submitted\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->precedence = (\preg_match("/Precedence\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->failedRecipients = (\preg_match("/Failed-Recipients\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
 
-        if (isset($head->date) and !empty(trim($head->date))) {
+        if (isset($head->date) and !empty(\trim($head->date))) {
             $header->date = self::parseDateTime($head->date);
-        } elseif (isset($head->Date) and !empty(trim($head->Date))) {
+        } elseif (isset($head->Date) and !empty(\trim($head->Date))) {
             $header->date = self::parseDateTime($head->Date);
         } else {
             $now = new DateTime();
             $header->date = self::parseDateTime($now->format('Y-m-d H:i:s'));
         }
 
-        $header->subject = (isset($head->subject) and !empty(trim($head->subject))) ? $this->decodeMimeStr($head->subject, $this->getServerEncoding()) : null;
+        $header->subject = (isset($head->subject) and !empty(\trim($head->subject))) ? $this->decodeMimeStr($head->subject, $this->getServerEncoding()) : null;
         if (isset($head->from) and !empty($head->from)) {
             list($header->fromHost, $header->fromName, $header->fromAddress) = $this->possiblyGetHostNameAndAddress($head->from);
-        } elseif (preg_match('/smtp.mailfrom=[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/', $headersRaw, $matches)) {
-            $header->fromAddress = substr($matches[0], 14);
+        } elseif (\preg_match('/smtp.mailfrom=[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/', $headersRaw, $matches)) {
+            $header->fromAddress = \substr($matches[0], 14);
         }
         if (isset($head->sender) and !empty($head->sender)) {
             list($header->senderHost, $header->senderName, $header->senderAddress) = $this->possiblyGetHostNameAndAddress($head->sender);
@@ -1220,7 +1217,7 @@ class Mailbox
                     $header->to[$toEmail] = $toName;
                 }
             }
-            $header->toString = implode(', ', $toStrings);
+            $header->toString = \implode(', ', $toStrings);
         }
 
         if (isset($head->cc)) {
@@ -1263,15 +1260,15 @@ class Mailbox
     /**
      * taken from https://www.electrictoolbox.com/php-imap-message-parts/.
      *
-     * @param \stdClass[] $messageParts
-     * @param \stdClass[] $flattenedParts
-     * @param string      $prefix
-     * @param int         $index
-     * @param bool        $fullPrefix
+     * @param stdClass[] $messageParts
+     * @param stdClass[] $flattenedParts
+     * @param string     $prefix
+     * @param int        $index
+     * @param bool       $fullPrefix
      *
      * @psalm-param array<string, PARTSTRUCTURE> $flattenedParts
      *
-     * @return \stdClass[]
+     * @return stdClass[]
      *
      * @psalm-return array<string, PARTSTRUCTURE>
      */
@@ -1280,17 +1277,17 @@ class Mailbox
         foreach ($messageParts as $part) {
             $flattenedParts[$prefix.$index] = $part;
             if (isset($part->parts)) {
-                /** @var \stdClass[] */
+                /** @var stdClass[] */
                 $part_parts = $part->parts;
 
                 if (2 == $part->type) {
-                    /** @var array<string, \stdClass> */
+                    /** @var array<string, stdClass> */
                     $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix.$index.'.', 0, false);
                 } elseif ($fullPrefix) {
-                    /** @var array<string, \stdClass> */
+                    /** @var array<string, stdClass> */
                     $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix.$index.'.');
                 } else {
-                    /** @var array<string, \stdClass> */
+                    /** @var array<string, stdClass> */
                     $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix);
                 }
                 unset($flattenedParts[$prefix.$index]->parts);
@@ -1298,7 +1295,7 @@ class Mailbox
             ++$index;
         }
 
-        /** @var array<string, \stdClass> */
+        /** @var array<string, stdClass> */
         return $flattenedParts;
     }
 
@@ -1324,7 +1321,7 @@ class Mailbox
         if (empty($mailStructure->parts)) {
             $this->initMailPart($mail, $mailStructure, 0, $markAsSeen);
         } else {
-            /** @var array<string, \stdClass> */
+            /** @var array<string, stdClass> */
             $parts = $mailStructure->parts;
             foreach ($this->flattenParts($parts) as $partNum => $partStructure) {
                 $this->initMailPart($mail, $partStructure, $partNum, $markAsSeen);
@@ -1352,13 +1349,13 @@ class Mailbox
     public function downloadAttachment(DataPartInfo $dataInfo, array $params, $partStructure, $_mailId, $emlOrigin = false)
     {
         if ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
-            $fileName = strtolower($partStructure->subtype).'.eml';
+            $fileName = \strtolower($partStructure->subtype).'.eml';
         } elseif ('ALTERNATIVE' == $partStructure->subtype) {
-            $fileName = strtolower($partStructure->subtype).'.eml';
-        } elseif ((!isset($params['filename']) or empty(trim($params['filename']))) && (!isset($params['name']) or empty(trim($params['name'])))) {
-            $fileName = strtolower($partStructure->subtype);
+            $fileName = \strtolower($partStructure->subtype).'.eml';
+        } elseif ((!isset($params['filename']) or empty(\trim($params['filename']))) && (!isset($params['name']) or empty(\trim($params['name'])))) {
+            $fileName = \strtolower($partStructure->subtype);
         } else {
-            $fileName = (isset($params['filename']) and !empty(trim($params['filename']))) ? $params['filename'] : $params['name'];
+            $fileName = (isset($params['filename']) and !empty(\trim($params['filename']))) ? $params['filename'] : $params['name'];
             $fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
             $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
         }
@@ -1366,8 +1363,8 @@ class Mailbox
         $partStructure_id = ($partStructure->ifid && isset($partStructure->id)) ? $partStructure->id : null;
 
         $attachment = new IncomingMailAttachment();
-        $attachment->id = sha1($fileName.(isset($partStructure_id) ? $partStructure_id : ''));
-        $attachment->contentId = isset($partStructure_id) ? trim($partStructure_id, ' <>') : null;
+        $attachment->id = \sha1($fileName.(isset($partStructure_id) ? $partStructure_id : ''));
+        $attachment->contentId = isset($partStructure_id) ? \trim($partStructure_id, ' <>') : null;
         $attachment->name = $fileName;
         $attachment->disposition = (isset($partStructure->disposition) && \is_string($partStructure->disposition)) ? $partStructure->disposition : null;
 
@@ -1377,7 +1374,7 @@ class Mailbox
         if (isset($charset) && !\is_string($charset)) {
             throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must specify charset as a string when specified!');
         }
-        $attachment->charset = (isset($charset) and !empty(trim($charset))) ? $charset : null;
+        $attachment->charset = (isset($charset) and !empty(\trim($charset))) ? $charset : null;
         $attachment->emlOrigin = $emlOrigin;
 
         $attachment->addDataPartInfo($dataInfo);
@@ -1385,12 +1382,12 @@ class Mailbox
         $attachmentsDir = $this->getAttachmentsDir();
 
         if (null != $attachmentsDir) {
-            $fileSysName = bin2hex(random_bytes(16)).'.bin';
-            $filePath = $attachmentsDir.\DIRECTORY_SEPARATOR.$fileSysName;
+            $fileSysName = \bin2hex(\random_bytes(16)).'.bin';
+            $filePath = $attachmentsDir.DIRECTORY_SEPARATOR.$fileSysName;
 
             if (\strlen($filePath) > 255) {
-                $ext = pathinfo($filePath, PATHINFO_EXTENSION);
-                $filePath = substr($filePath, 0, 255 - 1 - \strlen($ext)).'.'.$ext;
+                $ext = \pathinfo($filePath, PATHINFO_EXTENSION);
+                $filePath = \substr($filePath, 0, 255 - 1 - \strlen($ext)).'.'.$ext;
             }
             $attachment->setFilePath($filePath);
             $attachment->saveToDisk();
@@ -1413,13 +1410,13 @@ class Mailbox
      */
     public function decodeMimeStr($string, $toCharset = 'utf-8')
     {
-        if (empty(trim($string))) {
+        if (empty(\trim($string))) {
             throw new Exception('decodeMimeStr() Can not decode an empty string!');
         }
 
         $newString = '';
         /** @var list<object{charset?:string, text?:string}>|false */
-        $elements = imap_mime_header_decode($string);
+        $elements = \imap_mime_header_decode($string);
 
         if (false === $elements) {
             return $newString;
@@ -1429,7 +1426,7 @@ class Mailbox
             if (isset($element->text)) {
                 $fromCharset = !isset($element->charset) ? 'iso-8859-1' : $element->charset;
                 // Convert to UTF-8, if string has UTF-8 characters to avoid broken strings. See https://github.com/barbushin/php-imap/issues/232
-                $toCharset = isset($element->charset) && preg_match('/(UTF\-8)|(default)/i', $element->charset) ? 'UTF-8' : $toCharset;
+                $toCharset = isset($element->charset) && \preg_match('/(UTF\-8)|(default)/i', $element->charset) ? 'UTF-8' : $toCharset;
                 $newString .= $this->convertStringEncoding($element->text, $fromCharset, $toCharset);
             }
         }
@@ -1444,8 +1441,8 @@ class Mailbox
      */
     public function isUrlEncoded($string)
     {
-        $hasInvalidChars = preg_match('#[^%a-zA-Z0-9\-_\.\+]#', $string);
-        $hasEscapedChars = preg_match('#%[a-zA-Z0-9]{2}#', $string);
+        $hasInvalidChars = \preg_match('#[^%a-zA-Z0-9\-_\.\+]#', $string);
+        $hasEscapedChars = \preg_match('#%[a-zA-Z0-9]{2}#', $string);
 
         return !$hasInvalidChars && $hasEscapedChars;
     }
@@ -1460,17 +1457,17 @@ class Mailbox
      */
     public function parseDateTime($dateHeader)
     {
-        if (empty(trim($dateHeader))) {
+        if (empty(\trim($dateHeader))) {
             throw new InvalidParameterException('parseDateTime() expects parameter 1 to be a parsable string datetime');
         }
 
-        $dateHeaderUnixtimestamp = strtotime($dateHeader);
+        $dateHeaderUnixtimestamp = \strtotime($dateHeader);
 
         if (!$dateHeaderUnixtimestamp) {
             return $dateHeader;
         }
 
-        $dateHeaderRfc3339 = date(DATE_RFC3339, $dateHeaderUnixtimestamp);
+        $dateHeaderRfc3339 = \date(DATE_RFC3339, $dateHeaderUnixtimestamp);
 
         if (!$dateHeaderRfc3339) {
             return $dateHeader;
@@ -1490,14 +1487,14 @@ class Mailbox
      */
     public function convertStringEncoding($string, $fromEncoding, $toEncoding)
     {
-        if (preg_match('/default|ascii/i', $fromEncoding) || !$string || $fromEncoding == $toEncoding) {
+        if (\preg_match('/default|ascii/i', $fromEncoding) || !$string || $fromEncoding == $toEncoding) {
             return $string;
         }
-        $supportedEncodings = array_map('strtolower', mb_list_encodings());
-        if (\in_array(strtolower($fromEncoding), $supportedEncodings) && \in_array(strtolower($toEncoding), $supportedEncodings)) {
-            $convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
+        $supportedEncodings = \array_map('strtolower', \mb_list_encodings());
+        if (\in_array(\strtolower($fromEncoding), $supportedEncodings) && \in_array(\strtolower($toEncoding), $supportedEncodings)) {
+            $convertedString = \mb_convert_encoding($string, $toEncoding, $fromEncoding);
         } else {
-            $convertedString = @iconv($fromEncoding, $toEncoding.'//TRANSLIT//IGNORE', $string);
+            $convertedString = @\iconv($fromEncoding, $toEncoding.'//TRANSLIT//IGNORE', $string);
         }
         if (('' == $convertedString) or (false === $convertedString)) {
             return $string;
@@ -1527,7 +1524,7 @@ class Mailbox
     {
         $option = (SE_UID == $this->imapSearchOption) ? FT_UID : 0;
 
-        return imap_fetchheader($this->getImapStream(), $mailId, $option | FT_PREFETCHTEXT).Imap::body($this->getImapStream(), $mailId, $option);
+        return \imap_fetchheader($this->getImapStream(), $mailId, $option | FT_PREFETCHTEXT).Imap::body($this->getImapStream(), $mailId, $option);
     }
 
     /**
@@ -1642,7 +1639,7 @@ class Mailbox
      */
     protected function _constructAuthString()
     {
-        return base64_encode("user=$this->imapLogin\1auth=Bearer $this->imapOAuthAccessToken\1\1");
+        return \base64_encode("user=$this->imapLogin\1auth=Bearer $this->imapOAuthAccessToken\1\1");
     }
 
     /**
@@ -1656,7 +1653,7 @@ class Mailbox
     {
         $oauth_command = 'A AUTHENTICATE XOAUTH2 '.$this->_constructAuthString();
 
-        $oauth_result = fwrite($this->getImapStream(), $oauth_command);
+        $oauth_result = \fwrite($this->getImapStream(), $oauth_command);
 
         if (false === $oauth_result) {
             throw new Exception('Could not authenticate using OAuth!');
@@ -1679,7 +1676,7 @@ class Mailbox
                 return $this->initImapStream();
             } catch (ConnectionException $exception) {
             }
-        } while (--$retry > 0 && (!$this->connectionRetryDelay || !usleep($this->connectionRetryDelay * 1000)));
+        } while (--$retry > 0 && (!$this->connectionRetryDelay || !\usleep($this->connectionRetryDelay * 1000)));
 
         throw $exception;
     }
@@ -1752,16 +1749,16 @@ class Mailbox
         $params = [];
         if (!empty($partStructure->parameters)) {
             foreach ($partStructure->parameters as $param) {
-                $params[strtolower($param->attribute)] = '';
+                $params[\strtolower($param->attribute)] = '';
                 $value = isset($param->value) ? $param->value : null;
-                if (isset($value) && '' !== trim($value)) {
-                    $params[strtolower($param->attribute)] = $this->decodeMimeStr($value);
+                if (isset($value) && '' !== \trim($value)) {
+                    $params[\strtolower($param->attribute)] = $this->decodeMimeStr($value);
                 }
             }
         }
         if (!empty($partStructure->dparameters)) {
             foreach ($partStructure->dparameters as $param) {
-                $paramName = strtolower(preg_match('~^(.*?)\*~', $param->attribute, $matches) ? $matches[1] : $param->attribute);
+                $paramName = \strtolower(\preg_match('~^(.*?)\*~', $param->attribute, $matches) ? $matches[1] : $param->attribute);
                 if (isset($params[$paramName])) {
                     $params[$paramName] .= $param->value;
                 } else {
@@ -1797,7 +1794,7 @@ class Mailbox
         // Do NOT parse attachments, when getAttachmentsIgnore() is true
         if ($this->getAttachmentsIgnore()
             && (TYPEMULTIPART !== $partStructure->type
-            && (TYPETEXT !== $partStructure->type || !\in_array(mb_strtolower($partStructure->subtype), ['plain', 'html'], true)))
+            && (TYPETEXT !== $partStructure->type || !\in_array(\mb_strtolower($partStructure->subtype), ['plain', 'html'], true)))
         ) {
             return;
         }
@@ -1806,7 +1803,7 @@ class Mailbox
             $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, $emlParse);
             $mail->addAttachment($attachment);
         } else {
-            if (isset($params['charset']) && !empty(trim($params['charset']))) {
+            if (isset($params['charset']) && !empty(\trim($params['charset']))) {
                 $dataInfo->charset = $params['charset'];
             }
         }
@@ -1829,13 +1826,13 @@ class Mailbox
             }
         } else {
             if (TYPETEXT === $partStructure->type) {
-                if ('plain' === mb_strtolower($partStructure->subtype)) {
+                if ('plain' === \mb_strtolower($partStructure->subtype)) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
                 } elseif (!$partStructure->ifdisposition) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
                 } elseif (!\is_string($partStructure->disposition)) {
                     throw new InvalidArgumentException('disposition property of object passed as argument 2 to '.__METHOD__.'() was present but not a string!');
-                } elseif ('attachment' !== mb_strtolower($partStructure->disposition)) {
+                } elseif ('attachment' !== \mb_strtolower($partStructure->disposition)) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
                 }
             } elseif (TYPEMESSAGE === $partStructure->type) {
@@ -1852,11 +1849,11 @@ class Mailbox
      */
     protected function decodeRFC2231($string, $charset = 'utf-8')
     {
-        if (preg_match("/^(.*?)'.*?'(.*?)$/", $string, $matches)) {
+        if (\preg_match("/^(.*?)'.*?'(.*?)$/", $string, $matches)) {
             $encoding = $matches[1];
             $data = $matches[2];
             if ($this->isUrlEncoded($data)) {
-                $string = $this->convertStringEncoding(urldecode($data), $encoding, $charset);
+                $string = $this->convertStringEncoding(\urldecode($data), $encoding, $charset);
             }
         }
 
@@ -1875,19 +1872,19 @@ class Mailbox
      */
     protected function getCombinedPath($folder, $absolute = false)
     {
-        if (empty(trim($folder))) {
+        if (empty(\trim($folder))) {
             return $this->imapPath;
-        } elseif ('}' === substr($this->imapPath, -1)) {
+        } elseif ('}' === \substr($this->imapPath, -1)) {
             return $this->imapPath.$folder;
         } elseif (true === $absolute) {
             $folder = ('/' === $folder) ? '' : $folder;
-            $posConnectionDefinitionEnd = strpos($this->imapPath, '}');
+            $posConnectionDefinitionEnd = \strpos($this->imapPath, '}');
 
             if (false === $posConnectionDefinitionEnd) {
                 throw new UnexpectedValueException('"}" was not present in IMAP path!');
             }
 
-            return substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1).$folder;
+            return \substr($this->imapPath, 0, $posConnectionDefinitionEnd + 1).$folder;
         }
 
         return $this->imapPath.$this->getPathDelimiter().$folder;
@@ -1920,9 +1917,9 @@ class Mailbox
                 throw new UnexpectedValueException('personal was present on argument 1 passed to '.__METHOD__.'() but was not a string!');
             }
 
-            if ('' !== trim($recipientMailbox) && '' !== trim($recipientHost)) {
-                $recipientEmail = strtolower($recipientMailbox.'@'.$recipientHost);
-                $recipientName = (\is_string($recipientPersonal) and '' !== trim($recipientPersonal)) ? $this->decodeMimeStr($recipientPersonal, $this->getServerEncoding()) : null;
+            if ('' !== \trim($recipientMailbox) && '' !== \trim($recipientHost)) {
+                $recipientEmail = \strtolower($recipientMailbox.'@'.$recipientHost);
+                $recipientName = (\is_string($recipientPersonal) and '' !== \trim($recipientPersonal)) ? $this->decodeMimeStr($recipientPersonal, $this->getServerEncoding()) : null;
 
                 return [
                     $recipientEmail,
@@ -1959,7 +1956,7 @@ class Mailbox
 
                 // https://github.com/barbushin/php-imap/issues/339
                 $name = $this->decodeStringFromUtf7ImapToUtf8($item_name);
-                $name_pos = strpos($name, '}');
+                $name_pos = \strpos($name, '}');
                 if (false === $name_pos) {
                     throw new UnexpectedValueException('Expected token "}" not found in subscription name!');
                 }
@@ -1967,7 +1964,7 @@ class Mailbox
                     'fullpath' => $name,
                     'attributes' => $item->attributes,
                     'delimiter' => $item->delimiter,
-                    'shortpath' => substr($name, $name_pos + 1),
+                    'shortpath' => \substr($name, $name_pos + 1),
                 ];
             }
         }
@@ -1990,7 +1987,7 @@ class Mailbox
         ];
         foreach ([0, 1] as $index) {
             $maybe = isset($t[$index], $t[$index]->personal) ? $t[$index]->personal : null;
-            if (\is_string($maybe) && '' !== trim($maybe)) {
+            if (\is_string($maybe) && '' !== \trim($maybe)) {
                 $out[1] = $this->decodeMimeStr($maybe, $this->getServerEncoding());
 
                 break;
@@ -1998,7 +1995,7 @@ class Mailbox
         }
 
         /** @var string */
-        $out[] = strtolower($t[0]->mailbox.'@'.(string) $out[0]);
+        $out[] = \strtolower($t[0]->mailbox.'@'.(string) $out[0]);
 
         /** @var array{0:string|null, 1:string|null, 2:string} */
         return $out;
@@ -2033,16 +2030,16 @@ class Mailbox
      */
     protected function searchMailboxFromWithOrWithoutDisablingServerEncoding($criteria, $disableServerEncoding, $sender, ...$senders)
     {
-        array_unshift($senders, $sender);
+        \array_unshift($senders, $sender);
 
-        $senders = array_values(array_unique(array_map(
+        $senders = \array_values(\array_unique(\array_map(
             /**
              * @param string $sender
              *
              * @return string
              */
             static function ($sender) use ($criteria) {
-                return $criteria.' FROM '.mb_strtolower($sender);
+                return $criteria.' FROM '.\mb_strtolower($sender);
             },
             $senders
         )));
@@ -2066,17 +2063,17 @@ class Mailbox
      */
     protected function searchMailboxMergeResultsWithOrWithoutDisablingServerEncoding($disableServerEncoding, $single_criteria, ...$criteria)
     {
-        array_unshift($criteria, $single_criteria);
+        \array_unshift($criteria, $single_criteria);
 
-        $criteria = array_values(array_unique($criteria));
+        $criteria = \array_values(\array_unique($criteria));
 
         $out = [];
 
         foreach ($criteria as $criterion) {
-            $out = array_merge($out, $this->searchMailbox($criterion, $disableServerEncoding));
+            $out = \array_merge($out, $this->searchMailbox($criterion, $disableServerEncoding));
         }
 
         /** @psalm-var list<int> */
-        return array_values(array_unique($out, SORT_NUMERIC));
+        return \array_values(\array_unique($out, SORT_NUMERIC));
     }
 }

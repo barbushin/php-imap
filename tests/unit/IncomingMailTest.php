@@ -20,8 +20,8 @@ class IncomingMailTest extends TestCase
         $mail->isDraft = true;
         $header->isDraft = false;
 
-        $mail->date = date(DATE_RFC3339, 0);
-        $header->date = date(DATE_RFC3339, 60 * 60 * 24);
+        $mail->date = \date(DATE_RFC3339, 0);
+        $header->date = \date(DATE_RFC3339, 60 * 60 * 24);
 
         $mail->setHeader($header);
 
