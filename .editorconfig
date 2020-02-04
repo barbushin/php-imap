@@ -10,3 +10,6 @@ insert_final_newline = true
 
 [*.yml]
 indent_size = 2
+
+[composer.json]
+indent_style = space
