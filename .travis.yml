@@ -16,7 +16,7 @@ env:
 matrix:
   fast_finish: true
   include:
-    - php: 7.1.0
+    - php: 7.1.3
       dist: xenial
       env:
         - lint="yes"
