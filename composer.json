@@ -33,7 +33,6 @@
         "friendsofphp/php-cs-fixer": "^2.16",
         "jakub-onderka/php-parallel-lint": "^1.0",
         "paragonie/hidden-string": "^1.0",
-        "paragonie/random_compat": "^1",
         "phpunit/phpunit": "^6.0"
     },
     "scripts": {
