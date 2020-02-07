@@ -826,18 +826,21 @@ class LiveMailboxTest extends TestCase
     /**
      * Get subject search criteria and subject.
      *
-     * @psalm-param array{subject:mixed} $envelope
+     * @psalm-param array{subject?:mixed} $envelope
      *
      * @psalm-return array{0:string, 1:string}
      */
     protected function SubjectSearchCriteriaAndSubject(array $envelope): array
     {
-        static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null));
+        /** @var string|null */
+        $subject = isset($envelope['subject']) ? $envelope['subject'] : null;
 
-        $search_criteria = \sprintf('SUBJECT "%s"', $envelope['subject']);
+        static::assertTrue(\is_string($subject));
+
+        $search_criteria = \sprintf('SUBJECT "%s"', (string) $subject);
 
         /** @psalm-var array{0:string, 1:string} */
-        return [$search_criteria, $envelope['subject']];
+        return [$search_criteria, (string) $subject];
     }
 
     /**
