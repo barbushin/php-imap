@@ -51,6 +51,7 @@ script:
   - if [[ "$lint" != "no" ]]; then vendor/bin/parallel-lint .php_cs.dist src tests examples; fi
   - if [[ "$phpunitflags" != "do not run" ]]; then vendor/bin/phpunit $phpunitflags; fi
   - if [[ "$analysis" = "yes" ]]; then vendor/bin/composer-require-checker check ./composer.json; fi
+  - if [[ "$analysis" = "yes" ]]; then vendor/bin/phpmnd ./ --exclude=./.github/ --exclude=./examples/ --exclude=./vendor/ --exclude=./psalm/cache/ --non-zero-exit-on-violation --hint; fi
   - if [[ "$analysis" = "yes" ]]; then vendor/bin/psalm --show-info=false --shepherd --diff --diff-methods; fi
   - if [[ "$lint" = "yes" ]]; then vendor/bin/php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff-format=udiff -v; fi
   - if [[ "$lint" = "yes" ]]; then vendor/bin/phpcpd src tests; fi

@@ -34,6 +34,7 @@
         "jakub-onderka/php-parallel-lint": "^1.0",
         "paragonie/hidden-string": "^1.0",
         "phpunit/phpunit": "^6.5",
+        "povils/phpmnd": "^1.1|^2.0",
         "roave/security-advisories": "dev-master",
         "sebastian/phpcpd": "^3.0"
     },
@@ -43,6 +44,7 @@
             "phpcpd src tests",
             "phpunit",
             "composer-require-checker check ./composer.json",
+            "phpmnd ./ --exclude=./.github/ --exclude=./examples/ --exclude=./vendor/ --non-zero-exit-on-violation --hint",
             "psalm --show-info=false",
             "php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff-format=udiff -v"
         ]
