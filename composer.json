@@ -34,11 +34,13 @@
         "jakub-onderka/php-parallel-lint": "^1.0",
         "paragonie/hidden-string": "^1.0",
         "phpunit/phpunit": "^6.5",
-        "roave/security-advisories": "dev-master"
+        "roave/security-advisories": "dev-master",
+        "sebastian/phpcpd": "^3.0"
     },
     "scripts": {
         "tests": [
             "parallel-lint .php_cs.dist src tests examples",
+            "phpcpd src tests",
             "phpunit",
             "composer-require-checker check ./composer.json",
             "psalm --show-info=false",
