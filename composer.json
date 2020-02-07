@@ -35,7 +35,7 @@
         "maglnet/composer-require-checker": "^2.0",
         "paragonie/hidden-string": "^1.0",
         "phpunit/phpunit": "^7.5",
-        "povils/phpmnd": "^2.0",
+        "povils/phpmnd": "^2.2",
         "psalm/plugin-phpunit": "^0.8.1",
         "roave/security-advisories": "dev-master",
         "sebastian/phpcpd": "^4.1",
