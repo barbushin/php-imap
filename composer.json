@@ -46,8 +46,8 @@
             "phpunit",
             "composer-require-checker check ./composer.json",
             "phpmnd ./ --exclude=./.github/ --exclude=./examples/ --exclude=./vendor/ --non-zero-exit-on-violation --hint",
-            "psalm --show-info=false",
-            "php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff-format=udiff -v"
+            "php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff-format=udiff -v",
+            "psalm --show-info=false"
         ]
     },
     "suggest": {
