@@ -33,7 +33,8 @@
         "friendsofphp/php-cs-fixer": "^2.16",
         "jakub-onderka/php-parallel-lint": "^1.0",
         "paragonie/hidden-string": "^1.0",
-        "phpunit/phpunit": "^6.5"
+        "phpunit/phpunit": "^6.5",
+        "roave/security-advisories": "dev-master"
     },
     "scripts": {
         "tests": [
