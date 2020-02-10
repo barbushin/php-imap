@@ -835,7 +835,7 @@ class LiveMailboxTest extends TestCase
         /** @var string|null */
         $subject = isset($envelope['subject']) ? $envelope['subject'] : null;
 
-        $this->assertInternalType('string', $subject);
+        $this->assertIsString($subject);
 
         $search_criteria = \sprintf('SUBJECT "%s"', (string) $subject);
 
