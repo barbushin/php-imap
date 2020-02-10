@@ -76,7 +76,7 @@ class IncomingMailTest extends TestCase
         $this->assertSame($attachments, $mail->getAttachments());
 
         foreach ($attachments as $attachment) {
-            $this->assertTrue(\is_string($attachment->id));
+            $this->assertInternalType('string', $attachment->id);
             $this->assertTrue($mail->removeAttachment($attachment->id));
         }
 
@@ -84,7 +84,7 @@ class IncomingMailTest extends TestCase
         $this->assertSame([], $mail->getAttachments());
 
         foreach ($attachments as $attachment) {
-            $this->assertTrue(\is_string($attachment->id));
+            $this->assertInternalType('string', $attachment->id);
             $this->assertFalse($mail->removeAttachment($attachment->id));
         }
     }
