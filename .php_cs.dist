@@ -18,6 +18,9 @@ return PhpCsFixer\Config::create()
             'import_functions' => false,
         ],
         'native_function_invocation' => true,
+        'php_unit_test_case_static_method_calls' => [
+            'call_type' => 'this',
+        ],
     ])
     ->setRiskyAllowed(true)
     ->setFinder(
