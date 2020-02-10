@@ -1381,7 +1381,7 @@ class Mailbox
     {
         $option = (SE_UID == $this->imapSearchOption) ? FT_UID : 0;
 
-        return \imap_fetchheader($this->getImapStream(), $mailId, $option | FT_PREFETCHTEXT).Imap::body($this->getImapStream(), $mailId, $option);
+        return Imap::fetchheader($this->getImapStream(), $mailId, $option | FT_PREFETCHTEXT).Imap::body($this->getImapStream(), $mailId, $option);
     }
 
     /**
