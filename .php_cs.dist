@@ -24,7 +24,7 @@ return PhpCsFixer\Config::create()
         ],
         'php_unit_method_casing' => true,
         'php_unit_dedicate_assert' => [
-            'target' => '5.6',
+            'target' => 'newest',
         ],
     ])
     ->setRiskyAllowed(true)
