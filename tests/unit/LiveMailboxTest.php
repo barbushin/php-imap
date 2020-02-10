@@ -98,9 +98,9 @@ class LiveMailboxTest extends TestCase
             $limit = \min(\count($mailboxes), self::RANDOM_MAILBOX_SAMPLE_SIZE);
 
             for ($i = 0; $i < $limit; ++$i) {
-                static::assertIsArray($mailboxes[$i]);
-                static::assertTrue(isset($mailboxes[$i]['shortpath']));
-                static::assertIsString($mailboxes[$i]['shortpath']);
+                $this->assertIsArray($mailboxes[$i]);
+                $this->assertTrue(isset($mailboxes[$i]['shortpath']));
+                $this->assertIsString($mailboxes[$i]['shortpath']);
                 $mailbox->switchMailbox($mailboxes[$i]['shortpath']);
 
                 $check = $mailbox->checkMailbox();
