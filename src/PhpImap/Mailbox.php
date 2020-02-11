@@ -1171,7 +1171,6 @@ class Mailbox
      *
      * @param array  $params        Array of params of mail
      * @param object $partStructure Part of mail
-     * @param int    $_mailId       ID of mail
      * @param bool   $emlOrigin     True, if it indicates, that the attachment comes from an EML (mail) file
      *
      * @psalm-param array<string, string> $params
@@ -1181,7 +1180,7 @@ class Mailbox
      *
      * @todo consider "requiring" psalm (suggest + conflict) then setting $params to array<string, string>
      */
-    public function downloadAttachment(DataPartInfo $dataInfo, array $params, object $partStructure, int $_mailId, bool $emlOrigin = false): IncomingMailAttachment
+    public function downloadAttachment(DataPartInfo $dataInfo, array $params, object $partStructure, bool $emlOrigin = false): IncomingMailAttachment
     {
         if ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
             $fileName = \strtolower($partStructure->subtype).'.eml';
@@ -1579,7 +1578,7 @@ class Mailbox
         if ('RFC822' === $partStructure->subtype && isset($partStructure->disposition) && 'attachment' === $partStructure->disposition) {
             // Although we are downloading each part separately, we are going to download the EML to a single file
             //incase someone wants to process or parse in another process
-            $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, false);
+            $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, false);
             $mail->addAttachment($attachment);
         }
 
@@ -1597,7 +1596,7 @@ class Mailbox
         }
 
         if ($isAttachment) {
-            $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $mail->id, $emlParse);
+            $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, $emlParse);
             $mail->addAttachment($attachment);
         } else {
             if (isset($params['charset']) && !empty(\trim($params['charset']))) {
