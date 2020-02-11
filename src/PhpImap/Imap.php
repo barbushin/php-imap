@@ -1437,15 +1437,18 @@ final class Imap
             throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.' must be a boolean, '.\gettype($allow_sequence).' given!');
         }
 
+        $regex = '/^\d+:\d+$/';
+        $suffix = '() did not appear to be a valid message id range!';
+
+        if ($allow_sequence) {
+            $regex = '/^\d+(?:(?:,\d+)+|:\d+)$/';
+            $suffix = '() did not appear to be a valid message id range or sequence!';
+        }
+
         if (\is_int($msg_number) || \preg_match('/^\d+$/', $msg_number)) {
             return \sprintf('%1$s:%1$s', $msg_number);
-        } elseif (
-            $allow_sequence &&
-            1 !== \preg_match('/^\d+(?:(?:,\d+)+|:\d+)$/', $msg_number)
-        ) {
-            throw new InvalidArgumentException('Argument '.(string) $argument.' passed to '.$method.'() did not appear to be a valid message id range or sequence!');
-        } elseif (1 !== \preg_match('/^\d+:\d+$/', $msg_number)) {
-            throw new InvalidArgumentException('Argument '.(string) $argument.' passed to '.$method.'() did not appear to be a valid message id range!');
+        } elseif (1 !== \preg_match($regex, $msg_number)) {
+            throw new InvalidArgumentException('Argument '.(string) $argument.' passed to '.$method.$suffix);
         }
 
         return $msg_number;
