@@ -1177,8 +1177,6 @@ class Mailbox
      * @psalm-param PARTSTRUCTURE $partStructure
      *
      * @return IncomingMailAttachment $attachment
-     *
-     * @todo consider "requiring" psalm (suggest + conflict) then setting $params to array<string, string>
      */
     public function downloadAttachment(DataPartInfo $dataInfo, array $params, object $partStructure, bool $emlOrigin = false): IncomingMailAttachment
     {
