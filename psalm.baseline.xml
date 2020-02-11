@@ -25,8 +25,6 @@
     <DocblockTypeContradiction occurrences="2">
       <code>\in_array($imapSearchOption, $supported_options, true)</code>
       <code>\in_array($key, $supported_params, true)</code>
-      <code>\in_array($imapSearchOption, $supported_options, true)</code>
-      <code>\in_array($key, $supported_params, true)</code>
     </DocblockTypeContradiction>
     <PossiblyUnusedMethod occurrences="25">
       <code>setConnectionRetry</code>
@@ -57,20 +55,14 @@
     </PossiblyUnusedMethod>
   </file>
   <file src="tests/unit/IncomingMailTest.php">
-    <RedundantConditionGivenDocblockType occurrences="2">
-      <code>\is_string($attachment-&gt;id)</code>
-      <code>assertTrue</code>
-    </RedundantConditionGivenDocblockType>
-    <ReservedWord occurrences="8">
-      <code>$this-&gt;assertTrue($mail-&gt;__isset('textPlain'))</code>
-      <code>$this-&gt;assertFalse($mail-&gt;hasAttachments())</code>
-      <code>$this-&gt;assertTrue($mail-&gt;hasAttachments())</code>
-      <code>$this-&gt;assertTrue(\is_string($attachment-&gt;id))</code>
-      <code>$this-&gt;assertTrue($mail-&gt;removeAttachment($attachment-&gt;id))</code>
-      <code>$this-&gt;assertFalse($mail-&gt;hasAttachments())</code>
-      <code>$this-&gt;assertTrue(\is_string($attachment-&gt;id))</code>
-      <code>$this-&gt;assertFalse($mail-&gt;removeAttachment($attachment-&gt;id))</code>
-    </ReservedWord>
+    <DeprecatedMethod occurrences="2">
+      <code>assertInternalType</code>
+      <code>assertInternalType</code>
+    </DeprecatedMethod>
+    <PossiblyNullArgument occurrences="2">
+      <code>$attachment-&gt;id</code>
+      <code>$attachment-&gt;id</code>
+    </PossiblyNullArgument>
   </file>
   <file src="tests/unit/LiveMailboxTest.php">
     <PossiblyNullArgument occurrences="5">
@@ -146,11 +138,6 @@
       <code>$this-&gt;assertNull($mailbox-&gt;setConnectionArgs($option, $retriesNum, $param))</code>
       <code>$this-&gt;assertEquals($mailbox-&gt;decodeMimeStr($str, $mailbox-&gt;getServerEncoding()), $expectedStr)</code>
       <code>$this-&gt;expectExceptionMessage($expectedExceptionMessage)</code>
-    </ReservedWord>
-  </file>
-  <file src="tests/unit/RequirementsTest.php">
-    <ReservedWord occurrences="1">
-      <code>$this-&gt;assertTrue(\extension_loaded($extension))</code>
     </ReservedWord>
   </file>
 </files>
