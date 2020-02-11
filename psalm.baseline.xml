@@ -48,7 +48,6 @@
       <code>getMailboxInfo</code>
       <code>getQuotaLimit</code>
       <code>getQuotaUsage</code>
-      <code>getImapPath</code>
       <code>getSubscribedMailboxes</code>
       <code>subscribeMailbox</code>
       <code>unsubscribeMailbox</code>
@@ -94,16 +93,6 @@
     </ReservedWord>
   </file>
   <file src="tests/unit/MailboxTest.php">
-    <DeprecatedMethod occurrences="8">
-      <code>assertAttributeEquals</code>
-      <code>assertAttributeEquals</code>
-      <code>assertAttributeEquals</code>
-      <code>assertAttributeEquals</code>
-      <code>assertAttributeEquals</code>
-      <code>assertAttributeEquals</code>
-      <code>assertAttributeEquals</code>
-      <code>assertAttributeEquals</code>
-    </DeprecatedMethod>
     <InvalidArgument occurrences="1">
       <code>self::ANYTHING</code>
     </InvalidArgument>
