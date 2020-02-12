@@ -56,7 +56,7 @@ before_script:
   - if [[ "$coverage" = "yes" ]]; then chmod +x ./cc-test-reporter; fi
   - if [[ "$coverage" = "yes" ]]; then ./cc-test-reporter before-build; fi
   - if [[ "$analysis" = "yes" ]]; then composer require --dev paragonie/hidden-string; fi
-  - if [[ "$analysis" = "yes" ]]; then composer require --dev --update-with-dependencies phpunit/phpunit vimeo/psalm psalm/plugin-phpunit maglnet/composer-require-checker:^2.0; fi
+  - if [[ "$analysis" = "yes" ]]; then composer require --dev --update-with-dependencies "phpunit/phpunit:<9" vimeo/psalm psalm/plugin-phpunit maglnet/composer-require-checker:^2.0; fi
 
 script:
   - vendor/bin/parallel-lint .php_cs.dist src tests examples
