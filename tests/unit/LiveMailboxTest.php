@@ -829,10 +829,10 @@ class LiveMailboxTest extends TestCase
             );
 
             if ('448' === $matches[1]) {
-            static::assertSame(
-                \file_get_contents(__DIR__.'/../../.gitignore'),
-                \current($attachments)->getContents()
-            );
+                static::assertSame(
+                    \file_get_contents(__DIR__.'/../../.gitignore'),
+                    \current($attachments)->getContents()
+                );
             }
         }
 
