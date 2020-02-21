@@ -8,6 +8,7 @@
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
     errorBaseline="./psalm.baseline.xml"
+    cacheDirectory="./psalm/cache/"
 >
     <projectFiles>
         <file name="./.php_cs.dist"/>

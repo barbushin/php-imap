@@ -48,6 +48,7 @@ matrix:
 cache:
   directories:
     - ./vendor
+    - ./psalm/cache
 
 before_script:
   - if [[ "$coverage" = "no" ]]; then phpenv config-rm xdebug.ini; fi
