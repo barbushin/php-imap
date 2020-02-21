@@ -21,6 +21,7 @@ matrix:
       dist: xenial
       env:
         - lint="php-cs-fixer"
+        - phpunitflags="do not run"
     - php: 7.4
       dist: bionic
       env:
