@@ -4,44 +4,33 @@ env:
 
 language: php
 
+php:
+  - 5.6
+  - 7.0
+  - 7.1
+  - 7.2
+  - 7.3
+
+env:
+  - phpunitflags="--stop-on-failure --exclude-group=live"
+
 matrix:
   fast_finish: true
   include:
     - php: 5.6
       dist: xenial
       env:
-        - analysis=no
-        - coverage=no
-        - phpunitflags="--stop-on-failure --exclude-group=live"
         - lint="php-cs-fixer"
-    - php: 7.0
-      dist: xenial
-      env:
-        - analysis=no
-        - coverage=no
-        - phpunitflags="--stop-on-failure --exclude-group=live"
-    - php: 7.1
-      dist: xenial
-      env:
-        - analysis=no
-        - coverage=no
-        - phpunitflags="--stop-on-failure --exclude-group=live"
-    - php: 7.2
-      dist: xenial
-      env:
-        - analysis=no
-        - coverage=no
-        - phpunitflags="--stop-on-failure --exclude-group=live"
-    - php: 7.3
-      dist: xenial
-      env:
-        - analysis=no
-        - coverage=no
-        - phpunitflags="--stop-on-failure --exclude-group=live"
+        - phpunitflags="do not run"
     - php: 7.4
       dist: bionic
       env:
         - analysis=yes
+        - phpunitflags="do not run"
+    - php: 7.4
+      dist: bionic
+      env:
+        - lint=no
         - coverage=yes
         - phpunitflags="--stop-on-failure --coverage-clover=clover.xml"
 
@@ -51,7 +40,7 @@ cache:
     - ./psalm/cache
 
 before_script:
-  - if [[ "$coverage" = "no" ]]; then phpenv config-rm xdebug.ini; fi
+  - if [[ "$coverage" != "yes" ]]; then phpenv config-rm xdebug.ini; fi
   - composer install --no-interaction
   - if [[ "$coverage" = "yes" ]]; then curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter; fi
   - if [[ "$coverage" = "yes" ]]; then chmod +x ./cc-test-reporter; fi
@@ -60,8 +49,8 @@ before_script:
   - if [[ "$analysis" = "yes" ]]; then composer require --dev --update-with-dependencies "phpunit/phpunit:<9" vimeo/psalm psalm/plugin-phpunit maglnet/composer-require-checker:^2.0; fi
 
 script:
-  - vendor/bin/parallel-lint .php_cs.dist src tests examples
-  - vendor/bin/phpunit $phpunitflags
+  - if [[ "$lint" != "no" ]]; then vendor/bin/parallel-lint .php_cs.dist src tests examples; fi
+  - if [[ "$phpunitflags" != "do not run" ]]; then vendor/bin/phpunit $phpunitflags; fi
   - if [[ "$analysis" = "yes" ]]; then vendor/bin/composer-require-checker check ./composer.json; fi
   - if [[ "$analysis" = "yes" ]]; then vendor/bin/psalm --show-info=false --shepherd --diff --diff-methods; fi
   - if [[ "$lint" = "php-cs-fixer" ]]; then vendor/bin/php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff-format=udiff -v; fi
