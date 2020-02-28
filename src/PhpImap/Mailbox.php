@@ -1363,7 +1363,7 @@ class Mailbox
         $partStructure_id = ($partStructure->ifid && isset($partStructure->id)) ? $partStructure->id : null;
 
         $attachment = new IncomingMailAttachment();
-        $attachment->id = \sha1($fileName.(isset($partStructure_id) ? $partStructure_id : ''));
+        $attachment->id = \bin2hex(\random_bytes(20));
         $attachment->contentId = isset($partStructure_id) ? \trim($partStructure_id, ' <>') : null;
         $attachment->name = $fileName;
         $attachment->disposition = (isset($partStructure->disposition) && \is_string($partStructure->disposition)) ? $partStructure->disposition : null;

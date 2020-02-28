@@ -103,7 +103,8 @@
       <code>\is_int($retriesNum)</code>
       <code>\in_array($key, $supported_params, true)</code>
     </DocblockTypeContradiction>
-    <InvalidArgument occurrences="1">
+    <InvalidArgument occurrences="2">
+      <code>\random_bytes(20)</code>
       <code>\random_bytes(16)</code>
     </InvalidArgument>
     <PossiblyUnusedMethod occurrences="27">
@@ -157,7 +158,10 @@
     </ReservedWord>
   </file>
   <file src="tests/unit/LiveMailboxTest.php">
-    <InvalidArgument occurrences="4">
+    <InvalidArgument occurrences="7">
+      <code>\random_bytes(16)</code>
+      <code>\random_bytes(16)</code>
+      <code>\random_bytes(16)</code>
       <code>\random_bytes(16)</code>
       <code>\random_bytes(16)</code>
       <code>\random_bytes(16)</code>
