@@ -3,6 +3,8 @@ vendor/
 composer.lock
 *.phar
 .php_cs.cache
+coverage/
+psalm/cache/
 
 #################
 ## Eclipse
@@ -159,6 +161,7 @@ pip-log.txt
 # Unit test / coverage reports
 .coverage
 .tox
+clover.xml
 
 #Translations
 *.mo

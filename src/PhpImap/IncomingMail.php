@@ -2,6 +2,8 @@
 
 namespace PhpImap;
 
+use InvalidArgumentException;
+
 /**
  * The PhpImap IncomingMail class.
  *
@@ -18,28 +20,30 @@ class IncomingMail extends IncomingMailHeader
      * @var IncomingMailAttachment[]
      */
     protected $attachments = [];
+
+    /** @var bool */
     protected $hasAttachments = false;
+
+    /**
+     * @var DataPartInfo[][]
+     *
+     * @psalm-var array{0:list<DataPartInfo>, 1:list<DataPartInfo>}
+     */
     protected $dataInfo = [[], []];
 
-    public function setHeader(IncomingMailHeader $header)
-    {
-        foreach (get_object_vars($header) as $property => $value) {
-            $this->$property = $value;
-        }
-    }
+    /** @var string|null */
+    private $textPlain;
 
-    public function addDataPartInfo(DataPartInfo $dataInfo, $type)
-    {
-        $this->dataInfo[$type][] = $dataInfo;
-    }
+    /** @var string|null */
+    private $textHtml;
 
     /**
      * __get() is utilized for reading data from inaccessible (protected
      * or private) or non-existing properties.
      *
-     * @property $name Name of the property (eg. textPlain)
+     * @param string $name Name of the property (eg. textPlain)
      *
-     * @return mixed Value of the property (eg. Plain text message)
+     * @return string Value of the property (eg. Plain text message)
      */
     public function __get($name)
     {
@@ -51,13 +55,14 @@ class IncomingMail extends IncomingMailHeader
             $type = DataPartInfo::TEXT_HTML;
         }
         if (false === $type) {
-            trigger_error("Undefined property: IncomingMail::$name");
+            \trigger_error("Undefined property: IncomingMail::$name");
         }
         $this->$name = '';
         foreach ($this->dataInfo[$type] as $data) {
-            $this->$name .= trim($data->fetch());
+            $this->$name .= \trim($data->fetch());
         }
 
+        /** @var string */
         return $this->$name;
     }
 
@@ -65,7 +70,7 @@ class IncomingMail extends IncomingMailHeader
      * The method __isset() is triggered by calling isset() or empty()
      * on inaccessible (protected or private) or non-existing properties.
      *
-     * @property $name Name of the property (eg. textPlain)
+     * @param string $name Name of the property (eg. textPlain)
      *
      * @return bool True, if property is set or empty
      */
@@ -76,15 +81,39 @@ class IncomingMail extends IncomingMailHeader
         return isset($this->$name);
     }
 
+    public function setHeader(IncomingMailHeader $header)
+    {
+        /** @psalm-var array<string, scalar|array|object|null> */
+        $array = \get_object_vars($header);
+        foreach ($array as $property => $value) {
+            $this->$property = $value;
+        }
+    }
+
+    /**
+     * @param DataPartInfo::TEXT_PLAIN|DataPartInfo::TEXT_HTML $type
+     */
+    public function addDataPartInfo(DataPartInfo $dataInfo, $type)
+    {
+        $this->dataInfo[$type][] = $dataInfo;
+    }
+
     public function addAttachment(IncomingMailAttachment $attachment)
     {
+        if (!\is_string($attachment->id)) {
+            throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() does not have an id specified!');
+        }
         $this->attachments[$attachment->id] = $attachment;
+
+        $this->setHasAttachments(true);
     }
 
     /**
      * Sets property $hasAttachments.
      *
      * @param bool $hasAttachments True, if IncomingMail[] has one or more attachments
+     *
+     * @return void
      */
     public function setHasAttachments($hasAttachments)
     {
@@ -122,6 +151,8 @@ class IncomingMail extends IncomingMailHeader
 
         unset($this->attachments[$id]);
 
+        $this->setHasAttachments([] !== $this->attachments);
+
         return true;
     }
 
@@ -129,37 +160,58 @@ class IncomingMail extends IncomingMailHeader
      * Get array of internal HTML links placeholders.
      *
      * @return array attachmentId => link placeholder
+     *
+     * @psalm-return array<string, string>
      */
     public function getInternalLinksPlaceholders()
     {
-        return preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $this->textHtml, $matches) ? array_combine($matches[2], $matches[1]) : [];
+        $match = \preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $this->textHtml, $matches);
+
+        /** @psalm-var array{1:list<string>, 2:list<string>} */
+        $matches = $matches;
+
+        return $match ? \array_combine($matches[2], $matches[1]) : [];
     }
 
+    /**
+     * @param string $baseUri
+     *
+     * @return string
+     */
     public function replaceInternalLinks($baseUri)
     {
-        $baseUri = rtrim($baseUri, '\\/').'/';
+        $baseUri = \rtrim($baseUri, '\\/').'/';
         $fetchedHtml = $this->textHtml;
         $search = [];
         $replace = [];
         foreach ($this->getInternalLinksPlaceholders() as $attachmentId => $placeholder) {
             foreach ($this->attachments as $attachment) {
                 if ($attachment->contentId == $attachmentId) {
+                    if (!\is_string($attachment->id)) {
+                        throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() does not have an id specified!');
+                    }
                     $search[] = $placeholder;
-                    $replace[] = $baseUri.basename($this->attachments[$attachment->id]->filePath);
+                    $replace[] = $baseUri.\basename($this->attachments[$attachment->id]->filePath);
                 }
             }
         }
 
-        return str_replace($search, $replace, $fetchedHtml);
+        /** @psalm-var string */
+        return \str_replace($search, $replace, $fetchedHtml);
     }
 
     /**
      * Embed inline image attachments as base64 to allow for
      * email html to display inline images automatically.
+     *
+     * @return void
      */
     public function embedImageAttachments()
     {
-        preg_match_all("/\bcid:[^'\"\s]{1,256}/mi", $this->textHtml, $matches);
+        \preg_match_all("/\bcid:[^'\"\s]{1,256}/mi", $this->textHtml, $matches);
+
+        /** @psalm-var list<list<string>> */
+        $matches = $matches;
 
         if (\count($matches)) {
             foreach ($matches as $match) {
@@ -167,21 +219,23 @@ class IncomingMail extends IncomingMailHeader
                     continue;
                 }
 
-                $cid = str_replace('cid:', '', $match[0]);
+                $cid = \str_replace('cid:', '', $match[0]);
 
                 foreach ($this->getAttachments() as $attachment) {
                     if ($attachment->contentId == $cid && 'inline' == $attachment->disposition) {
                         $contents = $attachment->getContents();
                         $contentType = $attachment->getMimeType();
 
-                        if (!strstr($contentType, 'image')) {
+                        if (!\strstr($contentType, 'image')) {
                             continue;
+                        } elseif (!\is_string($attachment->id)) {
+                            throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() does not have an id specified!');
                         }
 
-                        $base64encoded = base64_encode($contents);
+                        $base64encoded = \base64_encode($contents);
                         $replacement = 'data:'.$contentType.';base64, '.$base64encoded;
 
-                        $this->textHtml = str_replace($match[0], $replacement, $this->textHtml);
+                        $this->textHtml = \str_replace($match[0], $replacement, $this->textHtml);
 
                         $this->removeAttachment($attachment->id);
                     }
