@@ -57,9 +57,6 @@ class Mailbox
     /** @var string */
     protected $imapPassword;
 
-    /** @var string|null */
-    protected $imapOAuthAccessToken = null;
-
     /** @var int */
     protected $imapSearchOption = SE_UID;
 
@@ -129,41 +126,6 @@ class Mailbox
     public function __destruct()
     {
         $this->disconnect();
-    }
-
-    /**
-     * Sets / Changes the OAuth Token for the authentication.
-     *
-     * @param string $access_token OAuth token from your application (eg. Google Mail)
-     *
-     * @return void
-     *
-     * @throws InvalidArgumentException If no access token is provided
-     * @throws Exception                If OAuth authentication was unsuccessful
-     */
-    public function setOAuthToken($access_token)
-    {
-        if (empty(\trim($access_token))) {
-            throw new InvalidParameterException('setOAuthToken() requires an access token as parameter!');
-        }
-
-        $this->imapOAuthAccessToken = \trim($access_token);
-
-        try {
-            $this->_oauthAuthentication();
-        } catch (Exception $ex) {
-            throw new Exception('Invalid OAuth token provided. Error: '.$ex->getMessage());
-        }
-    }
-
-    /**
-     * Gets the OAuth Token for the authentication.
-     *
-     * @return string|null $access_token OAuth Access Token
-     */
-    public function getOAuthToken()
-    {
-        return $this->imapOAuthAccessToken;
     }
 
     /**
@@ -1630,40 +1592,6 @@ class Mailbox
             $options,
             $internal_date
         );
-    }
-
-    /**
-     * Builds an OAuth2 authentication string for the given email address and access token.
-     *
-     * @return string $access_token Formatted OAuth access token
-     */
-    protected function _constructAuthString()
-    {
-        return \base64_encode("user=$this->imapLogin\1auth=Bearer $this->imapOAuthAccessToken\1\1");
-    }
-
-    /**
-     * Authenticates the IMAP client with the OAuth access token.
-     *
-     * @return void
-     *
-     * @throws Exception If any error occured
-     */
-    protected function _oauthAuthentication()
-    {
-        $oauth_command = 'A AUTHENTICATE XOAUTH2 '.$this->_constructAuthString();
-
-        $oauth_result = \fwrite($this->getImapStream(), $oauth_command);
-
-        if (false === $oauth_result) {
-            throw new Exception('Could not authenticate using OAuth!');
-        }
-
-        try {
-            $this->checkMailbox();
-        } catch (Throwable $ex) {
-            throw new Exception('OAuth authentication failed! IMAP Error: '.$ex->getMessage());
-        }
     }
 
     /** @return resource */

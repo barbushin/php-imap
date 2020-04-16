@@ -107,9 +107,7 @@
       <code>\random_bytes(20)</code>
       <code>\random_bytes(16)</code>
     </InvalidArgument>
-    <PossiblyUnusedMethod occurrences="27">
-      <code>setOAuthToken</code>
-      <code>getOAuthToken</code>
+    <PossiblyUnusedMethod occurrences="25">
       <code>setConnectionRetry</code>
       <code>setConnectionRetryDelay</code>
       <code>setExpungeOnDisconnect</code>
