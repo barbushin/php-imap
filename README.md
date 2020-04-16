@@ -18,6 +18,9 @@ Initially released in December 2012, the PHP IMAP Mailbox is a powerful and open
 ### Features
 
 * Connect to mailbox by POP3/IMAP/NNTP, using [PHP IMAP extension](http://php.net/manual/book.imap.php)
+* Supports various authentications
+	* Basic (Username/Email address and password)
+	* OAuth (Token)
 * Get emails with attachments and inline images
 * Get emails filtered or sorted by custom criteria
 * Mark emails as seen/unseen
@@ -92,6 +95,12 @@ $mailbox->setConnectionArgs(
     CL_EXPUNGE // expunge deleted mails upon mailbox close
     | OP_SECURE // don't do non-secure authentication
 );
+
+try {
+    $mailbox->setOAuthToken('TheOAuthAccessToken');
+} catch (Exception $ex) {
+    die('Authentication using OAuth failed! Error: '.$ex->getMessage());
+}
 
 try {
 	// Get all emails (messages)

@@ -22,7 +22,9 @@
       <code>$element-&gt;text</code>
       <code>$element-&gt;text</code>
     </InvalidArgument>
-    <PossiblyUnusedMethod occurrences="24">
+    <PossiblyUnusedMethod occurrences="27">
+      <code>setOAuthToken</code>
+      <code>getOAuthToken</code>
       <code>setConnectionRetry</code>
       <code>setConnectionRetryDelay</code>
       <code>setExpungeOnDisconnect</code>
