@@ -10,7 +10,6 @@ use InvalidArgumentException;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
 use stdClass;
-use Throwable;
 use UnexpectedValueException;
 
 /**
