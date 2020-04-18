@@ -925,16 +925,16 @@ class Mailbox
                 }
 
                 if (isset($mail->subject) and !empty(\trim($mail->subject))) {
-                    $mail->subject = $this->decodeMimeStr($mail->subject, $this->getServerEncoding());
+                    $mail->subject = $this->decodeMimeStr($mail->subject);
                 }
                 if (isset($mail->from) and !empty(\trim($mail->from))) {
-                    $mail->from = $this->decodeMimeStr($mail->from, $this->getServerEncoding());
+                    $mail->from = $this->decodeMimeStr($mail->from);
                 }
                 if (isset($mail->sender) and !empty(\trim($mail->sender))) {
-                    $mail->sender = $this->decodeMimeStr($mail->sender, $this->getServerEncoding());
+                    $mail->sender = $this->decodeMimeStr($mail->sender);
                 }
                 if (isset($mail->to) and !empty(\trim($mail->to))) {
-                    $mail->to = $this->decodeMimeStr($mail->to, $this->getServerEncoding());
+                    $mail->to = $this->decodeMimeStr($mail->to);
                 }
             }
         }
@@ -1159,7 +1159,7 @@ class Mailbox
             $header->date = self::parseDateTime($now->format('Y-m-d H:i:s'));
         }
 
-        $header->subject = (isset($head->subject) and !empty(\trim($head->subject))) ? $this->decodeMimeStr($head->subject, $this->getServerEncoding()) : null;
+        $header->subject = (isset($head->subject) and !empty(\trim($head->subject))) ? $this->decodeMimeStr($head->subject) : null;
         if (isset($head->from) and !empty($head->from)) {
             list($header->fromHost, $header->fromName, $header->fromAddress) = $this->possiblyGetHostNameAndAddress($head->from);
         } elseif (\preg_match('/smtp.mailfrom=[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/', $headersRaw, $matches)) {
@@ -1317,7 +1317,7 @@ class Mailbox
             $fileName = \strtolower($partStructure->subtype);
         } else {
             $fileName = (isset($params['filename']) and !empty(\trim($params['filename']))) ? $params['filename'] : $params['name'];
-            $fileName = $this->decodeMimeStr($fileName, $this->getServerEncoding());
+            $fileName = $this->decodeMimeStr($fileName);
             $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
         }
 
@@ -1358,10 +1358,24 @@ class Mailbox
     }
 
     /**
+     * Returns the list of available encodings in lower case.
+     *
+     * @return array mb_list_encodings() in lower case
+     */
+    protected function lowercase_mb_list_encodings()
+    {
+        $encodings = \mb_list_encodings();
+        foreach ($encodings as $encoding)
+        {
+            $lowercase_encodings[] = \strtolower($encoding);
+        }
+        return $lowercase_encodings;
+    }
+
+    /**
      * Decodes a mime string.
      *
      * @param string $string    MIME string to decode
-     * @param string $toCharset
      *
      * @return string Converted string if conversion was successful, or the original string if not
      *
@@ -1369,7 +1383,7 @@ class Mailbox
      *
      * @todo update implementation pending resolution of https://github.com/vimeo/psalm/issues/2619 & https://github.com/vimeo/psalm/issues/2620
      */
-    public function decodeMimeStr($string, $toCharset = 'utf-8')
+    public function decodeMimeStr($string)
     {
         if (empty(\trim($string))) {
             throw new Exception('decodeMimeStr() Can not decode an empty string!');
@@ -1380,15 +1394,32 @@ class Mailbox
         $elements = \imap_mime_header_decode($string);
 
         if (false === $elements) {
-            return $newString;
+            return $string;
         }
 
         foreach ($elements as $element) {
-            if (isset($element->text)) {
-                $fromCharset = !isset($element->charset) ? 'iso-8859-1' : $element->charset;
-                // Convert to UTF-8, if string has UTF-8 characters to avoid broken strings. See https://github.com/barbushin/php-imap/issues/232
-                $toCharset = isset($element->charset) && \preg_match('/(UTF\-8)|(default)/i', $element->charset) ? 'UTF-8' : $toCharset;
-                $newString .= $this->convertStringEncoding($element->text, $fromCharset, $toCharset);
+            switch (\strtolower($element->charset)) {
+                case 'default': // Charset default is already ASCII (not encoded)
+                case 'utf-8': // Charset UTF-8 is OK
+                    $newString .= $element->text;
+                    break;
+                default:
+                    // If charset exists in mb_list_encodings(), convert using mb_convert function
+                    if (in_array(\strtolower($element->charset), $this->lowercase_mb_list_encodings()))
+                    {
+                        $newString .= \mb_convert_encoding($element->text, 'UTF-8', $element->charset);
+                    } else {
+                        // Fallback: Try to convert with iconv()
+                        $iconv_converted_string = \iconv($element->charset, "UTF-8", $element->text);
+                        if (! $iconv_converted_string) {
+                            // If iconv() could also not convert, return string as it is
+                            // (unknown charset)
+                            $newString .= $element->text;
+                        } else {
+                            $newString .= $iconv_converted_string;
+                        }
+                    }
+                    break;
             }
         }
 
@@ -1846,7 +1877,7 @@ class Mailbox
 
             if ('' !== \trim($recipientMailbox) && '' !== \trim($recipientHost)) {
                 $recipientEmail = \strtolower($recipientMailbox.'@'.$recipientHost);
-                $recipientName = (\is_string($recipientPersonal) and '' !== \trim($recipientPersonal)) ? $this->decodeMimeStr($recipientPersonal, $this->getServerEncoding()) : null;
+                $recipientName = (\is_string($recipientPersonal) and '' !== \trim($recipientPersonal)) ? $this->decodeMimeStr($recipientPersonal) : null;
 
                 return [
                     $recipientEmail,
@@ -1915,7 +1946,7 @@ class Mailbox
         foreach ([0, 1] as $index) {
             $maybe = isset($t[$index], $t[$index]->personal) ? $t[$index]->personal : null;
             if (\is_string($maybe) && '' !== \trim($maybe)) {
-                $out[1] = $this->decodeMimeStr($maybe, $this->getServerEncoding());
+                $out[1] = $this->decodeMimeStr($maybe);
 
                 break;
             }

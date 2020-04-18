@@ -489,7 +489,7 @@ final class MailboxTest extends TestCase
      */
     public function testMimeDecodingReturnsCorrectValues($str)
     {
-        $this->assertEquals($this->getMailbox()->decodeMimeStr($str, 'utf-8'), $str);
+        $this->assertEquals($this->getMailbox()->decodeMimeStr($str), $str);
     }
 
     /**
@@ -762,7 +762,7 @@ final class MailboxTest extends TestCase
         $mailbox = $this->getMailbox();
 
         $mailbox->setServerEncoding($serverEncoding);
-        $this->assertEquals($mailbox->decodeMimeStr($str, $mailbox->getServerEncoding()), $expectedStr);
+        $this->assertEquals($mailbox->decodeMimeStr($str), $expectedStr);
     }
 
     /**
