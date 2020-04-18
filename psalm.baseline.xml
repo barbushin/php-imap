@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="3.8.5@e6ec5fa22a7b9e61670a24d07b3119aff80dcd89">
+<files psalm-version="3.11.2@d470903722cfcbc1cd04744c5491d3e6d13ec3d9">
   <file src="examples/get_and_parse_all_emails_without_saving_attachments.php">
     <UnusedVariable occurrences="1">
       <code>$mailbox</code>
@@ -172,9 +172,8 @@
       <code>$envelope['subject']</code>
       <code>$envelope['subject']</code>
     </PossiblyNullArgument>
-    <ReservedWord occurrences="37">
+    <ReservedWord occurrences="36">
       <code>$this-&gt;markTestSkipped('paragonie/hidden-string not installed!')</code>
-      <code>$this-&gt;assertTrue(\is_resource($mailbox-&gt;getImapStream()))</code>
       <code>$this-&gt;assertTrue($mailbox-&gt;hasImapStream())</code>
       <code>static::assertTrue(\is_array($mailboxes[$i]))</code>
       <code>static::assertTrue(isset($mailboxes[$i]['shortpath']))</code>
@@ -192,7 +191,6 @@
       <code>static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null))</code>
       <code>static::assertCount(1, $info)</code>
       <code>static::assertTrue($mail-&gt;hasAttachments())</code>
-      <code>static::assertCount(1, $attachments)</code>
     </ReservedWord>
   </file>
   <file src="tests/unit/MailboxTest.php">
