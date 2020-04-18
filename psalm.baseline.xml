@@ -233,7 +233,7 @@
       <code>$this-&gt;assertEquals($mailbox-&gt;getAttachmentsIgnore(), (bool) $paramValue)</code>
       <code>$this-&gt;assertEquals($utf8_decoded_str, $str)</code>
       <code>$this-&gt;assertEquals($this-&gt;getMailbox()-&gt;decodeMimeStr($str, 'utf-8'), $str)</code>
-      <code>$this-&gt;assertEquals($parsedDateTime-&gt;format('U'), $epochToCompare)</code>
+      <code>$this-&gt;assertEquals((int) $parsedDateTime-&gt;format('U'), $epochToCompare)</code>
       <code>$this-&gt;assertEquals($parsedDt, $dateToParse)</code>
       <code>$this-&gt;assertEquals($mailbox-&gt;decodeMimeStr($str), $expected)</code>
       <code>$this-&gt;assertNull($mailbox-&gt;setTimeouts($timeout, $types))</code>
