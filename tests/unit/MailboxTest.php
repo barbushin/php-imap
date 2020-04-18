@@ -495,25 +495,25 @@ final class MailboxTest extends TestCase
     /**
      * Provides test data for testing parsing datetimes.
      *
-     * @psalm-return array<string, array{0:string, 1:numeric}>
+     * @psalm-return array<string, array{0:string, 1:int}>
      */
     public function datetimeProvider()
     {
         return [
-            'Sun, 14 Aug 2005 16:13:03 +0000 (CEST)' => ['2005-08-14T16:13:03+00:00', '1124035983'],
-            'Sun, 14 Aug 2005 16:13:03 +0000' => ['2005-08-14T16:13:03+00:00', '1124035983'],
+            'Sun, 14 Aug 2005 16:13:03 +0000 (CEST)' => ['2005-08-14T16:13:03+00:00', 1124035983],
+            'Sun, 14 Aug 2005 16:13:03 +0000' => ['2005-08-14T16:13:03+00:00', 1124035983],
 
-            'Sun, 14 Aug 2005 16:13:03 +1000 (CEST)' => ['2005-08-14T06:13:03+00:00', '1123999983'],
-            'Sun, 14 Aug 2005 16:13:03 +1000' => ['2005-08-14T06:13:03+00:00', '1123999983'],
-            'Sun, 14 Aug 2005 16:13:03 -1000' => ['2005-08-15T02:13:03+00:00', '1124071983'],
+            'Sun, 14 Aug 2005 16:13:03 +1000 (CEST)' => ['2005-08-14T06:13:03+00:00', 1123999983],
+            'Sun, 14 Aug 2005 16:13:03 +1000' => ['2005-08-14T06:13:03+00:00', 1123999983],
+            'Sun, 14 Aug 2005 16:13:03 -1000' => ['2005-08-15T02:13:03+00:00', 1124071983],
 
-            'Sun, 14 Aug 2005 16:13:03 +1100 (CEST)' => ['2005-08-14T05:13:03+00:00', '1123996383'],
-            'Sun, 14 Aug 2005 16:13:03 +1100' => ['2005-08-14T05:13:03+00:00', '1123996383'],
-            'Sun, 14 Aug 2005 16:13:03 -1100' => ['2005-08-15T03:13:03+00:00', '1124075583'],
+            'Sun, 14 Aug 2005 16:13:03 +1100 (CEST)' => ['2005-08-14T05:13:03+00:00', 1123996383],
+            'Sun, 14 Aug 2005 16:13:03 +1100' => ['2005-08-14T05:13:03+00:00', 1123996383],
+            'Sun, 14 Aug 2005 16:13:03 -1100' => ['2005-08-15T03:13:03+00:00', 1124075583],
 
-            '14 Aug 2005 16:13:03 +1000 (CEST)' => ['2005-08-14T06:13:03+00:00', '1123999983'],
-            '14 Aug 2005 16:13:03 +1000' => ['2005-08-14T06:13:03+00:00', '1123999983'],
-            '14 Aug 2005 16:13:03 -1000' => ['2005-08-15T02:13:03+00:00', '1124071983'],
+            '14 Aug 2005 16:13:03 +1000 (CEST)' => ['2005-08-14T06:13:03+00:00', 1123999983],
+            '14 Aug 2005 16:13:03 +1000' => ['2005-08-14T06:13:03+00:00', 1123999983],
+            '14 Aug 2005 16:13:03 -1000' => ['2005-08-15T02:13:03+00:00', 1124071983],
         ];
     }
 
@@ -523,7 +523,7 @@ final class MailboxTest extends TestCase
      * @dataProvider datetimeProvider
      *
      * @param string  $dateToParse
-     * @param numeric $epochToCompare
+     * @param int $epochToCompare
      *
      * @return void
      */
@@ -531,7 +531,7 @@ final class MailboxTest extends TestCase
     {
         $parsedDt = $this->getMailbox()->parseDateTime($dateToParse);
         $parsedDateTime = new DateTime($parsedDt);
-        $this->assertEquals($parsedDateTime->format('U'), $epochToCompare);
+        $this->assertEquals((int) $parsedDateTime->format('U'), $epochToCompare);
     }
 
     /**
