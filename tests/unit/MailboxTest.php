@@ -495,25 +495,25 @@ final class MailboxTest extends TestCase
     /**
      * Provides test data for testing parsing datetimes.
      *
-     * @psalm-return array<string, array{0:string, 1:numeric}>
+     * @psalm-return array<string, array{0:string, 1:int}>
      */
     public function datetimeProvider()
     {
         return [
-            'Sun, 14 Aug 2005 16:13:03 +0000 (CEST)' => ['2005-08-14T16:13:03+00:00', '1124035983'],
-            'Sun, 14 Aug 2005 16:13:03 +0000' => ['2005-08-14T16:13:03+00:00', '1124035983'],
+            'Sun, 14 Aug 2005 16:13:03 +0000 (CEST)' => ['2005-08-14T16:13:03+00:00', 1124035983],
+            'Sun, 14 Aug 2005 16:13:03 +0000' => ['2005-08-14T16:13:03+00:00', 1124035983],
 
-            'Sun, 14 Aug 2005 16:13:03 +1000 (CEST)' => ['2005-08-14T06:13:03+00:00', '1123999983'],
-            'Sun, 14 Aug 2005 16:13:03 +1000' => ['2005-08-14T06:13:03+00:00', '1123999983'],
-            'Sun, 14 Aug 2005 16:13:03 -1000' => ['2005-08-15T02:13:03+00:00', '1124071983'],
+            'Sun, 14 Aug 2005 16:13:03 +1000 (CEST)' => ['2005-08-14T06:13:03+00:00', 1123999983],
+            'Sun, 14 Aug 2005 16:13:03 +1000' => ['2005-08-14T06:13:03+00:00', 1123999983],
+            'Sun, 14 Aug 2005 16:13:03 -1000' => ['2005-08-15T02:13:03+00:00', 1124071983],
 
-            'Sun, 14 Aug 2005 16:13:03 +1100 (CEST)' => ['2005-08-14T05:13:03+00:00', '1123996383'],
-            'Sun, 14 Aug 2005 16:13:03 +1100' => ['2005-08-14T05:13:03+00:00', '1123996383'],
-            'Sun, 14 Aug 2005 16:13:03 -1100' => ['2005-08-15T03:13:03+00:00', '1124075583'],
+            'Sun, 14 Aug 2005 16:13:03 +1100 (CEST)' => ['2005-08-14T05:13:03+00:00', 1123996383],
+            'Sun, 14 Aug 2005 16:13:03 +1100' => ['2005-08-14T05:13:03+00:00', 1123996383],
+            'Sun, 14 Aug 2005 16:13:03 -1100' => ['2005-08-15T03:13:03+00:00', 1124075583],
 
-            '14 Aug 2005 16:13:03 +1000 (CEST)' => ['2005-08-14T06:13:03+00:00', '1123999983'],
-            '14 Aug 2005 16:13:03 +1000' => ['2005-08-14T06:13:03+00:00', '1123999983'],
-            '14 Aug 2005 16:13:03 -1000' => ['2005-08-15T02:13:03+00:00', '1124071983'],
+            '14 Aug 2005 16:13:03 +1000 (CEST)' => ['2005-08-14T06:13:03+00:00', 1123999983],
+            '14 Aug 2005 16:13:03 +1000' => ['2005-08-14T06:13:03+00:00', 1123999983],
+            '14 Aug 2005 16:13:03 -1000' => ['2005-08-15T02:13:03+00:00', 1124071983],
         ];
     }
 
@@ -522,8 +522,8 @@ final class MailboxTest extends TestCase
      *
      * @dataProvider datetimeProvider
      *
-     * @param string  $dateToParse
-     * @param numeric $epochToCompare
+     * @param string $dateToParse
+     * @param int    $epochToCompare
      *
      * @return void
      */
@@ -531,7 +531,7 @@ final class MailboxTest extends TestCase
     {
         $parsedDt = $this->getMailbox()->parseDateTime($dateToParse);
         $parsedDateTime = new DateTime($parsedDt);
-        $this->assertEquals($parsedDateTime->format('U'), $epochToCompare);
+        $this->assertEquals((int) $parsedDateTime->format('U'), $epochToCompare);
     }
 
     /**
@@ -768,18 +768,18 @@ final class MailboxTest extends TestCase
     /**
      * Provides test data for testing base64 string decoding.
      *
-     * @psalm-return array<0:string, 1:string}>
+     * @psalm-return list<array{0:string, 1:string}>
      */
     public function Base64DecodeProvider()
     {
         return [
-            'bm8tcmVwbHlAZXhhbXBsZS5jb20=' => 'no-reply@example.com',
-            'TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4K' => 'Man is distinguished, not only by his reason, but by this singular passion from other animals, which is a lust of the mind, that by a perseverance of delight in the continued and indefatigable generation of knowledge, exceeds the short vehemence of any carnal pleasure.',
-            'SSBjYW4gZWF0IGdsYXNzIGFuZCBpdCBkb2VzIG5vdCBodXJ0IG1lLg==' => 'I can eat glass and it does not hurt me.',
-            '77u/4KSV4KS+4KSa4KSCIOCktuCkleCljeCkqOCli+CkruCljeCkr+CkpOCljeCkpOClgeCkruCljSDgpaQg4KSo4KWL4KSq4KS54KS/4KSo4KS44KWN4KSk4KS/IOCkruCkvuCkruCljSDgpaU=' => '﻿काचं शक्नोम्यत्तुम् । नोपहिनस्ति माम् ॥',
-            'SmUgcGV1eCBtYW5nZXIgZHUgdmVycmUsIMOnYSBuZSBtZSBmYWl0IHBhcyBtYWwu' => 'Je peux manger du verre, ça ne me fait pas mal.',
-            'UG90IHPEgyBtxINuw6JuYyBzdGljbMSDIMiZaSBlYSBudSBtxIMgcsSDbmXImXRlLg==' => 'Pot să mănânc sticlă și ea nu mă rănește.',
-            '5oiR6IO95ZCe5LiL546755KD6ICM5LiN5YK36Lqr6auU44CC' => '我能吞下玻璃而不傷身體。',
+            ['bm8tcmVwbHlAZXhhbXBsZS5jb20=', 'no-reply@example.com'],
+            ['TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4K', 'Man is distinguished, not only by his reason, but by this singular passion from other animals, which is a lust of the mind, that by a perseverance of delight in the continued and indefatigable generation of knowledge, exceeds the short vehemence of any carnal pleasure.'."\n"],
+            ['SSBjYW4gZWF0IGdsYXNzIGFuZCBpdCBkb2VzIG5vdCBodXJ0IG1lLg==', 'I can eat glass and it does not hurt me.'],
+            ['77u/4KSV4KS+4KSa4KSCIOCktuCkleCljeCkqOCli+CkruCljeCkr+CkpOCljeCkpOClgeCkruCljSDgpaQg4KSo4KWL4KSq4KS54KS/4KSo4KS44KWN4KSk4KS/IOCkruCkvuCkruCljSDgpaU=', '﻿काचं शक्नोम्यत्तुम् । नोपहिनस्ति माम् ॥'],
+            ['SmUgcGV1eCBtYW5nZXIgZHUgdmVycmUsIMOnYSBuZSBtZSBmYWl0IHBhcyBtYWwu', 'Je peux manger du verre, ça ne me fait pas mal.'],
+            ['UG90IHPEgyBtxINuw6JuYyBzdGljbMSDIMiZaSBlYSBudSBtxIMgcsSDbmXImXRlLg==', 'Pot să mănânc sticlă și ea nu mă rănește.'],
+            ['5oiR6IO95ZCe5LiL546755KD6ICM5LiN5YK36Lqr6auU44CC', '我能吞下玻璃而不傷身體。'],
         ];
     }
 

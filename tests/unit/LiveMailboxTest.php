@@ -101,7 +101,7 @@ class LiveMailboxTest extends TestCase
         $exception = null;
 
         try {
-            $this->assertTrue(\is_resource($mailbox->getImapStream()));
+            $mailbox->getImapStream();
             $this->assertTrue($mailbox->hasImapStream());
 
             $mailboxes = $mailbox->getMailboxes();
