@@ -1608,11 +1608,6 @@ class Mailbox
         }
     }
 
-    /**
-     * @param string $string
-     *
-     * @return string
-     */
     protected function decodeRFC2231(string $string): string
     {
         if (\preg_match("/^(.*?)'.*?'(.*?)$/", $string, $matches)) {
