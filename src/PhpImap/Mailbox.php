@@ -1189,7 +1189,7 @@ class Mailbox
         } else {
             $fileName = (isset($params['filename']) and !empty(\trim($params['filename']))) ? $params['filename'] : $params['name'];
             $fileName = $this->decodeMimeStr($fileName);
-            $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
+            $fileName = $this->decodeRFC2231($fileName);
         }
 
         $partStructure_id = ($partStructure->ifid && isset($partStructure->id)) ? $partStructure->id : null;
@@ -1265,7 +1265,7 @@ class Mailbox
                         $newString .= \mb_convert_encoding($element->text, 'UTF-8', $element->charset);
                     } else {
                         // Fallback: Try to convert with iconv()
-                        $iconv_converted_string = \iconv($element->charset, 'UTF-8', $element->text);
+                        $iconv_converted_string = @\iconv($element->charset, 'UTF-8', $element->text);
                         if (!$iconv_converted_string) {
                             // If iconv() could also not convert, return string as it is
                             // (unknown charset)
@@ -1316,33 +1316,6 @@ class Mailbox
         }
 
         return $dateHeaderRfc3339;
-    }
-
-    /**
-     * Converts a string from one encoding to another.
-     *
-     * @param string $string       the string, which you want to convert
-     * @param string $fromEncoding the current charset (encoding)
-     * @param string $toEncoding   the new charset (encoding)
-     *
-     * @return string Converted string if conversion was successful, or the original string if not
-     */
-    public function convertStringEncoding(string $string, string $fromEncoding, string $toEncoding): string
-    {
-        if (\preg_match('/default|ascii/i', $fromEncoding) || !$string || $fromEncoding == $toEncoding) {
-            return $string;
-        }
-        $supportedEncodings = \array_map('strtolower', \mb_list_encodings());
-        if (\in_array(\strtolower($fromEncoding), $supportedEncodings) && \in_array(\strtolower($toEncoding), $supportedEncodings)) {
-            $convertedString = \mb_convert_encoding($string, $toEncoding, $fromEncoding);
-        } else {
-            $convertedString = @\iconv($fromEncoding, $toEncoding.'//TRANSLIT//IGNORE', $string);
-        }
-        if (('' == $convertedString) or (false === $convertedString)) {
-            return $string;
-        }
-
-        return $convertedString;
     }
 
     /**
@@ -1458,6 +1431,7 @@ class Mailbox
      */
     protected function lowercase_mb_list_encodings()
     {
+        $lowercase_encodings = [];
         $encodings = \mb_list_encodings();
         foreach ($encodings as $encoding) {
             $lowercase_encodings[] = \strtolower($encoding);
@@ -1634,13 +1608,17 @@ class Mailbox
         }
     }
 
-    protected function decodeRFC2231(string $string, string $charset = 'utf-8'): string
+    /**
+     * @param string $string
+     *
+     * @return string
+     */
+    protected function decodeRFC2231(string $string): string
     {
         if (\preg_match("/^(.*?)'.*?'(.*?)$/", $string, $matches)) {
-            $encoding = $matches[1];
             $data = $matches[2];
             if ($this->isUrlEncoded($data)) {
-                $string = $this->convertStringEncoding(\urldecode($data), $encoding, $charset);
+                $string = $this->decodeMimeStr(\urldecode($data));
             }
         }
 
