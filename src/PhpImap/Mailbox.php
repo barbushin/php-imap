@@ -1358,25 +1358,9 @@ class Mailbox
     }
 
     /**
-     * Returns the list of available encodings in lower case.
-     *
-     * @return array mb_list_encodings() in lower case
-     */
-    protected function lowercase_mb_list_encodings()
-    {
-        $lowercase_encodings = array();
-        $encodings = \mb_list_encodings();
-        foreach ($encodings as $encoding)
-        {
-            $lowercase_encodings[] = \strtolower($encoding);
-        }
-        return $lowercase_encodings;
-    }
-
-    /**
      * Decodes a mime string.
      *
-     * @param string $string    MIME string to decode
+     * @param string $string MIME string to decode
      *
      * @return string Converted string if conversion was successful, or the original string if not
      *
@@ -1406,13 +1390,13 @@ class Mailbox
                     break;
                 default:
                     // If charset exists in mb_list_encodings(), convert using mb_convert function
-                    if (in_array(\strtolower($element->charset), $this->lowercase_mb_list_encodings()))
+                    if (\in_array(\strtolower($element->charset), $this->lowercase_mb_list_encodings()))
                     {
                         $newString .= \mb_convert_encoding($element->text, 'UTF-8', $element->charset);
                     } else {
                         // Fallback: Try to convert with iconv()
-                        $iconv_converted_string = @\iconv($element->charset, "UTF-8", $element->text);
-                        if (! $iconv_converted_string) {
+                        $iconv_converted_string = @\iconv($element->charset, 'UTF-8', $element->text);
+                        if (!$iconv_converted_string) {
                             // If iconv() could also not convert, return string as it is
                             // (unknown charset)
                             $newString .= $element->text;
@@ -1425,6 +1409,22 @@ class Mailbox
         }
 
         return $newString;
+    }
+
+    /**
+     * Returns the list of available encodings in lower case.
+     *
+     * @return array mb_list_encodings() in lower case
+     */
+    protected function lowercase_mb_list_encodings()
+    {
+        $lowercase_encodings = array();
+        $encodings = \mb_list_encodings();
+        foreach ($encodings as $encoding)
+        {
+            $lowercase_encodings[] = \strtolower($encoding);
+        }
+        return $lowercase_encodings;
     }
 
     /**
