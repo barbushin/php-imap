@@ -1364,6 +1364,7 @@ class Mailbox
      */
     protected function lowercase_mb_list_encodings()
     {
+        $lowercase_encodings = array();
         $encodings = \mb_list_encodings();
         foreach ($encodings as $encoding)
         {
