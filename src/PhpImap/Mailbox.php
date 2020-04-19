@@ -1390,8 +1390,7 @@ class Mailbox
                     break;
                 default:
                     // If charset exists in mb_list_encodings(), convert using mb_convert function
-                    if (\in_array(\strtolower($element->charset), $this->lowercase_mb_list_encodings()))
-                    {
+                    if (\in_array(\strtolower($element->charset), $this->lowercase_mb_list_encodings())) {
                         $newString .= \mb_convert_encoding($element->text, 'UTF-8', $element->charset);
                     } else {
                         // Fallback: Try to convert with iconv()
@@ -1409,22 +1408,6 @@ class Mailbox
         }
 
         return $newString;
-    }
-
-    /**
-     * Returns the list of available encodings in lower case.
-     *
-     * @return array mb_list_encodings() in lower case
-     */
-    protected function lowercase_mb_list_encodings()
-    {
-        $lowercase_encodings = array();
-        $encodings = \mb_list_encodings();
-        foreach ($encodings as $encoding)
-        {
-            $lowercase_encodings[] = \strtolower($encoding);
-        }
-        return $lowercase_encodings;
     }
 
     /**
@@ -1596,6 +1579,22 @@ class Mailbox
             $options,
             $internal_date
         );
+    }
+
+    /**
+     * Returns the list of available encodings in lower case.
+     *
+     * @return array mb_list_encodings() in lower case
+     */
+    protected function lowercase_mb_list_encodings()
+    {
+        $lowercase_encodings = array();
+        $encodings = \mb_list_encodings();
+        foreach ($encodings as $encoding)
+        {
+            $lowercase_encodings[] = \strtolower($encoding);
+        }
+        return $lowercase_encodings;
     }
 
     /** @return resource */
