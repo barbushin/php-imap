@@ -466,11 +466,6 @@ final class MailboxTest extends TestCase
      * Test, different datetimes conversions using differents timezones.
      *
      * @dataProvider datetimeProvider
-     *
-     * @param string $dateToParse
-     * @param int    $epochToCompare
-     *
-     * @return void
      */
     public function testParsedDateDifferentTimeZones(string $dateToParse, int $epochToCompare): void
     {
@@ -696,21 +691,14 @@ final class MailboxTest extends TestCase
 
     /**
      * @dataProvider Base64DecodeProvider
-     *
-     * @param string $input
-     * @param string $expected
-     *
-     * @return void
      */
-    public function testBase64Decode($input, $expected)
+    public function testBase64Decode(string $input, string $expected): void
     {
         $this->assertSame($expected, \imap_base64(\preg_replace('~[^a-zA-Z0-9+=/]+~s', '', $input)));
         $this->assertSame($expected, \base64_decode($input, false));
     }
 
     /**
-     * @return array
-     *
      * @psalm-return list<array{0:string, 1:string, 2:class-string<\Exception>, 3:string}>
      */
     public function attachmentDirFailureProvider(): array
