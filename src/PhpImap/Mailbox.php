@@ -1261,7 +1261,7 @@ class Mailbox
                     break;
                 default:
                     // If charset exists in mb_list_encodings(), convert using mb_convert function
-                    if (in_array(\strtolower($element->charset), $this->lowercase_mb_list_encodings())) {
+                    if (\in_array(\strtolower($element->charset), $this->lowercase_mb_list_encodings())) {
                         $newString .= \mb_convert_encoding($element->text, 'UTF-8', $element->charset);
                     } else {
                         // Fallback: Try to convert with iconv()
