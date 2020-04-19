@@ -1246,7 +1246,7 @@ class Mailbox
     /**
      * Decodes a mime string.
      *
-     * @param string $string    MIME string to decode
+     * @param string $string MIME string to decode
      *
      * @return string Converted string if conversion was successful, or the original string if not
      *
