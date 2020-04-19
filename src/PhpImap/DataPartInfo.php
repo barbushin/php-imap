@@ -90,8 +90,7 @@ class DataPartInfo
                 $this->data = \imap_binary((string) $this->data);
                 break;
             case ENCBASE64:
-                $this->data = \preg_replace('~[^a-zA-Z0-9+=/]+~s', '', (string) $this->data); // https://github.com/barbushin/php-imap/issues/88
-                $this->data = \imap_base64((string) $this->data);
+                $this->data = \base64_decode($this->data, false);
                 break;
             case ENCQUOTEDPRINTABLE:
                 $this->data = \quoted_printable_decode((string) $this->data);
