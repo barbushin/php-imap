@@ -26,6 +26,21 @@
       <code>\in_array($imapSearchOption, $supported_options, true)</code>
       <code>\in_array($key, $supported_params, true)</code>
     </DocblockTypeContradiction>
+    <InvalidArgument occurrences="6">
+      <code>$element-&gt;charset</code>
+      <code>$element-&gt;charset</code>
+      <code>$element-&gt;text</code>
+      <code>$element-&gt;charset</code>
+      <code>$element-&gt;charset</code>
+      <code>$element-&gt;text</code>
+    </InvalidArgument>
+    <MixedInferredReturnType occurrences="1">
+      <code>array</code>
+    </MixedInferredReturnType>
+    <PossiblyUndefinedVariable occurrences="2">
+      <code>$lowercase_encodings</code>
+      <code>$lowercase_encodings</code>
+    </PossiblyUndefinedVariable>
     <PossiblyUnusedMethod occurrences="24">
       <code>setConnectionRetry</code>
       <code>setConnectionRetryDelay</code>
@@ -53,80 +68,9 @@
       <code>unsubscribeMailbox</code>
     </PossiblyUnusedMethod>
   </file>
-  <file src="tests/unit/IncomingMailTest.php">
-    <DeprecatedMethod occurrences="2">
-      <code>assertInternalType</code>
-      <code>assertInternalType</code>
-    </DeprecatedMethod>
-    <PossiblyNullArgument occurrences="2">
-      <code>$attachment-&gt;id</code>
-      <code>$attachment-&gt;id</code>
-    </PossiblyNullArgument>
-  </file>
-  <file src="tests/unit/LiveMailboxTest.php">
-    <PossiblyNullArgument occurrences="5">
-      <code>$envelope['subject']</code>
-      <code>$envelope['subject']</code>
-      <code>$envelope['subject']</code>
-      <code>$envelope['subject']</code>
-      <code>$envelope['subject']</code>
-    </PossiblyNullArgument>
-    <ReservedWord occurrences="36">
-      <code>$this-&gt;markTestSkipped('paragonie/hidden-string not installed!')</code>
-      <code>$this-&gt;assertTrue($mailbox-&gt;hasImapStream())</code>
-      <code>static::assertTrue(\is_array($mailboxes[$i]))</code>
-      <code>static::assertTrue(isset($mailboxes[$i]['shortpath']))</code>
-      <code>static::assertTrue(\is_string($mailboxes[$i]['shortpath']))</code>
-      <code>$this-&gt;assertTrue(\property_exists($check, $expectedProperty))</code>
-      <code>$this-&gt;assertTrue(\is_string($check-&gt;Date), 'Date property of Mailbox::checkMailbox() result was not a string!')</code>
-      <code>$this-&gt;assertTrue(\is_int($unix), 'Date property of Mailbox::checkMailbox() result was not a valid date!')</code>
-      <code>$this-&gt;assertTrue(\in_array($check-&gt;Driver, ['POP3', 'IMAP', 'NNTP', 'pop3', 'imap', 'nntp'], true), 'Driver property of Mailbox::checkMailbox() result was not of an expected value!')</code>
-      <code>$this-&gt;assertTrue(\is_int($check-&gt;Nmsgs), 'Nmsgs property of Mailbox::checkMailbox() result was not of an expected type!')</code>
-      <code>$this-&gt;assertTrue(\is_int($check-&gt;Recent), 'Recent property of Mailbox::checkMailbox() result was not of an expected type!')</code>
-      <code>$this-&gt;assertTrue(\property_exists($status, $expectedProperty))</code>
-      <code>static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null))</code>
-      <code>static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null))</code>
-      <code>static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null))</code>
-      <code>static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null))</code>
-      <code>static::assertCount(1, $info)</code>
-      <code>static::assertTrue($mail-&gt;hasAttachments())</code>
-    </ReservedWord>
-  </file>
   <file src="tests/unit/MailboxTest.php">
     <InvalidArgument occurrences="1">
       <code>self::ANYTHING</code>
     </InvalidArgument>
-    <ReservedWord occurrences="30">
-      <code>$this-&gt;assertAttributeEquals('{imap.example.com:993/imap/ssl}INBOX', 'imapPath', $mailbox)</code>
-      <code>$this-&gt;assertAttributeEquals('php-imap@example.com', 'imapLogin', $mailbox)</code>
-      <code>$this-&gt;assertAttributeEquals('  v3rY!53cEt&amp;P4sSWöRd$', 'imapPassword', $mailbox)</code>
-      <code>$this-&gt;assertAttributeEquals(\realpath('.'), 'attachmentsDir', $mailbox)</code>
-      <code>$this-&gt;assertAttributeEquals('UTF-8', 'serverEncoding', $mailbox)</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;getServerEncoding(), $encoding)</code>
-      <code>$this-&gt;assertAttributeEquals('UTF-8', 'serverEncoding', $mailbox)</code>
-      <code>$this-&gt;assertAttributeEquals('UTF-8', 'serverEncoding', $mailbox)</code>
-      <code>$this-&gt;assertAttributeEquals('UTF-8', 'serverEncoding', $mailbox)</code>
-      <code>$this-&gt;assertEquals($encoding, $mailbox-&gt;getServerEncoding())</code>
-      <code>$this-&gt;assertNotEquals($encoding, $mailbox-&gt;getServerEncoding())</code>
-      <code>$this-&gt;assertEquals($this-&gt;getMailbox()-&gt;getImapSearchOption(), 1)</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;getImapSearchOption(), 2)</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;getImapSearchOption(), 1)</code>
-      <code>$this-&gt;assertEquals($this-&gt;getMailbox()-&gt;getLogin(), 'php-imap@example.com')</code>
-      <code>$this-&gt;assertNotEmpty($this-&gt;getMailbox()-&gt;getPathDelimiter())</code>
-      <code>$this-&gt;assertTrue($mailbox-&gt;validatePathDelimiter($str))</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;getPathDelimiter(), '.')</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;getPathDelimiter(), '/')</code>
-      <code>$this-&gt;assertEquals($this-&gt;getMailbox()-&gt;getAttachmentsIgnore(), false)</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;getAttachmentsIgnore(), (bool) $paramValue)</code>
-      <code>$this-&gt;assertEquals($utf8_decoded_str, $str)</code>
-      <code>$this-&gt;assertEquals($this-&gt;getMailbox()-&gt;decodeMimeStr($str, 'utf-8'), $str)</code>
-      <code>$this-&gt;assertEquals((int) $parsedDateTime-&gt;format('U'), $epochToCompare)</code>
-      <code>$this-&gt;assertEquals($parsedDt, $dateToParse)</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;decodeMimeStr($str), $expected)</code>
-      <code>$this-&gt;assertNull($mailbox-&gt;setTimeouts($timeout, $types))</code>
-      <code>$this-&gt;assertNull($mailbox-&gt;setConnectionArgs($option, $retriesNum, $param))</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;decodeMimeStr($str, $mailbox-&gt;getServerEncoding()), $expectedStr)</code>
-      <code>$this-&gt;expectExceptionMessage($expectedExceptionMessage)</code>
-    </ReservedWord>
   </file>
 </files>
