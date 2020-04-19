@@ -1318,7 +1318,7 @@ class Mailbox
         } else {
             $fileName = (isset($params['filename']) and !empty(\trim($params['filename']))) ? $params['filename'] : $params['name'];
             $fileName = $this->decodeMimeStr($fileName);
-            $fileName = $this->decodeRFC2231($fileName, $this->getServerEncoding());
+            $fileName = $this->decodeRFC2231($fileName);
         }
 
         $partStructure_id = ($partStructure->ifid && isset($partStructure->id)) ? $partStructure->id : null;
@@ -1593,6 +1593,7 @@ class Mailbox
         foreach ($encodings as $encoding) {
             $lowercase_encodings[] = \strtolower($encoding);
         }
+
         return $lowercase_encodings;
     }
 
@@ -1773,11 +1774,10 @@ class Mailbox
 
     /**
      * @param string $string
-     * @param string $charset
      *
      * @return string
      */
-    protected function decodeRFC2231($string, $charset = 'utf-8')
+    protected function decodeRFC2231($string)
     {
         if (\preg_match("/^(.*?)'.*?'(.*?)$/", $string, $matches)) {
             $data = $matches[2];
