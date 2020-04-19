@@ -1229,21 +1229,6 @@ class Mailbox
     }
 
     /**
-     * Returns the list of available encodings in lower case.
-     *
-     * @return array mb_list_encodings() in lower case
-     */
-    protected function lowercase_mb_list_encodings()
-    {
-        $encodings = \mb_list_encodings();
-        foreach ($encodings as $encoding)
-        {
-            $lowercase_encodings[] = \strtolower($encoding);
-        }
-        return $lowercase_encodings;
-    }
-
-    /**
      * Decodes a mime string.
      *
      * @param string $string MIME string to decode
@@ -1465,6 +1450,21 @@ class Mailbox
             $options,
             $internal_date
         );
+    }
+
+    /**
+     * Returns the list of available encodings in lower case.
+     *
+     * @return array mb_list_encodings() in lower case
+     */
+    protected function lowercase_mb_list_encodings()
+    {
+        $encodings = \mb_list_encodings();
+        foreach ($encodings as $encoding)
+        {
+            $lowercase_encodings[] = \strtolower($encoding);
+        }
+        return $lowercase_encodings;
     }
 
     /** @return resource */
