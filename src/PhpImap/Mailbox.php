@@ -1265,8 +1265,8 @@ class Mailbox
                         $newString .= \mb_convert_encoding($element->text, 'UTF-8', $element->charset);
                     } else {
                         // Fallback: Try to convert with iconv()
-                        $iconv_converted_string = \iconv($element->charset, "UTF-8", $element->text);
-                        if (! $iconv_converted_string) {
+                        $iconv_converted_string = \iconv($element->charset, 'UTF-8', $element->text);
+                        if (!$iconv_converted_string) {
                             // If iconv() could also not convert, return string as it is
                             // (unknown charset)
                             $newString .= $element->text;
@@ -1462,6 +1462,7 @@ class Mailbox
         foreach ($encodings as $encoding) {
             $lowercase_encodings[] = \strtolower($encoding);
         }
+
         return $lowercase_encodings;
     }
 
