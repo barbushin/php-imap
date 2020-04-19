@@ -112,10 +112,8 @@ class DataPartInfo
     protected function convertEncodingAfterFetch()
     {
         if (isset($this->charset) and !empty(\trim($this->charset))) {
-            $this->data = $this->mail->convertStringEncoding(
-                (string) $this->data, // Data to convert
-                $this->charset, // FROM-Encoding (Charset)
-                $this->mail->getServerEncoding() // TO-Encoding (Charset)
+            $this->data = $this->mail->decodeMimeStr(
+                (string) $this->data // Data to convert
             );
         }
 
