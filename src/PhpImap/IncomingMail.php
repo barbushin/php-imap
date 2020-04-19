@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PhpImap;
 
 use InvalidArgumentException;
@@ -45,7 +47,7 @@ class IncomingMail extends IncomingMailHeader
      *
      * @return string Value of the property (eg. Plain text message)
      */
-    public function __get($name)
+    public function __get(string $name): string
     {
         $type = false;
         if ('textPlain' == $name) {
@@ -74,14 +76,14 @@ class IncomingMail extends IncomingMailHeader
      *
      * @return bool True, if property is set or empty
      */
-    public function __isset($name)
+    public function __isset(string $name): bool
     {
         self::__get($name);
 
         return isset($this->$name);
     }
 
-    public function setHeader(IncomingMailHeader $header)
+    public function setHeader(IncomingMailHeader $header): void
     {
         /** @psalm-var array<string, scalar|array|object|null> */
         $array = \get_object_vars($header);
@@ -93,12 +95,12 @@ class IncomingMail extends IncomingMailHeader
     /**
      * @param DataPartInfo::TEXT_PLAIN|DataPartInfo::TEXT_HTML $type
      */
-    public function addDataPartInfo(DataPartInfo $dataInfo, $type)
+    public function addDataPartInfo(DataPartInfo $dataInfo, int $type): void
     {
         $this->dataInfo[$type][] = $dataInfo;
     }
 
-    public function addAttachment(IncomingMailAttachment $attachment)
+    public function addAttachment(IncomingMailAttachment $attachment): void
     {
         if (!\is_string($attachment->id)) {
             throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() does not have an id specified!');
@@ -112,10 +114,8 @@ class IncomingMail extends IncomingMailHeader
      * Sets property $hasAttachments.
      *
      * @param bool $hasAttachments True, if IncomingMail[] has one or more attachments
-     *
-     * @return void
      */
-    public function setHasAttachments($hasAttachments)
+    public function setHasAttachments(bool $hasAttachments): void
     {
         $this->hasAttachments = $hasAttachments;
     }
@@ -125,7 +125,7 @@ class IncomingMail extends IncomingMailHeader
      *
      * @return bool true or false
      */
-    public function hasAttachments()
+    public function hasAttachments(): bool
     {
         return $this->hasAttachments;
     }
@@ -133,17 +133,15 @@ class IncomingMail extends IncomingMailHeader
     /**
      * @return IncomingMailAttachment[]
      */
-    public function getAttachments()
+    public function getAttachments(): array
     {
         return $this->attachments;
     }
 
     /**
      * @param string $id The attachment id
-     *
-     * @return bool
      */
-    public function removeAttachment($id)
+    public function removeAttachment(string $id): bool
     {
         if (!isset($this->attachments[$id])) {
             return false;
@@ -163,7 +161,7 @@ class IncomingMail extends IncomingMailHeader
      *
      * @psalm-return array<string, string>
      */
-    public function getInternalLinksPlaceholders()
+    public function getInternalLinksPlaceholders(): array
     {
         $match = \preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $this->textHtml, $matches);
 
@@ -173,12 +171,7 @@ class IncomingMail extends IncomingMailHeader
         return $match ? \array_combine($matches[2], $matches[1]) : [];
     }
 
-    /**
-     * @param string $baseUri
-     *
-     * @return string
-     */
-    public function replaceInternalLinks($baseUri)
+    public function replaceInternalLinks(string $baseUri): string
     {
         $baseUri = \rtrim($baseUri, '\\/').'/';
         $fetchedHtml = $this->textHtml;
@@ -203,10 +196,8 @@ class IncomingMail extends IncomingMailHeader
     /**
      * Embed inline image attachments as base64 to allow for
      * email html to display inline images automatically.
-     *
-     * @return void
      */
-    public function embedImageAttachments()
+    public function embedImageAttachments(): void
     {
         \preg_match_all("/\bcid:[^'\"\s]{1,256}/mi", $this->textHtml, $matches);
 

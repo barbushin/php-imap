@@ -6,87 +6,11 @@
     </UnusedVariable>
   </file>
   <file src="src/PhpImap/Imap.php">
-    <DocblockTypeContradiction occurrences="75">
-      <code>\is_string($mailbox)</code>
-      <code>\is_string($message)</code>
-      <code>\is_string($options)</code>
-      <code>null !== $options &amp;&amp; !\is_string($options)</code>
-      <code>\is_string($internal_date)</code>
-      <code>null !== $internal_date &amp;&amp; !\is_string($internal_date)</code>
-      <code>\is_int($msg_number)</code>
-      <code>\is_int($options)</code>
-      <code>\is_string($flag)</code>
-      <code>\is_int($options)</code>
-      <code>\is_int($flag)</code>
-      <code>\is_string($mailbox)</code>
-      <code>\is_int($options)</code>
-      <code>\is_string($mailbox)</code>
-      <code>\is_int($options)</code>
-      <code>\is_int($msg_number)</code>
+    <DocblockTypeContradiction occurrences="3">
       <code>\is_int($section)</code>
       <code>!\is_string($section) &amp;&amp; !\is_int($section)</code>
-      <code>\is_int($options)</code>
-      <code>\is_int($msg_number)</code>
-      <code>\is_int($options)</code>
-      <code>\is_int($msg_number)</code>
-      <code>\is_int($options)</code>
-      <code>\is_string($quota_root)</code>
-      <code>\is_string($ref)</code>
-      <code>\is_string($pattern)</code>
-      <code>\is_string($ref)</code>
-      <code>\is_string($pattern)</code>
-      <code>\is_string($ref)</code>
-      <code>\is_string($pattern)</code>
-      <code>\is_string($mailbox)</code>
-      <code>\is_int($options)</code>
-      <code>\is_string($mailbox)</code>
-      <code>\is_int($options)</code>
-      <code>\is_string($mailbox)</code>
-      <code>\is_string($username)</code>
-      <code>\is_string($password)</code>
-      <code>\is_int($options)</code>
-      <code>\is_int($n_retries)</code>
-      <code>\is_string($old_mbox)</code>
-      <code>\is_string($new_mbox)</code>
-      <code>\is_string($mailbox)</code>
-      <code>\is_int($options)</code>
-      <code>\is_int($n_retries)</code>
-      <code>\is_int($msg_number)</code>
-      <code>\is_string($part_number)</code>
-      <code>\is_int($options)</code>
-      <code>\is_string($criteria)</code>
-      <code>\is_int($options)</code>
-      <code>\is_string($charset)</code>
-      <code>null !== $charset &amp;&amp; !\is_string($charset)</code>
-      <code>\is_string($flag)</code>
-      <code>\is_int($options)</code>
-      <code>\is_int($criteria)</code>
-      <code>\is_bool($reverse)</code>
-      <code>\is_int($options)</code>
-      <code>\is_string($search_criteria)</code>
-      <code>null !== $search_criteria &amp;&amp; !\is_string($search_criteria)</code>
-      <code>\is_string($charset)</code>
-      <code>null !== $charset &amp;&amp; !\is_string($charset)</code>
-      <code>\is_string($mailbox)</code>
-      <code>\is_int($options)</code>
-      <code>\is_string($mailbox)</code>
-      <code>\is_int($timeout_type)</code>
-      <code>\is_int($timeout)</code>
-      <code>\is_string($mailbox)</code>
-      <code>\is_string($str)</code>
-      <code>\is_string($str)</code>
-      <code>\is_string($method)</code>
-      <code>\is_int($argument)</code>
       <code>\is_resource($maybe)</code>
-      <code>\is_string($method)</code>
-      <code>\is_string($method)</code>
-      <code>\is_int($argument)</code>
-      <code>\is_bool($allow_sequence)</code>
     </DocblockTypeContradiction>
-    <MixedReturnTypeCoercion occurrences="2">
-      <code>$result</code>
-      <code>array[]</code>
-    </MixedReturnTypeCoercion>
   </file>
   <file src="src/PhpImap/IncomingMail.php">
     <PossiblyUnusedMethod occurrences="2">
@@ -98,16 +22,26 @@
     </PropertyTypeCoercion>
   </file>
   <file src="src/PhpImap/Mailbox.php">
-    <DocblockTypeContradiction occurrences="3">
+    <DocblockTypeContradiction occurrences="2">
       <code>\in_array($imapSearchOption, $supported_options, true)</code>
-      <code>\is_int($retriesNum)</code>
       <code>\in_array($key, $supported_params, true)</code>
     </DocblockTypeContradiction>
-    <InvalidArgument occurrences="2">
-      <code>\random_bytes(20)</code>
-      <code>\random_bytes(16)</code>
+    <InvalidArgument occurrences="6">
+      <code>$element-&gt;charset</code>
+      <code>$element-&gt;charset</code>
+      <code>$element-&gt;text</code>
+      <code>$element-&gt;charset</code>
+      <code>$element-&gt;charset</code>
+      <code>$element-&gt;text</code>
     </InvalidArgument>
-    <PossiblyUnusedMethod occurrences="25">
+    <MixedInferredReturnType occurrences="1">
+      <code>array</code>
+    </MixedInferredReturnType>
+    <PossiblyUndefinedVariable occurrences="2">
+      <code>$lowercase_encodings</code>
+      <code>$lowercase_encodings</code>
+    </PossiblyUndefinedVariable>
+    <PossiblyUnusedMethod occurrences="24">
       <code>setConnectionRetry</code>
       <code>setConnectionRetryDelay</code>
       <code>setExpungeOnDisconnect</code>
@@ -129,120 +63,14 @@
       <code>getMailboxInfo</code>
       <code>getQuotaLimit</code>
       <code>getQuotaUsage</code>
-      <code>getImapPath</code>
       <code>getSubscribedMailboxes</code>
       <code>subscribeMailbox</code>
       <code>unsubscribeMailbox</code>
     </PossiblyUnusedMethod>
-    <RedundantConditionGivenDocblockType occurrences="2">
-      <code>!\is_int($retriesNum) or $retriesNum &lt; 0</code>
-      <code>\is_int($retriesNum)</code>
-    </RedundantConditionGivenDocblockType>
-  </file>
-  <file src="tests/unit/IncomingMailTest.php">
-    <RedundantConditionGivenDocblockType occurrences="2">
-      <code>\is_string($attachment-&gt;id)</code>
-      <code>assertTrue</code>
-    </RedundantConditionGivenDocblockType>
-    <ReservedWord occurrences="8">
-      <code>$this-&gt;assertTrue($mail-&gt;__isset('textPlain'))</code>
-      <code>$this-&gt;assertFalse($mail-&gt;hasAttachments())</code>
-      <code>$this-&gt;assertTrue($mail-&gt;hasAttachments())</code>
-      <code>$this-&gt;assertTrue(\is_string($attachment-&gt;id))</code>
-      <code>$this-&gt;assertTrue($mail-&gt;removeAttachment($attachment-&gt;id))</code>
-      <code>$this-&gt;assertFalse($mail-&gt;hasAttachments())</code>
-      <code>$this-&gt;assertTrue(\is_string($attachment-&gt;id))</code>
-      <code>$this-&gt;assertFalse($mail-&gt;removeAttachment($attachment-&gt;id))</code>
-    </ReservedWord>
-  </file>
-  <file src="tests/unit/LiveMailboxTest.php">
-    <InvalidArgument occurrences="7">
-      <code>\random_bytes(16)</code>
-      <code>\random_bytes(16)</code>
-      <code>\random_bytes(16)</code>
-      <code>\random_bytes(16)</code>
-      <code>\random_bytes(16)</code>
-      <code>\random_bytes(16)</code>
-      <code>\random_bytes(4)</code>
-    </InvalidArgument>
-    <PossiblyNullArgument occurrences="5">
-      <code>$envelope['subject']</code>
-      <code>$envelope['subject']</code>
-      <code>$envelope['subject']</code>
-      <code>$envelope['subject']</code>
-      <code>$envelope['subject']</code>
-    </PossiblyNullArgument>
-    <ReservedWord occurrences="36">
-      <code>$this-&gt;markTestSkipped('paragonie/hidden-string not installed!')</code>
-      <code>$this-&gt;assertTrue($mailbox-&gt;hasImapStream())</code>
-      <code>static::assertTrue(\is_array($mailboxes[$i]))</code>
-      <code>static::assertTrue(isset($mailboxes[$i]['shortpath']))</code>
-      <code>static::assertTrue(\is_string($mailboxes[$i]['shortpath']))</code>
-      <code>$this-&gt;assertTrue(\property_exists($check, $expectedProperty))</code>
-      <code>$this-&gt;assertTrue(\is_string($check-&gt;Date), 'Date property of Mailbox::checkMailbox() result was not a string!')</code>
-      <code>$this-&gt;assertTrue(\is_int($unix), 'Date property of Mailbox::checkMailbox() result was not a valid date!')</code>
-      <code>$this-&gt;assertTrue(\in_array($check-&gt;Driver, ['POP3', 'IMAP', 'NNTP', 'pop3', 'imap', 'nntp'], true), 'Driver property of Mailbox::checkMailbox() result was not of an expected value!')</code>
-      <code>$this-&gt;assertTrue(\is_int($check-&gt;Nmsgs), 'Nmsgs property of Mailbox::checkMailbox() result was not of an expected type!')</code>
-      <code>$this-&gt;assertTrue(\is_int($check-&gt;Recent), 'Recent property of Mailbox::checkMailbox() result was not of an expected type!')</code>
-      <code>$this-&gt;assertTrue(\property_exists($status, $expectedProperty))</code>
-      <code>static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null))</code>
-      <code>static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null))</code>
-      <code>static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null))</code>
-      <code>static::assertTrue(\is_string(isset($envelope['subject']) ? $envelope['subject'] : null))</code>
-      <code>static::assertCount(1, $info)</code>
-      <code>static::assertTrue($mail-&gt;hasAttachments())</code>
-    </ReservedWord>
   </file>
   <file src="tests/unit/MailboxTest.php">
-    <DeprecatedMethod occurrences="8">
-      <code>assertAttributeEquals</code>
-      <code>assertAttributeEquals</code>
-      <code>assertAttributeEquals</code>
-      <code>assertAttributeEquals</code>
-      <code>assertAttributeEquals</code>
-      <code>assertAttributeEquals</code>
-      <code>assertAttributeEquals</code>
-      <code>assertAttributeEquals</code>
-    </DeprecatedMethod>
     <InvalidArgument occurrences="1">
       <code>self::ANYTHING</code>
     </InvalidArgument>
-    <ReservedWord occurrences="30">
-      <code>$this-&gt;assertAttributeEquals('{imap.example.com:993/imap/ssl}INBOX', 'imapPath', $mailbox)</code>
-      <code>$this-&gt;assertAttributeEquals('php-imap@example.com', 'imapLogin', $mailbox)</code>
-      <code>$this-&gt;assertAttributeEquals('  v3rY!53cEt&amp;P4sSWöRd$', 'imapPassword', $mailbox)</code>
-      <code>$this-&gt;assertAttributeEquals(\realpath('.'), 'attachmentsDir', $mailbox)</code>
-      <code>$this-&gt;assertAttributeEquals('UTF-8', 'serverEncoding', $mailbox)</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;getServerEncoding(), $encoding)</code>
-      <code>$this-&gt;assertAttributeEquals('UTF-8', 'serverEncoding', $mailbox)</code>
-      <code>$this-&gt;assertAttributeEquals('UTF-8', 'serverEncoding', $mailbox)</code>
-      <code>$this-&gt;assertAttributeEquals('UTF-8', 'serverEncoding', $mailbox)</code>
-      <code>$this-&gt;assertEquals($encoding, $mailbox-&gt;getServerEncoding())</code>
-      <code>$this-&gt;assertNotEquals($encoding, $mailbox-&gt;getServerEncoding())</code>
-      <code>$this-&gt;assertEquals($this-&gt;getMailbox()-&gt;getImapSearchOption(), 1)</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;getImapSearchOption(), 2)</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;getImapSearchOption(), 1)</code>
-      <code>$this-&gt;assertEquals($this-&gt;getMailbox()-&gt;getLogin(), 'php-imap@example.com')</code>
-      <code>$this-&gt;assertNotEmpty($this-&gt;getMailbox()-&gt;getPathDelimiter())</code>
-      <code>$this-&gt;assertTrue($mailbox-&gt;validatePathDelimiter($str))</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;getPathDelimiter(), '.')</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;getPathDelimiter(), '/')</code>
-      <code>$this-&gt;assertEquals($this-&gt;getMailbox()-&gt;getAttachmentsIgnore(), false)</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;getAttachmentsIgnore(), (bool) $paramValue)</code>
-      <code>$this-&gt;assertEquals($utf8_decoded_str, $str)</code>
-      <code>$this-&gt;assertEquals($this-&gt;getMailbox()-&gt;decodeMimeStr($str, 'utf-8'), $str)</code>
-      <code>$this-&gt;assertEquals((int) $parsedDateTime-&gt;format('U'), $epochToCompare)</code>
-      <code>$this-&gt;assertEquals($parsedDt, $dateToParse)</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;decodeMimeStr($str), $expected)</code>
-      <code>$this-&gt;assertNull($mailbox-&gt;setTimeouts($timeout, $types))</code>
-      <code>$this-&gt;assertNull($mailbox-&gt;setConnectionArgs($option, $retriesNum, $param))</code>
-      <code>$this-&gt;assertEquals($mailbox-&gt;decodeMimeStr($str, $mailbox-&gt;getServerEncoding()), $expectedStr)</code>
-      <code>$this-&gt;expectExceptionMessage($expectedExceptionMessage)</code>
-    </ReservedWord>
-  </file>
-  <file src="tests/unit/RequirementsTest.php">
-    <ReservedWord occurrences="1">
-      <code>$this-&gt;assertTrue(\extension_loaded($extension))</code>
-    </ReservedWord>
   </file>
 </files>
