@@ -90,7 +90,7 @@ class DataPartInfo
                 $this->data = \imap_binary((string) $this->data);
                 break;
             case ENCBASE64:
-                $this->data = \base64_decode($this->data, false);
+                $this->data = \base64_decode((string) $this->data, false);
                 break;
             case ENCQUOTEDPRINTABLE:
                 $this->data = \quoted_printable_decode((string) $this->data);
