@@ -33,7 +33,7 @@ Initially released in December 2012, the PHP IMAP Mailbox is a powerful and open
 
 * PHP `imap` extension must be present; so make sure this line is active in your php.ini: `extension=php_imap.dll`
 * PHP `mbstring` extension must be present; so make sure this line is active in your php.ini: `extension=php_mbstring.dll`
-* PHP `iconv` extension must be present, if `mbstring` is not available; so make sure this line is active in your php.ini: `extension=php_iconv.dll`
+* PHP `iconv` extension must be present; so make sure this line is active in your php.ini: `extension=php_iconv.dll`
 
 ### Installation by Composer
 
