@@ -45,7 +45,7 @@
         "tests": [
             "parallel-lint .php_cs.dist src tests examples",
             "phpcpd src tests",
-            "phpunit",
+            "phpunit --testdox",
             "composer-require-checker check ./composer.json",
             "phpmnd ./ --exclude=./.github/ --exclude=./examples/ --exclude=./vendor/ --non-zero-exit-on-violation --hint",
             "php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff-format=udiff -v",
