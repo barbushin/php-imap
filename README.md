@@ -31,9 +31,10 @@ Initially released in December 2012, the PHP IMAP Mailbox is a powerful and open
 | 7.3  | 3.x, 4.x |
 | 7.4  | >3.0.33, 4.x |
 
+* PHP `fileinfo` extension must be present; so make sure this line is active in your php.ini: `extension=php_fileinfo.dll`
+* PHP `iconv` extension must be present; so make sure this line is active in your php.ini: `extension=php_iconv.dll`
 * PHP `imap` extension must be present; so make sure this line is active in your php.ini: `extension=php_imap.dll`
 * PHP `mbstring` extension must be present; so make sure this line is active in your php.ini: `extension=php_mbstring.dll`
-* PHP `iconv` extension must be present; so make sure this line is active in your php.ini: `extension=php_iconv.dll`
 
 ### Installation by Composer
 
@@ -49,9 +50,15 @@ Install the latest available and may unstable source code from `develop`, which 
 
 	$ composer require php-imap/php-imap:dev-develop
 
-### PHPUnit Tests
+### Run Tests
 
-Before you can run the PHPUnit tests you may need to run `composer install` to install all (development) dependencies.
+Before you can run the any tests you may need to run `composer install` to install all (development) dependencies.
+
+#### Run all tests
+
+You can run all available tests by running the following command (inside of the installed `php-imap` directory): `composer run tests`
+
+#### Run only PHPUnit tests
 
 You can run all PHPUnit tests by running the following command (inside of the installed `php-imap` directory): `php vendor/bin/phpunit --testdox`
 
