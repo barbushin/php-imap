@@ -23,7 +23,7 @@
         "sort-packages": true
     },
     "require": {
-        "php": ">=5.6",
+        "php": "^7.2",
         "ext-fileinfo": "*",
         "ext-iconv": "*",
         "ext-imap": "*",
@@ -32,16 +32,24 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.16",
         "jakub-onderka/php-parallel-lint": "^1.0",
-        "paragonie/random_compat": "^1",
-        "phpunit/phpunit": "^5.7"
+        "maglnet/composer-require-checker": "^2.0",
+        "paragonie/hidden-string": "^1.0",
+        "phpunit/phpunit": "^8.5",
+        "povils/phpmnd": "^2.2",
+        "psalm/plugin-phpunit": "^0.10.0",
+        "roave/security-advisories": "dev-master",
+        "sebastian/phpcpd": "^4.1",
+        "vimeo/psalm": "^3.11"
     },
     "scripts": {
         "tests": [
             "parallel-lint .php_cs.dist src tests examples",
-            "phpunit",
+            "phpcpd src tests",
+            "phpunit --testdox",
             "composer-require-checker check ./composer.json",
-            "psalm --show-info=false",
-            "php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff-format=udiff -v"
+            "phpmnd ./ --exclude=./.github/ --exclude=./examples/ --exclude=./vendor/ --non-zero-exit-on-violation --hint",
+            "php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff-format=udiff -v",
+            "psalm --show-info=false"
         ]
     },
     "suggest": {

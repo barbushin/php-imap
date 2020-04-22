@@ -4,9 +4,9 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Packagist](https://img.shields.io/packagist/dt/php-imap/php-imap.svg?style=flat-square)](https://packagist.org/packages/php-imap/php-imap)
 [![Build Status](https://travis-ci.org/barbushin/php-imap.svg?branch=master)](https://travis-ci.org/barbushin/php-imap)
-[![Supported PHP Version](https://img.shields.io/packagist/php-v/php-imap/php-imap/3.0.8.svg)](README.md)
+[![Supported PHP Version](https://img.shields.io/packagist/php-v/php-imap/php-imap.svg)](README.md)
 [![Maintainability](https://api.codeclimate.com/v1/badges/02f72a4fd695cb7e2976/maintainability)](https://codeclimate.com/github/barbushin/php-imap/maintainability)
-[![Coverage](https://api.codeclimate.com/v1/badges/02f72a4fd695cb7e2976/test_coverage)](https://codeclimate.com/github/barbushin/php-imap/test_coverage)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/02f72a4fd695cb7e2976/test_coverage)](https://codeclimate.com/github/barbushin/php-imap/test_coverage)
 [![Type Coverage](https://shepherd.dev/github/barbushin/php-imap/coverage.svg)](https://shepherd.dev/github/barbushin/php-imap)
 
 Initially released in December 2012, the PHP IMAP Mailbox is a powerful and open source library to connect to a mailbox by POP3, IMAP and NNTP using the PHP IMAP extension. This library allows you to fetch emails from your email server. Extend the functionality or create powerful web applications to handle your incoming emails.
@@ -22,10 +22,19 @@ Initially released in December 2012, the PHP IMAP Mailbox is a powerful and open
 
 ### Requirements
 
-* PHP 5.6, 7.0, 7.1, 7.2, 7.3 or 7.4
+| PHP Version  | php-imap Version |
+| ------------- | ------------- |
+| 5.6  | 3.x  |
+| 7.0  | 3.x  |
+| 7.1  | 3.x  |
+| 7.2  | 3.x, 4.x |
+| 7.3  | 3.x, 4.x |
+| 7.4  | >3.0.33, 4.x |
+
+* PHP `fileinfo` extension must be present; so make sure this line is active in your php.ini: `extension=php_fileinfo.dll`
+* PHP `iconv` extension must be present; so make sure this line is active in your php.ini: `extension=php_iconv.dll`
 * PHP `imap` extension must be present; so make sure this line is active in your php.ini: `extension=php_imap.dll`
 * PHP `mbstring` extension must be present; so make sure this line is active in your php.ini: `extension=php_mbstring.dll`
-* PHP `iconv` extension must be present, if `mbstring` is not available; so make sure this line is active in your php.ini: `extension=php_iconv.dll`
 
 ### Installation by Composer
 
@@ -41,9 +50,15 @@ Install the latest available and may unstable source code from `develop`, which 
 
 	$ composer require php-imap/php-imap:dev-develop
 
-### PHPUnit Tests
+### Run Tests
 
-Before you can run the PHPUnit tests you may need to run `composer install` to install all (development) dependencies.
+Before you can run the any tests you may need to run `composer install` to install all (development) dependencies.
+
+#### Run all tests
+
+You can run all available tests by running the following command (inside of the installed `php-imap` directory): `composer run tests`
+
+#### Run only PHPUnit tests
 
 You can run all PHPUnit tests by running the following command (inside of the installed `php-imap` directory): `php vendor/bin/phpunit --testdox`
 

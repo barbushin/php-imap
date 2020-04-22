@@ -3,6 +3,7 @@
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
  * @author BAPCLTD-Marv
  */
+declare(strict_types=1);
 
 namespace PhpImap;
 
@@ -64,10 +65,6 @@ final class Imap
 
     /**
      * @param resource|false $imap_stream
-     * @param string         $message
-     * @param string         $mailbox
-     * @param string|null    $options
-     * @param string|null    $internal_date
      *
      * @return true
      *
@@ -75,24 +72,11 @@ final class Imap
      */
     public static function append(
         $imap_stream,
-        $mailbox,
-        $message,
-        $options = null,
-        $internal_date = null
-    ) {
-        if (!\is_string($mailbox)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be a string, '.\gettype($mailbox).' given!');
-        }
-        if (!\is_string($message)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be a string, '.\gettype($message).' given!');
-        }
-        if (null !== $options && !\is_string($options)) {
-            throw new InvalidArgumentException('Argument 4 passed to '.__METHOD__.'() must be a string, '.\gettype($options).' given!');
-        }
-        if (null !== $internal_date && !\is_string($internal_date)) {
-            throw new InvalidArgumentException('Argument 5 passed to '.__METHOD__.'() must be a string, '.\gettype($internal_date).' given!');
-        }
-
+        string $mailbox,
+        string $message,
+        string $options = null,
+        string $internal_date = null
+    ): bool {
         \imap_errors(); // flush errors
 
         $imap_stream = self::EnsureResource($imap_stream, __METHOD__, 1);
@@ -120,23 +104,12 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param int            $msg_number
-     * @param int            $options
-     *
-     * @return string
      */
     public static function body(
         $imap_stream,
-        $msg_number,
-        $options = 0
-    ) {
-        if (!\is_int($msg_number)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be an integer, '.\gettype($msg_number).' given!');
-        }
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be an integer, '.\gettype($options).' given!');
-        }
-
+        int $msg_number,
+        int $options = 0
+    ): string {
         \imap_errors(); // flush errors
 
         $result = \imap_body(
@@ -154,10 +127,8 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     *
-     * @return object
      */
-    public static function check($imap_stream)
+    public static function check($imap_stream): object
     {
         \imap_errors(); // flush errors
 
@@ -174,24 +145,15 @@ final class Imap
     /**
      * @param false|resource $imap_stream
      * @param int|string     $sequence
-     * @param string         $flag
-     * @param int            $options
      *
      * @return true
      */
     public static function clearflag_full(
         $imap_stream,
         $sequence,
-        $flag,
-        $options = 0
-    ) {
-        if (!\is_string($flag)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be a string, '.\gettype($flag).' given!');
-        }
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 4 passed to '.__METHOD__.'() must be an integer, '.\gettype($options).' given!');
-        }
-
+        string $flag,
+        int $options = 0
+    ): bool {
         \imap_errors(); // flush errors
 
         $result = \imap_clearflag_full(
@@ -215,19 +177,14 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param int            $flag
      *
      * @psalm-param value-of<self::CLOSE_FLAGS> $flag
      * @psalm-param 0|32768 $flag
      *
      * @return true
      */
-    public static function close($imap_stream, $flag = 0)
+    public static function close($imap_stream, int $flag = 0): bool
     {
-        if (!\is_int($flag)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be an integer, '.\gettype($flag).' given!');
-        }
-
         \imap_errors(); // flush errors
 
         $result = \imap_close(self::EnsureResource($imap_stream, __METHOD__, 1), $flag);
@@ -248,16 +205,11 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param string         $mailbox
      *
      * @return true
      */
-    public static function createmailbox($imap_stream, $mailbox)
+    public static function createmailbox($imap_stream, string $mailbox): bool
     {
-        if (!\is_string($mailbox)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be a string, '.\gettype($mailbox).' given!');
-        }
-
         \imap_errors(); // flush errors
 
         $result = \imap_createmailbox(
@@ -275,19 +227,14 @@ final class Imap
     /**
      * @param false|resource $imap_stream
      * @param string|int     $msg_number
-     * @param int            $options
      *
      * @return true
      */
     public static function delete(
         $imap_stream,
         $msg_number,
-        $options = 0
-    ) {
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be an integer, '.\gettype($options).' given!');
-        }
-
+        int $options = 0
+    ): bool {
         /**
          * @var int
          *
@@ -316,16 +263,11 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param string         $mailbox
      *
      * @return true
      */
-    public static function deletemailbox($imap_stream, $mailbox)
+    public static function deletemailbox($imap_stream, string $mailbox): bool
     {
-        if (!\is_string($mailbox)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be a string, '.\gettype($mailbox).' given!');
-        }
-
         \imap_errors(); // flush errors
 
         $result = \imap_deletemailbox(
@@ -345,7 +287,7 @@ final class Imap
      *
      * @return true
      */
-    public static function expunge($imap_stream)
+    public static function expunge($imap_stream): bool
     {
         \imap_errors(); // flush errors
 
@@ -363,7 +305,6 @@ final class Imap
     /**
      * @param false|resource $imap_stream
      * @param int|string     $sequence
-     * @param int            $options
      *
      * @return object[]
      *
@@ -372,12 +313,8 @@ final class Imap
     public static function fetch_overview(
         $imap_stream,
         $sequence,
-        $options = 0
-    ) {
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be an integer, '.\gettype($options).' given!');
-        }
-
+        int $options = 0
+    ): array {
         \imap_errors(); // flush errors
 
         $result = \imap_fetch_overview(
@@ -401,26 +338,16 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param int            $msg_number
      * @param string|int     $section
-     * @param int            $options
-     *
-     * @return string
      */
     public static function fetchbody(
         $imap_stream,
-        $msg_number,
+        int $msg_number,
         $section,
-        $options = 0
-    ) {
-        if (!\is_int($msg_number)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be an integer, '.\gettype($msg_number).' given!');
-        }
+        int $options = 0
+    ): string {
         if (!\is_string($section) && !\is_int($section)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be a string or an integer, '.\gettype($section).' given!');
-        }
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 4 passed to '.__METHOD__.'() must be an integer, '.\gettype($options).' given!');
+            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be a string or integer, '.\gettype($section).' given!');
         }
 
         \imap_errors(); // flush errors
@@ -441,23 +368,12 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param int            $msg_number
-     * @param int            $options
-     *
-     * @return string
      */
     public static function fetchheader(
         $imap_stream,
-        $msg_number,
-        $options = 0
-    ) {
-        if (!\is_int($msg_number)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be an integer, '.\gettype($msg_number).' given!');
-        }
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be an integer, '.\gettype($options).' given!');
-        }
-
+        int $msg_number,
+        int $options = 0
+    ): string {
         \imap_errors(); // flush errors
 
         $result = \imap_fetchheader(
@@ -475,25 +391,14 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param int            $msg_number
-     * @param int            $options
-     *
-     * @return object
      *
      * @psalm-return PARTSTRUCTURE
      */
     public static function fetchstructure(
         $imap_stream,
-        $msg_number,
-        $options = 0
-    ) {
-        if (!\is_int($msg_number)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be an integer, '.\gettype($msg_number).' given!');
-        }
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be an integer, '.\gettype($options).' given!');
-        }
-
+        int $msg_number,
+        int $options = 0
+    ): object {
         \imap_errors(); // flush errors
 
         $result = \imap_fetchstructure(
@@ -512,18 +417,13 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param string         $quota_root
      *
-     * @return array[]
+     * @todo add return array shape pending resolution of https://github.com/vimeo/psalm/issues/2620
      */
     public static function get_quotaroot(
         $imap_stream,
-        $quota_root
-    ) {
-        if (!\is_string($quota_root)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be a string, '.\gettype($quota_root).' given!');
-        }
-
+        string $quota_root
+    ): array {
         \imap_errors(); // flush errors
 
         $result = \imap_get_quotaroot(
@@ -540,8 +440,6 @@ final class Imap
 
     /**
      * @param resource|false $imap_stream
-     * @param string         $ref
-     * @param string         $pattern
      *
      * @return object[]
      *
@@ -549,16 +447,9 @@ final class Imap
      */
     public static function getmailboxes(
         $imap_stream,
-        $ref,
-        $pattern
-    ) {
-        if (!\is_string($ref)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be a string, '.\gettype($ref).' given!');
-        }
-        if (!\is_string($pattern)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be a string, '.\gettype($pattern).' given!');
-        }
-
+        string $ref,
+        string $pattern
+    ): array {
         \imap_errors(); // flush errors
 
         $result = \imap_getmailboxes(
@@ -587,8 +478,6 @@ final class Imap
 
     /**
      * @param resource|false $imap_stream
-     * @param string         $ref
-     * @param string         $pattern
      *
      * @return object[]
      *
@@ -596,16 +485,9 @@ final class Imap
      */
     public static function getsubscribed(
         $imap_stream,
-        $ref,
-        $pattern
-    ) {
-        if (!\is_string($ref)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be a string, '.\gettype($ref).' given!');
-        }
-        if (!\is_string($pattern)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be a string, '.\gettype($pattern).' given!');
-        }
-
+        string $ref,
+        string $pattern
+    ): array {
         \imap_errors(); // flush errors
 
         $result = \imap_getsubscribed(
@@ -624,10 +506,8 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     *
-     * @return array
      */
-    public static function headers($imap_stream)
+    public static function headers($imap_stream): array
     {
         \imap_errors(); // flush errors
 
@@ -644,22 +524,13 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param string         $ref
-     * @param string         $pattern
      *
      * @return string[]
      *
      * @psalm-return list<string>
      */
-    public static function listOfMailboxes($imap_stream, $ref, $pattern)
+    public static function listOfMailboxes($imap_stream, string $ref, string $pattern): array
     {
-        if (!\is_string($ref)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be a string, '.\gettype($ref).' given!');
-        }
-        if (!\is_string($pattern)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be a string, '.\gettype($pattern).' given!');
-        }
-
         \imap_errors(); // flush errors
 
         $result = \imap_list(
@@ -673,12 +544,7 @@ final class Imap
         }
 
         return \array_values(\array_map(
-            /**
-             * @param string $folder
-             *
-             * @return string
-             */
-            static function ($folder) {
+            static function (string $folder): string {
                 return static::decodeStringFromUtf7ImapToUtf8($folder);
             },
             $result
@@ -701,11 +567,9 @@ final class Imap
      *	disposition?:array{filename:string}
      * }> $body An indexed array of bodies (docblock is not complete)
      *
-     * @return string
-     *
      * @todo flesh out array shape pending resolution of https://github.com/vimeo/psalm/issues/1518
      */
-    public static function mail_compose(array $envelope, array $body)
+    public static function mail_compose(array $envelope, array $body): string
     {
         return \imap_mail_compose($envelope, $body);
     }
@@ -713,24 +577,15 @@ final class Imap
     /**
      * @param false|resource $imap_stream
      * @param int|string     $msglist
-     * @param string         $mailbox
-     * @param int            $options
      *
      * @return true
      */
     public static function mail_copy(
         $imap_stream,
         $msglist,
-        $mailbox,
-        $options = 0
-    ) {
-        if (!\is_string($mailbox)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be a string, '.\gettype($mailbox).' given!');
-        }
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 4 passed to '.__METHOD__.'() must be an integer, '.\gettype($options).' given!');
-        }
-
+        string $mailbox,
+        int $options = 0
+    ): bool {
         \imap_errors(); // flush errors
 
         $result = \imap_mail_copy(
@@ -755,24 +610,15 @@ final class Imap
     /**
      * @param false|resource $imap_stream
      * @param int|string     $msglist
-     * @param string         $mailbox
-     * @param int            $options
      *
      * @return true
      */
     public static function mail_move(
         $imap_stream,
         $msglist,
-        $mailbox,
-        $options = 0
-    ) {
-        if (!\is_string($mailbox)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be a string, '.\gettype($mailbox).' given!');
-        }
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 4 passed to '.__METHOD__.'() must be an integer, '.\gettype($options).' given!');
-        }
-
+        string $mailbox,
+        int $options = 0
+    ): bool {
         \imap_errors(); // flush errors
 
         $result = \imap_mail_move(
@@ -796,10 +642,8 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     *
-     * @return object
      */
-    public static function mailboxmsginfo($imap_stream)
+    public static function mailboxmsginfo($imap_stream): object
     {
         \imap_errors(); // flush errors
 
@@ -816,10 +660,8 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     *
-     * @return int
      */
-    public static function num_msg($imap_stream)
+    public static function num_msg($imap_stream): int
     {
         \imap_errors(); // flush errors
 
@@ -833,40 +675,18 @@ final class Imap
     }
 
     /**
-     * @param string $mailbox
-     * @param string $username
-     * @param string $password
-     * @param int    $options
-     * @param int    $n_retries
-     *
      * @psalm-param array{DISABLE_AUTHENTICATOR:string}|array<empty, empty> $params
      *
      * @return resource
      */
     public static function open(
-        $mailbox,
-        $username,
-        $password,
-        $options = 0,
-        $n_retries = 0,
+        string $mailbox,
+        string $username,
+        string $password,
+        int $options = 0,
+        int $n_retries = 0,
         array $params = []
     ) {
-        if (!\is_string($mailbox)) {
-            throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.' must be a string, '.\gettype($mailbox).' given!');
-        }
-        if (!\is_string($username)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.' must be a string, '.\gettype($username).' given!');
-        }
-        if (!\is_string($password)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.' must be a string, '.\gettype($password).' given!');
-        }
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 4 passed to '.__METHOD__.'() must be an integer, '.\gettype($options).' given!');
-        }
-        if (!\is_int($n_retries)) {
-            throw new InvalidArgumentException('Argument 5 passed to '.__METHOD__.'() must be an integer, '.\gettype($n_retries).' given!');
-        }
-
         if (\preg_match("/^\{.*\}(.*)$/", $mailbox, $matches)) {
             $mailbox_name = $matches[1];
 
@@ -894,33 +714,22 @@ final class Imap
 
     /**
      * @param resource|false $imap_stream
-     *
-     * @return bool
      */
-    public static function ping($imap_stream)
+    public static function ping($imap_stream): bool
     {
         return \is_resource($imap_stream) && \imap_ping($imap_stream);
     }
 
     /**
      * @param false|resource $imap_stream
-     * @param string         $old_mbox
-     * @param string         $new_mbox
      *
      * @return true
      */
     public static function renamemailbox(
         $imap_stream,
-        $old_mbox,
-        $new_mbox
-    ) {
-        if (!\is_string($old_mbox)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.' must be a string, '.\gettype($old_mbox).' given!');
-        }
-        if (!\is_string($new_mbox)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.' must be a string, '.\gettype($new_mbox).' given!');
-        }
-
+        string $old_mbox,
+        string $new_mbox
+    ): bool {
         $imap_stream = self::EnsureResource($imap_stream, __METHOD__, 1);
 
         $old_mbox = static::encodeStringToUtf7Imap($old_mbox);
@@ -939,28 +748,15 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param string         $mailbox
-     * @param int            $options
-     * @param int            $n_retries
      *
      * @return true
      */
     public static function reopen(
         $imap_stream,
-        $mailbox,
-        $options = 0,
-        $n_retries = 0
-    ) {
-        if (!\is_string($mailbox)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.' must be a string, '.\gettype($mailbox).' given!');
-        }
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.' must be an integer, '.\gettype($options).' given!');
-        }
-        if (!\is_int($n_retries)) {
-            throw new InvalidArgumentException('Argument 4 passed to '.__METHOD__.' must be an integer, '.\gettype($n_retries).' given!');
-        }
-
+        string $mailbox,
+        int $options = 0,
+        int $n_retries = 0
+    ): bool {
         $imap_stream = self::EnsureResource($imap_stream, __METHOD__, 1);
 
         $mailbox = static::encodeStringToUtf7Imap($mailbox);
@@ -979,29 +775,16 @@ final class Imap
     /**
      * @param false|resource        $imap_stream
      * @param string|false|resource $file
-     * @param int                   $msg_number
-     * @param string                $part_number
-     * @param int                   $options
      *
      * @return true
      */
     public static function savebody(
         $imap_stream,
         $file,
-        $msg_number,
-        $part_number = '',
-        $options = 0
-    ) {
-        if (!\is_int($msg_number)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be an integer, '.\gettype($msg_number).' given!');
-        }
-        if (!\is_string($part_number)) {
-            throw new InvalidArgumentException('Argument 4 passed to '.__METHOD__.'() must be an integer, '.\gettype($part_number).' given!');
-        }
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 5 passed to '.__METHOD__.'() must be an integer, '.\gettype($options).' given!');
-        }
-
+        int $msg_number,
+        string $part_number = '',
+        int $options = 0
+    ): bool {
         $imap_stream = self::EnsureResource($imap_stream, __METHOD__, 1);
         $file = \is_string($file) ? $file : self::EnsureResource($file, __METHOD__, 2);
         $part_number = self::encodeStringToUtf7Imap($part_number);
@@ -1019,9 +802,6 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param string         $criteria
-     * @param int            $options
-     * @param string         $charset
      *
      * @return int[]
      *
@@ -1029,20 +809,10 @@ final class Imap
      */
     public static function search(
         $imap_stream,
-        $criteria,
-        $options = SE_FREE,
-        $charset = null
-    ) {
-        if (!\is_string($criteria)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.' must be a string, '.\gettype($criteria).' given!');
-        }
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.' must be a string, '.\gettype($options).' given!');
-        }
-        if (null !== $charset && !\is_string($charset)) {
-            throw new InvalidArgumentException('Argument 4 passed to '.__METHOD__.' must be a string or null, '.\gettype($charset).' given!');
-        }
-
+        string $criteria,
+        int $options = SE_FREE,
+        string $charset = null
+    ): array {
         \imap_errors(); // flush errors
 
         $imap_stream = static::EnsureResource($imap_stream, __METHOD__, 1);
@@ -1080,24 +850,15 @@ final class Imap
     /**
      * @param false|resource $imap_stream
      * @param int|string     $sequence
-     * @param string         $flag
-     * @param int            $options
      *
      * @return true
      */
     public static function setflag_full(
         $imap_stream,
         $sequence,
-        $flag,
-        $options = NIL
-    ) {
-        if (!\is_string($flag)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.' must be a string, '.\gettype($flag).' given!');
-        }
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 4 passed to '.__METHOD__.' must be an integer, '.\gettype($options).' given!');
-        }
-
+        string $flag,
+        int $options = NIL
+    ): bool {
         \imap_errors(); // flush errors
 
         $result = \imap_setflag_full(
@@ -1121,11 +882,6 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param int            $criteria
-     * @param bool           $reverse
-     * @param int            $options
-     * @param string|null    $search_criteria
-     * @param string|null    $charset
      *
      * @psalm-param value-of<self::SORT_CRITERIA> $criteria
      * @psalm-param 1|5|0|2|6|3|4 $criteria
@@ -1136,28 +892,12 @@ final class Imap
      */
     public static function sort(
         $imap_stream,
-        $criteria,
-        $reverse,
-        $options,
-        $search_criteria = null,
-        $charset = null
-    ) {
-        if (!\is_int($criteria)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.' must be an integer, '.\gettype($criteria).' given!');
-        }
-        if (!\is_bool($reverse)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.' must be a boolean, '.\gettype($reverse).' given!');
-        }
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 4 passed to '.__METHOD__.' must be an integer, '.\gettype($options).' given!');
-        }
-        if (null !== $search_criteria && !\is_string($search_criteria)) {
-            throw new InvalidArgumentException('Argument 5 passed to '.__METHOD__.' must be a string or null, '.\gettype($search_criteria).' given!');
-        }
-        if (null !== $charset && !\is_string($charset)) {
-            throw new InvalidArgumentException('Argument 6 passed to '.__METHOD__.' must be a string or null, '.\gettype($charset).' given!');
-        }
-
+        int $criteria,
+        bool $reverse,
+        int $options,
+        string $search_criteria = null,
+        string $charset = null
+    ): array {
         \imap_errors(); // flush errors
 
         $imap_stream = self::EnsureResource($imap_stream, __METHOD__, 1);
@@ -1199,25 +939,14 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param string         $mailbox
-     * @param int            $options
      *
      * @psalm-param SA_MESSAGES|SA_RECENT|SA_UNSEEN|SA_UIDNEXT|SA_UIDVALIDITY|SA_ALL $flags
-     *
-     * @return object
      */
     public static function status(
         $imap_stream,
-        $mailbox,
-        $options
-    ) {
-        if (!\is_string($mailbox)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be a string, '.\gettype($mailbox).' given!');
-        }
-        if (!\is_int($options)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be an integer, '.\gettype($options).' given!');
-        }
-
+        string $mailbox,
+        int $options
+    ): object {
         $imap_stream = self::EnsureResource($imap_stream, __METHOD__, 1);
 
         $mailbox = static::encodeStringToUtf7Imap($mailbox);
@@ -1235,18 +964,11 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param string         $mailbox
-     *
-     * @return void
      */
     public static function subscribe(
         $imap_stream,
-        $mailbox
-    ) {
-        if (!\is_string($mailbox)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be a string, '.\gettype($mailbox).' given!');
-        }
-
+        string $mailbox
+    ): void {
         $imap_stream = self::EnsureResource($imap_stream, __METHOD__, 1);
 
         $mailbox = static::encodeStringToUtf7Imap($mailbox);
@@ -1261,25 +983,15 @@ final class Imap
     }
 
     /**
-     * @param int $timeout_type
-     * @param int $timeout
-     *
      * @psalm-param value-of<self::TIMEOUT_TYPES> $timeout_type
      * @psalm-param 4|1|2|3 $timeout_type
      *
      * @return true|int
      */
     public static function timeout(
-        $timeout_type,
-        $timeout = -1
+        int $timeout_type,
+        int $timeout = -1
     ) {
-        if (!\is_int($timeout_type)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be an integer, '.\gettype($timeout_type).' given!');
-        }
-        if (!\is_int($timeout)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be an integer, '.\gettype($timeout).' given!');
-        }
-
         \imap_errors(); // flush errors
 
         $result = \imap_timeout(
@@ -1296,18 +1008,11 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param string         $mailbox
-     *
-     * @return void
      */
     public static function unsubscribe(
         $imap_stream,
-        $mailbox
-    ) {
-        if (!\is_string($mailbox)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be a string, '.\gettype($mailbox).' given!');
-        }
-
+        string $mailbox
+    ): void {
         $imap_stream = self::EnsureResource($imap_stream, __METHOD__, 1);
 
         $mailbox = static::encodeStringToUtf7Imap($mailbox);
@@ -1324,16 +1029,10 @@ final class Imap
     /**
      * Returns the provided string in UTF7-IMAP encoded format.
      *
-     * @param string $str
-     *
      * @return string $str UTF-7 encoded string
      */
-    public static function encodeStringToUtf7Imap($str)
+    public static function encodeStringToUtf7Imap(string $str): string
     {
-        if (!\is_string($str)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be a string, '.\gettype($str).' given!');
-        }
-
         $out = \mb_convert_encoding($str, 'UTF7-IMAP', \mb_detect_encoding($str, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
 
         if (!\is_string($out)) {
@@ -1346,16 +1045,10 @@ final class Imap
     /**
      * Returns the provided string in UTF-8 encoded format.
      *
-     * @param string $str
-     *
      * @return string $str, but UTF-8 encoded
      */
-    public static function decodeStringFromUtf7ImapToUtf8($str)
+    public static function decodeStringFromUtf7ImapToUtf8(string $str): string
     {
-        if (!\is_string($str)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must be a string, '.\gettype($str).' given!');
-        }
-
         $out = \mb_convert_encoding($str, 'UTF-8', 'UTF7-IMAP');
 
         if (!\is_string($out)) {
@@ -1367,22 +1060,13 @@ final class Imap
 
     /**
      * @param false|resource $maybe
-     * @param string         $method
-     * @param int            $argument
      *
      * @throws InvalidArgumentException if $maybe is not a valid resource
      *
      * @return resource
      */
-    private static function EnsureResource($maybe, $method, $argument)
+    private static function EnsureResource($maybe, string $method, int $argument)
     {
-        if (!\is_string($method)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.' must be a string, '.\gettype($method).' given!');
-        }
-        if (!\is_int($argument)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.' must be an integer, '.\gettype($argument).' given!');
-        }
-
         if (!$maybe || !\is_resource($maybe)) {
             throw new InvalidArgumentException('Argument '.(string) $argument.' passed to '.$method.' must be a valid resource!');
         }
@@ -1393,16 +1077,9 @@ final class Imap
 
     /**
      * @param array|false $errors
-     * @param string      $method
-     *
-     * @return UnexpectedValueException
      */
-    private static function HandleErrors($errors, $method)
+    private static function HandleErrors($errors, string $method): UnexpectedValueException
     {
-        if (!\is_string($method)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.' must be a string, '.\gettype($method).' given!');
-        }
-
         if ($errors) {
             return new UnexpectedValueException('IMAP method '.$method.'() failed with error: '.\implode('. ', $errors));
         }
@@ -1412,29 +1089,15 @@ final class Imap
 
     /**
      * @param scalar $msg_number
-     * @param string $method
-     * @param int    $argument
-     * @param bool   $allow_sequence
-     *
-     * @return string
      */
     private static function EnsureRange(
         $msg_number,
-        $method,
-        $argument,
-        $allow_sequence = false
-    ) {
+        string $method,
+        int $argument,
+        bool $allow_sequence = false
+    ): string {
         if (!\is_int($msg_number) && !\is_string($msg_number)) {
             throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() must be an integer or a string!');
-        }
-        if (!\is_string($method)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.' must be a string, '.\gettype($method).' given!');
-        }
-        if (!\is_int($argument)) {
-            throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.' must be an integer, '.\gettype($argument).' given!');
-        }
-        if (!\is_bool($allow_sequence)) {
-            throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.' must be a boolean, '.\gettype($allow_sequence).' given!');
         }
 
         $regex = '/^\d+:\d+$/';

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PhpImap;
 
 /**
@@ -10,6 +12,7 @@ namespace PhpImap;
 class DataPartInfo
 {
     const TEXT_PLAIN = 0;
+
     const TEXT_HTML = 1;
 
     /**
@@ -54,12 +57,10 @@ class DataPartInfo
     protected $data;
 
     /**
-     * @param int       $id
      * @param 0|string  $part
      * @param int|mixed $encoding
-     * @param int       $options
      */
-    public function __construct(Mailbox $mail, $id, $part, $encoding, $options)
+    public function __construct(Mailbox $mail, int $id, $part, $encoding, int $options)
     {
         $this->mail = $mail;
         $this->id = $id;
@@ -68,10 +69,7 @@ class DataPartInfo
         $this->options = $options;
     }
 
-    /**
-     * @return string
-     */
-    public function fetch()
+    public function fetch(): string
     {
         if (0 === $this->part) {
             $this->data = Imap::body($this->mail->getImapStream(), $this->id, $this->options);
@@ -82,10 +80,7 @@ class DataPartInfo
         return $this->decodeAfterFetch();
     }
 
-    /**
-     * @return string
-     */
-    protected function decodeAfterFetch()
+    protected function decodeAfterFetch(): string
     {
         switch ($this->encoding) {
             case ENC8BIT:
@@ -95,8 +90,7 @@ class DataPartInfo
                 $this->data = \imap_binary((string) $this->data);
                 break;
             case ENCBASE64:
-                $this->data = \preg_replace('~[^a-zA-Z0-9+=/]+~s', '', (string) $this->data); // https://github.com/barbushin/php-imap/issues/88
-                $this->data = \imap_base64((string) $this->data);
+                $this->data = \base64_decode((string) $this->data, false);
                 break;
             case ENCQUOTEDPRINTABLE:
                 $this->data = \quoted_printable_decode((string) $this->data);
@@ -106,16 +100,11 @@ class DataPartInfo
         return $this->convertEncodingAfterFetch();
     }
 
-    /**
-     * @return string
-     */
-    protected function convertEncodingAfterFetch()
+    protected function convertEncodingAfterFetch(): string
     {
         if (isset($this->charset) and !empty(\trim($this->charset))) {
-            $this->data = $this->mail->convertStringEncoding(
-                (string) $this->data, // Data to convert
-                $this->charset, // FROM-Encoding (Charset)
-                $this->mail->getServerEncoding() // TO-Encoding (Charset)
+            $this->data = $this->mail->decodeMimeStr(
+                (string) $this->data // Data to convert
             );
         }
 
