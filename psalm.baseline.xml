@@ -34,13 +34,6 @@
       <code>$element-&gt;charset</code>
       <code>$element-&gt;text</code>
     </InvalidArgument>
-    <MixedInferredReturnType occurrences="1">
-      <code>array</code>
-    </MixedInferredReturnType>
-    <PossiblyUndefinedVariable occurrences="2">
-      <code>$lowercase_encodings</code>
-      <code>$lowercase_encodings</code>
-    </PossiblyUndefinedVariable>
     <PossiblyUnusedMethod occurrences="24">
       <code>setConnectionRetry</code>
       <code>setConnectionRetryDelay</code>
