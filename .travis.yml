@@ -10,7 +10,7 @@ php:
   - 7.3
 
 env:
-  - phpunitflags="--stop-on-failure --exclude-group=live"
+  - phpunitflags="--stop-on-failure --exclude-group=live,live-manual"
 
 matrix:
   fast_finish: true

@@ -387,6 +387,7 @@ final class MailboxTest extends TestCase
             'Deutsch' => ['Deutsch'], // German
             'U.S. English' => ['U.S. English'], // U.S. English
             'français' => ['français'], // French
+            'Éléments envoyés' => ['Éléments envoyés'], // issue 499
             'føroyskt' => ['føroyskt'], // Faroese
             'Kĩmĩrũ' => ['Kĩmĩrũ'], // Kimîîru
             'Kɨlaangi' => ['Kɨlaangi'], // Langi
