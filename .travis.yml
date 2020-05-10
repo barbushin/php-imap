@@ -10,7 +10,7 @@ php:
   - 7.3
 
 env:
-  - phpunitflags="--stop-on-failure --exclude-group=live,live-manual"
+  - phpunitflags="--stop-on-failure --testdox --exclude-group=live,live-manual"
 
 matrix:
   fast_finish: true
@@ -30,7 +30,7 @@ matrix:
       env:
         - lint=no
         - coverage=yes
-        - phpunitflags="--stop-on-failure --coverage-clover=clover.xml"
+        - phpunitflags="--stop-on-failure --testdox --coverage-clover=clover.xml"
 
 cache:
   directories:
