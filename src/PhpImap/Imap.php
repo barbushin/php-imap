@@ -691,7 +691,7 @@ final class Imap
             $mailbox_name = $matches[1];
 
             if (!\mb_detect_encoding($mailbox_name, 'ASCII', true)) {
-                $mailbox = static::encodeStringToUtf7Imap($mailbox_name);
+                $mailbox = static::encodeStringToUtf7Imap($mailbox);
             }
         }
 
