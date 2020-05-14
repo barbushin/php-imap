@@ -540,7 +540,7 @@ final class MailboxTest extends TestCase
     {
         $mailbox = $this->getMailbox();
 
-            $this->assertEquals($mailbox->decodeMimeStr($str), $expected);
+        $this->assertEquals($mailbox->decodeMimeStr($str), $expected);
     }
 
     /**
