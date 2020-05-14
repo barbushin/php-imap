@@ -1241,10 +1241,6 @@ class Mailbox
      */
     public function decodeMimeStr(string $string): string
     {
-        if (empty(\trim($string))) {
-            throw new Exception('decodeMimeStr() Can not decode an empty string!');
-        }
-
         $newString = '';
         /** @var list<object{charset?:string, text?:string}>|false */
         $elements = \imap_mime_header_decode($string);
