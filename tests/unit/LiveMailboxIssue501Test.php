@@ -28,6 +28,7 @@ class LiveMailboxIssue501Test extends AbstractLiveMailboxTest
     /**
      * @dataProvider MailBoxProvider
      *
+     * @group live
      * @group live-issue-501
      */
     public function testGetEmptyBody(
