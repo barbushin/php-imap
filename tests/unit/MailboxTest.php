@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace PhpImap;
 
 use DateTime;
-use Exception;
 use PhpImap\Exceptions\InvalidParameterException;
 use PHPUnit\Framework\TestCase;
 
@@ -523,10 +522,11 @@ final class MailboxTest extends TestCase
             ['=?iso-8859-1?Q?Sebastian_Kr=E4tzig?=', 'Sebastian Krätzig'],
             ['sebastian.kraetzig', 'sebastian.kraetzig'],
             ['=?US-ASCII?Q?Keith_Moore?= <km@ab.example.edu>', 'Keith Moore <km@ab.example.edu>'],
-            ['   ', ''],
+            ['   ', '   '],
             ['=?ISO-8859-1?Q?Max_J=F8rn_Simsen?= <max.joern.s@example.dk>', 'Max Jørn Simsen <max.joern.s@example.dk>'],
             ['=?ISO-8859-1?Q?Andr=E9?= Muster <andre.muster@vm1.ulg.ac.be>', 'André Muster <andre.muster@vm1.ulg.ac.be>'],
             ['=?ISO-8859-1?B?SWYgeW91IGNhbiByZWFkIHRoaXMgeW8=?= =?ISO-8859-2?B?dSB1bmRlcnN0YW5kIHRoZSBleGFtcGxlLg==?=', 'If you can read this you understand the example.'],
+            ['', ''], // barbushin/php-imap#501
         ];
     }
 
@@ -539,12 +539,7 @@ final class MailboxTest extends TestCase
     {
         $mailbox = $this->getMailbox();
 
-        if (empty($expected)) {
-            $this->expectException(Exception::class);
-            $mailbox->decodeMimeStr($str);
-        } else {
-            $this->assertEquals($mailbox->decodeMimeStr($str), $expected);
-        }
+        $this->assertEquals($mailbox->decodeMimeStr($str), $expected);
     }
 
     /**

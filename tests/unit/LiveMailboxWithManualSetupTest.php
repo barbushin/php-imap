@@ -53,6 +53,7 @@ class LiveMailboxWithManualSetupTest extends AbstractLiveMailboxTest
      *
      * @dataProvider statusProviderAbsolutePath
      *
+     * @group live
      * @group live-manual
      *
      * @psalm-param MAILBOX_ARGS $mailbox_args
