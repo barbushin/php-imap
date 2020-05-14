@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace PhpImap;
 
 use DateTime;
-use Exception;
 use PhpImap\Exceptions\InvalidParameterException;
 use PHPUnit\Framework\TestCase;
 
