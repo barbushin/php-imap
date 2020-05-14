@@ -86,4 +86,24 @@ abstract class AbstractLiveMailboxTest extends TestCase
             isset($mailbox_args[4]) ? $mailbox_args[4] : 'UTF-8'
         );
     }
+
+    /**
+     * Get subject search criteria and subject.
+     *
+     * @psalm-param array{subject?:mixed} $envelope
+     *
+     * @psalm-return array{0:string, 1:string}
+     */
+    protected function SubjectSearchCriteriaAndSubject(array $envelope): array
+    {
+        /** @var string|null */
+        $subject = isset($envelope['subject']) ? $envelope['subject'] : null;
+
+        $this->assertIsString($subject);
+
+        $search_criteria = \sprintf('SUBJECT "%s"', (string) $subject);
+
+        /** @psalm-var array{0:string, 1:string} */
+        return [$search_criteria, (string) $subject];
+    }
 }
