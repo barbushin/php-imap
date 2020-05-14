@@ -26,6 +26,27 @@ use const TYPETEXT;
 class LiveMailboxIssue501Test extends AbstractLiveMailboxTest
 {
     /**
+     * @group offline
+     * @group offline-issue-501
+     */
+    public function testDecodeMimeStrEmpty(): void
+    {
+        $this->assertSame([], \imap_mime_header_decode(''));
+
+        // example credentials nabbed from MailboxTest::testConstructorTrimsPossibleVariables()
+        $imapPath = ' {imap.example.com:993/imap/ssl}INBOX     ';
+        $login = '    php-imap@example.com';
+        $password = '  v3rY!53cEt&P4sSWöRd$';
+        // directory names can contain spaces before AND after on Linux/Unix systems. Windows trims these spaces automatically.
+        $attachmentsDir = '.';
+        $serverEncoding = 'UTF-8  ';
+
+        $mailbox = new Mailbox($imapPath, $login, $password, $attachmentsDir, $serverEncoding);
+
+        $this->assertSame('', $mailbox->decodeMimeStr(''));
+    }
+
+    /**
      * @dataProvider MailBoxProvider
      *
      * @group live
