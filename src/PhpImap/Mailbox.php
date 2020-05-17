@@ -1022,6 +1022,13 @@ class Mailbox
         $header->headers = $head;
         $header->id = $mailId;
         $header->isDraft = (!isset($head->date)) ? true : false;
+        $header->mimeVersion = (\preg_match("/MIME-Version\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->xVirusScanned = (\preg_match("/X-Virus-Scanned\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->organization = (\preg_match("/Organization\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->contentType = (\preg_match("/Content-Type\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->xMailer = (\preg_match("/X-Mailer\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->contentLanguage = (\preg_match("/Content-Language\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->xSenderIp = (\preg_match("/X-Sender-IP\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
         $header->priority = (\preg_match("/Priority\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
         $header->importance = (\preg_match("/Importance\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
         $header->sensitivity = (\preg_match("/Sensitivity\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
@@ -1192,12 +1199,17 @@ class Mailbox
             $fileName = $this->decodeRFC2231($fileName);
         }
 
-        $partStructure_id = ($partStructure->ifid && isset($partStructure->id)) ? $partStructure->id : null;
+        $partStructure_id = ($partStructure->ifid && isset($partStructure->id)) ? \trim($partStructure->id) : null;
 
         $attachment = new IncomingMailAttachment();
         $attachment->id = \bin2hex(\random_bytes(20));
         $attachment->contentId = isset($partStructure_id) ? \trim($partStructure_id, ' <>') : null;
+        $attachment->type = isset($partStructure->type) ? \trim($partStructure->type) : null;
+        $attachment->encoding = isset($partStructure->encoding) ? \trim($partStructure->encoding) : null;
+        $attachment->subtype = ($partStructure->ifsubtype && isset($partStructure->subtype)) ? \trim($partStructure->subtype) : null;
+        $attachment->description = ($partStructure->ifdescription && isset($partStructure->description)) ? \trim($partStructure->description) : null;
         $attachment->name = $fileName;
+        $attachment->sizeInBytes = isset($partStructure->bytes) ? $partStructure->bytes : null;
         $attachment->disposition = (isset($partStructure->disposition) && \is_string($partStructure->disposition)) ? $partStructure->disposition : null;
 
         /** @var scalar|array|object|resource|null */

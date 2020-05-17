@@ -27,6 +27,27 @@ class IncomingMailHeader
     public $headers;
 
     /** @var string|null */
+    public $mimeVersion;
+
+    /** @var string|null */
+    public $xVirusScanned;
+
+    /** @var string|null */
+    public $organization;
+
+    /** @var string|null */
+    public $contentType;
+
+    /** @var string|null */
+    public $xMailer;
+
+    /** @var string|null */
+    public $contentLanguage;
+
+    /** @var string|null */
+    public $xSenderIp;
+
+    /** @var string|null */
     public $priority;
 
     /** @var string|null */

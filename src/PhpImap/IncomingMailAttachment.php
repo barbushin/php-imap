@@ -22,8 +22,23 @@ class IncomingMailAttachment
     /** @var string|null */
     public $contentId;
 
+    /** @var integer|null */
+    public $type;
+
+    /** @var integer|null */
+    public $encoding;
+
+    /** @var string|null */
+    public $subtype;
+
+    /** @var string|null */
+    public $description;
+
     /** @var string|null */
     public $name;
+
+    /** @var integer|null */
+    public $sizeInBytes;
 
     /** @var string|null */
     public $disposition;
