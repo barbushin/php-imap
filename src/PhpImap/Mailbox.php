@@ -1204,8 +1204,8 @@ class Mailbox
         $attachment = new IncomingMailAttachment();
         $attachment->id = \bin2hex(\random_bytes(20));
         $attachment->contentId = isset($partStructure_id) ? \trim($partStructure_id, ' <>') : null;
-        $attachment->type = isset($partStructure->type) ? \trim($partStructure->type) : null;
-        $attachment->encoding = isset($partStructure->encoding) ? \trim($partStructure->encoding) : null;
+        $attachment->type = isset($partStructure->type) ? $partStructure->type : null;
+        $attachment->encoding = isset($partStructure->encoding) ? $partStructure->encoding : null;
         $attachment->subtype = ($partStructure->ifsubtype && isset($partStructure->subtype)) ? \trim($partStructure->subtype) : null;
         $attachment->description = ($partStructure->ifdescription && isset($partStructure->description)) ? \trim($partStructure->description) : null;
         $attachment->name = $fileName;
