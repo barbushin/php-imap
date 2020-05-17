@@ -50,6 +50,21 @@ class IncomingMailAttachment
     public $emlOrigin;
 
     /** @var string|null */
+    public $fileInfoRaw;
+
+    /** @var string|null */
+    public $fileInfo;
+
+    /** @var string|null */
+    public $mime;
+
+    /** @var string|null */
+    public $mimeEncoding;
+
+    /** @var string|null */
+    public $fileExtension;
+
+    /** @var string|null */
     private $file_path;
 
     /** @var DataPartInfo|null */
@@ -106,17 +121,23 @@ class IncomingMailAttachment
     }
 
     /**
-     * Gets the MIME type.
+     * Gets information about a file.
+     *
+     * @param const $fileinfo_const Any predefined constant. See https://www.php.net/manual/en/fileinfo.constants.php
      */
-    public function getMimeType(): string
+    public function getFileInfo($fileinfo_const = FILEINFO_NONE): string
     {
-        if (!$this->mimeType) {
-            $finfo = new finfo(FILEINFO_MIME);
-
-            $this->mimeType = $finfo->buffer($this->getContents());
+        if (($fileinfo_const == FILEINFO_MIME) AND ($this->mimeType != false)) {
+            return $this->mimeType;
         }
 
-        return $this->mimeType;
+        $finfo = new finfo($fileinfo_const);
+
+        if (!$finfo) {
+            return null;
+        }
+
+        return $finfo->buffer($this->getContents());
     }
 
     /**

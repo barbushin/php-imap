@@ -1223,6 +1223,12 @@ class Mailbox
 
         $attachment->addDataPartInfo($dataInfo);
 
+        $attachment->fileInfoRaw = $attachment->getFileInfo(FILEINFO_RAW);
+        $attachment->fileInfo = $attachment->getFileInfo(FILEINFO_NONE);
+        $attachment->mime = $attachment->getFileInfo(FILEINFO_MIME);
+        $attachment->mimeEncoding = $attachment->getFileInfo(FILEINFO_MIME_ENCODING);
+        $attachment->fileExtension = $attachment->getFileInfo(FILEINFO_EXTENSION);
+
         $attachmentsDir = $this->getAttachmentsDir();
 
         if (null != $attachmentsDir) {

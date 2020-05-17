@@ -53,7 +53,7 @@
         ]
     },
     "suggest": {
-        "ext-fileinfo": "To facilitate IncomingMailAttachment::getMimeType() auto-detection"
+        "ext-fileinfo": "To facilitate IncomingMailAttachment::getFileInfo() auto-detection"
     },
     "autoload-dev": {
         "psr-4": {
