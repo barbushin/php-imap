@@ -104,6 +104,9 @@ class Mailbox
     /** @var string */
     protected $pathDelimiter = '.';
 
+    /** @var string */
+    protected $mailboxFolder;
+
     /** @var resource|null */
     private $imapStream;
 
@@ -119,6 +122,8 @@ class Mailbox
         if (null != $attachmentsDir) {
             $this->setAttachmentsDir($attachmentsDir);
         }
+
+        $this->setMailboxFolder();
     }
 
     /**
@@ -427,6 +432,17 @@ class Mailbox
     }
 
     /**
+     * Sets the folder of the current mailbox.
+     *
+     * @return void
+     */
+    public function setMailboxFolder(): void
+    {
+        $imapPathParts = explode('}', $this->imapPath);
+        $this->mailboxFolder = (!empty($imapPathParts[1])) ? $imapPathParts[1] : 'INBOX';
+    }
+
+    /**
      * Switch mailbox without opening a new connection.
      *
      * @throws Exception
@@ -438,6 +454,8 @@ class Mailbox
         } else {
             $this->imapPath = $this->getCombinedPath($imapPath, $absolute);
         }
+
+        $this->setMailboxFolder();
 
         Imap::reopen($this->getImapStream(), $this->imapPath);
     }
@@ -1021,6 +1039,8 @@ class Mailbox
         $header->headersRaw = $headersRaw;
         $header->headers = $head;
         $header->id = $mailId;
+        $header->imapPath = $this->imapPath;
+        $header->mailboxFolder = $this->mailboxFolder;
         $header->isDraft = (!isset($head->date)) ? true : false;
         $header->mimeVersion = (\preg_match("/MIME-Version\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
         $header->xVirusScanned = (\preg_match("/X-Virus-Scanned\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
