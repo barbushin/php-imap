@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpImap;
 
+use Exception;
 use finfo;
 use UnexpectedValueException;
 
@@ -131,7 +132,11 @@ class IncomingMailAttachment
             return $this->mimeType;
         }
 
-        $finfo = new finfo($fileinfo_const);
+        try {
+            $finfo = new finfo($fileinfo_const);
+        } catch (Exception $ex) {
+            return null;
+        }
 
         if (!$finfo) {
             return null;
