@@ -71,9 +71,7 @@ class IncomingMailAttachment
     /** @var DataPartInfo|null */
     private $dataInfo;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $mimeType;
 
     /** @var string|null */
