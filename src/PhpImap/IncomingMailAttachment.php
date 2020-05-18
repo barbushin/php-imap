@@ -16,6 +16,8 @@ use UnexpectedValueException;
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
  *
  * @property string $filePath lazy attachment data file
+ *
+ * @psalm-type fileinfoconst = 0|2|16|1024|1040|8|32|128|256|16777216
  */
 class IncomingMailAttachment
 {
@@ -124,9 +126,13 @@ class IncomingMailAttachment
     /**
      * Gets information about a file.
      *
-     * @param const $fileinfo_const Any predefined constant. See https://www.php.net/manual/en/fileinfo.constants.php
+     * @param int $fileinfo_const Any predefined constant. See https://www.php.net/manual/en/fileinfo.constants.php
+     *
+     * @psalm-param fileinfoconst $fileinfo_const
+     *
+     * @return string|null
      */
-    public function getFileInfo($fileinfo_const = FILEINFO_NONE): string
+    public function getFileInfo($fileinfo_const = FILEINFO_NONE)
     {
         if ((FILEINFO_MIME == $fileinfo_const) and (false != $this->mimeType)) {
             return $this->mimeType;
