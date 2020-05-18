@@ -23,10 +23,10 @@ class IncomingMailAttachment
     /** @var string|null */
     public $contentId;
 
-    /** @var integer|null */
+    /** @var int|null */
     public $type;
 
-    /** @var integer|null */
+    /** @var int|null */
     public $encoding;
 
     /** @var string|null */
@@ -38,7 +38,7 @@ class IncomingMailAttachment
     /** @var string|null */
     public $name;
 
-    /** @var integer|null */
+    /** @var int|null */
     public $sizeInBytes;
 
     /** @var string|null */
