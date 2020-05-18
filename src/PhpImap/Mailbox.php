@@ -1570,8 +1570,18 @@ class Mailbox
 
         $isAttachment = isset($params['filename']) || isset($params['name']);
 
+        $dispositionAttachment = (
+            isset($partStructure->disposition) &&
+            \is_string($partStructure->disposition) &&
+            'attachment' === \mb_strtolower($partStructure->disposition)
+        );
+
         // ignore contentId on body when mail isn't multipart (https://github.com/barbushin/php-imap/issues/71)
-        if (!$partNum && TYPETEXT === $partStructure->type) {
+        if (
+            !$partNum &&
+            TYPETEXT === $partStructure->type &&
+            !$dispositionAttachment
+        ) {
             $isAttachment = false;
         }
 
@@ -1628,12 +1638,16 @@ class Mailbox
         } else {
             if (TYPETEXT === $partStructure->type) {
                 if ('plain' === \mb_strtolower($partStructure->subtype)) {
+                    if ($dispositionAttachment) {
+                        return;
+                    }
+
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
                 } elseif (!$partStructure->ifdisposition) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
                 } elseif (!\is_string($partStructure->disposition)) {
                     throw new InvalidArgumentException('disposition property of object passed as argument 2 to '.__METHOD__.'() was present but not a string!');
-                } elseif ('attachment' !== \mb_strtolower($partStructure->disposition)) {
+                } elseif (!$dispositionAttachment) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
                 }
             } elseif (TYPEMESSAGE === $partStructure->type) {
