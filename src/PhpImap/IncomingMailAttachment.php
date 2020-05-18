@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace PhpImap;
 
-use Exception;
 use const FILEINFO_MIME;
 use const FILEINFO_NONE;
 use finfo;
+use Throwable;
 use UnexpectedValueException;
 
 /**
@@ -142,7 +142,7 @@ class IncomingMailAttachment
             $finfo = new finfo($fileinfo_const);
 
             return $finfo->buffer($this->getContents());
-        } catch (Exception $ex) {
+        } catch (Throwable $ex) {
             return null;
         }
     }
