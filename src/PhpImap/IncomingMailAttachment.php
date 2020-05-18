@@ -140,15 +140,11 @@ class IncomingMailAttachment
 
         try {
             $finfo = new finfo($fileinfo_const);
+
+            return $finfo->buffer($this->getContents());
         } catch (Exception $ex) {
             return null;
         }
-
-        if (!$finfo) {
-            return null;
-        }
-
-        return $finfo->buffer($this->getContents());
     }
 
     /**
