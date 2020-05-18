@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace PhpImap;
 
 use Exception;
+use const FILEINFO_MIME;
+use const FILEINFO_NONE;
 use finfo;
 use UnexpectedValueException;
 
