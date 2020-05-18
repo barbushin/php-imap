@@ -436,7 +436,7 @@ class Mailbox
      */
     public function setMailboxFolder(): void
     {
-        $imapPathParts = explode('}', $this->imapPath);
+        $imapPathParts = \explode('}', $this->imapPath);
         $this->mailboxFolder = (!empty($imapPathParts[1])) ? $imapPathParts[1] : 'INBOX';
     }
 
