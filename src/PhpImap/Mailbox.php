@@ -433,8 +433,6 @@ class Mailbox
 
     /**
      * Sets the folder of the current mailbox.
-     *
-     * @return void
      */
     public function setMailboxFolder(): void
     {
