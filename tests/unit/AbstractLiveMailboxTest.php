@@ -13,6 +13,7 @@ namespace PhpImap;
 use Generator;
 use ParagonIE\HiddenString\HiddenString;
 use PHPUnit\Framework\TestCase;
+use Throwable;
 
 /**
  * @psalm-type MAILBOX_ARGS = array{
@@ -119,6 +120,10 @@ abstract class AbstractLiveMailboxTest extends TestCase
             $mailbox_args
         );
 
+        /** @var Throwable|null */
+        $exception = null;
+
+        try {
         $search = $mailbox->searchMailbox($search_criteria);
 
         $this->assertCount(
@@ -166,6 +171,17 @@ abstract class AbstractLiveMailboxTest extends TestCase
                 ' then the message is was not expunged as requested.'
             )
         );
+        } catch (Throwable $ex) {
+            $exception = $ex;
+        } finally {
+            $mailbox->switchMailbox($path->getString());
+            $mailbox->deleteMailbox($remove_mailbox);
+            $mailbox->disconnect();
+        }
+
+        if (null !== $exception) {
+            throw $exception;
+        }
     }
 
     /**
