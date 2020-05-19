@@ -123,6 +123,8 @@ abstract class AbstractLiveMailboxTest extends TestCase
         /** @var Throwable|null */
         $exception = null;
 
+        $mailboxDeleted = false;
+
         try {
             $search = $mailbox->searchMailbox($search_criteria);
 
@@ -162,6 +164,7 @@ abstract class AbstractLiveMailboxTest extends TestCase
 
             $mailbox->switchMailbox($path->getString());
             $mailbox->deleteMailbox($remove_mailbox);
+            $mailboxDeleted = true;
 
             $this->assertCount(
                 0,
@@ -175,7 +178,9 @@ abstract class AbstractLiveMailboxTest extends TestCase
             $exception = $ex;
         } finally {
             $mailbox->switchMailbox($path->getString());
+            if (!$mailboxDeleted) {
             $mailbox->deleteMailbox($remove_mailbox);
+            }
             $mailbox->disconnect();
         }
 
