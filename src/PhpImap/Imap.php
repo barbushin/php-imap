@@ -813,12 +813,16 @@ final class Imap
         $imap_stream,
         string $criteria,
         int $options = SE_FREE,
-        string $charset = null
+        string $charset = null,
+        bool $encodeCriteriaAsUtf7Imap = true
     ): array {
         \imap_errors(); // flush errors
 
         $imap_stream = static::EnsureConnection($imap_stream, __METHOD__, 1);
+
+        if ($encodeCriteriaAsUtf7Imap) {
         $criteria = static::encodeStringToUtf7Imap($criteria);
+        }
 
         if (\is_string($charset)) {
             $result = \imap_search(
