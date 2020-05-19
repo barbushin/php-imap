@@ -11,9 +11,17 @@ declare(strict_types=1);
 namespace PhpImap;
 
 use Generator;
+use ParagonIE\HiddenString\HiddenString;
 use const TYPETEXT;
 
 /**
+ * @psalm-type MAILBOX_ARGS = array{
+ *	0:HiddenString,
+ *	1:HiddenString,
+ *	2:HiddenString,
+ *	3:string,
+ *	4?:string
+ * }
  * @psalm-type COMPOSE_ENVELOPE = array{
  *	subject?:string
  * }
@@ -51,5 +59,31 @@ class LiveMailboxIssue250Test extends AbstractLiveMailboxTest
                 'test'."\r\n"
             ),
         ];
+    }
+
+    /**
+     * @dataProvider AppendProvider
+     *
+     * @group live
+     * @group live-issue-250
+     *
+     * @psalm-param MAILBOX_ARGS $mailbox_args
+     * @psalm-param COMPOSE_ENVELOPE $envelope
+     * @psalm-param COMPOSE_BODY $body
+     */
+    public function testAppend(
+        array $mailbox_args,
+        array $envelope,
+        array $body,
+        string $expected_compose_result,
+        bool $pre_compose
+    ): void {
+        parent::testAppend(
+            $mailbox_args,
+            $envelope,
+            $body,
+            $expected_compose_result,
+            $pre_compose
+        );
     }
 }
