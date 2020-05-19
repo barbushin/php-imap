@@ -814,7 +814,7 @@ final class Imap
         string $criteria,
         int $options = SE_FREE,
         string $charset = null,
-        bool $encodeCriteriaAsUtf7Imap = true
+        bool $encodeCriteriaAsUtf7Imap = false
     ): array {
         \imap_errors(); // flush errors
 
