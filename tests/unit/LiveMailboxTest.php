@@ -12,10 +12,10 @@ namespace PhpImap;
 
 use function date;
 use const ENCBASE64;
-use Exception;
 use Generator;
 use ParagonIE\HiddenString\HiddenString;
 use const SORTARRIVAL;
+use Throwable;
 use const TYPEAPPLICATION;
 use const TYPEMULTIPART;
 use const TYPETEXT;
@@ -66,7 +66,7 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
             $serverEncoding
         );
 
-        /** @var Exception|null */
+        /** @var Throwable|null */
         $exception = null;
 
         try {
@@ -129,7 +129,7 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
 
                 $this->assertSame($check->Nmsgs, $mailbox->countMails(), 'Mailbox::checkMailbox()->Nmsgs did not match Mailbox::countMails()!');
             }
-        } catch (Exception $ex) {
+        } catch (Throwable $ex) {
             $exception = $ex;
         } finally {
             $mailbox->switchMailbox($imapPath->getString());
