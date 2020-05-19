@@ -135,9 +135,9 @@ class IncomingMailAttachment
             return $this->mimeType;
         }
 
-            $finfo = new finfo($fileinfo_const);
+        $finfo = new finfo($fileinfo_const);
 
-            return $finfo->buffer($this->getContents());
+        return $finfo->buffer($this->getContents());
     }
 
     /**
