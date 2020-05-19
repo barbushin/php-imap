@@ -179,7 +179,7 @@ abstract class AbstractLiveMailboxTest extends TestCase
         } finally {
             $mailbox->switchMailbox($path->getString());
             if (!$mailboxDeleted) {
-            $mailbox->deleteMailbox($remove_mailbox);
+                $mailbox->deleteMailbox($remove_mailbox);
             }
             $mailbox->disconnect();
         }
