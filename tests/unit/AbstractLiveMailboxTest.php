@@ -124,53 +124,53 @@ abstract class AbstractLiveMailboxTest extends TestCase
         $exception = null;
 
         try {
-        $search = $mailbox->searchMailbox($search_criteria);
+            $search = $mailbox->searchMailbox($search_criteria);
 
-        $this->assertCount(
-            0,
-            $search,
-            (
-                'If a subject was found,'.
-                ' then the message is insufficiently unique to assert that'.
-                ' a newly-appended message was actually created.'
-            )
-        );
+            $this->assertCount(
+                0,
+                $search,
+                (
+                    'If a subject was found,'.
+                    ' then the message is insufficiently unique to assert that'.
+                    ' a newly-appended message was actually created.'
+                )
+            );
 
-        $message = [$envelope, $body];
+            $message = [$envelope, $body];
 
-        if ($pre_compose) {
-            $message = Imap::mail_compose($envelope, $body);
-        }
+            if ($pre_compose) {
+                $message = Imap::mail_compose($envelope, $body);
+            }
 
-        $mailbox->appendMessageToMailbox($message);
+            $mailbox->appendMessageToMailbox($message);
 
-        $search = $mailbox->searchMailbox($search_criteria);
+            $search = $mailbox->searchMailbox($search_criteria);
 
-        $this->assertCount(
-            1,
-            $search,
-            (
-                'If a subject was not found, '.
-                ' then Mailbox::appendMessageToMailbox() failed'.
-                ' despite not throwing an exception.'
-            )
-        );
+            $this->assertCount(
+                1,
+                $search,
+                (
+                    'If a subject was not found, '.
+                    ' then Mailbox::appendMessageToMailbox() failed'.
+                    ' despite not throwing an exception.'
+                )
+            );
 
-        $mailbox->deleteMail($search[0]);
+            $mailbox->deleteMail($search[0]);
 
-        $mailbox->expungeDeletedMails();
+            $mailbox->expungeDeletedMails();
 
-        $mailbox->switchMailbox($path->getString());
-        $mailbox->deleteMailbox($remove_mailbox);
+            $mailbox->switchMailbox($path->getString());
+            $mailbox->deleteMailbox($remove_mailbox);
 
-        $this->assertCount(
-            0,
-            $mailbox->searchMailbox($search_criteria),
-            (
-                'If a subject was found,'.
-                ' then the message is was not expunged as requested.'
-            )
-        );
+            $this->assertCount(
+                0,
+                $mailbox->searchMailbox($search_criteria),
+                (
+                    'If a subject was found,'.
+                    ' then the message is was not expunged as requested.'
+                )
+            );
         } catch (Throwable $ex) {
             $exception = $ex;
         } finally {
