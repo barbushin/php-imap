@@ -7,7 +7,6 @@ namespace PhpImap;
 use const FILEINFO_MIME;
 use const FILEINFO_NONE;
 use finfo;
-use Throwable;
 use UnexpectedValueException;
 
 /**
@@ -129,22 +128,16 @@ class IncomingMailAttachment
      * @param int $fileinfo_const Any predefined constant. See https://www.php.net/manual/en/fileinfo.constants.php
      *
      * @psalm-param fileinfoconst $fileinfo_const
-     *
-     * @return string|null
      */
-    public function getFileInfo($fileinfo_const = FILEINFO_NONE)
+    public function getFileInfo($fileinfo_const = FILEINFO_NONE): string
     {
         if ((FILEINFO_MIME == $fileinfo_const) and (false != $this->mimeType)) {
             return $this->mimeType;
         }
 
-        try {
             $finfo = new finfo($fileinfo_const);
 
             return $finfo->buffer($this->getContents());
-        } catch (Throwable $ex) {
-            return null;
-        }
     }
 
     /**
