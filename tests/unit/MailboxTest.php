@@ -623,6 +623,40 @@ final class MailboxTest extends TestCase
             'readonly, -12 retries' => ['expectException', OP_READONLY, -12, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
             'readonly, null options' => ['expectException', OP_READONLY, 0, [null]],
         ];
+
+        /** @psalm-var list<array{0:int, 1:string}> */
+        $options = [
+            [OP_DEBUG, 'debug'], // 1
+            [OP_READONLY, 'readonly'], // 2
+            [OP_ANONYMOUS, 'anonymous'], // 4
+            [OP_SHORTCACHE, 'short cache'], // 8
+            [OP_SILENT, 'silent'], // 16
+            [OP_PROTOTYPE, 'return driver prototype'], // 32
+            [OP_HALFOPEN, 'half-open'], // 64
+            [OP_SECURE, 'don\'t do non-secure authnetication'], // 256
+            [CL_EXPUNGE, 'expunge on close'], // 32768
+        ];
+
+        foreach ($options as $i => $option) {
+            $value = $option[0];
+
+            for ($j = $i + 1; $j < \count($options); ++$j) {
+                $value |= $options[$j][0];
+
+                $fields = [];
+
+                foreach ($options as $option) {
+                    if (0 !== ($value & $option[0])) {
+                        $fields[] = $option[1];
+                    }
+                }
+
+                $key = \implode(', ', $fields);
+
+                yield $key => ['assertNull', $value, 0, []];
+                yield ('INVALID + '.$key) => ['expectException', $value | 128, 0, []];
+            }
+        }
     }
 
     /**
