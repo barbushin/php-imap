@@ -642,6 +642,7 @@ final class MailboxTest extends TestCase
         if ('expectException' == $assertMethod) {
             $this->expectException(InvalidParameterException::class);
             $mailbox->setConnectionArgs($option, $retriesNum, $param);
+            $this->assertSame($option, $mailbox->getImapOptions());
         } elseif ('assertNull' == $assertMethod) {
             $this->assertNull($mailbox->setConnectionArgs($option, $retriesNum, $param));
         }
