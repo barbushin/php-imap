@@ -677,6 +677,8 @@ final class MailboxTest extends TestCase
         } elseif ('assertNull' == $assertMethod) {
             $this->assertNull($mailbox->setConnectionArgs($option, $retriesNum, $param));
         }
+
+        $mailbox->disconnect();
     }
 
     /**
