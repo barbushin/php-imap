@@ -88,6 +88,18 @@ class Mailbox
 
     const PART_TYPE_TWO = 2;
 
+    const IMAP_OPTIONS_SUPPORTED_VALUES =
+        OP_READONLY // 2
+        | OP_ANONYMOUS // 4
+        | OP_HALFOPEN // 64
+        | CL_EXPUNGE // 32768
+        | OP_DEBUG // 1
+        | OP_SHORTCACHE // 8
+        | OP_SILENT // 16
+        | OP_PROTOTYPE // 32
+        | OP_SECURE // 256
+    ;
+
     /** @var string */
     public $decodeMimeStrDefaultCharset = 'default';
 
@@ -338,8 +350,7 @@ class Mailbox
     public function setConnectionArgs(int $options = 0, int $retriesNum = 0, array $params = null): void
     {
         if (0 !== $options) {
-            $supported_options = [OP_READONLY, OP_ANONYMOUS, OP_HALFOPEN, CL_EXPUNGE, OP_DEBUG, OP_SHORTCACHE, OP_SILENT, OP_PROTOTYPE, OP_SECURE];
-            if (!\in_array($options, $supported_options, true)) {
+            if (($options & self::IMAP_OPTIONS_SUPPORTED_VALUES) !== $options) {
                 throw new InvalidParameterException('Please check your option for setConnectionArgs()! Unsupported option "'.$options.'". Available options: https://www.php.net/manual/de/function.imap-open.php');
             }
             $this->imapOptions = $options;
