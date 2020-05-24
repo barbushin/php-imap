@@ -755,8 +755,8 @@ final class MailboxTest extends TestCase
         $mailbox->setAttachmentsDir($attachmentsDir);
     }
 
-    protected function getMailbox(): Mailbox
+    protected function getMailbox(): Fixtures\Mailbox
     {
-        return new Mailbox($this->imapPath, $this->login, $this->password, $this->attachmentsDir, $this->serverEncoding);
+        return new Fixtures\Mailbox($this->imapPath, $this->login, $this->password, $this->attachmentsDir, $this->serverEncoding);
     }
 }
