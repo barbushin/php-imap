@@ -605,40 +605,23 @@ final class MailboxTest extends TestCase
     public function connectionArgsProvider(): Generator
     {
         yield from [
-            'readonly, disable gssapi' =>
-            ['assertNull', OP_READONLY, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'anonymous, disable gssapi' =>
-            ['assertNull', OP_ANONYMOUS, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'half open, disable gssapi' =>
-            ['assertNull', OP_HALFOPEN, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'expunge on close, disable gssapi' =>
-            ['assertNull', CL_EXPUNGE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'debug, disable gssapi' =>
-            ['assertNull', OP_DEBUG, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'short cache, disable gssapi' =>
-            ['assertNull', OP_SHORTCACHE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'silent, disable gssapi' =>
-            ['assertNull', OP_SILENT, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'return driver prototype, disable gssapi' =>
-            ['assertNull', OP_PROTOTYPE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'don\'t do non-secure authentication, disable gssapi' =>
-            ['assertNull', OP_SECURE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'readonly, disable gssapi, 1 retry' =>
-            ['assertNull', OP_READONLY, 1, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'readonly, disable gssapi, 3 retries' =>
-            ['assertNull', OP_READONLY, 3, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'readonly, disable gssapi, 12 retries' =>
-            ['assertNull', OP_READONLY, 12, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'readonly debug, disable gssapi' =>
-            ['expectException', OP_READONLY | OP_DEBUG, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'readonly, -1 retries' =>
-            ['expectException', OP_READONLY, -1, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'readonly, -3 retries' =>
-            ['expectException', OP_READONLY, -3, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'readonly, -12 retries' =>
-            ['expectException', OP_READONLY, -12, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            'readonly, null options' =>
-            ['expectException', OP_READONLY, 0, [null]],
+            'readonly, disable gssapi' => ['assertNull', OP_READONLY, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'anonymous, disable gssapi' => ['assertNull', OP_ANONYMOUS, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'half open, disable gssapi' => ['assertNull', OP_HALFOPEN, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'expunge on close, disable gssapi' => ['assertNull', CL_EXPUNGE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'debug, disable gssapi' => ['assertNull', OP_DEBUG, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'short cache, disable gssapi' => ['assertNull', OP_SHORTCACHE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'silent, disable gssapi' => ['assertNull', OP_SILENT, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'return driver prototype, disable gssapi' => ['assertNull', OP_PROTOTYPE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'don\'t do non-secure authentication, disable gssapi' => ['assertNull', OP_SECURE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly, disable gssapi, 1 retry' => ['assertNull', OP_READONLY, 1, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly, disable gssapi, 3 retries' => ['assertNull', OP_READONLY, 3, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly, disable gssapi, 12 retries' => ['assertNull', OP_READONLY, 12, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly debug, disable gssapi' => ['expectException', OP_READONLY | OP_DEBUG, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly, -1 retries' => ['expectException', OP_READONLY, -1, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly, -3 retries' => ['expectException', OP_READONLY, -3, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly, -12 retries' => ['expectException', OP_READONLY, -12, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly, null options' => ['expectException', OP_READONLY, 0, [null]],
         ];
     }
 
