@@ -56,6 +56,9 @@ class Mailbox
     const PART_TYPE_TWO = 2;
 
     /** @var string */
+    public $decodeMimeStrDefaultCharset = 'default';
+
+    /** @var string */
     protected $imapPath;
 
     /** @var string */
@@ -1304,18 +1307,24 @@ class Mailbox
         }
 
         foreach ($elements as $element) {
-            switch (\strtolower($element->charset)) {
+            $charset = \strtolower($element->charset);
+
+            if ('default' === $charset) {
+                $charset = $this->decodeMimeStrDefaultCharset;
+            }
+
+            switch ($charset) {
                 case 'default': // Charset default is already ASCII (not encoded)
                 case 'utf-8': // Charset UTF-8 is OK
                     $newString .= $element->text;
                     break;
                 default:
                     // If charset exists in mb_list_encodings(), convert using mb_convert function
-                    if (\in_array(\strtolower($element->charset), $this->lowercase_mb_list_encodings())) {
-                        $newString .= \mb_convert_encoding($element->text, 'UTF-8', $element->charset);
+                    if (\in_array($charset, $this->lowercase_mb_list_encodings())) {
+                        $newString .= \mb_convert_encoding($element->text, 'UTF-8', $charset);
                     } else {
                         // Fallback: Try to convert with iconv()
-                        $iconv_converted_string = @\iconv($element->charset, 'UTF-8', $element->text);
+                        $iconv_converted_string = @\iconv($charset, 'UTF-8', $element->text);
                         if (!$iconv_converted_string) {
                             // If iconv() could also not convert, return string as it is
                             // (unknown charset)
