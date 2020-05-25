@@ -14,10 +14,10 @@ class IncomingMailHeader
     /** @var int|null The IMAP message ID - not the "Message-ID:"-header of the email */
     public $id;
 
-    /** @var string */
+    /** @var string|null */
     public $imapPath;
 
-    /** @var string */
+    /** @var string|null */
     public $mailboxFolder;
 
     /** @var bool */

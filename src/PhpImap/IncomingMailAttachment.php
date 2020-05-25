@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace PhpImap;
 
-use Exception;
+use const FILEINFO_MIME;
+use const FILEINFO_NONE;
 use finfo;
+use Throwable;
 use UnexpectedValueException;
 
 /**
@@ -14,6 +16,8 @@ use UnexpectedValueException;
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
  *
  * @property string $filePath lazy attachment data file
+ *
+ * @psalm-type fileinfoconst = 0|2|16|1024|1040|8|32|128|256|16777216
  */
 class IncomingMailAttachment
 {
@@ -23,10 +27,10 @@ class IncomingMailAttachment
     /** @var string|null */
     public $contentId;
 
-    /** @var integer|null */
+    /** @var int|null */
     public $type;
 
-    /** @var integer|null */
+    /** @var int|null */
     public $encoding;
 
     /** @var string|null */
@@ -38,7 +42,7 @@ class IncomingMailAttachment
     /** @var string|null */
     public $name;
 
-    /** @var integer|null */
+    /** @var int|null */
     public $sizeInBytes;
 
     /** @var string|null */
@@ -122,25 +126,25 @@ class IncomingMailAttachment
     /**
      * Gets information about a file.
      *
-     * @param const $fileinfo_const Any predefined constant. See https://www.php.net/manual/en/fileinfo.constants.php
+     * @param int $fileinfo_const Any predefined constant. See https://www.php.net/manual/en/fileinfo.constants.php
+     *
+     * @psalm-param fileinfoconst $fileinfo_const
+     *
+     * @return string|null
      */
-    public function getFileInfo($fileinfo_const = FILEINFO_NONE): string
+    public function getFileInfo($fileinfo_const = FILEINFO_NONE)
     {
-        if (($fileinfo_const == FILEINFO_MIME) AND ($this->mimeType != false)) {
+        if ((FILEINFO_MIME == $fileinfo_const) and (false != $this->mimeType)) {
             return $this->mimeType;
         }
 
         try {
             $finfo = new finfo($fileinfo_const);
-        } catch (Exception $ex) {
+
+            return $finfo->buffer($this->getContents());
+        } catch (Throwable $ex) {
             return null;
         }
-
-        if (!$finfo) {
-            return null;
-        }
-
-        return $finfo->buffer($this->getContents());
     }
 
     /**

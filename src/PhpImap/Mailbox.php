@@ -433,12 +433,10 @@ class Mailbox
 
     /**
      * Sets the folder of the current mailbox.
-     *
-     * @return void
      */
     public function setMailboxFolder(): void
     {
-        $imapPathParts = explode('}', $this->imapPath);
+        $imapPathParts = \explode('}', $this->imapPath);
         $this->mailboxFolder = (!empty($imapPathParts[1])) ? $imapPathParts[1] : 'INBOX';
     }
 
@@ -1219,17 +1217,35 @@ class Mailbox
             $fileName = $this->decodeRFC2231($fileName);
         }
 
+        /** @var scalar|array|object|null */
+        $sizeInBytes = isset($partStructure->bytes) ? $partStructure->bytes : null;
+
+        /** @var scalar|array|object|null */
+        $encoding = isset($partStructure->encoding) ? $partStructure->encoding : null;
+
+        if (null !== $sizeInBytes && !\is_int($sizeInBytes)) {
+            throw new UnexpectedValueException('Supplied part structure specifies a non-integer, non-null bytes header!');
+        }
+        if (null !== $encoding && !\is_int($encoding)) {
+            throw new UnexpectedValueException('Supplied part structure specifies a non-integer, non-null encoding header!');
+        }
+        if (isset($partStructure->type) && !\is_int($partStructure->type)) {
+            throw new UnexpectedValueException('Supplied part structure specifies a non-integer, non-null type header!');
+        }
+
         $partStructure_id = ($partStructure->ifid && isset($partStructure->id)) ? \trim($partStructure->id) : null;
 
         $attachment = new IncomingMailAttachment();
         $attachment->id = \bin2hex(\random_bytes(20));
         $attachment->contentId = isset($partStructure_id) ? \trim($partStructure_id, ' <>') : null;
-        $attachment->type = isset($partStructure->type) ? $partStructure->type : null;
-        $attachment->encoding = isset($partStructure->encoding) ? $partStructure->encoding : null;
+        if (isset($partStructure->type)) {
+            $attachment->type = $partStructure->type;
+        }
+        $attachment->encoding = $encoding;
         $attachment->subtype = ($partStructure->ifsubtype && isset($partStructure->subtype)) ? \trim($partStructure->subtype) : null;
-        $attachment->description = ($partStructure->ifdescription && isset($partStructure->description)) ? \trim($partStructure->description) : null;
+        $attachment->description = ($partStructure->ifdescription && isset($partStructure->description)) ? \trim((string) $partStructure->description) : null;
         $attachment->name = $fileName;
-        $attachment->sizeInBytes = isset($partStructure->bytes) ? $partStructure->bytes : null;
+        $attachment->sizeInBytes = $sizeInBytes;
         $attachment->disposition = (isset($partStructure->disposition) && \is_string($partStructure->disposition)) ? $partStructure->disposition : null;
 
         /** @var scalar|array|object|resource|null */
