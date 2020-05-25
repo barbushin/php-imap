@@ -4,14 +4,47 @@ declare(strict_types=1);
 
 namespace PhpImap;
 
+use const CL_EXPUNGE;
 use function count;
+use const CP_UID;
+use const DATE_RFC3339;
 use DateTime;
 use const DIRECTORY_SEPARATOR;
 use Exception;
+use const FILEINFO_EXTENSION;
+use const FILEINFO_MIME;
+use const FILEINFO_MIME_ENCODING;
+use const FILEINFO_NONE;
+use const FILEINFO_RAW;
+use const FT_PEEK;
+use const FT_PREFETCHTEXT;
+use const FT_UID;
+use const IMAP_CLOSETIMEOUT;
+use const IMAP_OPENTIMEOUT;
+use const IMAP_READTIMEOUT;
+use const IMAP_WRITETIMEOUT;
 use InvalidArgumentException;
+use const OP_ANONYMOUS;
+use const OP_DEBUG;
+use const OP_HALFOPEN;
+use const OP_PROTOTYPE;
+use const OP_READONLY;
+use const OP_SECURE;
+use const OP_SHORTCACHE;
+use const OP_SILENT;
+use const PATHINFO_EXTENSION;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
+use const SA_ALL;
+use const SE_FREE;
+use const SE_UID;
+use const SORT_NUMERIC;
+use const SORTARRIVAL;
+use const ST_UID;
 use stdClass;
+use const TYPEMESSAGE;
+use const TYPEMULTIPART;
+use const TYPETEXT;
 use UnexpectedValueException;
 
 /**

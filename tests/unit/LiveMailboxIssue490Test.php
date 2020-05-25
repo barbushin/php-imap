@@ -12,6 +12,7 @@ namespace PhpImap;
 
 use Exception;
 use ParagonIE\HiddenString\HiddenString;
+use const TYPEMULTIPART;
 use const TYPETEXT;
 
 /**
