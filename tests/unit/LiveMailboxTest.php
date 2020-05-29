@@ -12,10 +12,10 @@ namespace PhpImap;
 
 use function date;
 use const ENCBASE64;
-use Exception;
 use Generator;
 use ParagonIE\HiddenString\HiddenString;
 use const SORTARRIVAL;
+use Throwable;
 use const TYPEAPPLICATION;
 use const TYPEMULTIPART;
 use const TYPETEXT;
@@ -66,7 +66,7 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
             $serverEncoding
         );
 
-        /** @var Exception|null */
+        /** @var Throwable|null */
         $exception = null;
 
         try {
@@ -129,7 +129,7 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
 
                 $this->assertSame($check->Nmsgs, $mailbox->countMails(), 'Mailbox::checkMailbox()->Nmsgs did not match Mailbox::countMails()!');
             }
-        } catch (Exception $ex) {
+        } catch (Throwable $ex) {
             $exception = $ex;
         } finally {
             $mailbox->switchMailbox($imapPath->getString());
@@ -312,110 +312,6 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
         );
 
         $this->assertSame($expected_result, $actual_result);
-    }
-
-    /**
-     * @psalm-return Generator<int, array{
-     *	0:MAILBOX_ARGS,
-     *	1:COMPOSE_ENVELOPE,
-     *	2:COMPOSE_BODY,
-     *	3:string,
-     *	4:bool
-     * }, mixed, void>
-     */
-    public function AppendProvider(): Generator
-    {
-        foreach ($this->MailBoxProvider() as $mailbox_args) {
-            foreach ($this->ComposeProvider() as $compose_args) {
-                [$envelope, $body, $expected_compose_result] = $compose_args;
-
-                yield [$mailbox_args, $envelope, $body, $expected_compose_result, false];
-            }
-
-            foreach ($this->ComposeProvider() as $compose_args) {
-                [$envelope, $body, $expected_compose_result] = $compose_args;
-
-                yield [$mailbox_args, $envelope, $body, $expected_compose_result, true];
-            }
-        }
-    }
-
-    /**
-     * @dataProvider AppendProvider
-     *
-     * @group live
-     *
-     * @depends testGetImapStream
-     * @depends testMailCompose
-     *
-     * @psalm-param MAILBOX_ARGS $mailbox_args
-     * @psalm-param COMPOSE_ENVELOPE $envelope
-     * @psalm-param COMPOSE_BODY $body
-     */
-    public function testAppend(
-        array $mailbox_args,
-        array $envelope,
-        array $body,
-        string $_expected_compose_result,
-        bool $pre_compose
-    ): void {
-        if ($this->MaybeSkipAppendTest($envelope)) {
-            return;
-        }
-
-        list($search_criteria) = $this->SubjectSearchCriteriaAndSubject($envelope);
-
-        list($mailbox, $remove_mailbox, $path) = $this->getMailboxFromArgs(
-            $mailbox_args
-        );
-
-        $search = $mailbox->searchMailbox($search_criteria);
-
-        $this->assertCount(
-            0,
-            $search,
-            (
-                'If a subject was found,'.
-                ' then the message is insufficiently unique to assert that'.
-                ' a newly-appended message was actually created.'
-            )
-        );
-
-        $message = [$envelope, $body];
-
-        if ($pre_compose) {
-            $message = Imap::mail_compose($envelope, $body);
-        }
-
-        $mailbox->appendMessageToMailbox($message);
-
-        $search = $mailbox->searchMailbox($search_criteria);
-
-        $this->assertCount(
-            1,
-            $search,
-            (
-                'If a subject was not found, '.
-                ' then Mailbox::appendMessageToMailbox() failed'.
-                ' despite not throwing an exception.'
-            )
-        );
-
-        $mailbox->deleteMail($search[0]);
-
-        $mailbox->expungeDeletedMails();
-
-        $mailbox->switchMailbox($path->getString());
-        $mailbox->deleteMailbox($remove_mailbox);
-
-        $this->assertCount(
-            0,
-            $mailbox->searchMailbox($search_criteria),
-            (
-                'If a subject was found,'.
-                ' then the message is was not expunged as requested.'
-            )
-        );
     }
 
     /**
@@ -748,19 +644,6 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
                 ' then the message is was not expunged as requested.'
             )
         );
-    }
-
-    protected function MaybeSkipAppendTest(array $envelope): bool
-    {
-        if (!isset($envelope['subject'])) {
-            $this->markTestSkipped(
-                'Cannot search for message by subject, no subject specified!'
-            );
-
-            return true;
-        }
-
-        return false;
     }
 
     /**
