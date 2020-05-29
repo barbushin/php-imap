@@ -10,6 +10,7 @@ namespace PhpImap;
 
 use const CL_EXPUNGE;
 use DateTime;
+use Generator;
 use const IMAP_CLOSETIMEOUT;
 use const IMAP_OPENTIMEOUT;
 use const IMAP_READTIMEOUT;
@@ -599,33 +600,63 @@ final class MailboxTest extends TestCase
     /**
      * Provides test data for testing connection args.
      *
-     * @psalm-return list<array{0:'assertNull'|'expectException', 1:int, 2:int, 3:array{DISABLE_AUTHENTICATOR?:string}|array<empty, empty>}>
+     * @psalm-return Generator<string, array{0:'assertNull'|'expectException', 1:int, 2:int, 3:array{DISABLE_AUTHENTICATOR?:string}|array<empty, empty>}>
      */
-    public function connectionArgsProvider(): array
+    public function connectionArgsProvider(): Generator
     {
-        /** @psalm-var list<array{0:'assertNull'|'expectException', 1:int, 2:int, 3:array{DISABLE_AUTHENTICATOR?:string}|array<empty, empty>}> */
-        return [
-            ['assertNull', OP_READONLY, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['assertNull', OP_READONLY, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['assertNull', OP_ANONYMOUS, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['assertNull', OP_HALFOPEN, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['assertNull', CL_EXPUNGE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['assertNull', OP_DEBUG, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['assertNull', OP_SHORTCACHE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['assertNull', OP_SILENT, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['assertNull', OP_PROTOTYPE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['assertNull', OP_SECURE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['assertNull', OP_READONLY, 1, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['assertNull', OP_READONLY, 3, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['assertNull', OP_READONLY, 12, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-
-            ['expectException', OP_READONLY | OP_DEBUG, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['expectException', OP_READONLY, -1, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['expectException', OP_READONLY, -3, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['expectException', OP_READONLY, -12, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['expectException', OP_READONLY, -1, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
-            ['expectException', OP_READONLY, 0, [null]],
+        yield from [
+            'readonly, disable gssapi' => ['assertNull', OP_READONLY, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'anonymous, disable gssapi' => ['assertNull', OP_ANONYMOUS, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'half open, disable gssapi' => ['assertNull', OP_HALFOPEN, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'expunge on close, disable gssapi' => ['assertNull', CL_EXPUNGE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'debug, disable gssapi' => ['assertNull', OP_DEBUG, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'short cache, disable gssapi' => ['assertNull', OP_SHORTCACHE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'silent, disable gssapi' => ['assertNull', OP_SILENT, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'return driver prototype, disable gssapi' => ['assertNull', OP_PROTOTYPE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'don\'t do non-secure authentication, disable gssapi' => ['assertNull', OP_SECURE, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly, disable gssapi, 1 retry' => ['assertNull', OP_READONLY, 1, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly, disable gssapi, 3 retries' => ['assertNull', OP_READONLY, 3, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly, disable gssapi, 12 retries' => ['assertNull', OP_READONLY, 12, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly debug, disable gssapi' => ['assertNull', OP_READONLY | OP_DEBUG, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly, -1 retries' => ['expectException', OP_READONLY, -1, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly, -3 retries' => ['expectException', OP_READONLY, -3, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly, -12 retries' => ['expectException', OP_READONLY, -12, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
+            'readonly, null options' => ['expectException', OP_READONLY, 0, [null]],
         ];
+
+        /** @psalm-var list<array{0:int, 1:string}> */
+        $options = [
+            [OP_DEBUG, 'debug'], // 1
+            [OP_READONLY, 'readonly'], // 2
+            [OP_ANONYMOUS, 'anonymous'], // 4
+            [OP_SHORTCACHE, 'short cache'], // 8
+            [OP_SILENT, 'silent'], // 16
+            [OP_PROTOTYPE, 'return driver prototype'], // 32
+            [OP_HALFOPEN, 'half-open'], // 64
+            [OP_SECURE, 'don\'t do non-secure authnetication'], // 256
+            [CL_EXPUNGE, 'expunge on close'], // 32768
+        ];
+
+        foreach ($options as $i => $option) {
+            $value = $option[0];
+
+            for ($j = $i + 1; $j < \count($options); ++$j) {
+                $value |= $options[$j][0];
+
+                $fields = [];
+
+                foreach ($options as $option) {
+                    if (0 !== ($value & $option[0])) {
+                        $fields[] = $option[1];
+                    }
+                }
+
+                $key = \implode(', ', $fields);
+
+                yield $key => ['assertNull', $value, 0, []];
+                yield ('INVALID + '.$key) => ['expectException', $value | 128, 0, []];
+            }
+        }
     }
 
     /**
@@ -642,9 +673,12 @@ final class MailboxTest extends TestCase
         if ('expectException' == $assertMethod) {
             $this->expectException(InvalidParameterException::class);
             $mailbox->setConnectionArgs($option, $retriesNum, $param);
+            $this->assertSame($option, $mailbox->getImapOptions());
         } elseif ('assertNull' == $assertMethod) {
             $this->assertNull($mailbox->setConnectionArgs($option, $retriesNum, $param));
         }
+
+        $mailbox->disconnect();
     }
 
     /**
@@ -755,8 +789,8 @@ final class MailboxTest extends TestCase
         $mailbox->setAttachmentsDir($attachmentsDir);
     }
 
-    protected function getMailbox(): Mailbox
+    protected function getMailbox(): Fixtures\Mailbox
     {
-        return new Mailbox($this->imapPath, $this->login, $this->password, $this->attachmentsDir, $this->serverEncoding);
+        return new Fixtures\Mailbox($this->imapPath, $this->login, $this->password, $this->attachmentsDir, $this->serverEncoding);
     }
 }

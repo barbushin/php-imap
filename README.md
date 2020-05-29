@@ -80,6 +80,12 @@ $mailbox = new PhpImap\Mailbox(
 	'UTF-8' // Server encoding (optional)
 );
 
+// set some connection arguments (if appropriate)
+$mailbox->setConnectionArgs(
+    CL_EXPUNGE // expunge deleted mails upon mailbox close
+    | OP_SECURE // don't do non-secure authentication
+);
+
 try {
 	// Get all emails (messages)
 	// PHP.net imap_search criteria: http://php.net/manual/en/function.imap-search.php
