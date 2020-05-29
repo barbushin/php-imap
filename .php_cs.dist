@@ -18,6 +18,7 @@ return PhpCsFixer\Config::create()
             'import_constants' => true,
             'import_functions' => false,
         ],
+        'native_constant_invocation' => true,
         'native_function_invocation' => true,
         'php_unit_test_case_static_method_calls' => [
             'call_type' => 'this',

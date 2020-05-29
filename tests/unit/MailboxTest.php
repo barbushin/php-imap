@@ -8,9 +8,24 @@ declare(strict_types=1);
 
 namespace PhpImap;
 
+use const CL_EXPUNGE;
 use DateTime;
+use const IMAP_CLOSETIMEOUT;
+use const IMAP_OPENTIMEOUT;
+use const IMAP_READTIMEOUT;
+use const IMAP_WRITETIMEOUT;
+use const OP_ANONYMOUS;
+use const OP_DEBUG;
+use const OP_HALFOPEN;
+use const OP_PROTOTYPE;
+use const OP_READONLY;
+use const OP_SECURE;
+use const OP_SHORTCACHE;
+use const OP_SILENT;
 use PhpImap\Exceptions\InvalidParameterException;
 use PHPUnit\Framework\TestCase;
+use const SE_FREE;
+use const SE_UID;
 
 final class MailboxTest extends TestCase
 {

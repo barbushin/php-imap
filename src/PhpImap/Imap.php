@@ -14,6 +14,7 @@ use const IMAP_READTIMEOUT;
 use const IMAP_WRITETIMEOUT;
 use InvalidArgumentException;
 use const NIL;
+use const SE_FREE;
 use const SORTARRIVAL;
 use const SORTCC;
 use const SORTDATE;

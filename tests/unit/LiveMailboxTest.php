@@ -11,9 +11,13 @@ declare(strict_types=1);
 namespace PhpImap;
 
 use function date;
+use const ENCBASE64;
 use Exception;
 use Generator;
 use ParagonIE\HiddenString\HiddenString;
+use const SORTARRIVAL;
+use const TYPEAPPLICATION;
+use const TYPEMULTIPART;
 use const TYPETEXT;
 
 /**
