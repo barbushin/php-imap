@@ -173,6 +173,57 @@ class LiveMailboxIssue514Test extends AbstractLiveMailboxTest
                 'plain text body did not match expected result!'
             );
 
+            $embedded = \implode('', [
+                '<img alt="png" width="5" height="1" src="',
+                'data:image/png; charset=binary;base64, ',
+                $body[3]['contents.data'],
+                '">',
+                '<img alt="webp" width="5" height="1" src="',
+                'data:image/webp; charset=binary;base64, ',
+                $body[4]['contents.data'],
+                '">',
+            ]);
+
+            $this->assertSame(
+                [
+                    'foo.png' => 'cid:foo.png',
+                    'foo.webp' => 'cid:foo.webp',
+                ],
+                $result->getInternalLinksPlaceholders(),
+                'Internal link placeholders did not match expected result!'
+            );
+
+            $replaced = \implode('', [
+                '<img alt="png" width="5" height="1" src="',
+                'foo.png',
+                '">',
+                '<img alt="webp" width="5" height="1" src="',
+                'foo.webp',
+                '">',
+            ]);
+
+            foreach ($result->getAttachments() as $attachment) {
+                if ('foo.png' === $attachment->contentId) {
+                    $replaced = \str_replace(
+                        'foo.png',
+                        '/' . basename($attachment->filePath),
+                        $replaced
+                    );
+                } elseif ('foo.webp' === $attachment->contentId) {
+                    $replaced = \str_replace(
+                        'foo.webp',
+                        '/' . basename($attachment->filePath),
+                        $replaced
+                    );
+                }
+            }
+
+            $this->assertSame(
+                $replaced,
+                $result->replaceInternalLinks(''),
+                'replaced html body did not match expected result!'
+            );
+
             $this->assertSame(
                 $body[2]['contents.data'],
                 $result->textHtml,
@@ -182,16 +233,7 @@ class LiveMailboxIssue514Test extends AbstractLiveMailboxTest
             $result->embedImageAttachments();
 
             $this->assertSame(
-                \implode('', [
-                    '<img alt="png" width="5" height="1" src="',
-                    'data:image/png; charset=binary;base64, ',
-                    $body[3]['contents.data'],
-                    '">',
-                    '<img alt="webp" width="5" height="1" src="',
-                    'data:image/webp; charset=binary;base64, ',
-                    $body[4]['contents.data'],
-                    '">',
-                ]),
+                $embedded,
                 $result->textHtml,
                 'embeded html body did not match expected result!'
             );
