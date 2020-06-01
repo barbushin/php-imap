@@ -13,6 +13,9 @@
     </DocblockTypeContradiction>
   </file>
   <file src="src/PhpImap/IncomingMail.php">
+    <PossiblyUnusedMethod occurrences="1">
+      <code>replaceInternalLinks</code>
+    </PossiblyUnusedMethod>
     <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;dataInfo</code>
     </PropertyTypeCoercion>
