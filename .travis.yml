@@ -34,7 +34,7 @@ matrix:
 
 cache:
   directories:
-    - ./vendor
+    - $HOME/.composer/cache
     - ./psalm/cache
 
 before_script:
