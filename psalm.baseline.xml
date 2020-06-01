@@ -13,9 +13,8 @@
     </DocblockTypeContradiction>
   </file>
   <file src="src/PhpImap/IncomingMail.php">
-    <PossiblyUnusedMethod occurrences="2">
+    <PossiblyUnusedMethod occurrences="1">
       <code>replaceInternalLinks</code>
-      <code>embedImageAttachments</code>
     </PossiblyUnusedMethod>
     <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;dataInfo</code>
@@ -26,7 +25,7 @@
       <code>\in_array($imapSearchOption, $supported_options, true)</code>
       <code>\in_array($key, $supported_params, true)</code>
     </DocblockTypeContradiction>
-    <InvalidArgument occurrences="6">
+    <InvalidArgument occurrences="3">
       <code>$element-&gt;charset</code>
       <code>$element-&gt;charset</code>
       <code>$element-&gt;text</code>
