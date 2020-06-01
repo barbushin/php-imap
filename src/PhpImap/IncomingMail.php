@@ -207,10 +207,9 @@ class IncomingMail extends IncomingMailHeader
      */
     public function embedImageAttachments(): void
     {
-        /** @var string|null */
-        $fetchedHtml = $this->textHtml;
+        $fetchedHtml = (string) $this->__get('textHtml');
 
-        \preg_match_all("/\bcid:[^'\"\s]{1,256}/mi", $fetchedHtml ?? '', $matches);
+        \preg_match_all("/\bcid:[^'\"\s]{1,256}/mi", $fetchedHtml, $matches);
 
         if (isset($matches[0]) && \is_array($matches[0]) && \count($matches[0])) {
             /** @var list<string> */
