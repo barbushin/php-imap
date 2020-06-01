@@ -169,7 +169,9 @@ class IncomingMail extends IncomingMailHeader
      */
     public function getInternalLinksPlaceholders(): array
     {
-        $match = \preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $this->textHtml, $matches);
+        $fetchedHtml = (string) $this->__get('textHtml');
+
+        $match = \preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $fetchedHtml, $matches);
 
         /** @psalm-var array{1:list<string>, 2:list<string>} */
         $matches = $matches;
