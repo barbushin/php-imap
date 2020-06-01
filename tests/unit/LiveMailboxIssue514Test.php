@@ -206,13 +206,13 @@ class LiveMailboxIssue514Test extends AbstractLiveMailboxTest
                 if ('foo.png' === $attachment->contentId) {
                     $replaced = \str_replace(
                         'foo.png',
-                        '/' . basename($attachment->filePath),
+                        '/'.\basename($attachment->filePath),
                         $replaced
                     );
                 } elseif ('foo.webp' === $attachment->contentId) {
                     $replaced = \str_replace(
                         'foo.webp',
-                        '/' . basename($attachment->filePath),
+                        '/'.\basename($attachment->filePath),
                         $replaced
                     );
                 }

@@ -64,7 +64,7 @@ class IncomingMail extends IncomingMailHeader
             \trigger_error("Undefined property: IncomingMail::$name");
         }
         if (!isset($this->$name)) {
-        $this->$name = '';
+            $this->$name = '';
         }
         foreach ($this->dataInfo[$type] as $data) {
             $this->$name .= \trim($data->fetch());
