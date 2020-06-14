@@ -57,10 +57,15 @@ class IncomingMail extends IncomingMailHeader
         if ('textHtml' == $name) {
             $type = DataPartInfo::TEXT_HTML;
         }
+        if (('textPlain' === $name || 'textHtml' === $name) && isset($this->$name)) {
+            return (string) $this->$name;
+        }
         if (false === $type) {
             \trigger_error("Undefined property: IncomingMail::$name");
         }
-        $this->$name = '';
+        if (!isset($this->$name)) {
+            $this->$name = '';
+        }
         foreach ($this->dataInfo[$type] as $data) {
             $this->$name .= \trim($data->fetch());
         }
@@ -164,7 +169,9 @@ class IncomingMail extends IncomingMailHeader
      */
     public function getInternalLinksPlaceholders(): array
     {
-        $match = \preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $this->textHtml, $matches);
+        $fetchedHtml = (string) $this->__get('textHtml');
+
+        $match = \preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $fetchedHtml, $matches);
 
         /** @psalm-var array{1:list<string>, 2:list<string>} */
         $matches = $matches;
@@ -200,23 +207,18 @@ class IncomingMail extends IncomingMailHeader
      */
     public function embedImageAttachments(): void
     {
-        /** @var string|null */
-        $fetchedHtml = $this->textHtml;
+        $fetchedHtml = (string) $this->__get('textHtml');
 
-        \preg_match_all("/\bcid:[^'\"\s]{1,256}/mi", $fetchedHtml ?? '', $matches);
+        \preg_match_all("/\bcid:[^'\"\s]{1,256}/mi", $fetchedHtml, $matches);
 
-        /** @psalm-var list<list<string>> */
-        $matches = $matches;
-
-        if (\count($matches)) {
+        if (isset($matches[0]) && \is_array($matches[0]) && \count($matches[0])) {
+            /** @var list<string> */
+            $matches = $matches[0];
+            $attachments = $this->getAttachments();
             foreach ($matches as $match) {
-                if (!isset($match[0])) {
-                    continue;
-                }
+                $cid = \str_replace('cid:', '', $match);
 
-                $cid = \str_replace('cid:', '', $match[0]);
-
-                foreach ($this->getAttachments() as $attachment) {
+                foreach ($attachments as $attachment) {
                     if ($attachment->contentId == $cid && 'inline' == $attachment->disposition) {
                         $contents = $attachment->getContents();
                         $contentType = (string) $attachment->getFileInfo(FILEINFO_MIME);
@@ -230,7 +232,7 @@ class IncomingMail extends IncomingMailHeader
                         $base64encoded = \base64_encode($contents);
                         $replacement = 'data:'.$contentType.';base64, '.$base64encoded;
 
-                        $this->textHtml = \str_replace($match[0], $replacement, $this->textHtml);
+                        $this->textHtml = \str_replace($match, $replacement, $this->textHtml);
 
                         $this->removeAttachment($attachment->id);
                     }

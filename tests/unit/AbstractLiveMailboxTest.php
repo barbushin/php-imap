@@ -32,6 +32,10 @@ use Throwable;
  *	charset?:string,
  *	subtype?:string,
  *	description?:string,
+ *  'disposition.type'?:string,
+ *  'type.parameters'?:array{name:string},
+ *  'contents.data'?:string,
+ *  id?:string,
  *	disposition?:array{filename:string}
  * }>
  */
