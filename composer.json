@@ -39,21 +39,24 @@
         "psalm/plugin-phpunit": "^0.10.0",
         "roave/security-advisories": "dev-master",
         "sebastian/phpcpd": "^4.1",
-        "vimeo/psalm": "^3.11"
+        "vimeo/psalm": "^3.11.5"
     },
     "scripts": {
-        "tests": [
+        "static-analysis": [
             "parallel-lint .php_cs.dist src tests examples",
             "phpcpd src tests",
-            "phpunit --testdox",
             "composer-require-checker check ./composer.json",
             "phpmnd ./ --exclude=./.github/ --exclude=./examples/ --exclude=./vendor/ --non-zero-exit-on-violation --hint",
             "php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff-format=udiff -v",
             "psalm --show-info=false"
+        ],
+        "tests": [
+            "@static-analysis",
+            "phpunit --testdox"
         ]
     },
     "suggest": {
-        "ext-fileinfo": "To facilitate IncomingMailAttachment::getMimeType() auto-detection"
+        "ext-fileinfo": "To facilitate IncomingMailAttachment::getFileInfo() auto-detection"
     },
     "autoload-dev": {
         "psr-4": {

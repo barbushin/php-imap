@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PhpImap;
 
+use const FILEINFO_MIME;
+use const FILEINFO_NONE;
 use finfo;
 use UnexpectedValueException;
 
@@ -13,6 +15,8 @@ use UnexpectedValueException;
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
  *
  * @property string $filePath lazy attachment data file
+ *
+ * @psalm-type fileinfoconst = 0|2|16|1024|1040|8|32|128|256|16777216
  */
 class IncomingMailAttachment
 {
@@ -22,8 +26,23 @@ class IncomingMailAttachment
     /** @var string|null */
     public $contentId;
 
+    /** @var int|null */
+    public $type;
+
+    /** @var int|null */
+    public $encoding;
+
+    /** @var string|null */
+    public $subtype;
+
+    /** @var string|null */
+    public $description;
+
     /** @var string|null */
     public $name;
+
+    /** @var int|null */
+    public $sizeInBytes;
 
     /** @var string|null */
     public $disposition;
@@ -35,14 +54,27 @@ class IncomingMailAttachment
     public $emlOrigin;
 
     /** @var string|null */
+    public $fileInfoRaw;
+
+    /** @var string|null */
+    public $fileInfo;
+
+    /** @var string|null */
+    public $mime;
+
+    /** @var string|null */
+    public $mimeEncoding;
+
+    /** @var string|null */
+    public $fileExtension;
+
+    /** @var string|null */
     private $file_path;
 
     /** @var DataPartInfo|null */
     private $dataInfo;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $mimeType;
 
     /** @var string|null */
@@ -91,17 +123,21 @@ class IncomingMailAttachment
     }
 
     /**
-     * Gets the MIME type.
+     * Gets information about a file.
+     *
+     * @param int $fileinfo_const Any predefined constant. See https://www.php.net/manual/en/fileinfo.constants.php
+     *
+     * @psalm-param fileinfoconst $fileinfo_const
      */
-    public function getMimeType(): string
+    public function getFileInfo($fileinfo_const = FILEINFO_NONE): string
     {
-        if (!$this->mimeType) {
-            $finfo = new finfo(FILEINFO_MIME);
-
-            $this->mimeType = $finfo->buffer($this->getContents());
+        if ((FILEINFO_MIME == $fileinfo_const) and (false != $this->mimeType)) {
+            return $this->mimeType;
         }
 
-        return $this->mimeType;
+        $finfo = new finfo($fileinfo_const);
+
+        return $finfo->buffer($this->getContents());
     }
 
     /**

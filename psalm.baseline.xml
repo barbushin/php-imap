@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="3.11.2@d470903722cfcbc1cd04744c5491d3e6d13ec3d9">
+<files psalm-version="3.11.5@3c60609c218d4d4b3b257728b8089094e5c6c6c2">
   <file src="examples/get_and_parse_all_emails_without_saving_attachments.php">
     <UnusedVariable occurrences="1">
       <code>$mailbox</code>
@@ -13,9 +13,8 @@
     </DocblockTypeContradiction>
   </file>
   <file src="src/PhpImap/IncomingMail.php">
-    <PossiblyUnusedMethod occurrences="2">
+    <PossiblyUnusedMethod occurrences="1">
       <code>replaceInternalLinks</code>
-      <code>embedImageAttachments</code>
     </PossiblyUnusedMethod>
     <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;dataInfo</code>
@@ -26,7 +25,7 @@
       <code>\in_array($imapSearchOption, $supported_options, true)</code>
       <code>\in_array($key, $supported_params, true)</code>
     </DocblockTypeContradiction>
-    <InvalidArgument occurrences="6">
+    <InvalidArgument occurrences="3">
       <code>$element-&gt;charset</code>
       <code>$element-&gt;charset</code>
       <code>$element-&gt;text</code>
@@ -34,13 +33,6 @@
       <code>$element-&gt;charset</code>
       <code>$element-&gt;text</code>
     </InvalidArgument>
-    <MixedInferredReturnType occurrences="1">
-      <code>array</code>
-    </MixedInferredReturnType>
-    <PossiblyUndefinedVariable occurrences="2">
-      <code>$lowercase_encodings</code>
-      <code>$lowercase_encodings</code>
-    </PossiblyUndefinedVariable>
     <PossiblyUnusedMethod occurrences="24">
       <code>setConnectionRetry</code>
       <code>setConnectionRetryDelay</code>

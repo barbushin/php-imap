@@ -4,14 +4,47 @@ declare(strict_types=1);
 
 namespace PhpImap;
 
+use const CL_EXPUNGE;
 use function count;
+use const CP_UID;
+use const DATE_RFC3339;
 use DateTime;
 use const DIRECTORY_SEPARATOR;
 use Exception;
+use const FILEINFO_EXTENSION;
+use const FILEINFO_MIME;
+use const FILEINFO_MIME_ENCODING;
+use const FILEINFO_NONE;
+use const FILEINFO_RAW;
+use const FT_PEEK;
+use const FT_PREFETCHTEXT;
+use const FT_UID;
+use const IMAP_CLOSETIMEOUT;
+use const IMAP_OPENTIMEOUT;
+use const IMAP_READTIMEOUT;
+use const IMAP_WRITETIMEOUT;
 use InvalidArgumentException;
+use const OP_ANONYMOUS;
+use const OP_DEBUG;
+use const OP_HALFOPEN;
+use const OP_PROTOTYPE;
+use const OP_READONLY;
+use const OP_SECURE;
+use const OP_SHORTCACHE;
+use const OP_SILENT;
+use const PATHINFO_EXTENSION;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
+use const SA_ALL;
+use const SE_FREE;
+use const SE_UID;
+use const SORT_NUMERIC;
+use const SORTARRIVAL;
+use const ST_UID;
 use stdClass;
+use const TYPEMESSAGE;
+use const TYPEMULTIPART;
+use const TYPETEXT;
 use UnexpectedValueException;
 
 /**
@@ -54,6 +87,21 @@ class Mailbox
     const MAX_LENGTH_FILEPATH = 255;
 
     const PART_TYPE_TWO = 2;
+
+    const IMAP_OPTIONS_SUPPORTED_VALUES =
+        OP_READONLY // 2
+        | OP_ANONYMOUS // 4
+        | OP_HALFOPEN // 64
+        | CL_EXPUNGE // 32768
+        | OP_DEBUG // 1
+        | OP_SHORTCACHE // 8
+        | OP_SILENT // 16
+        | OP_PROTOTYPE // 32
+        | OP_SECURE // 256
+    ;
+
+    /** @var string */
+    public $decodeMimeStrDefaultCharset = 'default';
 
     /** @var string */
     protected $imapPath;
@@ -104,6 +152,9 @@ class Mailbox
     /** @var string */
     protected $pathDelimiter = '.';
 
+    /** @var string */
+    protected $mailboxFolder;
+
     /** @var resource|null */
     private $imapStream;
 
@@ -119,6 +170,8 @@ class Mailbox
         if (null != $attachmentsDir) {
             $this->setAttachmentsDir($attachmentsDir);
         }
+
+        $this->setMailboxFolder();
     }
 
     /**
@@ -297,8 +350,7 @@ class Mailbox
     public function setConnectionArgs(int $options = 0, int $retriesNum = 0, array $params = null): void
     {
         if (0 !== $options) {
-            $supported_options = [OP_READONLY, OP_ANONYMOUS, OP_HALFOPEN, CL_EXPUNGE, OP_DEBUG, OP_SHORTCACHE, OP_SILENT, OP_PROTOTYPE, OP_SECURE];
-            if (!\in_array($options, $supported_options, true)) {
+            if (($options & self::IMAP_OPTIONS_SUPPORTED_VALUES) !== $options) {
                 throw new InvalidParameterException('Please check your option for setConnectionArgs()! Unsupported option "'.$options.'". Available options: https://www.php.net/manual/de/function.imap-open.php');
             }
             $this->imapOptions = $options;
@@ -427,6 +479,15 @@ class Mailbox
     }
 
     /**
+     * Sets the folder of the current mailbox.
+     */
+    public function setMailboxFolder(): void
+    {
+        $imapPathParts = \explode('}', $this->imapPath);
+        $this->mailboxFolder = (!empty($imapPathParts[1])) ? $imapPathParts[1] : 'INBOX';
+    }
+
+    /**
      * Switch mailbox without opening a new connection.
      *
      * @throws Exception
@@ -438,6 +499,8 @@ class Mailbox
         } else {
             $this->imapPath = $this->getCombinedPath($imapPath, $absolute);
         }
+
+        $this->setMailboxFolder();
 
         Imap::reopen($this->getImapStream(), $this->imapPath);
     }
@@ -1021,7 +1084,16 @@ class Mailbox
         $header->headersRaw = $headersRaw;
         $header->headers = $head;
         $header->id = $mailId;
+        $header->imapPath = $this->imapPath;
+        $header->mailboxFolder = $this->mailboxFolder;
         $header->isDraft = (!isset($head->date)) ? true : false;
+        $header->mimeVersion = (\preg_match("/MIME-Version\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->xVirusScanned = (\preg_match("/X-Virus-Scanned\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->organization = (\preg_match("/Organization\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->contentType = (\preg_match("/Content-Type\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->xMailer = (\preg_match("/X-Mailer\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->contentLanguage = (\preg_match("/Content-Language\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->xSenderIp = (\preg_match("/X-Sender-IP\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
         $header->priority = (\preg_match("/Priority\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
         $header->importance = (\preg_match("/Importance\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
         $header->sensitivity = (\preg_match("/Sensitivity\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
@@ -1192,12 +1264,35 @@ class Mailbox
             $fileName = $this->decodeRFC2231($fileName);
         }
 
-        $partStructure_id = ($partStructure->ifid && isset($partStructure->id)) ? $partStructure->id : null;
+        /** @var scalar|array|object|null */
+        $sizeInBytes = isset($partStructure->bytes) ? $partStructure->bytes : null;
+
+        /** @var scalar|array|object|null */
+        $encoding = isset($partStructure->encoding) ? $partStructure->encoding : null;
+
+        if (null !== $sizeInBytes && !\is_int($sizeInBytes)) {
+            throw new UnexpectedValueException('Supplied part structure specifies a non-integer, non-null bytes header!');
+        }
+        if (null !== $encoding && !\is_int($encoding)) {
+            throw new UnexpectedValueException('Supplied part structure specifies a non-integer, non-null encoding header!');
+        }
+        if (isset($partStructure->type) && !\is_int($partStructure->type)) {
+            throw new UnexpectedValueException('Supplied part structure specifies a non-integer, non-null type header!');
+        }
+
+        $partStructure_id = ($partStructure->ifid && isset($partStructure->id)) ? \trim($partStructure->id) : null;
 
         $attachment = new IncomingMailAttachment();
         $attachment->id = \bin2hex(\random_bytes(20));
         $attachment->contentId = isset($partStructure_id) ? \trim($partStructure_id, ' <>') : null;
+        if (isset($partStructure->type)) {
+            $attachment->type = $partStructure->type;
+        }
+        $attachment->encoding = $encoding;
+        $attachment->subtype = ($partStructure->ifsubtype && isset($partStructure->subtype)) ? \trim($partStructure->subtype) : null;
+        $attachment->description = ($partStructure->ifdescription && isset($partStructure->description)) ? \trim((string) $partStructure->description) : null;
         $attachment->name = $fileName;
+        $attachment->sizeInBytes = $sizeInBytes;
         $attachment->disposition = (isset($partStructure->disposition) && \is_string($partStructure->disposition)) ? $partStructure->disposition : null;
 
         /** @var scalar|array|object|resource|null */
@@ -1210,6 +1305,12 @@ class Mailbox
         $attachment->emlOrigin = $emlOrigin;
 
         $attachment->addDataPartInfo($dataInfo);
+
+        $attachment->fileInfoRaw = $attachment->getFileInfo(FILEINFO_RAW);
+        $attachment->fileInfo = $attachment->getFileInfo(FILEINFO_NONE);
+        $attachment->mime = $attachment->getFileInfo(FILEINFO_MIME);
+        $attachment->mimeEncoding = $attachment->getFileInfo(FILEINFO_MIME_ENCODING);
+        $attachment->fileExtension = $attachment->getFileInfo(FILEINFO_EXTENSION);
 
         $attachmentsDir = $this->getAttachmentsDir();
 
@@ -1241,10 +1342,6 @@ class Mailbox
      */
     public function decodeMimeStr(string $string): string
     {
-        if (empty(\trim($string))) {
-            throw new Exception('decodeMimeStr() Can not decode an empty string!');
-        }
-
         $newString = '';
         /** @var list<object{charset?:string, text?:string}>|false */
         $elements = \imap_mime_header_decode($string);
@@ -1254,18 +1351,24 @@ class Mailbox
         }
 
         foreach ($elements as $element) {
-            switch (\strtolower($element->charset)) {
+            $charset = \strtolower($element->charset);
+
+            if ('default' === $charset) {
+                $charset = $this->decodeMimeStrDefaultCharset;
+            }
+
+            switch ($charset) {
                 case 'default': // Charset default is already ASCII (not encoded)
                 case 'utf-8': // Charset UTF-8 is OK
                     $newString .= $element->text;
                     break;
                 default:
                     // If charset exists in mb_list_encodings(), convert using mb_convert function
-                    if (\in_array(\strtolower($element->charset), $this->lowercase_mb_list_encodings())) {
-                        $newString .= \mb_convert_encoding($element->text, 'UTF-8', $element->charset);
+                    if (\in_array($charset, $this->lowercase_mb_list_encodings())) {
+                        $newString .= \mb_convert_encoding($element->text, 'UTF-8', $charset);
                     } else {
                         // Fallback: Try to convert with iconv()
-                        $iconv_converted_string = @\iconv($element->charset, 'UTF-8', $element->text);
+                        $iconv_converted_string = @\iconv($charset, 'UTF-8', $element->text);
                         if (!$iconv_converted_string) {
                             // If iconv() could also not convert, return string as it is
                             // (unknown charset)
@@ -1536,8 +1639,18 @@ class Mailbox
 
         $isAttachment = isset($params['filename']) || isset($params['name']);
 
+        $dispositionAttachment = (
+            isset($partStructure->disposition) &&
+            \is_string($partStructure->disposition) &&
+            'attachment' === \mb_strtolower($partStructure->disposition)
+        );
+
         // ignore contentId on body when mail isn't multipart (https://github.com/barbushin/php-imap/issues/71)
-        if (!$partNum && TYPETEXT === $partStructure->type) {
+        if (
+            !$partNum &&
+            TYPETEXT === $partStructure->type &&
+            !$dispositionAttachment
+        ) {
             $isAttachment = false;
         }
 
@@ -1594,12 +1707,16 @@ class Mailbox
         } else {
             if (TYPETEXT === $partStructure->type) {
                 if ('plain' === \mb_strtolower($partStructure->subtype)) {
+                    if ($dispositionAttachment) {
+                        return;
+                    }
+
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
                 } elseif (!$partStructure->ifdisposition) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
                 } elseif (!\is_string($partStructure->disposition)) {
                     throw new InvalidArgumentException('disposition property of object passed as argument 2 to '.__METHOD__.'() was present but not a string!');
-                } elseif ('attachment' !== \mb_strtolower($partStructure->disposition)) {
+                } elseif (!$dispositionAttachment) {
                     $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_HTML);
                 }
             } elseif (TYPEMESSAGE === $partStructure->type) {

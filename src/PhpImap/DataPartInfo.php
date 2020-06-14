@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace PhpImap;
 
+use const ENC8BIT;
+use const ENCBASE64;
+use const ENCBINARY;
+use const ENCQUOTEDPRINTABLE;
+
 /**
  * @see https://github.com/barbushin/php-imap
  *
