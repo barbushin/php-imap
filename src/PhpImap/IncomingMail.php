@@ -219,7 +219,7 @@ class IncomingMail extends IncomingMailHeader
                 $cid = \str_replace('cid:', '', $match);
 
                 foreach ($attachments as $attachment) {
-                    if ($attachment->contentId == $cid && 'inline' == $attachment->disposition) {
+                    if ($attachment->contentId == $cid && 'inline' == \mb_strtolower((string) $attachment->disposition)) {
                         $contents = $attachment->getContents();
                         $contentType = (string) $attachment->getFileInfo(FILEINFO_MIME);
 
