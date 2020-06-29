@@ -54,7 +54,7 @@ class ImapTest extends Base
         if (\is_string($imapPath) && \is_string($login) && \is_string($password)) {
             yield 'CI ENV with invalid password' => [
                 UnexpectedValueException::class,
-                'IMAP error:[AUTHENTICATIONFAILED] Authentication failed.',
+                '/^IMAP error:.*\[AUTHENTICATIONFAILED\].*/',
                 [
                     new HiddenString($imapPath, true, true),
                     new HiddenString($login, true, true),
@@ -63,6 +63,7 @@ class ImapTest extends Base
                     0,
                     [],
                 ],
+                true,
             ];
         }
     }
