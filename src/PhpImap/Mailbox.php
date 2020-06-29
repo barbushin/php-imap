@@ -945,7 +945,6 @@ class Mailbox
      * @param string|null $searchCriteria See http://php.net/imap_search for a complete list of available criteria
      *
      * @psalm-param value-of<Imap::SORT_CRITERIA> $criteria
-     * @psalm-param 1|5|0|2|6|3|4 $criteria
      *
      * @return array Mails ids
      */

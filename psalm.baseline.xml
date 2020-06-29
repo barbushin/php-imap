@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="3.11.5@3c60609c218d4d4b3b257728b8089094e5c6c6c2">
+<files psalm-version="3.11.6@7fc1f50f54bd6b174b1c43a37c1b0b151915d55c">
   <file src="examples/get_and_parse_all_emails_without_saving_attachments.php">
     <UnusedVariable occurrences="1">
       <code>$mailbox</code>
@@ -13,9 +13,6 @@
     </DocblockTypeContradiction>
   </file>
   <file src="src/PhpImap/IncomingMail.php">
-    <PossiblyUnusedMethod occurrences="1">
-      <code>replaceInternalLinks</code>
-    </PossiblyUnusedMethod>
     <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;dataInfo</code>
     </PropertyTypeCoercion>

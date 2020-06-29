@@ -39,7 +39,7 @@
         "psalm/plugin-phpunit": "^0.10.0",
         "roave/security-advisories": "dev-master",
         "sebastian/phpcpd": "^4.1",
-        "vimeo/psalm": "^3.11.5"
+        "vimeo/psalm": "^3.11.6"
     },
     "scripts": {
         "static-analysis": [

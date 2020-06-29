@@ -181,13 +181,15 @@ final class Imap
      * @param false|resource $imap_stream
      *
      * @psalm-param value-of<self::CLOSE_FLAGS> $flag
-     * @psalm-param 0|32768 $flag
      *
      * @return true
      */
     public static function close($imap_stream, int $flag = 0): bool
     {
         \imap_errors(); // flush errors
+
+        /** @var int */
+        $flag = $flag;
 
         $result = \imap_close(self::EnsureConnection($imap_stream, __METHOD__, 1), $flag);
 
@@ -890,7 +892,6 @@ final class Imap
      * @param false|resource $imap_stream
      *
      * @psalm-param value-of<self::SORT_CRITERIA> $criteria
-     * @psalm-param 1|5|0|2|6|3|4 $criteria
      *
      * @return int[]
      *
@@ -908,6 +909,9 @@ final class Imap
 
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
         $reverse = (int) $reverse;
+
+        /** @var int */
+        $criteria = $criteria;
 
         if (null !== $search_criteria && null !== $charset) {
             $result = \imap_sort(
@@ -990,7 +994,6 @@ final class Imap
 
     /**
      * @psalm-param value-of<self::TIMEOUT_TYPES> $timeout_type
-     * @psalm-param 4|1|2|3 $timeout_type
      *
      * @return true|int
      */
@@ -999,6 +1002,9 @@ final class Imap
         int $timeout = -1
     ) {
         \imap_errors(); // flush errors
+
+        /** @var int */
+        $timeout_type = $timeout_type;
 
         $result = \imap_timeout(
             $timeout_type,
