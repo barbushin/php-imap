@@ -19,10 +19,7 @@
     </DocblockTypeContradiction>
     <InvalidArgument occurrences="3">
       <code>$element-&gt;charset</code>
-      <code>$element-&gt;charset</code>
       <code>$element-&gt;text</code>
-      <code>$element-&gt;charset</code>
-      <code>$element-&gt;charset</code>
       <code>$element-&gt;text</code>
     </InvalidArgument>
     <PossiblyUnusedMethod occurrences="24">
