@@ -107,10 +107,8 @@ class ImapTest extends Base
      * @dataProvider MailBoxProvider
      *
      * @group live
-     *
-     *
      */
-    public function test_sort_empty(
+    public function testSortEmpty(
         HiddenString $path,
         HiddenString $login,
         HiddenString $password
@@ -119,7 +117,7 @@ class ImapTest extends Base
             $path,
             $login,
             $password,
-            \sys_get_temp_dir()
+            \sys_get_temp_dir(),
         ]);
 
         /** @var Throwable|null */
@@ -137,7 +135,7 @@ class ImapTest extends Base
                     0
                 )
             );
-        }  catch (Throwable $ex) {
+        } catch (Throwable $ex) {
             $exception = $ex;
         } finally {
             $mailbox->switchMailbox($path->getString());

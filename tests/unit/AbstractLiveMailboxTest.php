@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace PhpImap;
 
 use Generator;
-use ParagonIE\HiddenString\HiddenString;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
