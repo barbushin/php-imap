@@ -14,8 +14,13 @@ use Throwable;
 use UnexpectedValueException;
 
 /**
- * @psalm-import-type MAILBOX_ARGS from LiveMailboxTestingTrait
- *
+ * @psalm-type MAILBOX_ARGS = array{
+ *	0:HiddenString,
+ *	1:HiddenString,
+ *	2:HiddenString,
+ *	3:string,
+ *	4?:string
+ * }
  * @psalm-type PSALM_OPEN_ARGS = array{
  *  0:HiddenString,
  *  1:HiddenString,

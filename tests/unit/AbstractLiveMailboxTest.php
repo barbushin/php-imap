@@ -11,12 +11,18 @@ declare(strict_types=1);
 namespace PhpImap;
 
 use Generator;
+use ParagonIE\HiddenString\HiddenString;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
 /**
- * @psalm-import-type MAILBOX_ARGS from LiveMailboxTestingTrait
- *
+ * @psalm-type MAILBOX_ARGS = array{
+ *	0:HiddenString,
+ *	1:HiddenString,
+ *	2:HiddenString,
+ *	3:string,
+ *	4?:string
+ * }
  * @psalm-type COMPOSE_ENVELOPE = array{
  *	subject?:string
  * }
