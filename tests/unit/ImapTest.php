@@ -9,10 +9,13 @@ namespace PhpImap;
 use Generator;
 use ParagonIE\HiddenString\HiddenString;
 use PHPUnit\Framework\TestCase as Base;
+use const SORTARRIVAL;
 use Throwable;
 use UnexpectedValueException;
 
 /**
+ * @psalm-import-type MAILBOX_ARGS from LiveMailboxTestingTrait
+ *
  * @psalm-type PSALM_OPEN_ARGS = array{
  *  0:HiddenString,
  *  1:HiddenString,
@@ -24,6 +27,8 @@ use UnexpectedValueException;
  */
 class ImapTest extends Base
 {
+    use LiveMailboxTestingTrait;
+
     /**
      * @psalm-return Generator<int|string, array{
      *  0:class-string<Throwable>,
@@ -96,5 +101,54 @@ class ImapTest extends Base
             $args[4],
             $args[5]
         );
+    }
+
+    /**
+     * @dataProvider MailBoxProvider
+     *
+     * @group live
+     *
+     *
+     */
+    public function test_sort_empty(
+        HiddenString $path,
+        HiddenString $login,
+        HiddenString $password
+    ): void {
+        list($mailbox, $remove_mailbox, $path) = $this->getMailboxFromArgs([
+            $path,
+            $login,
+            $password,
+            \sys_get_temp_dir()
+        ]);
+
+        /** @var Throwable|null */
+        $exception = null;
+
+        $mailboxDeleted = false;
+
+        try {
+            $this->assertSame(
+                [],
+                Imap::sort(
+                    $mailbox->getImapStream(),
+                    SORTARRIVAL,
+                    false,
+                    0
+                )
+            );
+        }  catch (Throwable $ex) {
+            $exception = $ex;
+        } finally {
+            $mailbox->switchMailbox($path->getString());
+            if (!$mailboxDeleted) {
+                $mailbox->deleteMailbox($remove_mailbox);
+            }
+            $mailbox->disconnect();
+        }
+
+        if (null !== $exception) {
+            throw $exception;
+        }
     }
 }
