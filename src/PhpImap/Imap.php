@@ -939,7 +939,7 @@ final class Imap
             );
         }
 
-        if (!$result) {
+        if (false === $result) {
             throw new UnexpectedValueException('Could not sort messages!', 0, self::HandleErrors(\imap_errors(), 'imap_sort'));
         }
 
