@@ -701,7 +701,7 @@ final class Imap
 
         \imap_errors(); // flush errors
 
-        $result = \imap_open($mailbox, $username, $password, $options, $n_retries, $params);
+        $result = @\imap_open($mailbox, $username, $password, $options, $n_retries, $params);
 
         if (!$result) {
             $lastError = \imap_last_error();
