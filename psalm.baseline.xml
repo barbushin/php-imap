@@ -54,4 +54,11 @@
       <code>self::ANYTHING</code>
     </InvalidArgument>
   </file>
+  <file src="vendor/phpunit/phpunit/src/Framework/MockObject/Builder/ParametersMatch.php">
+    <ParseError occurrences="3">
+      <code>Match</code>
+      <code>;</code>
+      <code>;</code>
+    </ParseError>
+  </file>
 </files>
