@@ -156,6 +156,30 @@ foreach($folders as $folder) {
 print_r($mails_ids);
 ```
 
+### Upgrading from 3.x
+
+Prior to 3.1, `Mailbox` used a "magic" method (`Mailbox::imap()`), with the
+class `Imap` now performing it's purpose to call many `imap_*` functions with
+automated string encoding/decoding of arguments and return values:
+
+Before:
+
+```php
+    public function checkMailbox()
+    {
+        return $this->imap('check');
+    }
+```
+
+After:
+
+```php
+    public function checkMailbox(): object
+    {
+        return Imap::check($this->getImapStream());
+    }
+```
+
 ### Recommended
 
 * Google Chrome extension [PHP Console](https://chrome.google.com/webstore/detail/php-console/nfhmhhlpfleoednkpnnnkolmclajemef)
