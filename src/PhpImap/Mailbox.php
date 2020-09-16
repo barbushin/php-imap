@@ -887,11 +887,24 @@ class Mailbox
                 if (isset($mail->to) and !empty(\trim($mail->to))) {
                     $mail->to = $this->decodeMimeStr($mail->to);
                 }
+                if (isset($mail->references) and !empty(\trim($mail->references))) {
+                    $mail->references = $this->cleanReferences($mail->references);
+                }
+                if (isset($mail->in_reply_to) and !empty(\trim($mail->in_reply_to))) {
+                    $mail->in_reply_to = $this->cleanReferences($mail->in_reply_to);
+                }
             }
         }
 
         /** @var list<object> */
         return $mails;
+    }
+
+    /**
+     * This fixed references and reply to <....outlook. com> where space occur.
+     */
+    public function cleanReferences($reference) {
+        return str_replace('><','> <',preg_replace('/<(.*?)(\s+)(.*?)>/','<\\1\\3>',$reference));
     }
 
     /**
@@ -1674,7 +1687,7 @@ class Mailbox
         // Do NOT parse attachments, when getAttachmentsIgnore() is true
         if ($this->getAttachmentsIgnore()
             && (TYPEMULTIPART !== $partStructure->type
-            && (TYPETEXT !== $partStructure->type || !\in_array(\mb_strtolower($partStructure->subtype), ['plain', 'html'], true)))
+                && (TYPETEXT !== $partStructure->type || !\in_array(\mb_strtolower($partStructure->subtype), ['plain', 'html'], true)))
         ) {
             return;
         }
@@ -1896,11 +1909,11 @@ class Mailbox
         \array_unshift($senders, $sender);
 
         $senders = \array_values(\array_unique(\array_map(
-            /**
-             * @param string $sender
-             *
-             * @return string
-             */
+        /**
+         * @param string $sender
+         *
+         * @return string
+         */
             static function ($sender) use ($criteria) {
                 return $criteria.' FROM '.\mb_strtolower($sender);
             },
