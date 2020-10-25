@@ -121,12 +121,12 @@ echo "\n\nAttachments:\n";
 print_r($mail->getAttachments());
 ```
 
-Method imap() allows to call any imap function in a context of the the instance:
+Method checkMailbox() allows to call any imap function in a context of the the instance:
 
 ```php
 // Call imap_check();
 // http://php.net/manual/en/function.imap-check.php
-$info = $mailbox->imap('check'); //
+$info = $mailbox->checkMailbox('check'); //
 
 // Show current time for the mailbox
 $currentServerTime = isset($info->Date) && $info->Date ? date('Y-m-d H:i:s', strtotime($info->Date)) : 'Unknown';
