@@ -16,6 +16,7 @@ use InvalidArgumentException;
  *
  * @property string $textPlain lazy plain message body
  * @property string $textHtml  lazy html message body
+ * @property string $textApplication  lazy html message body
  */
 class IncomingMail extends IncomingMailHeader
 {
@@ -40,6 +41,9 @@ class IncomingMail extends IncomingMailHeader
     /** @var string|null */
     private $textHtml;
 
+    /** @var string|null */
+    private $textApplication;
+
     /**
      * __get() is utilized for reading data from inaccessible (protected
      * or private) or non-existing properties.
@@ -56,6 +60,9 @@ class IncomingMail extends IncomingMailHeader
         }
         if ('textHtml' == $name) {
             $type = DataPartInfo::TEXT_HTML;
+        }
+        if ('textApplication' == $name) {
+            $type = DataPartInfo::TEXT_APPLICATION;
         }
         if (('textPlain' === $name || 'textHtml' === $name) && isset($this->$name)) {
             return (string) $this->$name;

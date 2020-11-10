@@ -1721,6 +1721,8 @@ class Mailbox
                 }
             } elseif (TYPEMESSAGE === $partStructure->type) {
                 $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_PLAIN);
+            } elseif (TYPEAPPLICATION === $partStructure->type) {
+                $mail->addDataPartInfo($dataInfo, DataPartInfo::TEXT_APPLICATION);
             }
         }
     }

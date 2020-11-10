@@ -20,6 +20,8 @@ class DataPartInfo
 
     const TEXT_HTML = 1;
 
+    const TEXT_APPLICATION = 3;
+
     /**
      * @var int
      *
