@@ -50,9 +50,9 @@ class IncomingMail extends IncomingMailHeader
      *
      * @param string $name Name of the property (eg. textPlain)
      *
-     * @return string Value of the property (eg. Plain text message)
+     * @return string|null Value of the property (eg. Plain text message)
      */
-    public function __get(string $name): string
+    public function __get(string $name): ?string
     {
         $type = false;
         if ('textPlain' == $name) {
@@ -72,6 +72,9 @@ class IncomingMail extends IncomingMailHeader
         }
         if (!isset($this->$name)) {
             $this->$name = '';
+        }
+        if (!isset($this->dataInfo[$type])) {
+            return null;
         }
         foreach ($this->dataInfo[$type] as $data) {
             $this->$name .= \trim($data->fetch());
