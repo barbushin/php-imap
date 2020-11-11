@@ -12,7 +12,6 @@
     "homepage": "https://github.com/barbushin/php-imap",
     "license": "MIT",
     "type": "library",
-    "version": "1.0",
     "authors": [
         {
             "name": "Sergey Barbushin",
