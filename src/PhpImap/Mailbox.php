@@ -1332,6 +1332,7 @@ class Mailbox
      * Decodes a mime string.
      *
      * @param string $string MIME string to decode
+     * @param string|null $charsetPreferred The charset of the data part info if it was set
      *
      * @return string Converted string if conversion was successful, or the original string if not
      *
@@ -1339,7 +1340,7 @@ class Mailbox
      *
      * @todo update implementation pending resolution of https://github.com/vimeo/psalm/issues/2619 & https://github.com/vimeo/psalm/issues/2620
      */
-    public function decodeMimeStr(string $string): string
+    public function decodeMimeStr(string $string, ?string $charsetPreferred = null): string
     {
         $newString = '';
         /** @var list<object{charset?:string, text?:string}>|false */
@@ -1353,7 +1354,7 @@ class Mailbox
             $charset = \strtolower($element->charset);
 
             if ('default' === $charset) {
-                $charset = $this->decodeMimeStrDefaultCharset;
+                $charset = !empty($charsetPreferred) ? $charsetPreferred : $this->decodeMimeStrDefaultCharset;
             }
 
             switch ($charset) {
