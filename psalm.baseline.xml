@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="3.11.6@7fc1f50f54bd6b174b1c43a37c1b0b151915d55c">
+<files psalm-version="3.12.2@7c7ebd068f8acaba211d4a2c707c4ba90874fa26">
   <file src="examples/get_and_parse_all_emails_without_saving_attachments.php">
     <UnusedVariable occurrences="1">
       <code>$mailbox</code>
@@ -12,11 +12,6 @@
       <code>\is_resource($maybe)</code>
     </DocblockTypeContradiction>
   </file>
-  <file src="src/PhpImap/IncomingMail.php">
-    <PropertyTypeCoercion occurrences="1">
-      <code>$this-&gt;dataInfo</code>
-    </PropertyTypeCoercion>
-  </file>
   <file src="src/PhpImap/Mailbox.php">
     <DocblockTypeContradiction occurrences="2">
       <code>\in_array($imapSearchOption, $supported_options, true)</code>
@@ -24,10 +19,7 @@
     </DocblockTypeContradiction>
     <InvalidArgument occurrences="3">
       <code>$element-&gt;charset</code>
-      <code>$element-&gt;charset</code>
       <code>$element-&gt;text</code>
-      <code>$element-&gt;charset</code>
-      <code>$element-&gt;charset</code>
       <code>$element-&gt;text</code>
     </InvalidArgument>
     <PossiblyUnusedMethod occurrences="24">
