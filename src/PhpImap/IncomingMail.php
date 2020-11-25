@@ -40,6 +40,18 @@ class IncomingMail extends IncomingMailHeader
     /** @var string|null */
     private $textHtml;
 
+    /** @var array */
+    public $charsetMapSelfDefine = [
+        'SHIFT_JIS' => 'SJIS',
+        'BIG5' => 'BIG-5',
+        'KS_C_5601-1987' => 'EUC-KR'
+    ];
+
+    /** @var array */
+    public $charsetAdditionSelfDefine = [
+        'GBK', 'GB2312'
+    ];
+
     /**
      * __get() is utilized for reading data from inaccessible (protected
      * or private) or non-existing properties.
@@ -58,6 +70,23 @@ class IncomingMail extends IncomingMailHeader
             $type = DataPartInfo::TEXT_HTML;
         }
         if (('textPlain' === $name || 'textHtml' === $name) && isset($this->$name)) {
+            $dataPartInfo = $this->dataInfo[$type][0];
+            $originEncodingInPhp = '';
+            if($dataPartInfo) {
+                $originEncoding = \strtoupper($dataPartInfo->charset);
+                //some charsets which not in mb_list_encodings()
+                if(in_array($originEncoding, array_merge(\mb_list_encodings(), $this->charsetAdditionSelfDefine))) {
+                    $originEncodingInPhp = $originEncoding;
+                    //some charsets which has different name in mb_list_encodings(), or not support by php but exist another one could be used to transfer
+                } else if (isset($this->charsetMapSelfDefine[$originEncoding])) {
+                    $originEncodingInPhp = $this->charsetMapSelfDefine[$originEncoding];
+                }
+            }
+
+            if($originEncodingInPhp) {
+                return \mb_convert_encoding((string) $this->$name, 'UTF-8', $originEncodingInPhp);
+            }
+
             return (string) $this->$name;
         }
         if (false === $type) {
