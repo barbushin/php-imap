@@ -1636,7 +1636,7 @@ class Mailbox
             }
         }
 
-        $isAttachment = isset($params['filename']) || isset($params['name']);
+        $isAttachment = isset($params['filename']) || isset($params['name']) || isset($partStructure->id);
 
         $dispositionAttachment = (
             isset($partStructure->disposition) &&
