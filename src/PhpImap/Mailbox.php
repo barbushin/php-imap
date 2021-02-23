@@ -1330,6 +1330,49 @@ class Mailbox
     }
 
     /**
+     * Converts a string to UTF-8
+     *
+     * @param string $string      MIME string to decode
+     * @param string $fromCharset Charset to convert from
+     *
+     * @return string Converted string if conversion was successful, or the original string if not
+     */
+    public function convertToUtf8(string $string, string $fromCharset): string
+    {
+		$fromCharset = mb_strtolower($fromCharset);
+		$newString = '';
+
+		if ('default' === $fromCharset) {
+			$fromCharset = $this->decodeMimeStrDefaultCharset;
+		}
+
+		switch ($fromCharset) {
+			case 'default': // Charset default is already ASCII (not encoded)
+			case 'utf-8': // Charset UTF-8 is OK
+				$newString .= $string;
+				break;
+			default:
+				// If charset exists in mb_list_encodings(), convert using mb_convert function
+				if (\in_array($fromCharset, $this->lowercase_mb_list_encodings(), true)) {
+					$newString .= \mb_convert_encoding($string, 'UTF-8', $fromCharset);
+				} else {
+					// Fallback: Try to convert with iconv()
+					$iconv_converted_string = @\iconv($fromCharset, 'UTF-8', $string);
+					if (!$iconv_converted_string) {
+						// If iconv() could also not convert, return string as it is
+						// (unknown charset)
+						$newString .= $string;
+					} else {
+						$newString .= $iconv_converted_string;
+					}
+				}
+				break;
+		}
+
+        return $newString;
+    }
+
+    /**
      * Decodes a mime string.
      *
      * @param string $string MIME string to decode
@@ -1351,34 +1394,7 @@ class Mailbox
         }
 
         foreach ($elements as $element) {
-            $charset = \strtolower($element->charset);
-
-            if ('default' === $charset) {
-                $charset = $this->decodeMimeStrDefaultCharset;
-            }
-
-            switch ($charset) {
-                case 'default': // Charset default is already ASCII (not encoded)
-                case 'utf-8': // Charset UTF-8 is OK
-                    $newString .= $element->text;
-                    break;
-                default:
-                    // If charset exists in mb_list_encodings(), convert using mb_convert function
-                    if (\in_array($charset, $this->lowercase_mb_list_encodings())) {
-                        $newString .= \mb_convert_encoding($element->text, 'UTF-8', $charset);
-                    } else {
-                        // Fallback: Try to convert with iconv()
-                        $iconv_converted_string = @\iconv($charset, 'UTF-8', $element->text);
-                        if (!$iconv_converted_string) {
-                            // If iconv() could also not convert, return string as it is
-                            // (unknown charset)
-                            $newString .= $element->text;
-                        } else {
-                            $newString .= $iconv_converted_string;
-                        }
-                    }
-                    break;
-            }
+            $newString .= $this->convertToUtf8($element->text, $element->charset);
         }
 
         return $newString;
