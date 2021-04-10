@@ -158,7 +158,7 @@ class Mailbox
     public const ATTACH_FILE_NAMERANDOM = 1;     // Filename is unique (random)
     public const ATTACH_FILE_NAMEORIGINAL = 2;   // Filename is Attachment-Filename
     /** @var int */
-    protected $attachmentsFilenameMode = ATTACH_FILE_NAMERANDOM;
+    protected $attachmentsFilenameMode = self::ATTACH_FILE_NAMERANDOM;
     /** @var resource|null */
     private $imapStream;
 
