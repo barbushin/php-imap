@@ -562,7 +562,7 @@ class Mailbox
     }
 
     /**
-     * Sets 'expunge on disconnect' parameter.
+     * Sets 'expunge on disconnect' parameter.		   
      */
     public function setExpungeOnDisconnect(bool $isEnabled): void
     {
@@ -686,7 +686,7 @@ class Mailbox
     /**
      * Search the mailbox for emails from multiple, specific senders whilst not using server encoding.
      *
-     * @see Mailbox::searchMailboxFromWithOrWithoutDisablingServerEncoding()
+	 * @see Mailbox::searchMailboxFromWithOrWithoutDisablingServerEncoding()
      *
      * @return int[]
      *
