@@ -1343,9 +1343,9 @@ class Mailbox
             
             $filePath = $attachmentsDir.DIRECTORY_SEPARATOR.$fileSysName;
 
-            if (\strlen($filePath) > 255) {
+            if (\strlen($filePath) > self::MAX_LENGTH_FILEPATH) {
                 $ext = \pathinfo($filePath, PATHINFO_EXTENSION);
-                $filePath = \substr($filePath, 0, 255 - 1 - \strlen($ext)).'.'.$ext;
+                $filePath = \substr($filePath, 0, self::MAX_LENGTH_FILEPATH - 1 - \strlen($ext)).'.'.$ext;
             }
  
             $attachment->setFilePath($filePath);
