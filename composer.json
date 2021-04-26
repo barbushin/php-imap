@@ -38,7 +38,7 @@
         "povils/phpmnd": "^2.2",
         "psalm/plugin-phpunit": "^0.10.0",
         "roave/security-advisories": "dev-master",
-        "sebastian/phpcpd": "^4.1",
+        "sebastian/phpcpd": "^6.0.3",
         "vimeo/psalm": "^3.11.5"
     },
     "scripts": {
