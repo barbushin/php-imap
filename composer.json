@@ -23,7 +23,7 @@
         "sort-packages": true
     },
     "require": {
-        "php": "^7.2|^8.0",
+        "php": "^7.4|^8.0",
         "ext-fileinfo": "*",
         "ext-iconv": "*",
         "ext-imap": "*",
@@ -32,13 +32,13 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.16",
         "jakub-onderka/php-parallel-lint": "^1.0",
-        "maglnet/composer-require-checker": "^2.0",
+        "maglnet/composer-require-checker": "3.2.0",
         "paragonie/hidden-string": "^1.0",
         "phpunit/phpunit": "^8.5",
         "povils/phpmnd": "^2.2",
         "psalm/plugin-phpunit": "^0.10.0",
         "roave/security-advisories": "dev-master",
-        "sebastian/phpcpd": "^6.0.3",
+        "sebastian/version": "2.0.1",
         "vimeo/psalm": "^3.11.5"
     },
     "scripts": {
