@@ -31,7 +31,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.16",
-        "jakub-onderka/php-parallel-lint": "^1.0",
+        "php-parallel-lint/php-parallel-lint": "^1.0",
         "maglnet/composer-require-checker": "3.2.0",
         "paragonie/hidden-string": "^1.0",
         "phpunit/phpunit": "^8.5",
