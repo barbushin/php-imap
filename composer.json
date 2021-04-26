@@ -36,7 +36,7 @@
         "paragonie/hidden-string": "^1.0",
         "phpunit/phpunit": "^8.5",
         "povils/phpmnd": "^2.2",
-        "psalm/plugin-phpunit": "^0.10.0",
+        "psalm/plugin-phpunit": "0.15.1",
         "roave/security-advisories": "dev-master",
         "sebastian/version": "2.0.1",
         "vimeo/psalm": "^3.11.5"
