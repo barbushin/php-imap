@@ -363,7 +363,7 @@ class Mailbox
             $this->imapRetriesNum = $retriesNum;
         }
 
-        if (\is_array($params) and \count($params) > 0) {
+        if (\is_array($params) && \count($params) > 0) {
             $supported_params = ['DISABLE_AUTHENTICATOR'];
 
             foreach (\array_keys($params) as $key) {
@@ -875,16 +875,16 @@ class Mailbox
                     throw new UnexpectedValueException('to property at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() was not a string!');
                 }
 
-                if (isset($mail->subject) and !empty(\trim($mail->subject))) {
+                if (isset($mail->subject) && !empty(\trim($mail->subject))) {
                     $mail->subject = $this->decodeMimeStr($mail->subject);
                 }
-                if (isset($mail->from) and !empty(\trim($mail->from))) {
+                if (isset($mail->from) && !empty(\trim($mail->from))) {
                     $mail->from = $this->decodeMimeStr($mail->from);
                 }
-                if (isset($mail->sender) and !empty(\trim($mail->sender))) {
+                if (isset($mail->sender) && !empty(\trim($mail->sender))) {
                     $mail->sender = $this->decodeMimeStr($mail->sender);
                 }
-                if (isset($mail->to) and !empty(\trim($mail->to))) {
+                if (isset($mail->to) && !empty(\trim($mail->to))) {
                     $mail->to = $this->decodeMimeStr($mail->to);
                 }
             }
@@ -952,7 +952,7 @@ class Mailbox
     public function sortMails(
         int $criteria = SORTARRIVAL,
         bool $reverse = true,
-        ? string $searchCriteria = 'ALL',
+        ?string $searchCriteria = 'ALL',
         string $charset = null
     ): array {
         return Imap::sort(
@@ -1101,22 +1101,22 @@ class Mailbox
         $header->precedence = (\preg_match("/Precedence\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
         $header->failedRecipients = (\preg_match("/Failed-Recipients\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
 
-        if (isset($head->date) and !empty(\trim($head->date))) {
+        if (isset($head->date) && !empty(\trim($head->date))) {
             $header->date = self::parseDateTime($head->date);
-        } elseif (isset($head->Date) and !empty(\trim($head->Date))) {
+        } elseif (isset($head->Date) && !empty(\trim($head->Date))) {
             $header->date = self::parseDateTime($head->Date);
         } else {
             $now = new DateTime();
             $header->date = self::parseDateTime($now->format('Y-m-d H:i:s'));
         }
 
-        $header->subject = (isset($head->subject) and !empty(\trim($head->subject))) ? $this->decodeMimeStr($head->subject) : null;
-        if (isset($head->from) and !empty($head->from)) {
+        $header->subject = (isset($head->subject) && !empty(\trim($head->subject))) ? $this->decodeMimeStr($head->subject) : null;
+        if (isset($head->from) && !empty($head->from)) {
             list($header->fromHost, $header->fromName, $header->fromAddress) = $this->possiblyGetHostNameAndAddress($head->from);
         } elseif (\preg_match('/smtp.mailfrom=[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/', $headersRaw, $matches)) {
             $header->fromAddress = \substr($matches[0], 14);
         }
-        if (isset($head->sender) and !empty($head->sender)) {
+        if (isset($head->sender) && !empty($head->sender)) {
             list($header->senderHost, $header->senderName, $header->senderAddress) = $this->possiblyGetHostNameAndAddress($head->sender);
         }
         if (isset($head->to)) {
@@ -1256,10 +1256,10 @@ class Mailbox
             $fileName = \strtolower($partStructure->subtype).'.eml';
         } elseif ('ALTERNATIVE' == $partStructure->subtype) {
             $fileName = \strtolower($partStructure->subtype).'.eml';
-        } elseif ((!isset($params['filename']) or empty(\trim($params['filename']))) && (!isset($params['name']) or empty(\trim($params['name'])))) {
+        } elseif ((!isset($params['filename']) || empty(\trim($params['filename']))) && (!isset($params['name']) || empty(\trim($params['name'])))) {
             $fileName = \strtolower($partStructure->subtype);
         } else {
-            $fileName = (isset($params['filename']) and !empty(\trim($params['filename']))) ? $params['filename'] : $params['name'];
+            $fileName = (isset($params['filename']) && !empty(\trim($params['filename']))) ? $params['filename'] : $params['name'];
             $fileName = $this->decodeMimeStr($fileName);
             $fileName = $this->decodeRFC2231($fileName);
         }
@@ -1301,7 +1301,7 @@ class Mailbox
         if (isset($charset) && !\is_string($charset)) {
             throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must specify charset as a string when specified!');
         }
-        $attachment->charset = (isset($charset) and !empty(\trim($charset))) ? $charset : null;
+        $attachment->charset = (isset($charset) && !empty(\trim($charset))) ? $charset : null;
         $attachment->emlOrigin = $emlOrigin;
 
         $attachment->addDataPartInfo($dataInfo);
@@ -1792,7 +1792,7 @@ class Mailbox
 
             if ('' !== \trim($recipientMailbox) && '' !== \trim($recipientHost)) {
                 $recipientEmail = \strtolower($recipientMailbox.'@'.$recipientHost);
-                $recipientName = (\is_string($recipientPersonal) and '' !== \trim($recipientPersonal)) ? $this->decodeMimeStr($recipientPersonal) : null;
+                $recipientName = (\is_string($recipientPersonal) && '' !== \trim($recipientPersonal)) ? $this->decodeMimeStr($recipientPersonal) : null;
 
                 return [
                     $recipientEmail,

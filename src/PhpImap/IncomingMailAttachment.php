@@ -131,7 +131,7 @@ class IncomingMailAttachment
      */
     public function getFileInfo($fileinfo_const = FILEINFO_NONE): string
     {
-        if ((FILEINFO_MIME == $fileinfo_const) and (false != $this->mimeType)) {
+        if ((FILEINFO_MIME == $fileinfo_const) && (false != $this->mimeType)) {
             return $this->mimeType;
         }
 
