@@ -2,7 +2,7 @@ name: PHP Static Analysis & Tests
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ develop, 'issue/592' ]
   pull_request:
     branches: [ develop ]
 
