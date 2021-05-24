@@ -1,0 +1,52 @@
+name: PHP Static Analysis & Tests
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  static-analysis:
+    name: Static Analysis
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: ['ubuntu-latest']
+        php-versions: ['7.2.0', '7.2', '7.3', '7.4']
+
+    steps:
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+        coverage: none
+
+    - uses: actions/checkout@v2
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+    - name: Cache Files
+      uses: actions/cache@v2
+      with:
+        path: |
+          ${{ steps.composer-cache.outputs.dir }}
+          **/.php_cs.cache
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+    - name: Install dependencies
+      if: steps.composer-cache.outputs.cache-hit != 'true'
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Run static analysis
+      run: composer run static-analysis
+
+    - name: Run tests
+      run: ./vendor/bin/phpunit --testdox --stop-on-failure
