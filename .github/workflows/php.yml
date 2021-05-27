@@ -127,14 +127,8 @@ jobs:
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Setup Node
-      uses: actions/setup-node@master
-      with:
-        node-version: 12
-    - run: npm install ts-node
-
     - name: Run tests
-      uses: paambaati/codeclimate-action@v2.2.4
+      uses: paambaati/codeclimate-action@v2.7.2
       env:
         CC_TEST_REPORTER_ID: "945dfb58a832d233a3caeb84e3e6d3be212e8c7abcb48117fce63b9adcb43647"
       with:
