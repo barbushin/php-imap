@@ -31,10 +31,10 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.16",
-        "jakub-onderka/php-parallel-lint": "^1.0",
         "maglnet/composer-require-checker": "^2.0|^3.2",
         "nikic/php-parser": "^4.3,<4.7|^4.10",
         "paragonie/hidden-string": "^1.0",
+        "php-parallel-lint/php-parallel-lint": "^1.3",
         "phpunit/phpunit": "^8.5|^9.5",
         "povils/phpmnd": "^2.2",
         "psalm/plugin-phpunit": "^0.10.0|^0.15.1",
