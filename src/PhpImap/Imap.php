@@ -41,7 +41,7 @@ use UnexpectedValueException;
 final class Imap
 {
     /** @psalm-var list<int> */
-    const SORT_CRITERIA = [
+    public const SORT_CRITERIA = [
         SORTARRIVAL,
         SORTCC,
         SORTDATE,
@@ -52,7 +52,7 @@ final class Imap
     ];
 
     /** @psalm-var list<int> */
-    const TIMEOUT_TYPES = [
+    public const TIMEOUT_TYPES = [
         IMAP_CLOSETIMEOUT,
         IMAP_OPENTIMEOUT,
         IMAP_READTIMEOUT,
@@ -60,7 +60,7 @@ final class Imap
     ];
 
     /** @psalm-var list<int> */
-    const CLOSE_FLAGS = [
+    public const CLOSE_FLAGS = [
         0,
         CL_EXPUNGE,
     ];

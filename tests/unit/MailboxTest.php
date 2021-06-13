@@ -30,7 +30,7 @@ use const SE_UID;
 
 final class MailboxTest extends TestCase
 {
-    const ANYTHING = 0;
+    public const ANYTHING = 0;
 
     /**
      * Holds the imap path.

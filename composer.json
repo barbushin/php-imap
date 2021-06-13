@@ -30,7 +30,7 @@
         "ext-mbstring": "*"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^2.16",
+        "friendsofphp/php-cs-fixer": "~3.0.0",
         "maglnet/composer-require-checker": "^2.0|^3.2",
         "nikic/php-parser": "^4.3,<4.7|^4.10",
         "paragonie/hidden-string": "^1.0",
@@ -44,11 +44,11 @@
     },
     "scripts": {
         "static-analysis": [
-            "parallel-lint .php_cs.dist src tests examples",
+            "parallel-lint .php-cs-fixer.dist.php src tests examples",
             "phpcpd src tests",
             "composer-require-checker check ./composer.json",
             "phpmnd ./ --exclude=./.github/ --exclude=./examples/ --exclude=./vendor/ --non-zero-exit-on-violation --hint",
-            "php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run --diff-format=udiff -v",
+            "php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run -v",
             "psalm --show-info=false"
         ],
         "tests": [

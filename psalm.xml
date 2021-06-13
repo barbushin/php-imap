@@ -11,7 +11,7 @@
     cacheDirectory="./psalm/cache/"
 >
     <projectFiles>
-        <file name="./.php_cs.dist"/>
+        <file name="./.php-cs-fixer.dist.php"/>
         <directory name="src"/>
         <directory name="tests"/>
         <directory name="examples"/>

@@ -82,13 +82,13 @@ use UnexpectedValueException;
  */
 class Mailbox
 {
-    const EXPECTED_SIZE_OF_MESSAGE_AS_ARRAY = 2;
+    public const EXPECTED_SIZE_OF_MESSAGE_AS_ARRAY = 2;
 
-    const MAX_LENGTH_FILEPATH = 255;
+    public const MAX_LENGTH_FILEPATH = 255;
 
-    const PART_TYPE_TWO = 2;
+    public const PART_TYPE_TWO = 2;
 
-    const IMAP_OPTIONS_SUPPORTED_VALUES =
+    public const IMAP_OPTIONS_SUPPORTED_VALUES =
         OP_READONLY // 2
         | OP_ANONYMOUS // 4
         | OP_HALFOPEN // 64
@@ -1329,7 +1329,7 @@ class Mailbox
     }
 
     /**
-     * Converts a string to UTF-8
+     * Converts a string to UTF-8.
      *
      * @param string $string      MIME string to decode
      * @param string $fromCharset Charset to convert from
@@ -1338,35 +1338,35 @@ class Mailbox
      */
     public function convertToUtf8(string $string, string $fromCharset): string
     {
-		$fromCharset = mb_strtolower($fromCharset);
-		$newString = '';
+        $fromCharset = mb_strtolower($fromCharset);
+        $newString = '';
 
-		if ('default' === $fromCharset) {
-			$fromCharset = $this->decodeMimeStrDefaultCharset;
-		}
+        if ('default' === $fromCharset) {
+            $fromCharset = $this->decodeMimeStrDefaultCharset;
+        }
 
-		switch ($fromCharset) {
-			case 'default': // Charset default is already ASCII (not encoded)
-			case 'utf-8': // Charset UTF-8 is OK
-				$newString .= $string;
-				break;
-			default:
-				// If charset exists in mb_list_encodings(), convert using mb_convert function
-				if (\in_array($fromCharset, $this->lowercase_mb_list_encodings(), true)) {
-					$newString .= \mb_convert_encoding($string, 'UTF-8', $fromCharset);
-				} else {
-					// Fallback: Try to convert with iconv()
-					$iconv_converted_string = @\iconv($fromCharset, 'UTF-8', $string);
-					if (!$iconv_converted_string) {
-						// If iconv() could also not convert, return string as it is
-						// (unknown charset)
-						$newString .= $string;
-					} else {
-						$newString .= $iconv_converted_string;
-					}
-				}
-				break;
-		}
+        switch ($fromCharset) {
+            case 'default': // Charset default is already ASCII (not encoded)
+            case 'utf-8': // Charset UTF-8 is OK
+                $newString .= $string;
+                break;
+            default:
+                // If charset exists in mb_list_encodings(), convert using mb_convert function
+                if (\in_array($fromCharset, $this->lowercase_mb_list_encodings(), true)) {
+                    $newString .= \mb_convert_encoding($string, 'UTF-8', $fromCharset);
+                } else {
+                    // Fallback: Try to convert with iconv()
+                    $iconv_converted_string = @\iconv($fromCharset, 'UTF-8', $string);
+                    if (!$iconv_converted_string) {
+                        // If iconv() could also not convert, return string as it is
+                        // (unknown charset)
+                        $newString .= $string;
+                    } else {
+                        $newString .= $iconv_converted_string;
+                    }
+                }
+                break;
+        }
 
         return $newString;
     }

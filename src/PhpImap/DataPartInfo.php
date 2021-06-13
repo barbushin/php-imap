@@ -16,9 +16,9 @@ use const ENCQUOTEDPRINTABLE;
  */
 class DataPartInfo
 {
-    const TEXT_PLAIN = 0;
+    public const TEXT_PLAIN = 0;
 
-    const TEXT_HTML = 1;
+    public const TEXT_HTML = 1;
 
     /**
      * @var int

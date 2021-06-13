@@ -44,9 +44,9 @@ use const TYPETEXT;
  */
 class LiveMailboxTest extends AbstractLiveMailboxTest
 {
-    const RANDOM_MAILBOX_SAMPLE_SIZE = 3;
+    public const RANDOM_MAILBOX_SAMPLE_SIZE = 3;
 
-    const ISSUE_EXPECTED_ATTACHMENT_COUNT = [
+    public const ISSUE_EXPECTED_ATTACHMENT_COUNT = [
         448 => 1,
         391 => 2,
     ];

@@ -221,7 +221,7 @@ class IncomingMail extends IncomingMailHeader
                 foreach ($attachments as $attachment) {
                     /**
                      * Inline images can contain a "Content-Disposition: inline", but only a "Content-ID" is also enough.
-                     * See https://github.com/barbushin/php-imap/issues/569
+                     * See https://github.com/barbushin/php-imap/issues/569.
                      */
                     if ($attachment->contentId == $cid || 'inline' == \mb_strtolower((string) $attachment->disposition)) {
                         $contents = $attachment->getContents();
