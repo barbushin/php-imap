@@ -984,7 +984,7 @@ class Mailbox
         $quota = $this->getQuota($quota_root);
 
         /** @var int */
-        return isset($quota['STORAGE']['limit']) ? $quota['STORAGE']['limit'] : 0;
+        return $quota['STORAGE']['limit'] ?? 0;
     }
 
     /**
@@ -999,7 +999,7 @@ class Mailbox
         $quota = $this->getQuota($quota_root);
 
         /** @var int|false */
-        return isset($quota['STORAGE']['usage']) ? $quota['STORAGE']['usage'] : 0;
+        return $quota['STORAGE']['usage'] ?? 0;
     }
 
     /**
@@ -1111,19 +1111,19 @@ class Mailbox
 
         $header->subject = (isset($head->subject) && !empty(\trim($head->subject))) ? $this->decodeMimeStr($head->subject) : null;
         if (isset($head->from) && !empty($head->from)) {
-            list($header->fromHost, $header->fromName, $header->fromAddress) = $this->possiblyGetHostNameAndAddress($head->from);
+            [$header->fromHost, $header->fromName, $header->fromAddress] = $this->possiblyGetHostNameAndAddress($head->from);
         } elseif (\preg_match('/smtp.mailfrom=[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/', $headersRaw, $matches)) {
             $header->fromAddress = \substr($matches[0], 14);
         }
         if (isset($head->sender) && !empty($head->sender)) {
-            list($header->senderHost, $header->senderName, $header->senderAddress) = $this->possiblyGetHostNameAndAddress($head->sender);
+            [$header->senderHost, $header->senderName, $header->senderAddress] = $this->possiblyGetHostNameAndAddress($head->sender);
         }
         if (isset($head->to)) {
             $toStrings = [];
             foreach ($head->to as $to) {
                 $to_parsed = $this->possiblyGetEmailAndNameFromRecipient($to);
                 if ($to_parsed) {
-                    list($toEmail, $toName) = $to_parsed;
+                    [$toEmail, $toName] = $to_parsed;
                     $toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
                     $header->to[$toEmail] = $toName;
                 }
@@ -1264,10 +1264,10 @@ class Mailbox
         }
 
         /** @var scalar|array|object|null */
-        $sizeInBytes = isset($partStructure->bytes) ? $partStructure->bytes : null;
+        $sizeInBytes = $partStructure->bytes ?? null;
 
         /** @var scalar|array|object|null */
-        $encoding = isset($partStructure->encoding) ? $partStructure->encoding : null;
+        $encoding = $partStructure->encoding ?? null;
 
         if (null !== $sizeInBytes && !\is_int($sizeInBytes)) {
             throw new UnexpectedValueException('Supplied part structure specifies a non-integer, non-null bytes header!');
@@ -1295,7 +1295,7 @@ class Mailbox
         $attachment->disposition = (isset($partStructure->disposition) && \is_string($partStructure->disposition)) ? $partStructure->disposition : null;
 
         /** @var scalar|array|object|resource|null */
-        $charset = isset($params['charset']) ? $params['charset'] : null;
+        $charset = $params['charset'] ?? null;
 
         if (isset($charset) && !\is_string($charset)) {
             throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must specify charset as a string when specified!');
@@ -1635,7 +1635,7 @@ class Mailbox
         if (!empty($partStructure->parameters)) {
             foreach ($partStructure->parameters as $param) {
                 $params[\strtolower($param->attribute)] = '';
-                $value = isset($param->value) ? $param->value : null;
+                $value = $param->value ?? null;
                 if (isset($value) && '' !== \trim($value)) {
                     $params[\strtolower($param->attribute)] = $this->decodeMimeStr($value);
                 }
@@ -1795,7 +1795,7 @@ class Mailbox
             $recipientHost = $recipient->host;
 
             /** @var mixed */
-            $recipientPersonal = isset($recipient->personal) ? $recipient->personal : null;
+            $recipientPersonal = $recipient->personal ?? null;
 
             if (!\is_string($recipientMailbox)) {
                 throw new UnexpectedValueException('mailbox was present on argument 1 passed to '.__METHOD__.'() but was not a string!');
@@ -1833,7 +1833,7 @@ class Mailbox
                     throw new UnexpectedValueException('Index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() corresponds to a non-object value, '.\gettype($item).' given!');
                 }
                 /** @var scalar|array|object|resource|null */
-                $item_name = isset($item->name) ? $item->name : null;
+                $item_name = $item->name ?? null;
 
                 if (!isset($item->name, $item->attributes, $item->delimiter)) {
                     throw new UnexpectedValueException('The object at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() was missing one or more of the required properties "name", "attributes", "delimiter"!');
@@ -1867,7 +1867,7 @@ class Mailbox
     protected function possiblyGetHostNameAndAddress(array $t): array
     {
         $out = [
-            isset($t[0]->host) ? $t[0]->host : (isset($t[1], $t[1]->host) ? $t[1]->host : null),
+            $t[0]->host ?? (isset($t[1], $t[1]->host) ? $t[1]->host : null),
             1 => null,
         ];
         foreach ([0, 1] as $index) {

@@ -61,7 +61,7 @@ class LiveMailboxWithManualSetupTest extends AbstractLiveMailboxTest
     public function testAbsolutePathStatusFromConstruction(
         array $mailbox_args
     ): void {
-        list($mailbox) = $this->getMailboxFromArgs($mailbox_args);
+        [$mailbox] = $this->getMailboxFromArgs($mailbox_args);
 
         $mailbox->statusMailbox();
 

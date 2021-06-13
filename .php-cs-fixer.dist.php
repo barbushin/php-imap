@@ -9,6 +9,8 @@ return (new PhpCsFixer\Config())
     ->setRules([
         '@Symfony' => true,
         '@Symfony:risky' => true,
+        '@PHP71Migration' => true, // @PHP72Migration does not exist
+        '@PHP71Migration:risky' => true, // @PHP72Migration:risky does not exist
         'array_syntax' => ['syntax' => 'short'],
         'declare_strict_types' => true,
         'global_namespace_import' => [
