@@ -1,5 +1,5 @@
 {
-    "name": "php-imap/php-imap",
+    "name": "comparon/php-imap",
     "description": "Manage mailboxes, filter/get/delete emails in PHP (supports IMAP/POP3/NNTP)",
     "keywords": [
         "PHP",
@@ -23,7 +23,7 @@
         "sort-packages": true
     },
     "require": {
-        "php": "^7.2",
+        "php": "^7.2|^8.0",
         "ext-fileinfo": "*",
         "ext-iconv": "*",
         "ext-imap": "*",
