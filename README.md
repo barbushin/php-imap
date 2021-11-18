@@ -127,6 +127,7 @@ Method `imap()` allows to call any [PHP IMAP function](https://www.php.net/manua
 // Call imap_check() - see http://php.net/manual/function.imap-check.php
 $info = $mailbox->imap('check');
 
+
 // Show current time for the mailbox
 $currentServerTime = isset($info->Date) && $info->Date ? date('Y-m-d H:i:s', strtotime($info->Date)) : 'Unknown';
 
@@ -153,6 +154,30 @@ foreach($folders as $folder) {
 }
 
 print_r($mails_ids);
+```
+
+### Upgrading from 3.x
+
+Prior to 3.1, `Mailbox` used a "magic" method (`Mailbox::imap()`), with the
+class `Imap` now performing it's purpose to call many `imap_*` functions with
+automated string encoding/decoding of arguments and return values:
+
+Before:
+
+```php
+    public function checkMailbox()
+    {
+        return $this->imap('check');
+    }
+```
+
+After:
+
+```php
+    public function checkMailbox(): object
+    {
+        return Imap::check($this->getImapStream());
+    }
 ```
 
 ### Recommended
