@@ -121,12 +121,12 @@ echo "\n\nAttachments:\n";
 print_r($mail->getAttachments());
 ```
 
-Checking the currently selected mailbox:
+Method `imap()` allows to call any [PHP IMAP function](https://www.php.net/manual/ref.imap.php) in a context of the instance. Example:
 
 ```php
-// Call imap_check();
-// http://php.net/manual/en/function.imap-check.php
-$info = $mailbox->checkMailbox(); //
+// Call imap_check() - see http://php.net/manual/function.imap-check.php
+$info = $mailbox->imap('check');
+
 
 // Show current time for the mailbox
 $currentServerTime = isset($info->Date) && $info->Date ? date('Y-m-d H:i:s', strtotime($info->Date)) : 'Unknown';
