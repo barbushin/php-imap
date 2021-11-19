@@ -1259,7 +1259,7 @@ class Mailbox
             $fileName = \strtolower($partStructure->subtype);
         } else {
             $fileName = (isset($params['filename']) and !empty(\trim($params['filename']))) ? $params['filename'] : $params['name'];
-            $fileName = $this->decodeMimeStr($fileName);
+            $fileName = $this->decodeMimeStr($fileName, $this->serverEncoding);
             $fileName = $this->decodeRFC2231($fileName);
         }
 
