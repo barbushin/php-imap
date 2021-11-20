@@ -706,7 +706,7 @@ final class Imap
         if (!$result) {
             $lastError = \imap_last_error();
 
-            if ('' !== \trim($lastError)) {
+            if ((\is_string($lastError)) && ('' !== \trim($lastError))) {
                 throw new UnexpectedValueException('IMAP error:'.$lastError);
             }
 

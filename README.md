@@ -30,6 +30,7 @@ Initially released in December 2012, the PHP IMAP Mailbox is a powerful and open
 | 7.2  | 3.x, 4.x |
 | 7.3  | 3.x, 4.x |
 | 7.4  | >3.0.33, 4.x |
+| 8.0  | >3.0.33, 4.x |
 
 * PHP `fileinfo` extension must be present; so make sure this line is active in your php.ini: `extension=php_fileinfo.dll`
 * PHP `iconv` extension must be present; so make sure this line is active in your php.ini: `extension=php_iconv.dll`
@@ -121,12 +122,12 @@ echo "\n\nAttachments:\n";
 print_r($mail->getAttachments());
 ```
 
-Checking the currently selected mailbox:
+Method `imap()` allows to call any [PHP IMAP function](https://www.php.net/manual/ref.imap.php) in a context of the instance. Example:
 
 ```php
-// Call imap_check();
-// http://php.net/manual/en/function.imap-check.php
-$info = $mailbox->checkMailbox(); //
+// Call imap_check() - see http://php.net/manual/function.imap-check.php
+$info = $mailbox->imap('check');
+
 
 // Show current time for the mailbox
 $currentServerTime = isset($info->Date) && $info->Date ? date('Y-m-d H:i:s', strtotime($info->Date)) : 'Unknown';
