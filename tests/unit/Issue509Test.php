@@ -12,7 +12,7 @@ namespace PhpImap;
 
 use PHPUnit\Framework\TestCase;
 
-class Issue509 extends TestCase
+class Issue509Test extends TestCase
 {
     const base64 =
     'vsiz58fPvcq0z7HuLiC05MDlx9jB1rzFvK0gsKi758fVtM+02S4NCsDMt7EgwM/AuiC16b7uILq7
