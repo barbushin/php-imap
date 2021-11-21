@@ -109,7 +109,7 @@ class DataPartInfo
     {
         if (isset($this->charset) && !empty(\trim($this->charset))) {
             $this->data = $this->mail->decodeMimeStr(
-                (string) $this->data // Data to convert
+                (string) $this->data, // Data to convert
                 \trim($this->charset)
             );
         }
