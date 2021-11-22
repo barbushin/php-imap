@@ -4,6 +4,7 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Packagist](https://img.shields.io/packagist/dt/php-imap/php-imap.svg?style=flat-square)](https://packagist.org/packages/php-imap/php-imap)
 [![Build Status](https://travis-ci.org/barbushin/php-imap.svg?branch=master)](https://travis-ci.org/barbushin/php-imap)
+[![CI](https://github.com/barbushin/php-imap/actions/workflows/php.yml/badge.svg)](https://github.com/barbushin/php-imap/actions/workflows/php.yml)
 [![Supported PHP Version](https://img.shields.io/packagist/php-v/php-imap/php-imap.svg)](README.md)
 [![Maintainability](https://api.codeclimate.com/v1/badges/02f72a4fd695cb7e2976/maintainability)](https://codeclimate.com/github/barbushin/php-imap/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/02f72a4fd695cb7e2976/test_coverage)](https://codeclimate.com/github/barbushin/php-imap/test_coverage)
