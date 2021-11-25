@@ -112,6 +112,9 @@ class IncomingMailHeader
      */
     public $cc = [];
 
+    /** @var string|null */
+    public $ccString;
+
     /**
      * @var (string|null)[]
      *

@@ -1136,9 +1136,12 @@ class Mailbox
             foreach ($head->cc as $cc) {
                 $cc_parsed = $this->possiblyGetEmailAndNameFromRecipient($cc);
                 if ($cc_parsed) {
-                    $header->cc[$cc_parsed[0]] = $cc_parsed[1];
+                    list($ccEmail, $ccName) = $cc_parsed;
+                    $ccStrings[] = $ccName ? "$ccName <$ccEmail>" : $ccEmail;
+                    $header->cc[$ccEmail] = $ccName;
                 }
             }
+            $header->ccString = \implode(', ', $ccStrings);
         }
 
         if (isset($head->bcc)) {
