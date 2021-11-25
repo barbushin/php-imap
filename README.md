@@ -78,7 +78,8 @@ $mailbox = new PhpImap\Mailbox(
 	'some@gmail.com', // Username for the before configured mailbox
 	'*********', // Password for the before configured username
 	__DIR__, // Directory, where attachments will be saved (optional)
-	'UTF-8' // Server encoding (optional)
+	'UTF-8', // Server encoding (optional)
+    true // Trim leading/ending whitespaces of IMAP path (optional)
 );
 
 // set some connection arguments (if appropriate)
