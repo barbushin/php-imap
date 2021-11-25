@@ -92,6 +92,9 @@ class IncomingMailHeader
     /** @var string|null */
     public $senderAddress;
 
+    /** @var string|null */
+    public $xOriginalTo;
+
     /**
      * @var (string|null)[]
      *
