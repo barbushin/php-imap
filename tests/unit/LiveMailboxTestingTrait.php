@@ -75,14 +75,14 @@ trait LiveMailboxTestingTrait
      */
     protected function getMailboxFromArgs(array $mailbox_args): array
     {
-        list($path, $username, $password, $attachments_dir) = $mailbox_args;
+        [$path, $username, $password, $attachments_dir] = $mailbox_args;
 
         return $this->getMailbox(
             $path,
             $username,
             $password,
             $attachments_dir,
-            isset($mailbox_args[4]) ? $mailbox_args[4] : 'UTF-8'
+            $mailbox_args[4] ?? 'UTF-8'
         );
     }
 }

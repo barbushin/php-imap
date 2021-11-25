@@ -118,7 +118,7 @@ class ImapTest extends Base
         HiddenString $login,
         HiddenString $password
     ): void {
-        list($mailbox, $remove_mailbox, $path) = $this->getMailboxFromArgs([
+        [$mailbox, $remove_mailbox, $path] = $this->getMailboxFromArgs([
             $path,
             $login,
             $password,

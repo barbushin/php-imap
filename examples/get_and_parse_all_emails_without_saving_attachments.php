@@ -46,7 +46,7 @@
             false // Do NOT mark emails as seen (optional)
         );
 
-        echo 'from-name: '.(string) (isset($email->fromName) ? $email->fromName : $email->fromAddress)."\n";
+        echo 'from-name: '.(string) ($email->fromName ?? $email->fromAddress)."\n";
         echo 'from-email: '.(string) $email->fromAddress."\n";
         echo 'to: '.(string) $email->toString."\n";
         echo 'subject: '.(string) $email->subject."\n";

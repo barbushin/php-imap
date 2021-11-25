@@ -2,7 +2,7 @@
 vendor/
 composer.lock
 *.phar
-.php_cs.cache
+.php-cs-fixer.cache
 coverage/
 psalm/cache/
 

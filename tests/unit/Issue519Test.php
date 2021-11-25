@@ -17,7 +17,7 @@ use const TYPEIMAGE;
 
 class Issue519Test extends TestCase
 {
-    const HEADER_VALUES = [
+    public const HEADER_VALUES = [
         'inline',
         'Inline',
         'iNline',
@@ -84,23 +84,23 @@ class Issue519Test extends TestCase
         'INLINE',
     ];
 
-    const CID = 'cid:foo.jpg';
+    public const CID = 'cid:foo.jpg';
 
-    const ID = 'foo.jpg';
+    public const ID = 'foo.jpg';
 
-    const SUBTYPE = 'jpeg';
+    public const SUBTYPE = 'jpeg';
 
-    const SIZE_IN_BYTES = 0;
+    public const SIZE_IN_BYTES = 0;
 
-    const HTML = 'foo.html';
+    public const HTML = 'foo.html';
 
-    const HTML_EMBED = '<img src="data:image/jpeg;base64, ">';
+    public const HTML_EMBED = '<img src="data:image/jpeg;base64, ">';
 
-    const MIME = 'image/jpeg';
+    public const MIME = 'image/jpeg';
 
-    const EXPECTED_ATTACHMENT_COUNT = 1;
+    public const EXPECTED_ATTACHMENT_COUNT = 1;
 
-    const EXPECTED_ATTACHMENT_COUNT_AFTER_EMBED = 0;
+    public const EXPECTED_ATTACHMENT_COUNT_AFTER_EMBED = 0;
 
     /**
      * @psalm-return array<string, array{0:string}>

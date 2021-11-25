@@ -44,9 +44,9 @@ use const TYPETEXT;
  */
 class LiveMailboxTest extends AbstractLiveMailboxTest
 {
-    const RANDOM_MAILBOX_SAMPLE_SIZE = 3;
+    public const RANDOM_MAILBOX_SAMPLE_SIZE = 3;
 
-    const ISSUE_EXPECTED_ATTACHMENT_COUNT = [
+    public const ISSUE_EXPECTED_ATTACHMENT_COUNT = [
         448 => 1,
         391 => 2,
     ];
@@ -58,7 +58,7 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
      */
     public function testGetImapStream(HiddenString $imapPath, HiddenString $login, HiddenString $password, string $attachmentsDir, string $serverEncoding = 'UTF-8'): void
     {
-        list($mailbox, $remove_mailbox) = $this->getMailbox(
+        [$mailbox, $remove_mailbox] = $this->getMailbox(
             $imapPath,
             $login,
             $password,
@@ -336,9 +336,9 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
             return;
         }
 
-        list($search_criteria) = $this->SubjectSearchCriteriaAndSubject($envelope);
+        [$search_criteria] = $this->SubjectSearchCriteriaAndSubject($envelope);
 
-        list($mailbox, $remove_mailbox, $path) = $this->getMailboxFromArgs(
+        [$mailbox, $remove_mailbox, $path] = $this->getMailboxFromArgs(
             $mailbox_args
         );
 
@@ -425,9 +425,9 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
             return;
         }
 
-        list($search_criteria) = $this->SubjectSearchCriteriaAndSubject($envelope);
+        [$search_criteria] = $this->SubjectSearchCriteriaAndSubject($envelope);
 
-        list($mailbox, $remove_mailbox, $path) = $this->getMailboxFromArgs(
+        [$mailbox, $remove_mailbox, $path] = $this->getMailboxFromArgs(
             $mailbox_args
         );
 
@@ -523,9 +523,9 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
             return;
         }
 
-        list($search_criteria, $search_subject) = $this->SubjectSearchCriteriaAndSubject($envelope);
+        [$search_criteria, $search_subject] = $this->SubjectSearchCriteriaAndSubject($envelope);
 
-        list($mailbox, $remove_mailbox, $path) = $this->getMailboxFromArgs(
+        [$mailbox, $remove_mailbox, $path] = $this->getMailboxFromArgs(
             $mailbox_args
         );
 
