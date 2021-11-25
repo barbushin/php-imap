@@ -1099,6 +1099,7 @@ class Mailbox
         $header->autoSubmitted = (\preg_match("/Auto-Submitted\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
         $header->precedence = (\preg_match("/Precedence\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
         $header->failedRecipients = (\preg_match("/Failed-Recipients\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->xOriginalTo = (\preg_match("/X-Original-To\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
 
         if (isset($head->date) && !empty(\trim($head->date))) {
             $header->date = self::parseDateTime($head->date);
