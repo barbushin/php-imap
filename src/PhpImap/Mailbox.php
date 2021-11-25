@@ -133,6 +133,9 @@ class Mailbox
     /** @var string */
     protected $serverEncoding = 'UTF-8';
 
+    /** @var bool|true */
+    protected $trimImapPath = true;
+
     /** @var string|null */
     protected $attachmentsDir = null;
 
@@ -161,9 +164,9 @@ class Mailbox
     /**
      * @throws InvalidParameterException
      */
-    public function __construct(string $imapPath, string $login, string $password, string $attachmentsDir = null, string $serverEncoding = 'UTF-8')
+    public function __construct(string $imapPath, string $login, string $password, string $attachmentsDir = null, string $serverEncoding = 'UTF-8', bool $trimImapPath = true)
     {
-        $this->imapPath = \trim($imapPath);
+        $this->imapPath = (true == $trimImapPath) ? \trim($imapPath) : $imapPath;
         $this->imapLogin = \trim($login);
         $this->imapPassword = $password;
         $this->setServerEncoding($serverEncoding);
