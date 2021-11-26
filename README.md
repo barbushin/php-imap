@@ -72,6 +72,8 @@ You can run all PHPUnit tests by running the following command (inside of the in
 
 Below, you'll find an example code how you can use this library. For further information and other examples, you may take a look at the [wiki](https://github.com/barbushin/php-imap/wiki).
 
+By default, this library uses random filenames for attachments as identical file names from other emails would overwrite other attachments. If you want to keep the original file name, you can set the attachment filename mode to ``true``, but then you also need to ensure, that those files don't get overwritten by other emails for example.
+
 ```php
 // Create PhpImap\Mailbox instance for all further actions
 $mailbox = new PhpImap\Mailbox(
@@ -80,7 +82,8 @@ $mailbox = new PhpImap\Mailbox(
 	'*********', // Password for the before configured username
 	__DIR__, // Directory, where attachments will be saved (optional)
 	'UTF-8', // Server encoding (optional)
-    true // Trim leading/ending whitespaces of IMAP path (optional)
+    true, // Trim leading/ending whitespaces of IMAP path (optional)
+    false // Attachment filename mode (optional; false = random filename; true = original filename)
 );
 
 // set some connection arguments (if appropriate)

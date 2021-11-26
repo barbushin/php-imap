@@ -161,10 +161,13 @@ class Mailbox
     /** @var resource|null */
     private $imapStream;
 
+    /** @var bool|false */
+    protected $attachmentFilenameMode = false;
+
     /**
      * @throws InvalidParameterException
      */
-    public function __construct(string $imapPath, string $login, string $password, string $attachmentsDir = null, string $serverEncoding = 'UTF-8', bool $trimImapPath = true)
+    public function __construct(string $imapPath, string $login, string $password, string $attachmentsDir = null, string $serverEncoding = 'UTF-8', bool $trimImapPath = true, bool $attachmentFilenameMode = false)
     {
         $this->imapPath = (true == $trimImapPath) ? \trim($imapPath) : $imapPath;
         $this->imapLogin = \trim($login);
@@ -173,6 +176,7 @@ class Mailbox
         if (null != $attachmentsDir) {
             $this->setAttachmentsDir($attachmentsDir);
         }
+        $this->setAttachmentFilenameMode($attachmentFilenameMode);
 
         $this->setMailboxFolder();
     }
@@ -257,6 +261,32 @@ class Mailbox
         }
 
         $this->serverEncoding = $serverEncoding;
+    }
+
+    /**
+     * Returns the current set attachment filename mode.
+     *
+     * @return bool Attachment filename mode (e.g. true)
+     */
+    public function getAttachmentFilenameMode(): bool
+    {
+        return $this->attachmentFilenameMode;
+    }
+
+    /**
+     * Sets / Changes the attachment filename mode.
+     *
+     * @param bool $attachmentFilenameMode Attachment filename mode (e.g. false)
+     *
+     * @throws InvalidParameterException
+     */
+    public function setAttachmentFilenameMode(bool $attachmentFilenameMode): void
+    {
+        if (!\is_bool($attachmentFilenameMode)) {
+            throw new InvalidParameterException('"'.$attachmentFilenameMode.'" is not supported by setOriginalAttachmentFilename(). Only boolean values are allowed: true (use original filename), false (use random generated filename)');
+        }
+
+        $this->attachmentFilenameMode = $attachmentFilenameMode;
     }
 
     /**
@@ -1322,13 +1352,19 @@ class Mailbox
         $attachmentsDir = $this->getAttachmentsDir();
 
         if (null != $attachmentsDir) {
-            $fileSysName = \bin2hex(\random_bytes(16)).'.bin';
+            if (true == $this->getAttachmentFilenameMode()) {
+                $fileSysName = $attachment->name;
+            } else {
+                $fileSysName = \bin2hex(\random_bytes(16)).'.bin';
+            }
+
             $filePath = $attachmentsDir.DIRECTORY_SEPARATOR.$fileSysName;
 
             if (\strlen($filePath) > self::MAX_LENGTH_FILEPATH) {
                 $ext = \pathinfo($filePath, PATHINFO_EXTENSION);
                 $filePath = \substr($filePath, 0, self::MAX_LENGTH_FILEPATH - 1 - \strlen($ext)).'.'.$ext;
             }
+
             $attachment->setFilePath($filePath);
             $attachment->saveToDisk();
         }
