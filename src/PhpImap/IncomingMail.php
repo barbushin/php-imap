@@ -225,7 +225,7 @@ class IncomingMail extends IncomingMailHeader
                      */
                     if ($attachment->contentId == $cid || 'inline' == \mb_strtolower((string) $attachment->disposition)) {
                         $contents = $attachment->getContents();
-                        $contentType = (string) $attachment->getFileInfo(FILEINFO_MIME);
+                        $contentType = (string) $attachment->getFileInfo(FILEINFO_MIME_TYPE);
 
                         if (!\strstr($contentType, 'image')) {
                             continue;
