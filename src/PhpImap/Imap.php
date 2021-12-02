@@ -908,7 +908,7 @@ final class Imap
         \imap_errors(); // flush errors
 
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
-        $reverse = (int) $reverse;
+        $reverse = (bool) $reverse;
 
         /** @var int */
         $criteria = $criteria;
