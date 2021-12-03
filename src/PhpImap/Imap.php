@@ -1079,7 +1079,7 @@ final class Imap
      */
     private static function EnsureResource($maybe, string $method, int $argument)
     {
-        if (!$maybe || !\is_resource($maybe)) {
+        if (!$maybe || (!\is_resource($maybe) && !$maybe instanceof \IMAP\Connection)) {
             throw new InvalidArgumentException('Argument '.(string) $argument.' passed to '.$method.' must be a valid resource!');
         }
 
