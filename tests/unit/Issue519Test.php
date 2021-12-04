@@ -96,7 +96,7 @@ class Issue519Test extends TestCase
 
     public const HTML_EMBED = '<img src="data:image/jpeg;base64, ">';
 
-    public const MIME = 'image/jpeg';
+    public const MIME_TYPE = 'image/jpeg';
 
     public const EXPECTED_ATTACHMENT_COUNT = 1;
 
@@ -154,7 +154,7 @@ class Issue519Test extends TestCase
         $attachment->name = self::ID;
         $attachment->sizeInBytes = self::SIZE_IN_BYTES;
         $attachment->disposition = $header_value;
-        $attachment->override_getFileInfo_mime = self::MIME;
+        $attachment->override_getFileInfo_mime_type = self::MIME_TYPE;
 
         $attachment->addDataPartInfo($part);
 
