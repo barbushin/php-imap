@@ -40,6 +40,8 @@
         "psalm/plugin-phpunit": "^0.10.0|^0.15.1",
         "roave/security-advisories": "dev-master",
         "sebastian/phpcpd": "^4.1|^6.0",
+        "symfony/symfony": "^5.4",
+        "symplify/easy-ci": "^9.4",
         "vimeo/psalm": "^4.7"
     },
     "scripts": {
