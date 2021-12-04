@@ -156,6 +156,6 @@ jobs:
     - name: Run tests
       uses: paambaati/codeclimate-action@v2.7.2
       env:
-        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        CC_TEST_REPORTER_ID: "945dfb58a832d233a3caeb84e3e6d3be212e8c7abcb48117fce63b9adcb43647"
       with:
         coverageCommand: ./vendor/bin/phpunit --testdox --stop-on-failure --coverage-clover=clover.xml
