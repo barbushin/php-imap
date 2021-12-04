@@ -37,7 +37,7 @@ jobs:
     needs: provide_php_versions_json
     strategy:
       matrix:
-        operating-system: ['ubuntu-latest', 'ubuntu-20.04']
+        operating-system: ['ubuntu-20.04']
         php-versions: ${{ fromJson(needs.provide_php_versions_json.outputs.matrix) }}
 
     steps:
@@ -79,7 +79,7 @@ jobs:
     needs: provide_php_versions_json
     strategy:
       matrix:
-        operating-system: ['ubuntu-latest', 'ubuntu-20.04']
+        operating-system: ['ubuntu-20.04']
         php-versions: ${{ fromJson(needs.provide_php_versions_json.outputs.matrix) }}
 
     steps:
