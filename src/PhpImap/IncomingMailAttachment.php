@@ -68,13 +68,13 @@ class IncomingMailAttachment
     public $fileExtension;
 
     /** @var string|null */
+    public $mimeType;
+
+    /** @var string|null */
     private $file_path;
 
     /** @var DataPartInfo|null */
     private $dataInfo;
-
-    /** @var string|null */
-    public $mimeType;
 
     /** @var string|null */
     private $filePath;

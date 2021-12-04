@@ -14,6 +14,7 @@ use Exception;
 use const FILEINFO_EXTENSION;
 use const FILEINFO_MIME;
 use const FILEINFO_MIME_ENCODING;
+use const FILEINFO_MIME_TYPE;
 use const FILEINFO_NONE;
 use const FILEINFO_RAW;
 use const FT_PEEK;
@@ -90,14 +91,14 @@ class Mailbox
 
     public const IMAP_OPTIONS_SUPPORTED_VALUES =
         OP_READONLY // 2
-        | OP_ANONYMOUS // 4
-        | OP_HALFOPEN // 64
-        | CL_EXPUNGE // 32768
-        | OP_DEBUG // 1
-        | OP_SHORTCACHE // 8
-        | OP_SILENT // 16
-        | OP_PROTOTYPE // 32
-        | OP_SECURE // 256
+            | OP_ANONYMOUS // 4
+            | OP_HALFOPEN // 64
+            | CL_EXPUNGE // 32768
+            | OP_DEBUG // 1
+            | OP_SHORTCACHE // 8
+            | OP_SILENT // 16
+            | OP_PROTOTYPE // 32
+            | OP_SECURE // 256
     ;
 
     /** @var string */
@@ -158,11 +159,11 @@ class Mailbox
     /** @var string */
     protected $mailboxFolder;
 
-    /** @var resource|null */
-    private $imapStream;
-
     /** @var bool|false */
     protected $attachmentFilenameMode = false;
+
+    /** @var resource|null */
+    private $imapStream;
 
     /**
      * @throws InvalidParameterException
@@ -1169,7 +1170,7 @@ class Mailbox
             foreach ($head->cc as $cc) {
                 $cc_parsed = $this->possiblyGetEmailAndNameFromRecipient($cc);
                 if ($cc_parsed) {
-                    list($ccEmail, $ccName) = $cc_parsed;
+                    [$ccEmail, $ccName] = $cc_parsed;
                     $ccStrings[] = $ccName ? "$ccName <$ccEmail>" : $ccEmail;
                     $header->cc[$ccEmail] = $ccName;
                 }
@@ -1698,11 +1699,9 @@ class Mailbox
 
         $isAttachment = isset($params['filename']) || isset($params['name']) || isset($partStructure->id);
 
-        $dispositionAttachment = (
-            isset($partStructure->disposition) &&
+        $dispositionAttachment = (isset($partStructure->disposition) &&
             \is_string($partStructure->disposition) &&
-            'attachment' === \mb_strtolower($partStructure->disposition)
-        );
+            'attachment' === \mb_strtolower($partStructure->disposition));
 
         // ignore contentId on body when mail isn't multipart (https://github.com/barbushin/php-imap/issues/71)
         if (
@@ -1731,9 +1730,10 @@ class Mailbox
         }
 
         // Do NOT parse attachments, when getAttachmentsIgnore() is true
-        if ($this->getAttachmentsIgnore()
+        if (
+            $this->getAttachmentsIgnore()
             && (TYPEMULTIPART !== $partStructure->type
-            && (TYPETEXT !== $partStructure->type || !\in_array(\mb_strtolower($partStructure->subtype), ['plain', 'html'], true)))
+                && (TYPETEXT !== $partStructure->type || !\in_array(\mb_strtolower($partStructure->subtype), ['plain', 'html'], true)))
         ) {
             return;
         }
@@ -1832,13 +1832,8 @@ class Mailbox
     protected function possiblyGetEmailAndNameFromRecipient(object $recipient): ?array
     {
         if (isset($recipient->mailbox, $recipient->host)) {
-            /** @var mixed */
             $recipientMailbox = $recipient->mailbox;
-
-            /** @var mixed */
             $recipientHost = $recipient->host;
-
-            /** @var mixed */
             $recipientPersonal = $recipient->personal ?? null;
 
             if (!\is_string($recipientMailbox)) {
@@ -1927,7 +1922,7 @@ class Mailbox
         $out[] = \strtolower($t[0]->mailbox.'@'.(string) $out[0]);
 
         /** @var array{0:string|null, 1:string|null, 2:string} */
-        return $out;
+        return (array) $out;
     }
 
     /**

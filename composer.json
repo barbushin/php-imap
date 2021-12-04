@@ -30,7 +30,7 @@
         "ext-mbstring": "*"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "~3.0.0",
+        "friendsofphp/php-cs-fixer": "^3.4",
         "maglnet/composer-require-checker": "^2.0|^3.2",
         "nikic/php-parser": "^4.3,<4.7|^4.10",
         "paragonie/hidden-string": "^1.0",
