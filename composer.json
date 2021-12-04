@@ -48,6 +48,7 @@
         "static-analysis": [
             "parallel-lint .php-cs-fixer.dist.php src tests examples",
             "phpcpd src tests",
+            "composer-require-checker check --config-file=composer-require-checker.config.json ./composer.json",
             "phpmnd ./ --exclude=./.github/ --exclude=./examples/ --exclude=./vendor/ --non-zero-exit-on-violation --hint",
             "php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run -v",
             "psalm --show-info=false"
