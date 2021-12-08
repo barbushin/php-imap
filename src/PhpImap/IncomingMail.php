@@ -34,6 +34,10 @@ class IncomingMail extends IncomingMailHeader
      * @psalm-var array{0:list<DataPartInfo>, 1:list<DataPartInfo>}
      */
     protected $dataInfo = [[], []];
+    /**
+     * @var bool
+     */
+    protected $trimInfoPartsData = true;
 
     /** @var string|null */
     private $textPlain;
@@ -77,7 +81,7 @@ class IncomingMail extends IncomingMailHeader
             return null;
         }
         foreach ($this->dataInfo[$type] as $data) {
-            $this->$name .= \trim($data->fetch());
+            $this->$name .= ($this->trimInfoPartsData ? \trim($data->fetch()) : $data->fetch()) ;
         }
 
         /** @var string */
@@ -249,5 +253,20 @@ class IncomingMail extends IncomingMailHeader
                 }
             }
         }
+    }
+
+    /**
+     * @param $val
+     * @return $this
+     */
+    public function setTrimInfoPartsData($val) :self
+    {
+        $this->trimInfoPartsData = (bool)$val;
+        return $this;
+    }
+
+    public function getTrimInfoPartsData(): ?bool
+    {
+        return $this->trimInfoPartsData;
     }
 }
