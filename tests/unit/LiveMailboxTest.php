@@ -653,6 +653,8 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
      * @param string $actual_result
      *
      * @return string
+     *
+     * @psalm-pure
      */
     protected function ReplaceBoundaryHere(
         $expected_result,

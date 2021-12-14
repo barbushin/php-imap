@@ -573,6 +573,8 @@ final class Imap
      * }> $body An indexed array of bodies (docblock is not complete)
      *
      * @todo flesh out array shape pending resolution of https://github.com/vimeo/psalm/issues/1518
+     *
+     * @psalm-pure
      */
     public static function mail_compose(array $envelope, array $body): string
     {
@@ -719,6 +721,8 @@ final class Imap
 
     /**
      * @param resource|false $imap_stream
+     *
+     * @psalm-pure
      */
     public static function ping($imap_stream): bool
     {
@@ -1038,6 +1042,8 @@ final class Imap
      * Returns the provided string in UTF7-IMAP encoded format.
      *
      * @return string $str UTF-7 encoded string
+     *
+     * @psalm-pure
      */
     public static function encodeStringToUtf7Imap(string $str): string
     {
@@ -1054,6 +1060,8 @@ final class Imap
      * Returns the provided string in UTF-8 encoded format.
      *
      * @return string $str, but UTF-8 encoded
+     *
+     * @psalm-pure
      */
     public static function decodeStringFromUtf7ImapToUtf8(string $str): string
     {
@@ -1072,6 +1080,8 @@ final class Imap
      * @throws InvalidArgumentException if $maybe is not a valid resource
      *
      * @return resource
+     *
+     * @psalm-pure
      */
     private static function EnsureResource($maybe, string $method, int $argument)
     {
@@ -1101,6 +1111,8 @@ final class Imap
 
     /**
      * @param array|false $errors
+     *
+     * @psalm-pure
      */
     private static function HandleErrors($errors, string $method): UnexpectedValueException
     {
@@ -1113,6 +1125,8 @@ final class Imap
 
     /**
      * @param scalar $msg_number
+     *
+     * @psalm-pure
      */
     private static function EnsureRange(
         $msg_number,

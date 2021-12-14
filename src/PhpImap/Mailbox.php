@@ -219,6 +219,8 @@ class Mailbox
      * @param string $delimiter Path delimiter
      *
      * @return bool true (supported) or false (unsupported)
+     *
+     * @psalm-pure
      */
     public function validatePathDelimiter(string $delimiter): bool
     {
@@ -481,6 +483,8 @@ class Mailbox
      * Returns the provided string in UTF7-IMAP encoded format.
      *
      * @return string $str UTF-7 encoded string
+     *
+     * @psalm-pure
      */
     public function encodeStringToUtf7Imap(string $str): string
     {
@@ -497,6 +501,8 @@ class Mailbox
      * Returns the provided string in UTF-8 encoded format.
      *
      * @return string $str UTF-7 encoded string or same as before, when it's no string
+     *
+     * @psalm-pure
      */
     public function decodeStringFromUtf7ImapToUtf8(string $str): string
     {
@@ -1446,6 +1452,9 @@ class Mailbox
         return $newString;
     }
 
+    /**
+     * @psalm-pure
+     */
     public function isUrlEncoded(string $string): bool
     {
         $hasInvalidChars = \preg_match('#[^%a-zA-Z0-9\-_\.\+]#', $string);
@@ -1461,6 +1470,8 @@ class Mailbox
      *
      * @return string RFC 3339 compliant format or original (unchanged) format,
      *                if conversation is not possible
+     *
+     * @psalm-pure
      */
     public function parseDateTime(string $dateHeader): string
     {
