@@ -134,9 +134,6 @@ class Mailbox
     /** @var string */
     protected $serverEncoding = 'UTF-8';
 
-    /** @var bool|true */
-    protected $trimImapPath = true;
-
     /** @var string|null */
     protected $attachmentsDir = null;
 
