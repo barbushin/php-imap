@@ -1235,13 +1235,10 @@ class Mailbox
                 $part_parts = $part->parts;
 
                 if (self::PART_TYPE_TWO == $part->type) {
-                    /** @var array<string, stdClass> */
                     $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix.$index.'.', 0, false);
                 } elseif ($fullPrefix) {
-                    /** @var array<string, stdClass> */
                     $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix.$index.'.');
                 } else {
-                    /** @var array<string, stdClass> */
                     $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix);
                 }
                 unset($flattenedParts[$prefix.$index]->parts);
