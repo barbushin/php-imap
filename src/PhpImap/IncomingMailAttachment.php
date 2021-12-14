@@ -80,7 +80,7 @@ class IncomingMailAttachment
     private $filePath;
 
     /**
-     * @return string|false|null
+     * @return false|string
      */
     public function __get(string $name)
     {

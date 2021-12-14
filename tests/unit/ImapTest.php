@@ -35,12 +35,7 @@ class ImapTest extends Base
     use LiveMailboxTestingTrait;
 
     /**
-     * @psalm-return Generator<int|string, array{
-     *  0:class-string<Throwable>,
-     *  1:string,
-     *  2:PSALM_OPEN_ARGS,
-     *  3?:bool
-     * }>
+     * @psalm-return Generator<'CI ENV with invalid password'|'empty mailbox/username/password', array{0: UnexpectedValueException::class, 1: '/^IMAP error:.[AUTHENTICATIONFAILED]/'|'IMAP error:Can't open mailbox : no such mailbox', 2: array{0: HiddenString, 1: HiddenString, 2: HiddenString, 3: 0, 4: 0, 5: array<empty, empty>}, 3?: true}, mixed, void>
      */
     public function OpenFailure(): Generator
     {

@@ -37,7 +37,8 @@ use const TYPETEXT;
 class LiveMailboxIssue250Test extends AbstractLiveMailboxTest
 {
     /**
-     * @psalm-return Generator<int, array{0:COMPOSE_ENVELOPE, 1:COMPOSE_BODY, 2:string}, mixed, void>
+     * @psalm-return Generator<int, array{0: array{subject: string}, 1: array{0: array{type: 0, 'contents.data': 'test'}}, 2: string}, mixed, void>
+     * @return Generator
      */
     public function ComposeProvider(): Generator
     {

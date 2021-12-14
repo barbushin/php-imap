@@ -44,7 +44,8 @@ abstract class AbstractLiveMailboxTest extends TestCase
     use LiveMailboxTestingTrait;
 
     /**
-     * @psalm-return Generator<int, array{0:COMPOSE_ENVELOPE, 1:COMPOSE_BODY, 2:string}, mixed, void>
+     * @psalm-return Generator<empty, empty, mixed, void>
+     * @return Generator
      */
     public function ComposeProvider(): Generator
     {

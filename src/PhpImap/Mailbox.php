@@ -592,6 +592,8 @@ class Mailbox
      * @param string $name Name of mailbox, which you want to delete (eg. 'PhpImap')
      *
      * @see imap_deletemailbox()
+     *
+     * @return boolean
      */
     public function deleteMailbox(string $name, bool $absolute = false): bool
     {
@@ -615,7 +617,7 @@ class Mailbox
      * This function returns an object containing status information.
      * The object has the following properties: messages, recent, unseen, uidnext, and uidvalidity.
      */
-    public function statusMailbox(): object
+    public function statusMailbox(): stdClass
     {
         return Imap::status($this->getImapStream(), $this->imapPath, SA_ALL);
     }
@@ -626,7 +628,9 @@ class Mailbox
      * This function returns an object containing listing the folders.
      * The object has the following properties: messages, recent, unseen, uidnext, and uidvalidity.
      *
-     * @return array listing the folders
+     * @return string[] listing the folders
+     *
+     * @psalm-return list<string>
      */
     public function getListingFolders(string $pattern = '*'): array
     {
@@ -953,11 +957,11 @@ class Mailbox
      *  Deleted - number of deleted messages
      *  Size - mailbox size
      *
-     * @return object Object with info
+     * @return stdClass Object with info
      *
      * @see mailboxmsginfo
      */
-    public function getMailboxInfo(): object
+    public function getMailboxInfo(): stdClass
     {
         return Imap::mailboxmsginfo($this->getImapStream());
     }
@@ -980,7 +984,9 @@ class Mailbox
      *
      * @psalm-param value-of<Imap::SORT_CRITERIA> $criteria
      *
-     * @return array Mails ids
+     * @return int[] Mails ids
+     *
+     * @psalm-return list<int>
      */
     public function sortMails(
         int $criteria = SORTARRIVAL,
@@ -1216,7 +1222,7 @@ class Mailbox
      *
      * @return stdClass[]
      *
-     * @psalm-return array<string, PARTSTRUCTURE>
+     * @psalm-return array<string, stdClass>
      */
     public function flattenParts(array $messageParts, array $flattenedParts = [], string $prefix = '', int $index = 1, bool $fullPrefix = true): array
     {
@@ -1503,6 +1509,10 @@ class Mailbox
 
     /**
      * Get folders list.
+     *
+     * @return (false|mixed|string)[][]
+     *
+     * @psalm-return list<array{fullpath: string, attributes: mixed, delimiter: mixed, shortpath: false|string}>
      */
     public function getMailboxes(string $search = '*'): array
     {
@@ -1514,6 +1524,10 @@ class Mailbox
 
     /**
      * Get folders list.
+     *
+     * @return (false|mixed|string)[][]
+     *
+     * @psalm-return list<array{fullpath: string, attributes: mixed, delimiter: mixed, shortpath: false|string}>
      */
     public function getSubscribedMailboxes(string $search = '*'): array
     {
@@ -1590,9 +1604,11 @@ class Mailbox
     /**
      * Returns the list of available encodings in lower case.
      *
-     * @return array mb_list_encodings() in lower case
+     * @return string[]
+     *
+     * @psalm-return list<string>
      */
-    protected function lowercase_mb_list_encodings()
+    protected function lowercase_mb_list_encodings(): array
     {
         $lowercase_encodings = [];
         $encodings = \mb_list_encodings();
@@ -1827,7 +1843,8 @@ class Mailbox
     }
 
     /**
-     * @psalm-return array{0:string, 1:string|null}|null
+     * @psalm-return array{0: string, 1: null|string}|null
+     * @return (null|string)[]|null
      */
     protected function possiblyGetEmailAndNameFromRecipient(object $recipient): ?array
     {
@@ -1862,6 +1879,10 @@ class Mailbox
      * @psalm-param array<int, scalar|array|object{name?:string}|resource|null> $t
      *
      * @todo revisit implementation pending resolution of https://github.com/vimeo/psalm/issues/2619
+     *
+     * @return (false|mixed|string)[][]
+     *
+     * @psalm-return list<array{fullpath: string, attributes: mixed, delimiter: mixed, shortpath: false|string}>
      */
     protected function possiblyGetMailboxes(array $t): array
     {
@@ -1955,7 +1976,8 @@ class Mailbox
              *
              * @return string
              */
-            static function ($sender) use ($criteria) {
+            static function ($sender) use ($criteria): string
+            {
                 return $criteria.' FROM '.\mb_strtolower($sender);
             },
             $senders

@@ -647,7 +647,7 @@ final class Imap
     /**
      * @param false|resource $imap_stream
      */
-    public static function mailboxmsginfo($imap_stream): object
+    public static function mailboxmsginfo($imap_stream): \stdClass
     {
         \imap_errors(); // flush errors
 
@@ -952,11 +952,8 @@ final class Imap
      *
      * @psalm-param SA_MESSAGES|SA_RECENT|SA_UNSEEN|SA_UIDNEXT|SA_UIDVALIDITY|SA_ALL $flags
      */
-    public static function status(
-        $imap_stream,
-        string $mailbox,
-        int $options
-    ): object {
+    public static function status($imap_stream, string $mailbox, int $options): \stdClass
+    {
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
 
         $mailbox = static::encodeStringToUtf7Imap($mailbox);
@@ -975,10 +972,8 @@ final class Imap
     /**
      * @param false|resource $imap_stream
      */
-    public static function subscribe(
-        $imap_stream,
-        string $mailbox
-    ): void {
+    public static function subscribe($imap_stream, string $mailbox): void
+    {
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
 
         $mailbox = static::encodeStringToUtf7Imap($mailbox);

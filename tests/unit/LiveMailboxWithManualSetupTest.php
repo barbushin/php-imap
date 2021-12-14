@@ -25,7 +25,7 @@ use ParagonIE\HiddenString\HiddenString;
 class LiveMailboxWithManualSetupTest extends AbstractLiveMailboxTest
 {
     /**
-     * @return Generator<int, array{0:string}|void, void>
+     * @psalm-return Generator<int, array{0: '.issue-499.Éléments envoyés'}, mixed, void>
      */
     public function RelativeToRootPathProvider(): Generator
     {
@@ -35,7 +35,7 @@ class LiveMailboxWithManualSetupTest extends AbstractLiveMailboxTest
     }
 
     /**
-     * @return Generator<int, array{0:MAILBOX_ARGS}|void, void>
+     * @psalm-return Generator<int, array{0: array{0: HiddenString, 1: HiddenString, 2: HiddenString, 3: string, 4?: string}}, mixed, void>
      */
     public function statusProviderAbsolutePath(): Generator
     {
