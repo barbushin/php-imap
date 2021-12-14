@@ -1942,7 +1942,7 @@ class Mailbox
         $out[] = \strtolower($t[0]->mailbox.'@'.(string) $out[0]);
 
         /** @var array{0:string|null, 1:string|null, 2:string} */
-        return (array) $out;
+        return $out;
     }
 
     /**
