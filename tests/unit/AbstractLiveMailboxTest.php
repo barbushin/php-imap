@@ -191,10 +191,10 @@ abstract class AbstractLiveMailboxTest extends TestCase
 
         $this->assertIsString($subject);
 
-        $search_criteria = \sprintf('SUBJECT "%s"', (string) $subject);
+        $search_criteria = \sprintf('SUBJECT "%s"', $subject);
 
         /** @psalm-var array{0:string, 1:string} */
-        return [$search_criteria, (string) $subject];
+        return [$search_criteria, $subject];
     }
 
     protected function MaybeSkipAppendTest(array $envelope): bool

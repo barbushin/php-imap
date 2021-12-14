@@ -169,7 +169,7 @@ class IncomingMail extends IncomingMailHeader
      */
     public function getInternalLinksPlaceholders(): array
     {
-        $fetchedHtml = (string) $this->__get('textHtml');
+        $fetchedHtml = $this->__get('textHtml');
 
         $match = \preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $fetchedHtml, $matches);
 
@@ -207,7 +207,7 @@ class IncomingMail extends IncomingMailHeader
      */
     public function embedImageAttachments(): void
     {
-        $fetchedHtml = (string) $this->__get('textHtml');
+        $fetchedHtml = $this->__get('textHtml');
 
         \preg_match_all("/\bcid:[^'\"\s]{1,256}/mi", $fetchedHtml, $matches);
 
