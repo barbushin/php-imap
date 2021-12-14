@@ -1171,6 +1171,7 @@ class Mailbox
         }
 
         if (isset($head->cc)) {
+            $ccStrings = [];
             foreach ($head->cc as $cc) {
                 $cc_parsed = $this->possiblyGetEmailAndNameFromRecipient($cc);
                 if ($cc_parsed) {
