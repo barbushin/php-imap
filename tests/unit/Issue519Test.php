@@ -104,6 +104,7 @@ class Issue519Test extends TestCase
 
     /**
      * @psalm-return array<string, array{0: string}>
+     *
      * @return string[][]
      */
     public function provider(): array

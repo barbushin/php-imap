@@ -22,6 +22,7 @@ use const SORTFROM;
 use const SORTSIZE;
 use const SORTSUBJECT;
 use const SORTTO;
+use stdClass;
 use Throwable;
 use UnexpectedValueException;
 
@@ -647,7 +648,7 @@ final class Imap
     /**
      * @param false|resource $imap_stream
      */
-    public static function mailboxmsginfo($imap_stream): \stdClass
+    public static function mailboxmsginfo($imap_stream): stdClass
     {
         \imap_errors(); // flush errors
 
@@ -952,7 +953,7 @@ final class Imap
      *
      * @psalm-param SA_MESSAGES|SA_RECENT|SA_UNSEEN|SA_UIDNEXT|SA_UIDVALIDITY|SA_ALL $flags
      */
-    public static function status($imap_stream, string $mailbox, int $options): \stdClass
+    public static function status($imap_stream, string $mailbox, int $options): stdClass
     {
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
 

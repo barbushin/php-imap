@@ -592,8 +592,6 @@ class Mailbox
      * @param string $name Name of mailbox, which you want to delete (eg. 'PhpImap')
      *
      * @see imap_deletemailbox()
-     *
-     * @return boolean
      */
     public function deleteMailbox(string $name, bool $absolute = false): bool
     {
@@ -1844,6 +1842,7 @@ class Mailbox
 
     /**
      * @psalm-return array{0: string, 1: null|string}|null
+     *
      * @return (null|string)[]|null
      */
     protected function possiblyGetEmailAndNameFromRecipient(object $recipient): ?array
@@ -1976,8 +1975,7 @@ class Mailbox
              *
              * @return string
              */
-            static function ($sender) use ($criteria): string
-            {
+            static function ($sender) use ($criteria): string {
                 return $criteria.' FROM '.\mb_strtolower($sender);
             },
             $senders

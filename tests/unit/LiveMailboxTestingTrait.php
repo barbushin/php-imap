@@ -27,6 +27,7 @@ trait LiveMailboxTestingTrait
      * Provides constructor arguments for a live mailbox.
      *
      * @psalm-return array{'CI ENV'?: array{0: \ParagonIE\HiddenString\HiddenString, 1: \ParagonIE\HiddenString\HiddenString, 2: \ParagonIE\HiddenString\HiddenString, 3: string}}
+     *
      * @return (\ParagonIE\HiddenString\HiddenString|string)[][]
      */
     public function MailBoxProvider(): array
