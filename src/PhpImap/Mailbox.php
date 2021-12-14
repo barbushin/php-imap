@@ -1062,6 +1062,27 @@ class Mailbox
     }
 
     /**
+     * Get mail header field value.
+     *
+     * @param string $headersRaw        RAW headers as single string
+     * @param string $header_field_name Name of the required header field
+     *
+     * @return string Value of the header field
+     */
+    public function getMailHeaderFieldValue(string $headersRaw, string $header_field_name): string
+    {
+        $header_field_value = '';
+
+        if (\preg_match("/$header_field_name\:(.*)/i", $headersRaw, $matches)) {
+            if (isset($matches[1])) {
+                return \trim($matches[1]);
+            }
+        }
+
+        return $header_field_value;
+    }
+
+    /**
      * Get mail header.
      *
      * @param int $mailId ID of the message
@@ -1127,20 +1148,20 @@ class Mailbox
         $header->imapPath = $this->imapPath;
         $header->mailboxFolder = $this->mailboxFolder;
         $header->isDraft = (!isset($head->date)) ? true : false;
-        $header->mimeVersion = (\preg_match("/MIME-Version\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
-        $header->xVirusScanned = (\preg_match("/X-Virus-Scanned\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
-        $header->organization = (\preg_match("/Organization\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
-        $header->contentType = (\preg_match("/Content-Type\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
-        $header->xMailer = (\preg_match("/X-Mailer\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
-        $header->contentLanguage = (\preg_match("/Content-Language\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
-        $header->xSenderIp = (\preg_match("/X-Sender-IP\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
-        $header->priority = (\preg_match("/Priority\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
-        $header->importance = (\preg_match("/Importance\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
-        $header->sensitivity = (\preg_match("/Sensitivity\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
-        $header->autoSubmitted = (\preg_match("/Auto-Submitted\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
-        $header->precedence = (\preg_match("/Precedence\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
-        $header->failedRecipients = (\preg_match("/Failed-Recipients\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
-        $header->xOriginalTo = (\preg_match("/X-Original-To\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
+        $header->mimeVersion = $this->getMailHeaderFieldValue($headersRaw, 'MIME-Version');
+        $header->xVirusScanned = $this->getMailHeaderFieldValue($headersRaw, 'X-Virus-Scanned');
+        $header->organization = $this->getMailHeaderFieldValue($headersRaw, 'Organization');
+        $header->contentType = $this->getMailHeaderFieldValue($headersRaw, 'Content-Type');
+        $header->xMailer = $this->getMailHeaderFieldValue($headersRaw, 'X-Mailer');
+        $header->contentLanguage = $this->getMailHeaderFieldValue($headersRaw, 'Content-Language');
+        $header->xSenderIp = $this->getMailHeaderFieldValue($headersRaw, 'X-Sender-IP');
+        $header->priority = $this->getMailHeaderFieldValue($headersRaw, 'Priority');
+        $header->importance = $this->getMailHeaderFieldValue($headersRaw, 'Importance');
+        $header->sensitivity = $this->getMailHeaderFieldValue($headersRaw, 'Sensitivity');
+        $header->autoSubmitted = $this->getMailHeaderFieldValue($headersRaw, 'Auto-Submitted');
+        $header->precedence = $this->getMailHeaderFieldValue($headersRaw, 'Precedence');
+        $header->failedRecipients = $this->getMailHeaderFieldValue($headersRaw, 'Failed-Recipients');
+        $header->xOriginalTo = $this->getMailHeaderFieldValue($headersRaw, 'X-Original-To');
 
         if (isset($head->date) && !empty(\trim($head->date))) {
             $header->date = self::parseDateTime($head->date);
