@@ -695,7 +695,7 @@ final class Imap
         array $params = []
     ) {
         if (\preg_match("/^\{.*\}(.*)$/", $mailbox, $matches)) {
-            $mailbox_name = $matches[1];
+            $mailbox_name = $matches[1] ?? '';
 
             if (!\mb_detect_encoding($mailbox_name, 'ASCII', true)) {
                 $mailbox = static::encodeStringToUtf7Imap($mailbox);

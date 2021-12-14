@@ -1127,20 +1127,20 @@ class Mailbox
         $header->imapPath = $this->imapPath;
         $header->mailboxFolder = $this->mailboxFolder;
         $header->isDraft = (!isset($head->date)) ? true : false;
-        $header->mimeVersion = (\preg_match("/MIME-Version\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->xVirusScanned = (\preg_match("/X-Virus-Scanned\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->organization = (\preg_match("/Organization\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->contentType = (\preg_match("/Content-Type\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->xMailer = (\preg_match("/X-Mailer\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->contentLanguage = (\preg_match("/Content-Language\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->xSenderIp = (\preg_match("/X-Sender-IP\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->priority = (\preg_match("/Priority\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->importance = (\preg_match("/Importance\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->sensitivity = (\preg_match("/Sensitivity\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->autoSubmitted = (\preg_match("/Auto-Submitted\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->precedence = (\preg_match("/Precedence\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->failedRecipients = (\preg_match("/Failed-Recipients\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->xOriginalTo = (\preg_match("/X-Original-To\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->mimeVersion = (\preg_match("/MIME-Version\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
+        $header->xVirusScanned = (\preg_match("/X-Virus-Scanned\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
+        $header->organization = (\preg_match("/Organization\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
+        $header->contentType = (\preg_match("/Content-Type\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
+        $header->xMailer = (\preg_match("/X-Mailer\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
+        $header->contentLanguage = (\preg_match("/Content-Language\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
+        $header->xSenderIp = (\preg_match("/X-Sender-IP\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
+        $header->priority = (\preg_match("/Priority\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
+        $header->importance = (\preg_match("/Importance\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
+        $header->sensitivity = (\preg_match("/Sensitivity\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
+        $header->autoSubmitted = (\preg_match("/Auto-Submitted\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
+        $header->precedence = (\preg_match("/Precedence\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
+        $header->failedRecipients = (\preg_match("/Failed-Recipients\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
+        $header->xOriginalTo = (\preg_match("/X-Original-To\:(.*)/i", $headersRaw, $matches)) ? (!isset($matches[1]) ?: \trim($matches[1])) : '';
 
         if (isset($head->date) && !empty(\trim($head->date))) {
             $header->date = self::parseDateTime($head->date);
@@ -1708,7 +1708,7 @@ class Mailbox
         }
         if (!empty($partStructure->dparameters)) {
             foreach ($partStructure->dparameters as $param) {
-                $paramName = \strtolower(\preg_match('~^(.*?)\*~', $param->attribute, $matches) ? $matches[1] : $param->attribute);
+                $paramName = \strtolower(\preg_match('~^(.*?)\*~', $param->attribute, $matches) ? (!isset($matches[1]) ?: $matches[1]) : $param->attribute);
                 if (isset($params[$paramName])) {
                     $params[$paramName] .= $param->value;
                 } else {
@@ -1807,7 +1807,7 @@ class Mailbox
     protected function decodeRFC2231(string $string): string
     {
         if (\preg_match("/^(.*?)'.*?'(.*?)$/", $string, $matches)) {
-            $data = $matches[2];
+            $data = isset($matches[2]) ? $matches[2] : '';
             if ($this->isUrlEncoded($data)) {
                 $string = $this->decodeMimeStr(\urldecode($data));
             }
