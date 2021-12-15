@@ -897,6 +897,9 @@ final class Imap
      * @param false|resource $imap_stream
      *
      * @psalm-param value-of<self::SORT_CRITERIA> $criteria
+     * @psalm-suppress InvalidArgument
+     *
+     * @todo InvalidArgument, although it's correct: Argument 3 of imap_sort expects int, bool provided https://www.php.net/manual/de/function.imap-sort.php
      *
      * @return int[]
      *

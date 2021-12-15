@@ -1700,6 +1700,7 @@ class Mailbox
      * @param string|0 $partNum
      *
      * @psalm-param PARTSTRUCTURE $partStructure
+     * @psalm-suppress InvalidArgument
      *
      * @todo refactor type checking pending resolution of https://github.com/vimeo/psalm/issues/2619
      */
