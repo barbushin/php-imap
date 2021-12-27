@@ -1,21 +1,30 @@
 <?xml version="1.0"?>
 <psalm
-    totallyTyped="true"
-	findUnusedCode="true"
-    resolveFromConfigFile="true"
-    requireVoidReturnType="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
-    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    name="Psalm for php-imap"
+    useDocblockTypes="true"
+    errorLevel="1"
+    strictBinaryOperands="false"
+    rememberPropertyAssignmentsAfterCall="true"
+    checkForThrowsDocblock="false"
+    throwExceptionOnError="0"
+    findUnusedCode="false"
+    ensureArrayStringOffsetsExist="true"
+    ensureArrayIntOffsetsExist="true"
+    resolveFromConfigFile="true"
+    xsi:schemaLocation="https://getpsalm.org/schema/config config.xsd"
+    limitMethodComplexity="true"
     errorBaseline="./psalm.baseline.xml"
     cacheDirectory="./psalm/cache/"
+    findUnusedPsalmSuppress="true"
 >
     <projectFiles>
         <file name="./.php-cs-fixer.dist.php"/>
         <directory name="src"/>
-        <directory name="tests"/>
-        <directory name="examples"/>
         <ignoreFiles>
+            <directory name="tests"/>
+            <directory name="examples"/>
             <directory name="vendor"/>
         </ignoreFiles>
     </projectFiles>

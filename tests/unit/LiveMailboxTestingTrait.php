@@ -26,7 +26,9 @@ trait LiveMailboxTestingTrait
     /**
      * Provides constructor arguments for a live mailbox.
      *
-     * @psalm-return MAILBOX_ARGS[]
+     * @psalm-return array{'CI ENV'?: array{0: \ParagonIE\HiddenString\HiddenString, 1: \ParagonIE\HiddenString\HiddenString, 2: \ParagonIE\HiddenString\HiddenString, 3: string}}
+     *
+     * @return (\ParagonIE\HiddenString\HiddenString|string)[][]
      */
     public function MailBoxProvider(): array
     {
@@ -49,11 +51,11 @@ trait LiveMailboxTestingTrait
      * @param string $attachmentsDir
      * @param string $serverEncoding
      *
-     * @return mixed[]
+     * @return (Mailbox|\ParagonIE\HiddenString\HiddenString|string)[]
      *
-     * @psalm-return array{0:Mailbox, 1:string, 2:HiddenString}
+     * @psalm-return array{0: Mailbox, 1: string, 2: \ParagonIE\HiddenString\HiddenString}
      */
-    protected function getMailbox(HiddenString $imapPath, HiddenString $login, HiddenString $password, $attachmentsDir, $serverEncoding = 'UTF-8')
+    protected function getMailbox(HiddenString $imapPath, HiddenString $login, HiddenString $password, $attachmentsDir, $serverEncoding = 'UTF-8'): array
     {
         $mailbox = new Mailbox($imapPath->getString(), $login->getString(), $password->getString(), $attachmentsDir, $serverEncoding);
 

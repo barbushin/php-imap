@@ -68,19 +68,19 @@ class IncomingMailAttachment
     public $fileExtension;
 
     /** @var string|null */
+    public $mimeType;
+
+    /** @var string|null */
     private $file_path;
 
     /** @var DataPartInfo|null */
     private $dataInfo;
 
     /** @var string|null */
-    public $mimeType;
-
-    /** @var string|null */
     private $filePath;
 
     /**
-     * @return string|false|null
+     * @return false|string
      */
     public function __get(string $name)
     {

@@ -103,7 +103,9 @@ class Issue519Test extends TestCase
     public const EXPECTED_ATTACHMENT_COUNT_AFTER_EMBED = 0;
 
     /**
-     * @psalm-return array<string, array{0:string}>
+     * @psalm-return array<string, array{0: string}>
+     *
+     * @return string[][]
      */
     public function provider(): array
     {

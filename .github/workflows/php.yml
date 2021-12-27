@@ -7,38 +7,13 @@ on:
     branches: [ develop ]
 
 jobs:
-  provide_php_versions_json:
-    runs-on: ubuntu-20.04
-
-    steps:
-      # git clone + use PHP + composer install
-      - uses: actions/checkout@v2
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.0
-
-      - uses: "ramsey/composer-install@v1"
-
-      # to see the output
-      - run: vendor/bin/easy-ci php-versions-json
-
-      # here we create the json, we need the "id:" so we can use it in "outputs" bellow
-      -
-        id: output_data
-        run: echo "::set-output name=matrix::$(vendor/bin/easy-ci php-versions-json)"
-
-    # here, we save the result of this 1st phase to the "outputs"
-    outputs:
-        matrix: ${{ steps.output_data.outputs.matrix }}
-
   static-analysis:
     name: Static Analysis PHP ${{ matrix.php-versions }}
     runs-on: ${{ matrix.operating-system }}
-    needs: provide_php_versions_json
     strategy:
       matrix:
-        operating-system: ['ubuntu-latest', 'ubuntu-20.04']
-        php-versions: ${{ fromJson(needs.provide_php_versions_json.outputs.matrix) }}
+        operating-system: ['ubuntu-20.04']
+        php-versions: ['7.2', '7.3', '7.4', '8.0', '8.1']
 
     steps:
     - name: Setup PHP
@@ -66,6 +41,7 @@ jobs:
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-composer-
+
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist --no-progress --no-suggest
@@ -76,11 +52,10 @@ jobs:
   phpunit:
     name: PHP ${{ matrix.php-versions }} Unit Tests
     runs-on: ${{ matrix.operating-system }}
-    needs: provide_php_versions_json
     strategy:
       matrix:
-        operating-system: ['ubuntu-latest', 'ubuntu-20.04']
-        php-versions: ${{ fromJson(needs.provide_php_versions_json.outputs.matrix) }}
+        operating-system: ['ubuntu-20.04']
+        php-versions: ['7.2', '7.3', '7.4', '8.0', '8.1']
 
     steps:
     - name: Setup PHP
@@ -108,6 +83,7 @@ jobs:
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-composer-
+
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist --no-progress --no-suggest
@@ -156,6 +132,6 @@ jobs:
     - name: Run tests
       uses: paambaati/codeclimate-action@v2.7.2
       env:
-        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        CC_TEST_REPORTER_ID: "945dfb58a832d233a3caeb84e3e6d3be212e8c7abcb48117fce63b9adcb43647"
       with:
         coverageCommand: ./vendor/bin/phpunit --testdox --stop-on-failure --coverage-clover=clover.xml
