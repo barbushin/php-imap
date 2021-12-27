@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpImap;
 
-use const FILEINFO_MIME;
+use const FILEINFO_MIME_TYPE;
 use InvalidArgumentException;
 
 /**
@@ -169,7 +169,7 @@ class IncomingMail extends IncomingMailHeader
      */
     public function getInternalLinksPlaceholders(): array
     {
-        $fetchedHtml = (string) $this->__get('textHtml');
+        $fetchedHtml = $this->__get('textHtml');
 
         $match = \preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $fetchedHtml, $matches);
 
@@ -207,7 +207,7 @@ class IncomingMail extends IncomingMailHeader
      */
     public function embedImageAttachments(): void
     {
-        $fetchedHtml = (string) $this->__get('textHtml');
+        $fetchedHtml = $this->__get('textHtml');
 
         \preg_match_all("/\bcid:[^'\"\s]{1,256}/mi", $fetchedHtml, $matches);
 
@@ -221,11 +221,11 @@ class IncomingMail extends IncomingMailHeader
                 foreach ($attachments as $attachment) {
                     /**
                      * Inline images can contain a "Content-Disposition: inline", but only a "Content-ID" is also enough.
-                     * See https://github.com/barbushin/php-imap/issues/569
+                     * See https://github.com/barbushin/php-imap/issues/569.
                      */
                     if ($attachment->contentId == $cid || 'inline' == \mb_strtolower((string) $attachment->disposition)) {
                         $contents = $attachment->getContents();
-                        $contentType = (string) $attachment->getFileInfo(FILEINFO_MIME);
+                        $contentType = $attachment->getFileInfo(FILEINFO_MIME_TYPE);
 
                         if (!\strstr($contentType, 'image')) {
                             continue;

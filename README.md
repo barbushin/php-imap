@@ -4,6 +4,7 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Packagist](https://img.shields.io/packagist/dt/php-imap/php-imap.svg?style=flat-square)](https://packagist.org/packages/php-imap/php-imap)
 [![Build Status](https://travis-ci.org/barbushin/php-imap.svg?branch=master)](https://travis-ci.org/barbushin/php-imap)
+[![CI](https://github.com/barbushin/php-imap/actions/workflows/php.yml/badge.svg)](https://github.com/barbushin/php-imap/actions/workflows/php.yml)
 [![Supported PHP Version](https://img.shields.io/packagist/php-v/php-imap/php-imap.svg)](README.md)
 [![Maintainability](https://api.codeclimate.com/v1/badges/02f72a4fd695cb7e2976/maintainability)](https://codeclimate.com/github/barbushin/php-imap/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/02f72a4fd695cb7e2976/test_coverage)](https://codeclimate.com/github/barbushin/php-imap/test_coverage)
@@ -71,6 +72,8 @@ You can run all PHPUnit tests by running the following command (inside of the in
 
 Below, you'll find an example code how you can use this library. For further information and other examples, you may take a look at the [wiki](https://github.com/barbushin/php-imap/wiki).
 
+By default, this library uses random filenames for attachments as identical file names from other emails would overwrite other attachments. If you want to keep the original file name, you can set the attachment filename mode to ``true``, but then you also need to ensure, that those files don't get overwritten by other emails for example.
+
 ```php
 // Create PhpImap\Mailbox instance for all further actions
 $mailbox = new PhpImap\Mailbox(
@@ -78,7 +81,9 @@ $mailbox = new PhpImap\Mailbox(
 	'some@gmail.com', // Username for the before configured mailbox
 	'*********', // Password for the before configured username
 	__DIR__, // Directory, where attachments will be saved (optional)
-	'UTF-8' // Server encoding (optional)
+	'UTF-8', // Server encoding (optional)
+    true, // Trim leading/ending whitespaces of IMAP path (optional)
+    false // Attachment filename mode (optional; false = random filename; true = original filename)
 );
 
 // set some connection arguments (if appropriate)

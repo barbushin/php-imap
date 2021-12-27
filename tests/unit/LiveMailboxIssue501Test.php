@@ -59,7 +59,7 @@ class LiveMailboxIssue501Test extends AbstractLiveMailboxTest
         string $attachmentsDir,
         string $serverEncoding = 'UTF-8'
     ): void {
-        list($mailbox, $remove_mailbox) = $this->getMailbox(
+        [$mailbox, $remove_mailbox] = $this->getMailbox(
             $imapPath,
             $login,
             $password,
@@ -74,7 +74,7 @@ class LiveMailboxIssue501Test extends AbstractLiveMailboxTest
                 'subject' => 'barbushin/php-imap#501: '.\bin2hex(\random_bytes(16)),
             ];
 
-            list($search_criteria) = $this->SubjectSearchCriteriaAndSubject(
+            [$search_criteria] = $this->SubjectSearchCriteriaAndSubject(
                 $envelope
             );
 

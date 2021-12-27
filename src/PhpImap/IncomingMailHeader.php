@@ -92,6 +92,9 @@ class IncomingMailHeader
     /** @var string|null */
     public $senderAddress;
 
+    /** @var string|null */
+    public $xOriginalTo;
+
     /**
      * @var (string|null)[]
      *
@@ -108,6 +111,9 @@ class IncomingMailHeader
      * @psalm-var array<string, string|null>
      */
     public $cc = [];
+
+    /** @var string|null */
+    public $ccString;
 
     /**
      * @var (string|null)[]

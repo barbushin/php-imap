@@ -44,9 +44,9 @@ use const TYPETEXT;
  */
 class LiveMailboxTest extends AbstractLiveMailboxTest
 {
-    const RANDOM_MAILBOX_SAMPLE_SIZE = 3;
+    public const RANDOM_MAILBOX_SAMPLE_SIZE = 3;
 
-    const ISSUE_EXPECTED_ATTACHMENT_COUNT = [
+    public const ISSUE_EXPECTED_ATTACHMENT_COUNT = [
         448 => 1,
         391 => 2,
     ];
@@ -58,7 +58,7 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
      */
     public function testGetImapStream(HiddenString $imapPath, HiddenString $login, HiddenString $password, string $attachmentsDir, string $serverEncoding = 'UTF-8'): void
     {
-        list($mailbox, $remove_mailbox) = $this->getMailbox(
+        [$mailbox, $remove_mailbox] = $this->getMailbox(
             $imapPath,
             $login,
             $password,
@@ -143,7 +143,9 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
     }
 
     /**
-     * @psalm-return Generator<int, array{0:COMPOSE_ENVELOPE, 1:COMPOSE_BODY, 2:string}, mixed, void>
+     * @psalm-return Generator<int, array{0: array{subject: string}, 1: array{0: array{type: 0|1|3, 'contents.data'?: string, encoding?: 3, subtype?: 'octet-stream', description?: '.gitignore'|'gitignore.', 'disposition.type'?: 'attachment', disposition?: array{filename: '.gitignore'|'gitignore.'}, 'type.parameters'?: array{name: '.gitignore'|'gitignore.'}}, 1?: array{type: 0, 'contents.data': 'test'}, 2?: array{type: 3, encoding: 3, subtype: 'octet-stream', description: 'foo.bin', 'disposition.type': 'attachment', disposition: array{filename: 'foo.bin'}, 'type.parameters': array{name: 'foo.bin'}, 'contents.data': string}, 3?: array{type: 3, encoding: 3, subtype: 'octet-stream', description: 'foo.bin', 'disposition.type': 'attachment', disposition: array{filename: 'foo.bin'}, 'type.parameters': array{name: 'foo.bin'}, 'contents.data': string}}, 2: string}, mixed, void>
+     *
+     * @return Generator
      */
     public function ComposeProvider(): Generator
     {
@@ -336,9 +338,9 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
             return;
         }
 
-        list($search_criteria) = $this->SubjectSearchCriteriaAndSubject($envelope);
+        [$search_criteria] = $this->SubjectSearchCriteriaAndSubject($envelope);
 
-        list($mailbox, $remove_mailbox, $path) = $this->getMailboxFromArgs(
+        [$mailbox, $remove_mailbox, $path] = $this->getMailboxFromArgs(
             $mailbox_args
         );
 
@@ -425,9 +427,9 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
             return;
         }
 
-        list($search_criteria) = $this->SubjectSearchCriteriaAndSubject($envelope);
+        [$search_criteria] = $this->SubjectSearchCriteriaAndSubject($envelope);
 
-        list($mailbox, $remove_mailbox, $path) = $this->getMailboxFromArgs(
+        [$mailbox, $remove_mailbox, $path] = $this->getMailboxFromArgs(
             $mailbox_args
         );
 
@@ -523,9 +525,9 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
             return;
         }
 
-        list($search_criteria, $search_subject) = $this->SubjectSearchCriteriaAndSubject($envelope);
+        [$search_criteria, $search_subject] = $this->SubjectSearchCriteriaAndSubject($envelope);
 
-        list($mailbox, $remove_mailbox, $path) = $this->getMailboxFromArgs(
+        [$mailbox, $remove_mailbox, $path] = $this->getMailboxFromArgs(
             $mailbox_args
         );
 
@@ -651,6 +653,8 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
      * @param string $actual_result
      *
      * @return string
+     *
+     * @psalm-pure
      */
     protected function ReplaceBoundaryHere(
         $expected_result,

@@ -44,7 +44,9 @@ abstract class AbstractLiveMailboxTest extends TestCase
     use LiveMailboxTestingTrait;
 
     /**
-     * @psalm-return Generator<int, array{0:COMPOSE_ENVELOPE, 1:COMPOSE_BODY, 2:string}, mixed, void>
+     * @psalm-return Generator<empty, empty, mixed, void>
+     *
+     * @return Generator
      */
     public function ComposeProvider(): Generator
     {
@@ -100,9 +102,9 @@ abstract class AbstractLiveMailboxTest extends TestCase
             return;
         }
 
-        list($search_criteria) = $this->SubjectSearchCriteriaAndSubject($envelope);
+        [$search_criteria] = $this->SubjectSearchCriteriaAndSubject($envelope);
 
-        list($mailbox, $remove_mailbox, $path) = $this->getMailboxFromArgs(
+        [$mailbox, $remove_mailbox, $path] = $this->getMailboxFromArgs(
             $mailbox_args
         );
 
@@ -185,14 +187,14 @@ abstract class AbstractLiveMailboxTest extends TestCase
     protected function SubjectSearchCriteriaAndSubject(array $envelope): array
     {
         /** @var string|null */
-        $subject = isset($envelope['subject']) ? $envelope['subject'] : null;
+        $subject = $envelope['subject'] ?? null;
 
         $this->assertIsString($subject);
 
-        $search_criteria = \sprintf('SUBJECT "%s"', (string) $subject);
+        $search_criteria = \sprintf('SUBJECT "%s"', $subject);
 
         /** @psalm-var array{0:string, 1:string} */
-        return [$search_criteria, (string) $subject];
+        return [$search_criteria, $subject];
     }
 
     protected function MaybeSkipAppendTest(array $envelope): bool

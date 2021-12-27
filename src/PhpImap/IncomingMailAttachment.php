@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PhpImap;
 
-use const FILEINFO_MIME;
 use const FILEINFO_NONE;
 use finfo;
 use UnexpectedValueException;
@@ -69,19 +68,19 @@ class IncomingMailAttachment
     public $fileExtension;
 
     /** @var string|null */
+    public $mimeType;
+
+    /** @var string|null */
     private $file_path;
 
     /** @var DataPartInfo|null */
     private $dataInfo;
 
     /** @var string|null */
-    private $mimeType;
-
-    /** @var string|null */
     private $filePath;
 
     /**
-     * @return string|false|null
+     * @return false|string
      */
     public function __get(string $name)
     {
@@ -131,10 +130,6 @@ class IncomingMailAttachment
      */
     public function getFileInfo(int $fileinfo_const = FILEINFO_NONE): string
     {
-        if ((FILEINFO_MIME == $fileinfo_const) && (false != $this->mimeType)) {
-            return $this->mimeType;
-        }
-
         $finfo = new finfo($fileinfo_const);
 
         return $finfo->buffer($this->getContents());

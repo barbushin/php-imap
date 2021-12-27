@@ -45,7 +45,7 @@ class LiveMailboxIssue514Test extends AbstractLiveMailboxTest
             'subject' => 'barbushin/php-imap#514--'.\bin2hex(\random_bytes(16)),
         ];
 
-        list($search_criteria) = $this->SubjectSearchCriteriaAndSubject($envelope);
+        [$search_criteria] = $this->SubjectSearchCriteriaAndSubject($envelope);
 
         $body = [
             [
@@ -97,7 +97,7 @@ class LiveMailboxIssue514Test extends AbstractLiveMailboxTest
             $body
         );
 
-        list($mailbox, $remove_mailbox, $path) = $this->getMailboxFromArgs([
+        [$mailbox, $remove_mailbox, $path] = $this->getMailboxFromArgs([
             $imapPath,
             $login,
             $password,

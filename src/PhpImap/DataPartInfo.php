@@ -16,9 +16,9 @@ use const ENCQUOTEDPRINTABLE;
  */
 class DataPartInfo
 {
-    const TEXT_PLAIN = 0;
+    public const TEXT_PLAIN = 0;
 
-    const TEXT_HTML = 1;
+    public const TEXT_HTML = 1;
 
     /**
      * @var int
@@ -109,8 +109,7 @@ class DataPartInfo
     {
         if (isset($this->charset) && !empty(\trim($this->charset))) {
             $this->data = $this->mail->decodeMimeStr(
-                (string) $this->data, // Data to convert
-                \trim($this->charset)
+                (string) $this->data // Data to convert
             );
         }
 
