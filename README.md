@@ -5,9 +5,9 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Packagist](https://img.shields.io/packagist/dt/php-imap/php-imap.svg?style=flat-square)](https://packagist.org/packages/php-imap/php-imap)
 
-[![CI PHP Unit Tests](https://github.com/barbushin/php-imap/actions/workflows/php_unit_tests.yml/badge.svg)](https://github.com/barbushin/php-imap/actions/workflows/php_unit_tests.yml)
-[![CI PHP Static Analysis](https://github.com/barbushin/php-imap/actions/workflows/php_static_analysis.yml/badge.svg)](https://github.com/barbushin/php-imap/actions/workflows/php_static_analysis.yml)
-[![CI PHP Code Coverage](https://github.com/barbushin/php-imap/actions/workflows/php_code_coverage.yml/badge.svg)](https://github.com/barbushin/php-imap/actions/workflows/php_code_coverage.yml)
+[![CI PHP Unit Tests](https://github.com/barbushin/php-imap/actions/workflows/php_unit_tests.yml/badge.svg?branch=master)](https://github.com/barbushin/php-imap/actions/workflows/php_unit_tests.yml)
+[![CI PHP Static Analysis](https://github.com/barbushin/php-imap/actions/workflows/php_static_analysis.yml/badge.svg?branch=master)](https://github.com/barbushin/php-imap/actions/workflows/php_static_analysis.yml)
+[![CI PHP Code Coverage](https://github.com/barbushin/php-imap/actions/workflows/php_code_coverage.yml/badge.svg?branch=master)](https://github.com/barbushin/php-imap/actions/workflows/php_code_coverage.yml)
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/02f72a4fd695cb7e2976/maintainability)](https://codeclimate.com/github/barbushin/php-imap/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/02f72a4fd695cb7e2976/test_coverage)](https://codeclimate.com/github/barbushin/php-imap/test_coverage)
