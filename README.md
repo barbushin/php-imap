@@ -1,11 +1,14 @@
 # PHP IMAP
 
 [![GitHub release](https://img.shields.io/github/release/barbushin/php-imap.svg?style=flat-square)](https://packagist.org/packages/php-imap/php-imap)
+[![Supported PHP Version](https://img.shields.io/packagist/php-v/php-imap/php-imap.svg)](README.md)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Packagist](https://img.shields.io/packagist/dt/php-imap/php-imap.svg?style=flat-square)](https://packagist.org/packages/php-imap/php-imap)
-[![Build Status](https://travis-ci.org/barbushin/php-imap.svg?branch=master)](https://travis-ci.org/barbushin/php-imap)
-[![CI](https://github.com/barbushin/php-imap/actions/workflows/php.yml/badge.svg)](https://github.com/barbushin/php-imap/actions/workflows/php.yml)
-[![Supported PHP Version](https://img.shields.io/packagist/php-v/php-imap/php-imap.svg)](README.md)
+
+[![CI PHP Unit Tests](https://github.com/barbushin/php-imap/actions/workflows/php_unit_tests.yml/badge.svg)](https://github.com/barbushin/php-imap/actions/workflows/php_unit_tests.yml)
+[![CI PHP Static Analysis](https://github.com/barbushin/php-imap/actions/workflows/php_static_analysis.yml/badge.svg)](https://github.com/barbushin/php-imap/actions/workflows/php_static_analysis.yml)
+[![CI PHP Code Coverage](https://github.com/barbushin/php-imap/actions/workflows/php_code_coverage.yml/badge.svg)](https://github.com/barbushin/php-imap/actions/workflows/php_code_coverage.yml)
+
 [![Maintainability](https://api.codeclimate.com/v1/badges/02f72a4fd695cb7e2976/maintainability)](https://codeclimate.com/github/barbushin/php-imap/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/02f72a4fd695cb7e2976/test_coverage)](https://codeclimate.com/github/barbushin/php-imap/test_coverage)
 [![Type Coverage](https://shepherd.dev/github/barbushin/php-imap/coverage.svg)](https://shepherd.dev/github/barbushin/php-imap)
@@ -32,6 +35,7 @@ Initially released in December 2012, the PHP IMAP Mailbox is a powerful and open
 | 7.3  | 3.x, 4.x |
 | 7.4  | >3.0.33, 4.x |
 | 8.0  | >3.0.33, 4.x |
+| 8.1  | >4.3.0 |
 
 * PHP `fileinfo` extension must be present; so make sure this line is active in your php.ini: `extension=php_fileinfo.dll`
 * PHP `iconv` extension must be present; so make sure this line is active in your php.ini: `extension=php_iconv.dll`
