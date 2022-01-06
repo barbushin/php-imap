@@ -2,9 +2,9 @@ name: PHP Code Coverage
 
 on:
   push:
-    branches: [ develop ]
+    branches:
+      - master
   pull_request:
-    branches: [ develop ]
 
 jobs:
   coverage:

@@ -2,9 +2,9 @@ name: PHP Unit Tests
 
 on:
   push:
-    branches: [ develop ]
+    branches:
+      - master
   pull_request:
-    branches: [ develop ]
 
 jobs:
   phpunit:
