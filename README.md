@@ -52,10 +52,6 @@ Install the latest available and stable source code from `master`, which is may 
 
 	$ composer require php-imap/php-imap:dev-master
 
-Install the latest available and may unstable source code from `develop`, which is may not properly tested yet:
-
-	$ composer require php-imap/php-imap:dev-develop
-
 ### Run Tests
 
 Before you can run the any tests you may need to run `composer install` to install all (development) dependencies.
