@@ -41,6 +41,7 @@ Initially released in December 2012, the PHP IMAP Mailbox is a powerful and open
 * PHP `iconv` extension must be present; so make sure this line is active in your php.ini: `extension=php_iconv.dll`
 * PHP `imap` extension must be present; so make sure this line is active in your php.ini: `extension=php_imap.dll`
 * PHP `mbstring` extension must be present; so make sure this line is active in your php.ini: `extension=php_mbstring.dll`
+* PHP `json` extension must be present; so make sure this line is active in your php.ini: `extension=json.dll`
 
 ### Installation by Composer
 
@@ -97,7 +98,7 @@ try {
 	// PHP.net imap_search criteria: http://php.net/manual/en/function.imap-search.php
 	$mailsIds = $mailbox->searchMailbox('ALL');
 } catch(PhpImap\Exceptions\ConnectionException $ex) {
-	echo "IMAP connection failed: " . $ex;
+	echo "IMAP connection failed: " . implode(",", $ex->getErrors('all'));
 	die();
 }
 

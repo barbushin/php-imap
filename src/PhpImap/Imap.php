@@ -14,6 +14,7 @@ use const IMAP_READTIMEOUT;
 use const IMAP_WRITETIMEOUT;
 use InvalidArgumentException;
 use const NIL;
+use PhpImap\Exceptions\ConnectionException;
 use const SE_FREE;
 use const SORTARRIVAL;
 use const SORTCC;
@@ -707,13 +708,7 @@ final class Imap
         $result = @\imap_open($mailbox, $username, $password, $options, $n_retries, $params);
 
         if (!$result) {
-            $lastError = \imap_last_error();
-
-            if ((\is_string($lastError)) && ('' !== \trim($lastError))) {
-                throw new UnexpectedValueException('IMAP error:'.$lastError);
-            }
-
-            throw new UnexpectedValueException('Could not open mailbox!', 0, self::HandleErrors(\imap_errors(), 'imap_open'));
+            throw new ConnectionException(\imap_errors());
         }
 
         return $result;
