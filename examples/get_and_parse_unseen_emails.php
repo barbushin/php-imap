@@ -23,7 +23,7 @@
     try {
         $mail_ids = $mailbox->searchMailbox('UNSEEN');
     } catch (ConnectionException $ex) {
-        exit('IMAP connection failed: '.$ex->getMessage());
+        exit('IMAP connection failed: '.$ex->getErrors('first'));
     } catch (Exception $ex) {
         exit('An error occured: '.$ex->getMessage());
     }

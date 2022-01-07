@@ -97,7 +97,7 @@ try {
 	// PHP.net imap_search criteria: http://php.net/manual/en/function.imap-search.php
 	$mailsIds = $mailbox->searchMailbox('ALL');
 } catch(PhpImap\Exceptions\ConnectionException $ex) {
-	echo "IMAP connection failed: " . $ex;
+	echo "IMAP connection failed: " . implode(",", $ex->getErrors('all'));
 	die();
 }
 
