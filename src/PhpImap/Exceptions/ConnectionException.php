@@ -13,4 +13,30 @@ use Exception;
  */
 class ConnectionException extends Exception
 {
+    public function __construct($message, $code = 0, Exception $previous = null)
+    {
+        parent::__construct(json_encode($message), $code, $previous);
+    }
+
+    public function getErrors($select = 'first')
+    {
+        $message = $this->getMessage();
+
+        switch (strtolower($select)) {
+            case 'all':
+                return json_decode($message);
+                break;
+            default:
+            case 'first':
+                $message = json_decode($message);
+
+                return $message[0];
+                break;
+            case 'last':
+                $message = json_decode($message);
+
+                return $message[\count($message) - 1];
+                break;
+        }
+    }
 }
