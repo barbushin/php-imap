@@ -79,6 +79,9 @@ class DataPartInfo
         if (0 === $this->part) {
             $this->data = Imap::body($this->mail->getImapStream(), $this->id, $this->options);
         } else {
+            if (null !== $this->data) {
+                return $this->data;
+            }
             $this->data = Imap::fetchbody($this->mail->getImapStream(), $this->id, $this->part, $this->options);
         }
 
