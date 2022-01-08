@@ -835,6 +835,30 @@ class Mailbox
     }
 
     /**
+     * Check, if the specified flag for the mail is set or not.
+     *
+     * @param int    $mailsId A single mail ID
+     * @param string $flag    Which you can get are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060
+     *
+     * @return bool True, when the flag is set, false when not
+     *
+     * @psalm-param list<int> $mailId
+     */
+    public function flagIsSet(int $mailId, string $flag): bool
+    {
+        $flag = str_replace('\\', '', strtolower($flag));
+
+        $overview = Imap::fetch_overview($this->getImapStream(), $mailId, ST_UID);
+
+        if ($overview[0]->$flag == 1)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Causes a store to add the specified flag to the flags set for the mails in the specified sequence.
      *
      * @param array  $mailsIds Array of mail IDs
@@ -1141,7 +1165,12 @@ class Mailbox
         $header->id = $mailId;
         $header->imapPath = $this->imapPath;
         $header->mailboxFolder = $this->mailboxFolder;
-        $header->isDraft = (!isset($head->date)) ? true : false;
+        $header->isSeen = ($this->flagIsSet($mailId, '\Seen')) ? true : false;
+        $header->isAnswered = ($this->flagIsSet($mailId, '\Answered')) ? true : false;
+        $header->isRecent = ($this->flagIsSet($mailId, '\Recent')) ? true : false;
+        $header->isFlagged = ($this->flagIsSet($mailId, '\Flagged')) ? true : false;
+        $header->isDeleted = ($this->flagIsSet($mailId, '\Deleted')) ? true : false;
+        $header->isDraft = ($this->flagIsSet($mailId, '\Draft')) ? true : false;
         $header->mimeVersion = $this->getMailHeaderFieldValue($headersRaw, 'MIME-Version');
         $header->xVirusScanned = $this->getMailHeaderFieldValue($headersRaw, 'X-Virus-Scanned');
         $header->organization = $this->getMailHeaderFieldValue($headersRaw, 'Organization');

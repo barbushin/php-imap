@@ -21,6 +21,21 @@ class IncomingMailHeader
     public $mailboxFolder;
 
     /** @var bool */
+    public $isSeen = false;
+
+    /** @var bool */
+    public $isAnswered = false;
+
+    /** @var bool */
+    public $isRecent = false;
+
+    /** @var bool */
+    public $isFlagged = false;
+
+    /** @var bool */
+    public $isDeleted = false;
+
+    /** @var bool */
     public $isDraft = false;
 
     /** @var string|null */
