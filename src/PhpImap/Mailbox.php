@@ -158,6 +158,7 @@ class Mailbox
 
     public const ATTACH_FILE_NAMERANDOM = 1;     // Filename is unique (random)
     public const ATTACH_FILE_NAMEORIGINAL = 2;   // Filename is Attachment-Filename
+    public const ATTACH_FILE_NAMEITTERATED = 3;  // Filename is Attachment-Filename but if allready exists it will be extend by Number (#nr)
     /** @var int */
     protected $attachmentsFilenameMode = self::ATTACH_FILE_NAMERANDOM;
     /** @var resource|null */
@@ -166,7 +167,7 @@ class Mailbox
     /**
      * @throws InvalidParameterException
      */
-    public function __construct(string $imapPath, string $login, string $password, string $attachmentsDir = null, string $serverEncoding = 'UTF-8', bool $trimImapPath = true, bool $attachmentFilenameMode = false)
+    public function __construct(string $imapPath, string $login, string $password, string $attachmentsDir = null, string $serverEncoding = 'UTF-8', bool $trimImapPath = true, bool $attachmentFilenameMode = self::ATTACH_FILE_NAMERANDOM)
     {
         $this->imapPath = (true == $trimImapPath) ? \trim($imapPath) : $imapPath;
         $this->imapLogin = \trim($login);
