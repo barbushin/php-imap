@@ -14,6 +14,7 @@ use const IMAP_READTIMEOUT;
 use const IMAP_WRITETIMEOUT;
 use InvalidArgumentException;
 use const NIL;
+use PhpImap\Exceptions\ConnectionException;
 use const SE_FREE;
 use const SORTARRIVAL;
 use const SORTCC;
@@ -22,6 +23,7 @@ use const SORTFROM;
 use const SORTSIZE;
 use const SORTSUBJECT;
 use const SORTTO;
+use stdClass;
 use Throwable;
 use UnexpectedValueException;
 
@@ -41,7 +43,7 @@ use UnexpectedValueException;
 final class Imap
 {
     /** @psalm-var list<int> */
-    const SORT_CRITERIA = [
+    public const SORT_CRITERIA = [
         SORTARRIVAL,
         SORTCC,
         SORTDATE,
@@ -52,7 +54,7 @@ final class Imap
     ];
 
     /** @psalm-var list<int> */
-    const TIMEOUT_TYPES = [
+    public const TIMEOUT_TYPES = [
         IMAP_CLOSETIMEOUT,
         IMAP_OPENTIMEOUT,
         IMAP_READTIMEOUT,
@@ -60,7 +62,7 @@ final class Imap
     ];
 
     /** @psalm-var list<int> */
-    const CLOSE_FLAGS = [
+    public const CLOSE_FLAGS = [
         0,
         CL_EXPUNGE,
     ];
@@ -572,6 +574,8 @@ final class Imap
      * }> $body An indexed array of bodies (docblock is not complete)
      *
      * @todo flesh out array shape pending resolution of https://github.com/vimeo/psalm/issues/1518
+     *
+     * @psalm-pure
      */
     public static function mail_compose(array $envelope, array $body): string
     {
@@ -647,7 +651,7 @@ final class Imap
     /**
      * @param false|resource $imap_stream
      */
-    public static function mailboxmsginfo($imap_stream): object
+    public static function mailboxmsginfo($imap_stream): stdClass
     {
         \imap_errors(); // flush errors
 
@@ -692,7 +696,7 @@ final class Imap
         array $params = []
     ) {
         if (\preg_match("/^\{.*\}(.*)$/", $mailbox, $matches)) {
-            $mailbox_name = $matches[1];
+            $mailbox_name = $matches[1] ?? '';
 
             if (!\mb_detect_encoding($mailbox_name, 'ASCII', true)) {
                 $mailbox = static::encodeStringToUtf7Imap($mailbox);
@@ -704,13 +708,7 @@ final class Imap
         $result = @\imap_open($mailbox, $username, $password, $options, $n_retries, $params);
 
         if (!$result) {
-            $lastError = \imap_last_error();
-
-            if ((\is_string($lastError)) && ('' !== \trim($lastError))) {
-                throw new UnexpectedValueException('IMAP error:'.$lastError);
-            }
-
-            throw new UnexpectedValueException('Could not open mailbox!', 0, self::HandleErrors(\imap_errors(), 'imap_open'));
+            throw new ConnectionException(\imap_errors());
         }
 
         return $result;
@@ -718,6 +716,8 @@ final class Imap
 
     /**
      * @param resource|false $imap_stream
+     *
+     * @psalm-pure
      */
     public static function ping($imap_stream): bool
     {
@@ -892,6 +892,9 @@ final class Imap
      * @param false|resource $imap_stream
      *
      * @psalm-param value-of<self::SORT_CRITERIA> $criteria
+     * @psalm-suppress InvalidArgument
+     *
+     * @todo InvalidArgument, although it's correct: Argument 3 of imap_sort expects int, bool provided https://www.php.net/manual/de/function.imap-sort.php
      *
      * @return int[]
      *
@@ -908,7 +911,7 @@ final class Imap
         \imap_errors(); // flush errors
 
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
-        $reverse = (int) $reverse;
+        $reverse = $reverse;
 
         /** @var int */
         $criteria = $criteria;
@@ -952,11 +955,8 @@ final class Imap
      *
      * @psalm-param SA_MESSAGES|SA_RECENT|SA_UNSEEN|SA_UIDNEXT|SA_UIDVALIDITY|SA_ALL $flags
      */
-    public static function status(
-        $imap_stream,
-        string $mailbox,
-        int $options
-    ): object {
+    public static function status($imap_stream, string $mailbox, int $options): stdClass
+    {
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
 
         $mailbox = static::encodeStringToUtf7Imap($mailbox);
@@ -975,10 +975,8 @@ final class Imap
     /**
      * @param false|resource $imap_stream
      */
-    public static function subscribe(
-        $imap_stream,
-        string $mailbox
-    ): void {
+    public static function subscribe($imap_stream, string $mailbox): void
+    {
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
 
         $mailbox = static::encodeStringToUtf7Imap($mailbox);
@@ -1042,6 +1040,8 @@ final class Imap
      * Returns the provided string in UTF7-IMAP encoded format.
      *
      * @return string $str UTF-7 encoded string
+     *
+     * @psalm-pure
      */
     public static function encodeStringToUtf7Imap(string $str): string
     {
@@ -1058,6 +1058,8 @@ final class Imap
      * Returns the provided string in UTF-8 encoded format.
      *
      * @return string $str, but UTF-8 encoded
+     *
+     * @psalm-pure
      */
     public static function decodeStringFromUtf7ImapToUtf8(string $str): string
     {
@@ -1076,10 +1078,12 @@ final class Imap
      * @throws InvalidArgumentException if $maybe is not a valid resource
      *
      * @return resource
+     *
+     * @psalm-pure
      */
     private static function EnsureResource($maybe, string $method, int $argument)
     {
-        if (!$maybe || !\is_resource($maybe)) {
+        if (!$maybe || (!\is_resource($maybe) && !$maybe instanceof \IMAP\Connection)) {
             throw new InvalidArgumentException('Argument '.(string) $argument.' passed to '.$method.' must be a valid resource!');
         }
 
@@ -1105,6 +1109,8 @@ final class Imap
 
     /**
      * @param array|false $errors
+     *
+     * @psalm-pure
      */
     private static function HandleErrors($errors, string $method): UnexpectedValueException
     {
@@ -1117,6 +1123,8 @@ final class Imap
 
     /**
      * @param scalar $msg_number
+     *
+     * @psalm-pure
      */
     private static function EnsureRange(
         $msg_number,

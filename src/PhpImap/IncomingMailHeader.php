@@ -21,6 +21,21 @@ class IncomingMailHeader
     public $mailboxFolder;
 
     /** @var bool */
+    public $isSeen = false;
+
+    /** @var bool */
+    public $isAnswered = false;
+
+    /** @var bool */
+    public $isRecent = false;
+
+    /** @var bool */
+    public $isFlagged = false;
+
+    /** @var bool */
+    public $isDeleted = false;
+
+    /** @var bool */
     public $isDraft = false;
 
     /** @var string|null */
@@ -92,6 +107,9 @@ class IncomingMailHeader
     /** @var string|null */
     public $senderAddress;
 
+    /** @var string|null */
+    public $xOriginalTo;
+
     /**
      * @var (string|null)[]
      *
@@ -108,6 +126,9 @@ class IncomingMailHeader
      * @psalm-var array<string, string|null>
      */
     public $cc = [];
+
+    /** @var string|null */
+    public $ccString;
 
     /**
      * @var (string|null)[]

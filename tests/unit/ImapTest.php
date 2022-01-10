@@ -8,10 +8,10 @@ namespace PhpImap;
 
 use Generator;
 use ParagonIE\HiddenString\HiddenString;
+use PhpImap\Exceptions\ConnectionException;
 use PHPUnit\Framework\TestCase as Base;
 use const SORTARRIVAL;
 use Throwable;
-use UnexpectedValueException;
 
 /**
  * @psalm-type MAILBOX_ARGS = array{
@@ -35,18 +35,13 @@ class ImapTest extends Base
     use LiveMailboxTestingTrait;
 
     /**
-     * @psalm-return Generator<int|string, array{
-     *  0:class-string<Throwable>,
-     *  1:string,
-     *  2:PSALM_OPEN_ARGS,
-     *  3?:bool
-     * }>
+     * @psalm-return Generator<'CI ENV with invalid password'|'empty mailbox/username/password', array{0: ConnectionException::class, 1: '/^[AUTHENTICATIONFAILED]/'|'Can't open mailbox : no such mailbox', 2: array{0: HiddenString, 1: HiddenString, 2: HiddenString, 3: 0, 4: 0, 5: array<empty, empty>}, 3?: true}, mixed, void>
      */
     public function OpenFailure(): Generator
     {
         yield 'empty mailbox/username/password' => [
-            UnexpectedValueException::class,
-            'IMAP error:Can\'t open mailbox : no such mailbox',
+            ConnectionException::class,
+            'Can\'t open mailbox : no such mailbox',
             [
                 new HiddenString(''),
                 new HiddenString(''),
@@ -63,8 +58,8 @@ class ImapTest extends Base
 
         if (\is_string($imapPath) && \is_string($login) && \is_string($password)) {
             yield 'CI ENV with invalid password' => [
-                UnexpectedValueException::class,
-                '/^IMAP error:.*\[AUTHENTICATIONFAILED\].*/',
+                ConnectionException::class,
+                '/^\[AUTHENTICATIONFAILED\].*/',
                 [
                     new HiddenString($imapPath, true, true),
                     new HiddenString($login, true, true),
@@ -118,7 +113,7 @@ class ImapTest extends Base
         HiddenString $login,
         HiddenString $password
     ): void {
-        list($mailbox, $remove_mailbox, $path) = $this->getMailboxFromArgs([
+        [$mailbox, $remove_mailbox, $path] = $this->getMailboxFromArgs([
             $path,
             $login,
             $password,

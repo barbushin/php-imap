@@ -14,6 +14,7 @@ use Exception;
 use const FILEINFO_EXTENSION;
 use const FILEINFO_MIME;
 use const FILEINFO_MIME_ENCODING;
+use const FILEINFO_MIME_TYPE;
 use const FILEINFO_NONE;
 use const FILEINFO_RAW;
 use const FT_PEEK;
@@ -82,22 +83,22 @@ use UnexpectedValueException;
  */
 class Mailbox
 {
-    const EXPECTED_SIZE_OF_MESSAGE_AS_ARRAY = 2;
+    public const EXPECTED_SIZE_OF_MESSAGE_AS_ARRAY = 2;
 
-    const MAX_LENGTH_FILEPATH = 255;
+    public const MAX_LENGTH_FILEPATH = 255;
 
-    const PART_TYPE_TWO = 2;
+    public const PART_TYPE_TWO = 2;
 
-    const IMAP_OPTIONS_SUPPORTED_VALUES =
+    public const IMAP_OPTIONS_SUPPORTED_VALUES =
         OP_READONLY // 2
-        | OP_ANONYMOUS // 4
-        | OP_HALFOPEN // 64
-        | CL_EXPUNGE // 32768
-        | OP_DEBUG // 1
-        | OP_SHORTCACHE // 8
-        | OP_SILENT // 16
-        | OP_PROTOTYPE // 32
-        | OP_SECURE // 256
+            | OP_ANONYMOUS // 4
+            | OP_HALFOPEN // 64
+            | CL_EXPUNGE // 32768
+            | OP_DEBUG // 1
+            | OP_SHORTCACHE // 8
+            | OP_SILENT // 16
+            | OP_PROTOTYPE // 32
+            | OP_SECURE // 256
     ;
 
     /** @var string */
@@ -165,15 +166,16 @@ class Mailbox
     /**
      * @throws InvalidParameterException
      */
-    public function __construct(string $imapPath, string $login, string $password, string $attachmentsDir = null, string $serverEncoding = 'UTF-8')
+    public function __construct(string $imapPath, string $login, string $password, string $attachmentsDir = null, string $serverEncoding = 'UTF-8', bool $trimImapPath = true, bool $attachmentFilenameMode = false)
     {
-        $this->imapPath = \trim($imapPath);
+        $this->imapPath = (true == $trimImapPath) ? \trim($imapPath) : $imapPath;
         $this->imapLogin = \trim($login);
         $this->imapPassword = $password;
         $this->setServerEncoding($serverEncoding);
         if (null != $attachmentsDir) {
             $this->setAttachmentsDir($attachmentsDir);
         }
+        $this->setAttachmentFilenameMode($attachmentFilenameMode);
 
         $this->setMailboxFolder();
     }
@@ -218,6 +220,8 @@ class Mailbox
      * @param string $delimiter Path delimiter
      *
      * @return bool true (supported) or false (unsupported)
+     *
+     * @psalm-pure
      */
     public function validatePathDelimiter(string $delimiter): bool
     {
@@ -258,6 +262,32 @@ class Mailbox
         }
 
         $this->serverEncoding = $serverEncoding;
+    }
+
+    /**
+     * Returns the current set attachment filename mode.
+     *
+     * @return bool Attachment filename mode (e.g. true)
+     */
+    public function getAttachmentFilenameMode(): bool
+    {
+        return $this->attachmentFilenameMode;
+    }
+
+    /**
+     * Sets / Changes the attachment filename mode.
+     *
+     * @param bool $attachmentFilenameMode Attachment filename mode (e.g. false)
+     *
+     * @throws InvalidParameterException
+     */
+    public function setAttachmentFilenameMode(bool $attachmentFilenameMode): void
+    {
+        if (!\is_bool($attachmentFilenameMode)) {
+            throw new InvalidParameterException('"'.$attachmentFilenameMode.'" is not supported by setOriginalAttachmentFilename(). Only boolean values are allowed: true (use original filename), false (use random generated filename)');
+        }
+
+        $this->attachmentFilenameMode = $attachmentFilenameMode;
     }
 
     /**
@@ -467,26 +497,24 @@ class Mailbox
      * Returns the provided string in UTF7-IMAP encoded format.
      *
      * @return string $str UTF-7 encoded string
+     *
+     * @psalm-pure
      */
     public function encodeStringToUtf7Imap(string $str): string
     {
-        $out = \mb_convert_encoding($str, 'UTF7-IMAP', \mb_detect_encoding($str, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
-
-        if (!\is_string($out)) {
-            throw new UnexpectedValueException('mb_convert_encoding($str, \'UTF-8\', {detected}) could not convert $str');
-        }
-
-        return $out;
+        return imap_utf7_encode($str);
     }
 
     /**
      * Returns the provided string in UTF-8 encoded format.
      *
      * @return string $str UTF-7 encoded string or same as before, when it's no string
+     *
+     * @psalm-pure
      */
     public function decodeStringFromUtf7ImapToUtf8(string $str): string
     {
-        $out = \mb_convert_encoding($str, 'UTF-8', 'UTF7-IMAP');
+        $out = imap_utf7_decode($str);
 
         if (!\is_string($out)) {
             throw new UnexpectedValueException('mb_convert_encoding($str, \'UTF-8\', \'UTF7-IMAP\') could not convert $str');
@@ -598,7 +626,7 @@ class Mailbox
      * This function returns an object containing status information.
      * The object has the following properties: messages, recent, unseen, uidnext, and uidvalidity.
      */
-    public function statusMailbox(): object
+    public function statusMailbox(): stdClass
     {
         return Imap::status($this->getImapStream(), $this->imapPath, SA_ALL);
     }
@@ -609,7 +637,9 @@ class Mailbox
      * This function returns an object containing listing the folders.
      * The object has the following properties: messages, recent, unseen, uidnext, and uidvalidity.
      *
-     * @return array listing the folders
+     * @return string[] listing the folders
+     *
+     * @psalm-return list<string>
      */
     public function getListingFolders(string $pattern = '*'): array
     {
@@ -819,6 +849,30 @@ class Mailbox
     }
 
     /**
+     * Check, if the specified flag for the mail is set or not.
+     *
+     * @param int    $mailsId A single mail ID
+     * @param string $flag    Which you can get are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060
+     *
+     * @return bool True, when the flag is set, false when not
+     *
+     * @psalm-param list<int> $mailId
+     */
+    public function flagIsSet(int $mailId, string $flag): bool
+    {
+        $flag = str_replace('\\', '', strtolower($flag));
+
+        $overview = Imap::fetch_overview($this->getImapStream(), $mailId, ST_UID);
+
+        if ($overview[0]->$flag == 1)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Causes a store to add the specified flag to the flags set for the mails in the specified sequence.
      *
      * @param array  $mailsIds Array of mail IDs
@@ -936,11 +990,11 @@ class Mailbox
      *  Deleted - number of deleted messages
      *  Size - mailbox size
      *
-     * @return object Object with info
+     * @return stdClass Object with info
      *
      * @see mailboxmsginfo
      */
-    public function getMailboxInfo(): object
+    public function getMailboxInfo(): stdClass
     {
         return Imap::mailboxmsginfo($this->getImapStream());
     }
@@ -963,7 +1017,9 @@ class Mailbox
      *
      * @psalm-param value-of<Imap::SORT_CRITERIA> $criteria
      *
-     * @return array Mails ids
+     * @return int[] Mails ids
+     *
+     * @psalm-return list<int>
      */
     public function sortMails(
         int $criteria = SORTARRIVAL,
@@ -1001,7 +1057,7 @@ class Mailbox
         $quota = $this->getQuota($quota_root);
 
         /** @var int */
-        return isset($quota['STORAGE']['limit']) ? $quota['STORAGE']['limit'] : 0;
+        return $quota['STORAGE']['limit'] ?? 0;
     }
 
     /**
@@ -1016,7 +1072,7 @@ class Mailbox
         $quota = $this->getQuota($quota_root);
 
         /** @var int|false */
-        return isset($quota['STORAGE']['usage']) ? $quota['STORAGE']['usage'] : 0;
+        return $quota['STORAGE']['usage'] ?? 0;
     }
 
     /**
@@ -1035,6 +1091,27 @@ class Mailbox
         }
 
         return Imap::fetchbody($this->getImapStream(), $msgId, '', $options);
+    }
+
+    /**
+     * Get mail header field value.
+     *
+     * @param string $headersRaw        RAW headers as single string
+     * @param string $header_field_name Name of the required header field
+     *
+     * @return string Value of the header field
+     */
+    public function getMailHeaderFieldValue(string $headersRaw, string $header_field_name): string
+    {
+        $header_field_value = '';
+
+        if (\preg_match("/$header_field_name\:(.*)/i", $headersRaw, $matches)) {
+            if (isset($matches[1])) {
+                return \trim($matches[1]);
+            }
+        }
+
+        return $header_field_value;
     }
 
     /**
@@ -1102,20 +1179,26 @@ class Mailbox
         $header->id = $mailId;
         $header->imapPath = $this->imapPath;
         $header->mailboxFolder = $this->mailboxFolder;
-        $header->isDraft = (!isset($head->date)) ? true : false;
-        $header->mimeVersion = (\preg_match("/MIME-Version\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->xVirusScanned = (\preg_match("/X-Virus-Scanned\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->organization = (\preg_match("/Organization\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->contentType = (\preg_match("/Content-Type\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->xMailer = (\preg_match("/X-Mailer\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->contentLanguage = (\preg_match("/Content-Language\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->xSenderIp = (\preg_match("/X-Sender-IP\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->priority = (\preg_match("/Priority\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->importance = (\preg_match("/Importance\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->sensitivity = (\preg_match("/Sensitivity\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->autoSubmitted = (\preg_match("/Auto-Submitted\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->precedence = (\preg_match("/Precedence\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
-        $header->failedRecipients = (\preg_match("/Failed-Recipients\:(.*)/i", $headersRaw, $matches)) ? \trim($matches[1]) : '';
+        $header->isSeen = ($this->flagIsSet($mailId, '\Seen')) ? true : false;
+        $header->isAnswered = ($this->flagIsSet($mailId, '\Answered')) ? true : false;
+        $header->isRecent = ($this->flagIsSet($mailId, '\Recent')) ? true : false;
+        $header->isFlagged = ($this->flagIsSet($mailId, '\Flagged')) ? true : false;
+        $header->isDeleted = ($this->flagIsSet($mailId, '\Deleted')) ? true : false;
+        $header->isDraft = ($this->flagIsSet($mailId, '\Draft')) ? true : false;
+        $header->mimeVersion = $this->getMailHeaderFieldValue($headersRaw, 'MIME-Version');
+        $header->xVirusScanned = $this->getMailHeaderFieldValue($headersRaw, 'X-Virus-Scanned');
+        $header->organization = $this->getMailHeaderFieldValue($headersRaw, 'Organization');
+        $header->contentType = $this->getMailHeaderFieldValue($headersRaw, 'Content-Type');
+        $header->xMailer = $this->getMailHeaderFieldValue($headersRaw, 'X-Mailer');
+        $header->contentLanguage = $this->getMailHeaderFieldValue($headersRaw, 'Content-Language');
+        $header->xSenderIp = $this->getMailHeaderFieldValue($headersRaw, 'X-Sender-IP');
+        $header->priority = $this->getMailHeaderFieldValue($headersRaw, 'Priority');
+        $header->importance = $this->getMailHeaderFieldValue($headersRaw, 'Importance');
+        $header->sensitivity = $this->getMailHeaderFieldValue($headersRaw, 'Sensitivity');
+        $header->autoSubmitted = $this->getMailHeaderFieldValue($headersRaw, 'Auto-Submitted');
+        $header->precedence = $this->getMailHeaderFieldValue($headersRaw, 'Precedence');
+        $header->failedRecipients = $this->getMailHeaderFieldValue($headersRaw, 'Failed-Recipients');
+        $header->xOriginalTo = $this->getMailHeaderFieldValue($headersRaw, 'X-Original-To');
 
         if (isset($head->date) && !empty(\trim($head->date))) {
             $header->date = self::parseDateTime($head->date);
@@ -1128,19 +1211,19 @@ class Mailbox
 
         $header->subject = (isset($head->subject) && !empty(\trim($head->subject))) ? $this->decodeMimeStr($head->subject) : null;
         if (isset($head->from) && !empty($head->from)) {
-            list($header->fromHost, $header->fromName, $header->fromAddress) = $this->possiblyGetHostNameAndAddress($head->from);
+            [$header->fromHost, $header->fromName, $header->fromAddress] = $this->possiblyGetHostNameAndAddress($head->from);
         } elseif (\preg_match('/smtp.mailfrom=[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/', $headersRaw, $matches)) {
             $header->fromAddress = \substr($matches[0], 14);
         }
         if (isset($head->sender) && !empty($head->sender)) {
-            list($header->senderHost, $header->senderName, $header->senderAddress) = $this->possiblyGetHostNameAndAddress($head->sender);
+            [$header->senderHost, $header->senderName, $header->senderAddress] = $this->possiblyGetHostNameAndAddress($head->sender);
         }
         if (isset($head->to)) {
             $toStrings = [];
             foreach ($head->to as $to) {
                 $to_parsed = $this->possiblyGetEmailAndNameFromRecipient($to);
                 if ($to_parsed) {
-                    list($toEmail, $toName) = $to_parsed;
+                    [$toEmail, $toName] = $to_parsed;
                     $toStrings[] = $toName ? "$toName <$toEmail>" : $toEmail;
                     $header->to[$toEmail] = $toName;
                 }
@@ -1149,12 +1232,16 @@ class Mailbox
         }
 
         if (isset($head->cc)) {
+            $ccStrings = [];
             foreach ($head->cc as $cc) {
                 $cc_parsed = $this->possiblyGetEmailAndNameFromRecipient($cc);
                 if ($cc_parsed) {
-                    $header->cc[$cc_parsed[0]] = $cc_parsed[1];
+                    [$ccEmail, $ccName] = $cc_parsed;
+                    $ccStrings[] = $ccName ? "$ccName <$ccEmail>" : $ccEmail;
+                    $header->cc[$ccEmail] = $ccName;
                 }
             }
+            $header->ccString = \implode(', ', $ccStrings);
         }
 
         if (isset($head->bcc)) {
@@ -1195,7 +1282,7 @@ class Mailbox
      *
      * @return stdClass[]
      *
-     * @psalm-return array<string, PARTSTRUCTURE>
+     * @psalm-return array<string, stdClass>
      */
     public function flattenParts(array $messageParts, array $flattenedParts = [], string $prefix = '', int $index = 1, bool $fullPrefix = true): array
     {
@@ -1206,13 +1293,10 @@ class Mailbox
                 $part_parts = $part->parts;
 
                 if (self::PART_TYPE_TWO == $part->type) {
-                    /** @var array<string, stdClass> */
                     $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix.$index.'.', 0, false);
                 } elseif ($fullPrefix) {
-                    /** @var array<string, stdClass> */
                     $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix.$index.'.');
                 } else {
-                    /** @var array<string, stdClass> */
                     $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix);
                 }
                 unset($flattenedParts[$prefix.$index]->parts);
@@ -1276,15 +1360,15 @@ class Mailbox
             $fileName = \strtolower($partStructure->subtype);
         } else {
             $fileName = (isset($params['filename']) && !empty(\trim($params['filename']))) ? $params['filename'] : $params['name'];
-            $fileName = $this->decodeMimeStr($fileName, $this->serverEncoding);
+            $fileName = $this->decodeMimeStr($fileName);
             $fileName = $this->decodeRFC2231($fileName);
         }
 
         /** @var scalar|array|object|null */
-        $sizeInBytes = isset($partStructure->bytes) ? $partStructure->bytes : null;
+        $sizeInBytes = $partStructure->bytes ?? null;
 
         /** @var scalar|array|object|null */
-        $encoding = isset($partStructure->encoding) ? $partStructure->encoding : null;
+        $encoding = $partStructure->encoding ?? null;
 
         if (null !== $sizeInBytes && !\is_int($sizeInBytes)) {
             throw new UnexpectedValueException('Supplied part structure specifies a non-integer, non-null bytes header!');
@@ -1312,7 +1396,7 @@ class Mailbox
         $attachment->disposition = (isset($partStructure->disposition) && \is_string($partStructure->disposition)) ? $partStructure->disposition : null;
 
         /** @var scalar|array|object|resource|null */
-        $charset = isset($params['charset']) ? $params['charset'] : null;
+        $charset = $params['charset'] ?? null;
 
         if (isset($charset) && !\is_string($charset)) {
             throw new InvalidArgumentException('Argument 2 passed to '.__METHOD__.'() must specify charset as a string when specified!');
@@ -1325,6 +1409,7 @@ class Mailbox
         $attachment->fileInfoRaw = $attachment->getFileInfo(FILEINFO_RAW);
         $attachment->fileInfo = $attachment->getFileInfo(FILEINFO_NONE);
         $attachment->mime = $attachment->getFileInfo(FILEINFO_MIME);
+        $attachment->mimeType = $attachment->getFileInfo(FILEINFO_MIME_TYPE);
         $attachment->mimeEncoding = $attachment->getFileInfo(FILEINFO_MIME_ENCODING);
         $attachment->fileExtension = $attachment->getFileInfo(FILEINFO_EXTENSION);
 
@@ -1346,7 +1431,6 @@ class Mailbox
                 $ext = \pathinfo($filePath, PATHINFO_EXTENSION);
                 $filePath = \substr($filePath, 0, self::MAX_LENGTH_FILEPATH - 1 - \strlen($ext)).'.'.$ext;
             }
- 
             $attachment->setFilePath($filePath);
             $attachment->saveToDisk();
         }
@@ -1355,7 +1439,7 @@ class Mailbox
     }
 
     /**
-     * Converts a string to UTF-8
+     * Converts a string to UTF-8.
      *
      * @param string $string      MIME string to decode
      * @param string $fromCharset Charset to convert from
@@ -1364,35 +1448,35 @@ class Mailbox
      */
     public function convertToUtf8(string $string, string $fromCharset): string
     {
-		$fromCharset = mb_strtolower($fromCharset);
-		$newString = '';
+        $fromCharset = mb_strtolower($fromCharset);
+        $newString = '';
 
-		if ('default' === $fromCharset) {
-			$fromCharset = $this->decodeMimeStrDefaultCharset;
-		}
+        if ('default' === $fromCharset) {
+            $fromCharset = $this->decodeMimeStrDefaultCharset;
+        }
 
-		switch ($fromCharset) {
-			case 'default': // Charset default is already ASCII (not encoded)
-			case 'utf-8': // Charset UTF-8 is OK
-				$newString .= $string;
-				break;
-			default:
-				// If charset exists in mb_list_encodings(), convert using mb_convert function
-				if (\in_array($fromCharset, $this->lowercase_mb_list_encodings(), true)) {
-					$newString .= \mb_convert_encoding($string, 'UTF-8', $fromCharset);
-				} else {
-					// Fallback: Try to convert with iconv()
-					$iconv_converted_string = @\iconv($fromCharset, 'UTF-8', $string);
-					if (!$iconv_converted_string) {
-						// If iconv() could also not convert, return string as it is
-						// (unknown charset)
-						$newString .= $string;
-					} else {
-						$newString .= $iconv_converted_string;
-					}
-				}
-				break;
-		}
+        switch ($fromCharset) {
+            case 'default': // Charset default is already ASCII (not encoded)
+            case 'utf-8': // Charset UTF-8 is OK
+                $newString .= $string;
+                break;
+            default:
+                // If charset exists in mb_list_encodings(), convert using mb_convert function
+                if (\in_array($fromCharset, $this->lowercase_mb_list_encodings(), true)) {
+                    $newString .= \mb_convert_encoding($string, 'UTF-8', $fromCharset);
+                } else {
+                    // Fallback: Try to convert with iconv()
+                    $iconv_converted_string = @\iconv($fromCharset, 'UTF-8', $string);
+                    if (!$iconv_converted_string) {
+                        // If iconv() could also not convert, return string as it is
+                        // (unknown charset)
+                        $newString .= $string;
+                    } else {
+                        $newString .= $iconv_converted_string;
+                    }
+                }
+                break;
+        }
 
         return $newString;
     }
@@ -1425,6 +1509,9 @@ class Mailbox
         return $newString;
     }
 
+    /**
+     * @psalm-pure
+     */
     public function isUrlEncoded(string $string): bool
     {
         $hasInvalidChars = \preg_match('#[^%a-zA-Z0-9\-_\.\+]#', $string);
@@ -1440,6 +1527,8 @@ class Mailbox
      *
      * @return string RFC 3339 compliant format or original (unchanged) format,
      *                if conversation is not possible
+     *
+     * @psalm-pure
      */
     public function parseDateTime(string $dateHeader): string
     {
@@ -1484,6 +1573,10 @@ class Mailbox
 
     /**
      * Get folders list.
+     *
+     * @return (false|mixed|string)[][]
+     *
+     * @psalm-return list<array{fullpath: string, attributes: mixed, delimiter: mixed, shortpath: false|string}>
      */
     public function getMailboxes(string $search = '*'): array
     {
@@ -1495,6 +1588,10 @@ class Mailbox
 
     /**
      * Get folders list.
+     *
+     * @return (false|mixed|string)[][]
+     *
+     * @psalm-return list<array{fullpath: string, attributes: mixed, delimiter: mixed, shortpath: false|string}>
      */
     public function getSubscribedMailboxes(string $search = '*'): array
     {
@@ -1571,9 +1668,11 @@ class Mailbox
     /**
      * Returns the list of available encodings in lower case.
      *
-     * @return array mb_list_encodings() in lower case
+     * @return string[]
+     *
+     * @psalm-return list<string>
      */
-    protected function lowercase_mb_list_encodings()
+    protected function lowercase_mb_list_encodings(): array
     {
         $lowercase_encodings = [];
         $encodings = \mb_list_encodings();
@@ -1640,6 +1739,7 @@ class Mailbox
      * @param string|0 $partNum
      *
      * @psalm-param PARTSTRUCTURE $partStructure
+     * @psalm-suppress InvalidArgument
      *
      * @todo refactor type checking pending resolution of https://github.com/vimeo/psalm/issues/2619
      */
@@ -1661,7 +1761,7 @@ class Mailbox
         if (!empty($partStructure->parameters)) {
             foreach ($partStructure->parameters as $param) {
                 $params[\strtolower($param->attribute)] = '';
-                $value = isset($param->value) ? $param->value : null;
+                $value = $param->value ?? null;
                 if (isset($value) && '' !== \trim($value)) {
                     $params[\strtolower($param->attribute)] = $this->decodeMimeStr($value);
                 }
@@ -1669,7 +1769,7 @@ class Mailbox
         }
         if (!empty($partStructure->dparameters)) {
             foreach ($partStructure->dparameters as $param) {
-                $paramName = \strtolower(\preg_match('~^(.*?)\*~', $param->attribute, $matches) ? $matches[1] : $param->attribute);
+                $paramName = \strtolower(\preg_match('~^(.*?)\*~', $param->attribute, $matches) ? (!isset($matches[1]) ?: $matches[1]) : $param->attribute);
                 if (isset($params[$paramName])) {
                     $params[$paramName] .= $param->value;
                 } else {
@@ -1680,11 +1780,9 @@ class Mailbox
 
         $isAttachment = isset($params['filename']) || isset($params['name']) || isset($partStructure->id);
 
-        $dispositionAttachment = (
-            isset($partStructure->disposition) &&
+        $dispositionAttachment = (isset($partStructure->disposition) &&
             \is_string($partStructure->disposition) &&
-            'attachment' === \mb_strtolower($partStructure->disposition)
-        );
+            'attachment' === \mb_strtolower($partStructure->disposition));
 
         // ignore contentId on body when mail isn't multipart (https://github.com/barbushin/php-imap/issues/71)
         if (
@@ -1713,9 +1811,10 @@ class Mailbox
         }
 
         // Do NOT parse attachments, when getAttachmentsIgnore() is true
-        if ($this->getAttachmentsIgnore()
+        if (
+            $this->getAttachmentsIgnore()
             && (TYPEMULTIPART !== $partStructure->type
-            && (TYPETEXT !== $partStructure->type || !\in_array(\mb_strtolower($partStructure->subtype), ['plain', 'html'], true)))
+                && (TYPETEXT !== $partStructure->type || !\in_array(\mb_strtolower($partStructure->subtype), ['plain', 'html'], true)))
         ) {
             return;
         }
@@ -1769,7 +1868,7 @@ class Mailbox
     protected function decodeRFC2231(string $string): string
     {
         if (\preg_match("/^(.*?)'.*?'(.*?)$/", $string, $matches)) {
-            $data = $matches[2];
+            $data = $matches[2] ?? '';
             if ($this->isUrlEncoded($data)) {
                 $string = $this->decodeMimeStr(\urldecode($data));
             }
@@ -1809,19 +1908,16 @@ class Mailbox
     }
 
     /**
-     * @psalm-return array{0:string, 1:string|null}|null
+     * @psalm-return array{0: string, 1: null|string}|null
+     *
+     * @return (null|string)[]|null
      */
     protected function possiblyGetEmailAndNameFromRecipient(object $recipient): ?array
     {
         if (isset($recipient->mailbox, $recipient->host)) {
-            /** @var mixed */
             $recipientMailbox = $recipient->mailbox;
-
-            /** @var mixed */
             $recipientHost = $recipient->host;
-
-            /** @var mixed */
-            $recipientPersonal = isset($recipient->personal) ? $recipient->personal : null;
+            $recipientPersonal = $recipient->personal ?? null;
 
             if (!\is_string($recipientMailbox)) {
                 throw new UnexpectedValueException('mailbox was present on argument 1 passed to '.__METHOD__.'() but was not a string!');
@@ -1849,6 +1945,10 @@ class Mailbox
      * @psalm-param array<int, scalar|array|object{name?:string}|resource|null> $t
      *
      * @todo revisit implementation pending resolution of https://github.com/vimeo/psalm/issues/2619
+     *
+     * @return (false|mixed|string)[][]
+     *
+     * @psalm-return list<array{fullpath: string, attributes: mixed, delimiter: mixed, shortpath: false|string}>
      */
     protected function possiblyGetMailboxes(array $t): array
     {
@@ -1859,7 +1959,7 @@ class Mailbox
                     throw new UnexpectedValueException('Index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() corresponds to a non-object value, '.\gettype($item).' given!');
                 }
                 /** @var scalar|array|object|resource|null */
-                $item_name = isset($item->name) ? $item->name : null;
+                $item_name = $item->name ?? null;
 
                 if (!isset($item->name, $item->attributes, $item->delimiter)) {
                     throw new UnexpectedValueException('The object at index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() was missing one or more of the required properties "name", "attributes", "delimiter"!');
@@ -1893,7 +1993,7 @@ class Mailbox
     protected function possiblyGetHostNameAndAddress(array $t): array
     {
         $out = [
-            isset($t[0]->host) ? $t[0]->host : (isset($t[1], $t[1]->host) ? $t[1]->host : null),
+            $t[0]->host ?? (isset($t[1], $t[1]->host) ? $t[1]->host : null),
             1 => null,
         ];
         foreach ([0, 1] as $index) {
@@ -1942,7 +2042,7 @@ class Mailbox
              *
              * @return string
              */
-            static function ($sender) use ($criteria) {
+            static function ($sender) use ($criteria): string {
                 return $criteria.' FROM '.\mb_strtolower($sender);
             },
             $senders
