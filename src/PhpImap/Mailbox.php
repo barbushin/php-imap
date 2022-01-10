@@ -476,7 +476,7 @@ class Mailbox
 
     public function hasImapStream(): bool
     {
-        return \is_resource($this->imapStream) && \imap_ping($this->imapStream);
+        return (\is_resource($this->imapStream) || $this->imapStream instanceof \IMAP\Connection) && \imap_ping($this->imapStream);
     }
 
     /**

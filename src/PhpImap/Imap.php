@@ -721,7 +721,7 @@ final class Imap
      */
     public static function ping($imap_stream): bool
     {
-        return \is_resource($imap_stream) && \imap_ping($imap_stream);
+        return (\is_resource($imap_stream) || $imap_stream instanceof \IMAP\Connection) && \imap_ping($imap_stream);
     }
 
     /**
