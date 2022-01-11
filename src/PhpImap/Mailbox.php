@@ -156,18 +156,18 @@ class Mailbox
     /** @var string */
     protected $mailboxFolder;
 
-    public const ATTACH_FILE_NAMERANDOM = 1;     // Filename is unique (random)
-    public const ATTACH_FILE_NAMEORIGINAL = 2;   // Filename is Attachment-Filename
-    public const ATTACH_FILE_NAMEITTERATED = 3;  // Filename is Attachment-Filename but if allready exists it will be extend by Number (#nr)
+    public const ATTACH_FILE_NAME_RANDOM = 1;     // Filename is unique (random)
+    public const ATTACH_FILE_NAME_ORIGINAL = 2;   // Filename is Attachment-Filename
+    public const ATTACH_FILE_NAME_ITTERATED = 3;  // Filename is Attachment-Filename but if allready exists it will be extend by Number like: Filename (1).ext
     /** @var int */
-    protected $attachmentsFilenameMode = self::ATTACH_FILE_NAMERANDOM;
+    protected $attachmentsFilenameMode = self::ATTACH_FILE_NAME_RANDOM;
     /** @var resource|null */
     private $imapStream;
 
     /**
      * @throws InvalidParameterException
      */
-    public function __construct(string $imapPath, string $login, string $password, string $attachmentsDir = null, string $serverEncoding = 'UTF-8', bool $trimImapPath = true, bool $attachmentFilenameMode = self::ATTACH_FILE_NAMERANDOM)
+    public function __construct(string $imapPath, string $login, string $password, string $attachmentsDir = null, string $serverEncoding = 'UTF-8', bool $trimImapPath = true, bool $attachmentFilenameMode = self::ATTACH_FILE_NAME_RANDOM)
     {
         $this->imapPath = (true == $trimImapPath) ? \trim($imapPath) : $imapPath;
         $this->imapLogin = \trim($login);
@@ -332,7 +332,7 @@ class Mailbox
     /**
      * Set $this->setAttachmentsRandomFilename param. 
      *
-     * @param int $random ATTACH_FILE_NAMERANDOM, ATTACH_FILE_NAMEORIGINAL
+     * @param int $random ATTACH_FILE_NAME_RANDOM, ATTACH_FILE_NAME_ORIGINAL, ATTACH_FILE_NAME_ITTERATED
      *
      * @return Mailbox
      */
@@ -1418,10 +1418,18 @@ class Mailbox
 
         if (null !== $attachmentsDir) {
             switch($this->attachmentsFilenameMode) {
-                case self::ATTACH_FILE_NAMEORIGINAL:
+                case self::ATTACH_FILE_NAME_ORIGINAL:
                     $fileSysName = $fileName;
                     break;
-                case self::ATTACH_FILE_NAMERANDOM:
+				case self::ATTACH_FILE_NAME_ITTERATED:
+					$fileSysName = $fileName;
+					$i = 1;
+					while(file_exists($attachmentsDir.DIRECTORY_SEPARATOR.$fileSysName)) {
+						$frag = pathinfo($fileName);
+						$fileSysName = "{$frag['filename']} ({$i}){$frag['extension']}";
+					}
+					break;
+                case self::ATTACH_FILE_NAME_RANDOM:
                 default:
                     $fileSysName = \bin2hex(\random_bytes(16)).'.bin';
             }
