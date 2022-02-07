@@ -911,10 +911,10 @@ final class Imap
         \imap_errors(); // flush errors
 
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
-        $reverse = $reverse;
 
-        /** @var int */
-        $criteria = $criteria;
+        if(PHP_MAJOR_VERSION < 8) {
+            $reverse = (int)$reverse;
+        }
 
         if (null !== $search_criteria && null !== $charset) {
             $result = \imap_sort(
