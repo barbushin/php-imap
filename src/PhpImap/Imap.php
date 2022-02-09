@@ -911,7 +911,11 @@ final class Imap
         \imap_errors(); // flush errors
 
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
-        $reverse = $reverse;
+        
+        if (version_compare(phpversion(), '8.0.0', '<')) {
+            // PHP 8.0.0 reverse is now bool instead of int // https://www.php.net/manual/en/function.imap-sort.php
+            $reverse = (int)$reverse;
+        }
 
         /** @var int */
         $criteria = $criteria;
