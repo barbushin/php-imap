@@ -837,12 +837,12 @@ class Mailbox
     /**
      * Check, if the specified flag for the mail is set or not.
      *
-     * @param int    $mailsId A single mail ID
-     * @param string $flag    Which you can get are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060
+     * @param int    $mailId A single mail ID
+     * @param string $flag   Which you can get are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060
      *
      * @return bool True, when the flag is set, false when not
      *
-     * @psalm-param list<int> $mailId
+     * @psalm-param int $mailId
      */
     public function flagIsSet(int $mailId, string $flag): bool
     {
@@ -850,8 +850,7 @@ class Mailbox
 
         $overview = Imap::fetch_overview($this->getImapStream(), $mailId, ST_UID);
 
-        if ($overview[0]->$flag == 1)
-        {
+        if ($overview[0]->$flag == 1) {
             return true;
         }
 
@@ -1677,7 +1676,7 @@ class Mailbox
                 return $this->initImapStream();
             } catch (ConnectionException $exception) {
             }
-        } while (--$retry > 0 && (!$this->connectionRetryDelay || !\usleep($this->connectionRetryDelay * 1000)));
+        } while (--$retry > 0 && (!$this->connectionRetryDelay || !\usleep((int) $this->connectionRetryDelay * 1000)));
 
         throw $exception;
     }
@@ -1899,8 +1898,11 @@ class Mailbox
     protected function possiblyGetEmailAndNameFromRecipient(object $recipient): ?array
     {
         if (isset($recipient->mailbox, $recipient->host)) {
+            /** @var string */
             $recipientMailbox = $recipient->mailbox;
+            /** @var string */
             $recipientHost = $recipient->host;
+            /** @var string|null */
             $recipientPersonal = $recipient->personal ?? null;
 
             if (!\is_string($recipientMailbox)) {
