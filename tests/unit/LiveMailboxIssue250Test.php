@@ -38,8 +38,6 @@ class LiveMailboxIssue250Test extends AbstractLiveMailboxTest
 {
     /**
      * @psalm-return Generator<int, array{0: array{subject: string}, 1: array{0: array{type: 0, 'contents.data': 'test'}}, 2: string}, mixed, void>
-     *
-     * @return Generator
      */
     public function ComposeProvider(): Generator
     {
