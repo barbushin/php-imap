@@ -23,6 +23,7 @@ use const SORTFROM;
 use const SORTSIZE;
 use const SORTSUBJECT;
 use const SORTTO;
+use const PHP_MAJOR_VERSION;
 use stdClass;
 use Throwable;
 use UnexpectedValueException;
@@ -912,8 +913,15 @@ final class Imap
 
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
 
+        /** @var int */
+        $criteria = $criteria;
+
         if(PHP_MAJOR_VERSION < 8) {
+            /** @var int */
             $reverse = (int)$reverse;
+        } else {
+            /** @var bool */
+            $reverse = $reverse;
         }
 
         if (null !== $search_criteria && null !== $charset) {
