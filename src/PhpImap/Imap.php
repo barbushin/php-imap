@@ -14,6 +14,7 @@ use const IMAP_READTIMEOUT;
 use const IMAP_WRITETIMEOUT;
 use InvalidArgumentException;
 use const NIL;
+use const PHP_MAJOR_VERSION;
 use PhpImap\Exceptions\ConnectionException;
 use const SE_FREE;
 use const SORTARRIVAL;
@@ -911,10 +912,17 @@ final class Imap
         \imap_errors(); // flush errors
 
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
-        $reverse = $reverse;
 
         /** @var int */
         $criteria = $criteria;
+
+        if (PHP_MAJOR_VERSION < 8) {
+            /** @var int */
+            $reverse = (int) $reverse;
+        } else {
+            /** @var bool */
+            $reverse = $reverse;
+        }
 
         if (null !== $search_criteria && null !== $charset) {
             $result = \imap_sort(
