@@ -14,6 +14,7 @@ use const IMAP_READTIMEOUT;
 use const IMAP_WRITETIMEOUT;
 use InvalidArgumentException;
 use const NIL;
+use const PHP_MAJOR_VERSION;
 use PhpImap\Exceptions\ConnectionException;
 use const SE_FREE;
 use const SORTARRIVAL;
@@ -23,7 +24,6 @@ use const SORTFROM;
 use const SORTSIZE;
 use const SORTSUBJECT;
 use const SORTTO;
-use const PHP_MAJOR_VERSION;
 use stdClass;
 use Throwable;
 use UnexpectedValueException;
@@ -916,9 +916,9 @@ final class Imap
         /** @var int */
         $criteria = $criteria;
 
-        if(PHP_MAJOR_VERSION < 8) {
+        if (PHP_MAJOR_VERSION < 8) {
             /** @var int */
-            $reverse = (int)$reverse;
+            $reverse = (int) $reverse;
         } else {
             /** @var bool */
             $reverse = $reverse;
