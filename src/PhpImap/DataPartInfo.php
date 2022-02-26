@@ -34,7 +34,7 @@ class DataPartInfo
      */
     public $encoding;
 
-    /** @var string|null */
+    /** @var null|string */
     public $charset;
 
     /**
@@ -58,7 +58,7 @@ class DataPartInfo
      */
     public $options;
 
-    /** @var string|null */
+    /** @var null|string */
     protected $data;
 
     /**

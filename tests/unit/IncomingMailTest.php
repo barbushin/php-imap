@@ -35,7 +35,7 @@ class IncomingMailTest extends TestCase
                 'date',
             ] as $property
         ) {
-            /** @var scalar|array|object|resource|null */
+            /** @var null|array|object|resource|scalar */
             $headerPropertyValue = $header->$property;
             $this->assertSame($headerPropertyValue, $mail->$property);
         }

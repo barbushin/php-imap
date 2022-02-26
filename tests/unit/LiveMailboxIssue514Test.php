@@ -35,7 +35,7 @@ class LiveMailboxIssue514Test extends AbstractLiveMailboxTest
         string $attachmentsDir,
         string $serverEncoding = 'UTF-8'
     ): void {
-        /** @var Throwable|null */
+        /** @var null|Throwable */
         $exception = null;
 
         $mailboxDeleted = false;

@@ -42,7 +42,7 @@ final class MailboxTest extends TestCase
     /**
      * Holds the imap username.
      *
-     * @var string|email
+     * @var email|string
      *
      * @psalm-var string
      */
@@ -374,7 +374,7 @@ final class MailboxTest extends TestCase
      */
     public function attachmentsIgnoreProvider(): array
     {
-        /** @psalm-var array<string, array{0:bool}> */
+        /* @psalm-var array<string, array{0:bool}> */
         return [
             'true' => [true],
             'false' => [false],
@@ -577,7 +577,7 @@ final class MailboxTest extends TestCase
      */
     public function timeoutsProvider(): array
     {
-        /** @psalm-var array<string, array{0:'assertNull'|'expectException', 1:int, 2:list<int>}> */
+        /* @psalm-var array<string, array{0:'assertNull'|'expectException', 1:int, 2:list<int>}> */
         return [
             'array(IMAP_OPENTIMEOUT)' => ['assertNull', 1, [IMAP_OPENTIMEOUT]],
             'array(IMAP_READTIMEOUT)' => ['assertNull', 1, [IMAP_READTIMEOUT]],

@@ -106,7 +106,7 @@ abstract class AbstractLiveMailboxTest extends TestCase
             $mailbox_args
         );
 
-        /** @var Throwable|null */
+        /** @var null|Throwable */
         $exception = null;
 
         $mailboxDeleted = false;
@@ -184,14 +184,14 @@ abstract class AbstractLiveMailboxTest extends TestCase
      */
     protected function SubjectSearchCriteriaAndSubject(array $envelope): array
     {
-        /** @var string|null */
+        /** @var null|string */
         $subject = $envelope['subject'] ?? null;
 
         $this->assertIsString($subject);
 
         $search_criteria = \sprintf('SUBJECT "%s"', $subject);
 
-        /** @psalm-var array{0:string, 1:string} */
+        /* @psalm-var array{0:string, 1:string} */
         return [$search_criteria, $subject];
     }
 

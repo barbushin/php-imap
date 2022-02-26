@@ -13,70 +13,70 @@ use UnexpectedValueException;
  *
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
  *
- * @property string|false|null $filePath lazy attachment data file
+ * @property null|false|string $filePath lazy attachment data file
  *
  * @psalm-type fileinfoconst = 0|2|16|1024|1040|8|32|128|256|16777216
  */
 class IncomingMailAttachment
 {
-    /** @var string|null */
+    /** @var null|string */
     public $id;
 
-    /** @var string|null */
+    /** @var null|string */
     public $contentId;
 
-    /** @var int|null */
+    /** @var null|int */
     public $type;
 
-    /** @var int|null */
+    /** @var null|int */
     public $encoding;
 
-    /** @var string|null */
+    /** @var null|string */
     public $subtype;
 
-    /** @var string|null */
+    /** @var null|string */
     public $description;
 
-    /** @var string|null */
+    /** @var null|string */
     public $name;
 
-    /** @var int|null */
+    /** @var null|int */
     public $sizeInBytes;
 
-    /** @var string|null */
+    /** @var null|string */
     public $disposition;
 
-    /** @var string|null */
+    /** @var null|string */
     public $charset;
 
-    /** @var bool|null */
+    /** @var null|bool */
     public $emlOrigin;
 
-    /** @var string|null */
+    /** @var null|string */
     public $fileInfoRaw;
 
-    /** @var string|null */
+    /** @var null|string */
     public $fileInfo;
 
-    /** @var string|null */
+    /** @var null|string */
     public $mime;
 
-    /** @var string|null */
+    /** @var null|string */
     public $mimeEncoding;
 
-    /** @var string|null */
+    /** @var null|string */
     public $fileExtension;
 
-    /** @var string|null */
+    /** @var null|string */
     public $mimeType;
 
-    /** @var string|null */
+    /** @var null|string */
     private $file_path;
 
-    /** @var DataPartInfo|null */
+    /** @var null|DataPartInfo */
     private $dataInfo;
 
-    /** @var string|null */
+    /** @var null|string */
     private $filePath;
 
     /**

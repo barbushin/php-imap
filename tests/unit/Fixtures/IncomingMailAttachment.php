@@ -10,7 +10,7 @@ use PhpImap\IncomingMailAttachment as Base;
 
 class IncomingMailAttachment extends Base
 {
-    /** @var string|null */
+    /** @var null|string */
     public $override_getFileInfo_mime_type = null;
 
     public function getFileInfo(int $fileinfo_const = FILEINFO_NONE): string
