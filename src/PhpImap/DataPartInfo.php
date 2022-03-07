@@ -114,6 +114,12 @@ class DataPartInfo
             $this->data = $this->mail->decodeMimeStr(
                 (string) $this->data // Data to convert
             );
+
+            $this->data = $this->mail->convertToUtf8(
+                $this->data,
+                $this->charset
+            );
+            $this->charset = 'utf-8';
         }
 
         return (null === $this->data) ? '' : $this->data;
