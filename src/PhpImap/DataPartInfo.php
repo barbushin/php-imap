@@ -85,23 +85,23 @@ class DataPartInfo
             $this->data = Imap::fetchbody($this->mail->getImapStream(), $this->id, $this->part, $this->options);
         }
 
-        return $this->decodeAfterFetch();
+        return $this->decodeAfterFetch($this->data);
     }
 
-    protected function decodeAfterFetch(): string
+    public function decodeAfterFetch(string $data): string
     {
         switch ($this->encoding) {
             case ENC8BIT:
-                $this->data = \imap_utf8((string) $this->data);
+                $this->data = \imap_utf8((string) $data);
                 break;
             case ENCBINARY:
-                $this->data = \imap_binary((string) $this->data);
+                $this->data = \imap_binary((string) $data);
                 break;
             case ENCBASE64:
-                $this->data = \base64_decode((string) $this->data, false);
+                $this->data = \base64_decode((string) $data, false);
                 break;
             case ENCQUOTEDPRINTABLE:
-                $this->data = \quoted_printable_decode((string) $this->data);
+                $this->data = \quoted_printable_decode((string) $data);
                 break;
         }
 
@@ -119,7 +119,6 @@ class DataPartInfo
                 $this->data,
                 $this->charset
             );
-            $this->charset = 'utf-8';
         }
 
         return (null === $this->data) ? '' : $this->data;
