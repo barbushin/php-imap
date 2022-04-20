@@ -620,7 +620,10 @@ class Mailbox {
 		if($string && $fromEncoding != $toEncoding) {
 			$convertedString = @iconv($fromEncoding, $toEncoding . '//IGNORE', $string);
 			if(!$convertedString && extension_loaded('mbstring')) {
-				$convertedString = @mb_convert_encoding($string, $toEncoding, $fromEncoding);
+				$encodings = array_map(function($item) { return strtolower($item); }, \mb_list_encodings());
+				if(in_array(strtolower($fromEncoding), $encodings) && in_array(strtolower($toEncoding), $encodings)) {
+				    $convertedString = @mb_convert_encoding($string, $toEncoding, $fromEncoding);
+				}
 			}
 		}
 		return $convertedString ?: $string;
