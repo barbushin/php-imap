@@ -709,7 +709,7 @@ final class Imap
         $result = @\imap_open($mailbox, $username, $password, $options, $n_retries, $params);
 
         if (!$result) {
-            throw new ConnectionException(\imap_errors());
+            throw new ConnectionException(\imap_errors() ?: []);
         }
 
         return $result;
