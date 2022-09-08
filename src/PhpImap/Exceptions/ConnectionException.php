@@ -13,12 +13,12 @@ use Exception;
  */
 class ConnectionException extends Exception
 {
-    public function __construct($message, $code = 0, Exception $previous = null)
+    public function __construct(array $message, int $code = 0, Exception $previous = null)
     {
         parent::__construct(json_encode($message), $code, $previous);
     }
 
-    public function getErrors($select = 'first')
+    public function getErrors(string $select = 'first')
     {
         $message = $this->getMessage();
 
