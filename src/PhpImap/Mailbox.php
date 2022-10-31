@@ -1449,7 +1449,7 @@ class Mailbox
 	public function getNewFileSysName(string $fileSysName) : string {
 		$i = 1;
 		while(file_exists($$this->getAttachmentsDir().DIRECTORY_SEPARATOR.$fileSysName)) {
-			$frag = pathinfo($fileName);
+			$frag = pathinfo($fileSysName);
 			$fileSysName = "{$frag['filename']} ({$i}){$frag['extension']}";
 			$i++;
 		}		
