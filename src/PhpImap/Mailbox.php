@@ -1446,14 +1446,14 @@ class Mailbox
 
         return $attachment;
     }
-	public function getNewFileSysName(string $fileSysName) : string {
-		$i = 1;
-		while(file_exists($$this->getAttachmentsDir().DIRECTORY_SEPARATOR.$fileSysName)) {
-			$frag = pathinfo($fileSysName);
-			$fileSysName = "{$frag['filename']} ({$i}){$frag['extension']}";
-			$i++;
-		}		
-		return $fileSysName;
+    public function getNewFileSysName(string $fileSysName) : string {
+        $i = 1;
+        while(file_exists($$this->getAttachmentsDir().DIRECTORY_SEPARATOR.$fileSysName)) {
+            $frag = pathinfo($fileSysName);
+            $fileSysName = "{$frag['filename']} ({$i}){$frag['extension']}";
+            $i++;
+        }		
+        return $fileSysName;
 	}
 	public function getNewFileName(string $fileName) : string {
 		$i = 1;
