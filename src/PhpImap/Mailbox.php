@@ -159,6 +159,8 @@ class Mailbox
     public const ATTACH_FILE_NAME_RANDOM = 1;     // Filename is unique (random)
     public const ATTACH_FILE_NAME_ORIGINAL = 2;   // Filename is Attachment-Filename
     public const ATTACH_FILE_NAME_ITTERATED = 3;  // Filename is Attachment-Filename but if allready exists it will be extend by Number like: Filename (1).ext
+	public const ATTACH_FILE_NAME_TRANSFER = 3;   // Filename is Attachment-Filename but if allready exists in current transfer-job it will be extend by Number like: Filename (1).ext if file exists from prior transfer it will be overwritten
+	static $fileNameStack = [];
     /** @var int */
     protected $attachmentsFilenameMode = self::ATTACH_FILE_NAME_RANDOM;
     /** @var resource|null */
@@ -332,7 +334,7 @@ class Mailbox
     /**
      * Set $this->setAttachmentsRandomFilename param. 
      *
-     * @param int $random ATTACH_FILE_NAME_RANDOM, ATTACH_FILE_NAME_ORIGINAL, ATTACH_FILE_NAME_ITTERATED
+     * @param int $random ATTACH_FILE_NAME_RANDOM, ATTACH_FILE_NAME_ORIGINAL, ATTACH_FILE_NAME_ITTERATED, ATTACH_FILE_NAME_TRANSFER
      *
      * @return Mailbox
      */
@@ -1421,13 +1423,10 @@ class Mailbox
                     $fileSysName = $fileName;
                     break;
 				case self::ATTACH_FILE_NAME_ITTERATED:
-					$fileSysName = $fileName;
-					$i = 1;
-					while(file_exists($attachmentsDir.DIRECTORY_SEPARATOR.$fileSysName)) {
-						$frag = pathinfo($fileName);
-						$fileSysName = "{$frag['filename']} ({$i}){$frag['extension']}";
-					}
+					$fileSysName = $this->getNewFileSysName($fileName);
 					break;
+				case self::ATTACH_FILE_NAME_TRANSFER:
+					$fileSysName = $this->getNewFileName($fileName);
                 case self::ATTACH_FILE_NAME_RANDOM:
                 default:
                     $fileSysName = \bin2hex(\random_bytes(16)).'.bin';
@@ -1445,6 +1444,24 @@ class Mailbox
 
         return $attachment;
     }
+	public function getNewFileSysName(string $fileSysName) : string {
+		$i = 1;
+		while(file_exists($attachmentsDir.DIRECTORY_SEPARATOR.$fileSysName)) {
+			$frag = pathinfo($fileName);
+			$fileSysName = "{$frag['filename']} ({$i}){$frag['extension']}";
+			$i++;
+		}		
+		return $fileSysName;
+	}
+	public function getNewFileName(string $fileName) : string {
+		$i = 1;
+		while(!in_array($fileName,	self::$fileNameStack, true)) {
+			$frag = pathinfo($fileName);
+			$fileName = "{$frag['filename']} ({$i}){$frag['extension']}";
+			$i++;
+		}		
+		return $fileName;	
+	}
 
     /**
      * Converts a string to UTF-8.
