@@ -1421,13 +1421,13 @@ class Mailbox
         if (null !== $attachmentsDir) {
             switch($this->attachmentsFilenameMode) {
                 case self::ATTACH_FILE_NAME_ORIGINAL:
-                    $fileSysName = $fileName;
+                    $fileSysName = $this->sanitizeFileName($fileName);
                     break;
 				case self::ATTACH_FILE_NAME_ITTERATED:
-					$fileSysName = $this->getNewFileSysName($fileName);
+					$fileSysName = $this->getNewFileSysName($this->sanitizeFileName($fileName));
 					break;
 				case self::ATTACH_FILE_NAME_TRANSFER:
-					$fileSysName = $this->getNewFileName($fileName);
+					$fileSysName = $this->getNewFileName($this->sanitizeFileName($fileName));
 					break;
                 case self::ATTACH_FILE_NAME_RANDOM:
                 default:
@@ -1446,23 +1446,28 @@ class Mailbox
 
         return $attachment;
     }
-    public function getNewFileSysName(string $fileSysName) : string {
-        $i = 1;
-        while(file_exists($$this->getAttachmentsDir().DIRECTORY_SEPARATOR.$fileSysName)) {
-            $frag = pathinfo($fileSysName);
-            $fileSysName = "{$frag['filename']} ({$i}){$frag['extension']}";
-            $i++;
-        }		
-        return $fileSysName;
+	public function sanitizeFileName(string $fileName) : string {
+		return preg_replace('/([^\p{L}\s\d\-_~,;:\[\]\(\).\'])/is', '-', $fileName);
 	}
+    public function getNewFileSysName(string $fileSysName) : string {
+      $i = 1;
+      while(file_exists($this->getAttachmentsDir().DIRECTORY_SEPARATOR.$fileSysName)) {
+        $frag = pathinfo($fileSysName);
+        $ext = empty($frag['extension']) ? '' : ".{$frag['extension']}";
+        $fileSysName = "{$frag['filename']} ({$i}){$ext}";
+        $i++;
+      }
+      return $fileSysName;
+    }
 	public function getNewFileName(string $fileName) : string {
 		$i = 1;
 		while(!in_array($fileName,	self::$fileNameStack, true)) {
 			$frag = pathinfo($fileName);
-			$fileName = "{$frag['filename']} ({$i}){$frag['extension']}";
+			$ext = empty($frag['extension']) ? '' : ".{$frag['extension']}";
+			$fileName = "{$frag['filename']} ({$i}){$ext}";
 			$i++;
-		}		
-		return $fileName;	
+		}
+		return $fileName;
 	}
 
     /**
