@@ -156,16 +156,21 @@ class Mailbox
     /** @var string */
     protected $mailboxFolder;
 
-    /** @var bool|false */
-    protected $attachmentFilenameMode = false;
-
+    public const ATTACH_FILE_NAME_RANDOM = 1;     // Filename is unique (random)
+    public const ATTACH_FILE_NAME_ORIGINAL = 2;   // Filename is Attachment-Filename
+    public const ATTACH_FILE_NAME_ITTERATED = 3;  // Filename is Attachment-Filename but if allready exists it will be extend by Number like: Filename (1).ext
+    public const ATTACH_FILE_NAME_TRANSFER = 3;   // Filename is Attachment-Filename but if allready exists in current transfer-job it will be extend by Number like: Filename (1).ext if file exists from prior transfer it will be overwritten
+    static $fileNameStack = [];
+	
+    /** @var int */
+    protected $attachmentsFilenameMode = self::ATTACH_FILE_NAME_RANDOM;
     /** @var resource|null */
     private $imapStream;
 
     /**
      * @throws InvalidParameterException
      */
-    public function __construct(string $imapPath, string $login, string $password, string $attachmentsDir = null, string $serverEncoding = 'UTF-8', bool $trimImapPath = true, bool $attachmentFilenameMode = false)
+    public function __construct(string $imapPath, string $login, string $password, string $attachmentsDir = null, string $serverEncoding = 'UTF-8', bool $trimImapPath = true, bool $attachmentFilenameMode = self::ATTACH_FILE_NAME_RANDOM)
     {
         $this->imapPath = (true == $trimImapPath) ? \trim($imapPath) : $imapPath;
         $this->imapLogin = \trim($login);
@@ -326,7 +331,20 @@ class Mailbox
     {
         $this->attachmentsIgnore = $attachmentsIgnore;
     }
-
+	
+    /**
+     * Set $this->setAttachmentsRandomFilename param. 
+     *
+     * @param int $random ATTACH_FILE_NAME_RANDOM, ATTACH_FILE_NAME_ORIGINAL, ATTACH_FILE_NAME_ITTERATED, ATTACH_FILE_NAME_TRANSFER
+     *
+     * @return Mailbox
+     */
+    public function setAttachmentsFilenameMode(int $mode) : Mailbox
+    {
+        $this->attachmentsFilenameMode = $mode;
+        return $this;
+    }
+	
     /**
      * Get $this->attachmentsIgnore param.
      *
@@ -557,7 +575,7 @@ class Mailbox
     }
 
     /**
-     * Sets 'expunge on disconnect' parameter.
+     * Sets 'expunge on disconnect' parameter.		   
      */
     public function setExpungeOnDisconnect(bool $isEnabled): void
     {
@@ -681,7 +699,7 @@ class Mailbox
     /**
      * Search the mailbox for emails from multiple, specific senders whilst not using server encoding.
      *
-     * @see Mailbox::searchMailboxFromWithOrWithoutDisablingServerEncoding()
+	 * @see Mailbox::searchMailboxFromWithOrWithoutDisablingServerEncoding()
      *
      * @return int[]
      *
@@ -1410,26 +1428,57 @@ class Mailbox
 
         $attachmentsDir = $this->getAttachmentsDir();
 
-        if (null != $attachmentsDir) {
-            if (true == $this->getAttachmentFilenameMode()) {
-                $fileSysName = $attachment->name;
-            } else {
-                $fileSysName = \bin2hex(\random_bytes(16)).'.bin';
+        if (null !== $attachmentsDir) {
+            switch($this->attachmentsFilenameMode) {
+                case self::ATTACH_FILE_NAME_ORIGINAL:
+                    $fileSysName = $this->sanitizeFileName($fileName);
+                    break;
+				case self::ATTACH_FILE_NAME_ITTERATED:
+					$fileSysName = $this->getNewFileSysName($this->sanitizeFileName($fileName));
+					break;
+				case self::ATTACH_FILE_NAME_TRANSFER:
+					$fileSysName = $this->getNewFileName($this->sanitizeFileName($fileName));
+					break;
+                case self::ATTACH_FILE_NAME_RANDOM:
+                default:
+                    $fileSysName = \bin2hex(\random_bytes(16)).'.bin';
             }
-
+            
             $filePath = $attachmentsDir.DIRECTORY_SEPARATOR.$fileSysName;
 
             if (\strlen($filePath) > self::MAX_LENGTH_FILEPATH) {
                 $ext = \pathinfo($filePath, PATHINFO_EXTENSION);
                 $filePath = \substr($filePath, 0, self::MAX_LENGTH_FILEPATH - 1 - \strlen($ext)).'.'.$ext;
             }
-
             $attachment->setFilePath($filePath);
             $attachment->saveToDisk();
         }
 
         return $attachment;
     }
+	public function sanitizeFileName(string $fileName) : string {
+		return preg_replace('/([^\p{L}\s\d\-_~,;:\[\]\(\).\'])/is', '-', $fileName);
+	}
+    public function getNewFileSysName(string $fileSysName) : string {
+      $i = 1;
+      while(file_exists($this->getAttachmentsDir().DIRECTORY_SEPARATOR.$fileSysName)) {
+        $frag = pathinfo($fileSysName);
+        $ext = empty($frag['extension']) ? '' : ".{$frag['extension']}";
+        $fileSysName = "{$frag['filename']} ({$i}){$ext}";
+        $i++;
+      }
+      return $fileSysName;
+    }
+	public function getNewFileName(string $fileName) : string {
+		$i = 1;
+		while(!in_array($fileName,	self::$fileNameStack, true)) {
+			$frag = pathinfo($fileName);
+			$ext = empty($frag['extension']) ? '' : ".{$frag['extension']}";
+			$fileName = "{$frag['filename']} ({$i}){$ext}";
+			$i++;
+		}
+		return $fileName;
+	}
 
     /**
      * Converts a string to UTF-8.
