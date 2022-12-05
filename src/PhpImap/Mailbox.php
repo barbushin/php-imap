@@ -476,7 +476,12 @@ class Mailbox
 
     public function hasImapStream(): bool
     {
-        return (\is_resource($this->imapStream) || $this->imapStream instanceof \IMAP\Connection) && \imap_ping($this->imapStream);
+        try {
+            return (\is_resource($this->imapStream) || $this->imapStream instanceof \IMAP\Connection) && \imap_ping($this->imapStream);
+        } catch (\ValueError) {
+            // From PHP 8.1.10 imap_ping() on a closed stream throws a ValueError. See #680.
+            return false;
+        }
     }
 
     /**
