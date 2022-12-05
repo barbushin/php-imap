@@ -478,9 +478,14 @@ class Mailbox
     {
         try {
             return (\is_resource($this->imapStream) || $this->imapStream instanceof \IMAP\Connection) && \imap_ping($this->imapStream);
-        } catch (\ValueError $exception) {
+        } catch (\Error $exception) {
             // From PHP 8.1.10 imap_ping() on a closed stream throws a ValueError. See #680.
-            return false;
+            $valueError = '\ValueError';
+            if (class_exists($valueError) && $exception instanceof $valueError) {
+                return false;
+            }
+
+            throw $exception;
         }
     }
 
