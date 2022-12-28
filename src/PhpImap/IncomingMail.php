@@ -34,10 +34,10 @@ class IncomingMail extends IncomingMailHeader
      */
     protected $dataInfo = [[], []];
 
-    /** @var string|null */
+    /** @var null|string */
     private $textPlain;
 
-    /** @var string|null */
+    /** @var null|string */
     private $textHtml;
 
     /**
@@ -70,7 +70,7 @@ class IncomingMail extends IncomingMailHeader
             $this->$name .= \trim($data->fetch());
         }
 
-        /** @var string */
+        /* @var string */
         return $this->$name;
     }
 
@@ -99,7 +99,7 @@ class IncomingMail extends IncomingMailHeader
     }
 
     /**
-     * @param DataPartInfo::TEXT_PLAIN|DataPartInfo::TEXT_HTML $type
+     * @param DataPartInfo::TEXT_HTML|DataPartInfo::TEXT_PLAIN $type
      */
     public function addDataPartInfo(DataPartInfo $dataInfo, int $type): void
     {
@@ -197,7 +197,7 @@ class IncomingMail extends IncomingMailHeader
             }
         }
 
-        /** @psalm-var string */
+        /* @psalm-var string */
         return \str_replace($search, $replace, $fetchedHtml);
     }
 
@@ -219,7 +219,7 @@ class IncomingMail extends IncomingMailHeader
                 $cid = \str_replace('cid:', '', $match);
 
                 foreach ($attachments as $attachment) {
-                    /**
+                    /*
                      * Inline images can contain a "Content-Disposition: inline", but only a "Content-ID" is also enough.
                      * See https://github.com/barbushin/php-imap/issues/569.
                      */

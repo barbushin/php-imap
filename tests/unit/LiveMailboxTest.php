@@ -66,7 +66,7 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
             $serverEncoding
         );
 
-        /** @var Throwable|null */
+        /** @var null|Throwable */
         $exception = null;
 
         try {
@@ -616,7 +616,8 @@ class LiveMailboxTest extends AbstractLiveMailboxTest
 
             $attachments = $mail->getAttachments();
 
-            $this->assertCount(self::ISSUE_EXPECTED_ATTACHMENT_COUNT[
+            $this->assertCount(
+                self::ISSUE_EXPECTED_ATTACHMENT_COUNT[
                 (int) $matches[1]],
                 $attachments
             );

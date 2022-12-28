@@ -134,7 +134,7 @@ class Mailbox
     /** @var string */
     protected $serverEncoding = 'UTF-8';
 
-    /** @var string|null */
+    /** @var null|string */
     protected $attachmentsDir = null;
 
     /** @var bool */
@@ -159,7 +159,7 @@ class Mailbox
     /** @var bool|false */
     protected $attachmentFilenameMode = false;
 
-    /** @var resource|null */
+    /** @var null|resource */
     private $imapStream;
 
     /**
@@ -357,7 +357,7 @@ class Mailbox
             throw new InvalidParameterException('You have provided at least one unsupported timeout type. Supported types are: IMAP_OPENTIMEOUT, IMAP_READTIMEOUT, IMAP_WRITETIMEOUT, IMAP_CLOSETIMEOUT');
         }
 
-        /** @var array{1?:int, 2?:int, 3?:int, 4?:int} */
+        /* @var array{1?:int, 2?:int, 3?:int, 4?:int} */
         $this->timeouts = \array_fill_keys($types, $timeout);
     }
 
@@ -374,7 +374,7 @@ class Mailbox
     /**
      * Set custom connection arguments of imap_open method. See http://php.net/imap_open.
      *
-     * @param string[]|null $params
+     * @param null|string[] $params
      *
      * @psalm-param array{DISABLE_AUTHENTICATOR?:string}|array<empty, empty>|null $params
      *
@@ -431,7 +431,7 @@ class Mailbox
     /**
      * Get current saving folder for attachments.
      *
-     * @return string|null Attachments dir
+     * @return null|string Attachments dir
      */
     public function getAttachmentsDir(): ?string
     {
@@ -470,7 +470,7 @@ class Mailbox
             }
         }
 
-        /** @var resource */
+        /* @var resource */
         return $this->imapStream;
     }
 
@@ -656,11 +656,11 @@ class Mailbox
     public function searchMailbox(string $criteria = 'ALL', bool $disableServerEncoding = false): array
     {
         if ($disableServerEncoding) {
-            /** @psalm-var list<int> */
+            /* @psalm-var list<int> */
             return Imap::search($this->getImapStream(), $criteria, $this->imapSearchOption);
         }
 
-        /** @psalm-var list<int> */
+        /* @psalm-var list<int> */
         return Imap::search($this->getImapStream(), $criteria, $this->imapSearchOption, $this->getServerEncoding());
     }
 
@@ -749,7 +749,7 @@ class Mailbox
     /**
      * Moves mails listed in mailId into new mailbox.
      *
-     * @param string|int $mailId  a range or message number
+     * @param int|string $mailId  a range or message number
      * @param string     $mailBox Mailbox name
      *
      * @see imap_mail_move()
@@ -763,7 +763,7 @@ class Mailbox
     /**
      * Copies mails listed in mailId into new mailbox.
      *
-     * @param string|int $mailId  a range or message number
+     * @param int|string $mailId  a range or message number
      * @param string     $mailBox Mailbox name
      *
      * @see imap_mail_copy()
@@ -956,7 +956,7 @@ class Mailbox
             }
         }
 
-        /** @var list<object> */
+        /* @var list<object> */
         return $mails;
     }
 
@@ -1008,7 +1008,7 @@ class Mailbox
      *
      * @param int         $criteria       Sorting criteria (eg. SORTARRIVAL)
      * @param bool        $reverse        Sort reverse or not
-     * @param string|null $searchCriteria See http://php.net/imap_search for a complete list of available criteria
+     * @param null|string $searchCriteria See http://php.net/imap_search for a complete list of available criteria
      *
      * @psalm-param value-of<Imap::SORT_CRITERIA> $criteria
      *
@@ -1051,7 +1051,7 @@ class Mailbox
     {
         $quota = $this->getQuota($quota_root);
 
-        /** @var int */
+        /* @var int */
         return $quota['STORAGE']['limit'] ?? 0;
     }
 
@@ -1060,13 +1060,13 @@ class Mailbox
      *
      * @param string $quota_root Should normally be in the form of which mailbox (i.e. INBOX)
      *
-     * @return int|false FALSE in the case of call failure
+     * @return false|int FALSE in the case of call failure
      */
     public function getQuotaUsage(string $quota_root = 'INBOX')
     {
         $quota = $this->getQuota($quota_root);
 
-        /** @var int|false */
+        /* @var int|false */
         return $quota['STORAGE']['usage'] ?? 0;
     }
 
@@ -1299,7 +1299,7 @@ class Mailbox
             ++$index;
         }
 
-        /** @var array<string, stdClass> */
+        /* @var array<string, stdClass> */
         return $flattenedParts;
     }
 
@@ -1359,10 +1359,10 @@ class Mailbox
             $fileName = $this->decodeRFC2231($fileName);
         }
 
-        /** @var scalar|array|object|null */
+        /** @var null|array|object|scalar */
         $sizeInBytes = $partStructure->bytes ?? null;
 
-        /** @var scalar|array|object|null */
+        /** @var null|array|object|scalar */
         $encoding = $partStructure->encoding ?? null;
 
         if (null !== $sizeInBytes && !\is_int($sizeInBytes)) {
@@ -1390,7 +1390,7 @@ class Mailbox
         $attachment->sizeInBytes = $sizeInBytes;
         $attachment->disposition = (isset($partStructure->disposition) && \is_string($partStructure->disposition)) ? $partStructure->disposition : null;
 
-        /** @var scalar|array|object|resource|null */
+        /** @var null|array|object|resource|scalar */
         $charset = $params['charset'] ?? null;
 
         if (isset($charset) && !\is_string($charset)) {
@@ -1623,7 +1623,7 @@ class Mailbox
     /**
      * Appends $message to $mailbox.
      *
-     * @param string|array $message
+     * @param array|string $message
      *
      * @psalm-param string|array{0:COMPOSE_ENVELOPE, 1:COMPOSE_BODY} $message
      *
@@ -1729,7 +1729,7 @@ class Mailbox
     }
 
     /**
-     * @param string|0 $partNum
+     * @param 0|string $partNum
      *
      * @psalm-param PARTSTRUCTURE $partStructure
      * @psalm-suppress InvalidArgument
@@ -1912,7 +1912,7 @@ class Mailbox
             $recipientMailbox = $recipient->mailbox;
             /** @var string */
             $recipientHost = $recipient->host;
-            /** @var string|null */
+            /** @var null|string */
             $recipientPersonal = $recipient->personal ?? null;
 
             if (!\is_string($recipientMailbox)) {
@@ -1954,7 +1954,7 @@ class Mailbox
                 if (!\is_object($item)) {
                     throw new UnexpectedValueException('Index '.(string) $index.' of argument 1 passed to '.__METHOD__.'() corresponds to a non-object value, '.\gettype($item).' given!');
                 }
-                /** @var scalar|array|object|resource|null */
+                /** @var null|array|object|resource|scalar */
                 $item_name = $item->name ?? null;
 
                 if (!isset($item->name, $item->attributes, $item->delimiter)) {
@@ -2001,10 +2001,10 @@ class Mailbox
             }
         }
 
-        /** @var string */
+        /* @var string */
         $out[] = \strtolower($t[0]->mailbox.'@'.(string) $out[0]);
 
-        /** @var array{0:string|null, 1:string|null, 2:string} */
+        /* @var array{0:string|null, 1:string|null, 2:string} */
         return $out;
     }
 
@@ -2073,7 +2073,7 @@ class Mailbox
             $out = \array_merge($out, $this->searchMailbox($criterion, $disableServerEncoding));
         }
 
-        /** @psalm-var list<int> */
+        /* @psalm-var list<int> */
         return \array_values(\array_unique($out, SORT_NUMERIC));
     }
 }

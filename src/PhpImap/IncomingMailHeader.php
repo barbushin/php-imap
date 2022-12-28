@@ -11,13 +11,13 @@ namespace PhpImap;
  */
 class IncomingMailHeader
 {
-    /** @var int|null The IMAP message ID - not the "Message-ID:"-header of the email */
+    /** @var null|int The IMAP message ID - not the "Message-ID:"-header of the email */
     public $id;
 
-    /** @var string|null */
+    /** @var null|string */
     public $imapPath;
 
-    /** @var string|null */
+    /** @var null|string */
     public $mailboxFolder;
 
     /** @var bool */
@@ -38,76 +38,76 @@ class IncomingMailHeader
     /** @var bool */
     public $isDraft = false;
 
-    /** @var string|null */
+    /** @var null|string */
     public $date;
 
-    /** @var string|null */
+    /** @var null|string */
     public $headersRaw;
 
-    /** @var object|null */
+    /** @var null|object */
     public $headers;
 
-    /** @var string|null */
+    /** @var null|string */
     public $mimeVersion;
 
-    /** @var string|null */
+    /** @var null|string */
     public $xVirusScanned;
 
-    /** @var string|null */
+    /** @var null|string */
     public $organization;
 
-    /** @var string|null */
+    /** @var null|string */
     public $contentType;
 
-    /** @var string|null */
+    /** @var null|string */
     public $xMailer;
 
-    /** @var string|null */
+    /** @var null|string */
     public $contentLanguage;
 
-    /** @var string|null */
+    /** @var null|string */
     public $xSenderIp;
 
-    /** @var string|null */
+    /** @var null|string */
     public $priority;
 
-    /** @var string|null */
+    /** @var null|string */
     public $importance;
 
-    /** @var string|null */
+    /** @var null|string */
     public $sensitivity;
 
-    /** @var string|null */
+    /** @var null|string */
     public $autoSubmitted;
 
-    /** @var string|null */
+    /** @var null|string */
     public $precedence;
 
-    /** @var string|null */
+    /** @var null|string */
     public $failedRecipients;
 
-    /** @var string|null */
+    /** @var null|string */
     public $subject;
 
-    /** @var string|null */
+    /** @var null|string */
     public $fromHost;
 
-    /** @var string|null */
+    /** @var null|string */
     public $fromName;
 
-    /** @var string|null */
+    /** @var null|string */
     public $fromAddress;
 
-    /** @var string|null */
+    /** @var null|string */
     public $senderHost;
 
-    /** @var string|null */
+    /** @var null|string */
     public $senderName;
 
-    /** @var string|null */
+    /** @var null|string */
     public $senderAddress;
 
-    /** @var string|null */
+    /** @var null|string */
     public $xOriginalTo;
 
     /**
@@ -117,7 +117,7 @@ class IncomingMailHeader
      */
     public $to = [];
 
-    /** @var string|null */
+    /** @var null|string */
     public $toString;
 
     /**
@@ -127,7 +127,7 @@ class IncomingMailHeader
      */
     public $cc = [];
 
-    /** @var string|null */
+    /** @var null|string */
     public $ccString;
 
     /**
@@ -144,6 +144,6 @@ class IncomingMailHeader
      */
     public $replyTo = [];
 
-    /** @var string|null */
+    /** @var null|string */
     public $messageId;
 }

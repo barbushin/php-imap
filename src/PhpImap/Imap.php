@@ -69,7 +69,7 @@ final class Imap
     ];
 
     /**
-     * @param resource|false $imap_stream
+     * @param false|resource $imap_stream
      *
      * @return true
      *
@@ -143,7 +143,7 @@ final class Imap
             throw new UnexpectedValueException('Could not check imap mailbox!', 0, self::HandleErrors(\imap_errors(), 'imap_check'));
         }
 
-        /** @var object */
+        /* @var object */
         return $result;
     }
 
@@ -233,7 +233,7 @@ final class Imap
 
     /**
      * @param false|resource $imap_stream
-     * @param string|int     $msg_number
+     * @param int|string     $msg_number
      *
      * @return true
      */
@@ -339,13 +339,13 @@ final class Imap
             throw new UnexpectedValueException('Could not fetch overview for message from mailbox!', 0, self::HandleErrors(\imap_errors(), 'imap_fetch_overview'));
         }
 
-        /** @psalm-var list<object> */
+        /* @psalm-var list<object> */
         return $result;
     }
 
     /**
      * @param false|resource $imap_stream
-     * @param string|int     $section
+     * @param int|string     $section
      */
     public static function fetchbody(
         $imap_stream,
@@ -418,7 +418,7 @@ final class Imap
             throw new UnexpectedValueException('Could not fetch message structure from mailbox!', 0, self::HandleErrors(\imap_errors(), 'imap_fetchstructure'));
         }
 
-        /** @psalm-var PARTSTRUCTURE */
+        /* @psalm-var PARTSTRUCTURE */
         return $result;
     }
 
@@ -446,7 +446,7 @@ final class Imap
     }
 
     /**
-     * @param resource|false $imap_stream
+     * @param false|resource $imap_stream
      *
      * @return object[]
      *
@@ -479,12 +479,12 @@ final class Imap
             throw new UnexpectedValueException('Call to imap_getmailboxes() with supplied arguments returned false, not array!', 0, self::HandleErrors(\imap_errors(), 'imap_getmailboxes'));
         }
 
-        /** @psalm-var list<object> */
+        /* @psalm-var list<object> */
         return $result;
     }
 
     /**
-     * @param resource|false $imap_stream
+     * @param false|resource $imap_stream
      *
      * @return object[]
      *
@@ -507,7 +507,7 @@ final class Imap
             throw new UnexpectedValueException('Call to imap_getsubscribed() with supplied arguments returned false, not array!', 0, self::HandleErrors(\imap_errors(), 'imap_getsubscribed'));
         }
 
-        /** @psalm-var list<object> */
+        /* @psalm-var list<object> */
         return $result;
     }
 
@@ -716,7 +716,7 @@ final class Imap
     }
 
     /**
-     * @param resource|false $imap_stream
+     * @param false|resource $imap_stream
      *
      * @psalm-pure
      */
@@ -779,7 +779,7 @@ final class Imap
 
     /**
      * @param false|resource        $imap_stream
-     * @param string|false|resource $file
+     * @param false|resource|string $file
      *
      * @return true
      */
@@ -852,7 +852,7 @@ final class Imap
             throw new UnexpectedValueException('Could not search mailbox!', 0, self::HandleErrors($errors, 'imap_search'));
         }
 
-        /** @psalm-var list<int> */
+        /* @psalm-var list<int> */
         return $result;
     }
 
@@ -954,7 +954,7 @@ final class Imap
             throw new UnexpectedValueException('Could not sort messages!', 0, self::HandleErrors(\imap_errors(), 'imap_sort'));
         }
 
-        /** @psalm-var list<int> */
+        /* @psalm-var list<int> */
         return $result;
     }
 
@@ -1001,7 +1001,7 @@ final class Imap
     /**
      * @psalm-param value-of<self::TIMEOUT_TYPES> $timeout_type
      *
-     * @return true|int
+     * @return int|true
      */
     public static function timeout(
         int $timeout_type,
@@ -1095,7 +1095,7 @@ final class Imap
             throw new InvalidArgumentException('Argument '.(string) $argument.' passed to '.$method.' must be a valid resource!');
         }
 
-        /** @var resource */
+        /* @var resource */
         return $maybe;
     }
 

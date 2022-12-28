@@ -120,7 +120,7 @@ class ImapTest extends Base
             \sys_get_temp_dir(),
         ]);
 
-        /** @var Throwable|null */
+        /** @var null|Throwable */
         $exception = null;
 
         $mailboxDeleted = false;
