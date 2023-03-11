@@ -1414,7 +1414,7 @@ class Mailbox
             if (true == $this->getAttachmentFilenameMode()) {
                 $fileSysName = $attachment->name;
             } else {
-                $fileSysName = \bin2hex(\random_bytes(16)).'.bin';
+                $fileSysName = \bin2hex(\random_bytes(16)) . '.' . $attachment->fileExtension;
             }
 
             $filePath = $attachmentsDir.DIRECTORY_SEPARATOR.$fileSysName;
