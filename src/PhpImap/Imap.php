@@ -1148,7 +1148,7 @@ final class Imap
         $suffix = '() did not appear to be a valid message id range!';
 
         if ($allow_sequence) {
-            $regex = '/^\d+(?:(?:,\d+)+|:\d+)$/';
+            $regex = '/^\d+(?:(?:,\d+)+|:(\d+|\*))$/';
             $suffix = '() did not appear to be a valid message id range or sequence!';
         }
 
