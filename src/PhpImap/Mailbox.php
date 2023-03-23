@@ -510,13 +510,90 @@ class Mailbox
      */
     public function decodeStringFromUtf7ImapToUtf8(string $str): string
     {
-        $out = imap_utf7_decode($str);
+        $index_64 = array(
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, 63, -1, -1, -1,
+            52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1,
+            -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+            15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1,
+            -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+            41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1
+        );
 
-        if (!\is_string($out)) {
-            throw new UnexpectedValueException('mb_convert_encoding($str, \'UTF-8\', \'UTF7-IMAP\') could not convert $str');
+        $u7len = strlen($str);
+        $p = '';
+        $err = $str;
+
+        for ($i = 0; $u7len > 0; $i++, $u7len--) {
+            $u7 = $str[$i];
+            if ($u7 === '&') {
+                $i++;
+                $u7len--;
+                $u7 = $str[$i] ?? '';
+
+                if ($u7len && $u7 === '-') {
+                    $p .= '&';
+                    continue;
+                }
+
+                $ch = 0;
+                $k = 10;
+                for (; $u7len > 0; $i++, $u7len--) {
+                    $u7 = $str[$i];
+
+                    if ((ord($u7) & 0x80) || ($b = $index_64[ord($u7)]) === -1) {
+                        break;
+                    }
+
+                    if ($k > 0) {
+                        $ch |= $b << $k;
+                        $k -= 6;
+                    } else {
+                        $ch |= $b >> (-$k);
+                        if ($ch < 0x80) {
+                            /* Printable US-ASCII */
+                            if (0x20 <= $ch && $ch < 0x7f) {
+                                return $err;
+                            }
+                            $p .= chr($ch);
+                        } else if ($ch < 0x800) {
+                            $p .= chr(0xc0 | ($ch >> 6));
+                            $p .= chr(0x80 | ($ch & 0x3f));
+                        } else {
+                            $p .= chr(0xe0 | ($ch >> 12));
+                            $p .= chr(0x80 | (($ch >> 6) & 0x3f));
+                            $p .= chr(0x80 | ($ch & 0x3f));
+                        }
+
+                        $ch = ($b << (16 + $k)) & 0xffff;
+                        $k += 10;
+                    }
+                }
+
+                /* Non-zero or too many extra bits */
+                if ($ch || $k < 6) {
+                    return $err;
+                }
+
+                /* BASE64 not properly terminated */
+                if (!$u7len || $u7 !== '-') {
+                    return $err;
+                }
+
+                /* Adjacent BASE64 sections */
+                if ($u7len > 2 && $str[$i + 1] === '&' && $str[$i + 2] !== '-') {
+                    return $err;
+                }
+            } else if (ord($u7) < 0x20 || ord($u7) >= 0x7f) {
+                /* Not printable US-ASCII */
+                return $err;
+            } else {
+                $p .= $u7;
+            }
         }
 
-        return $out;
+        return str_replace(array('\\\\', '\"'), array('\\', '"'), $p);
     }
 
     /**
