@@ -1791,7 +1791,7 @@ class Mailbox
         }
 
         // check if the part is a subpart of another attachment part (RFC822)
-        if ('RFC822' === $partStructure->subtype && isset($partStructure->disposition) && 'attachment' === $partStructure->disposition) {
+        if ('RFC822' === $partStructure->subtype && isset($partStructure->disposition) && $dispositionAttachment) {
             // Although we are downloading each part separately, we are going to download the EML to a single file
             //incase someone wants to process or parse in another process
             $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, false);
