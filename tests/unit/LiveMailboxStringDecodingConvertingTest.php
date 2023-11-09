@@ -19,7 +19,7 @@ class LiveMailboxStringDecodingConvertingTest extends TestCase
     /**
      * Provides data for testing string decoding.
      */
-    public function stringDecodeProvider(): Generator
+    public static function stringDecodeProvider(): Generator
     {
         yield 'Issue #250 iso-8859-1' => [
             ENCQUOTEDPRINTABLE,

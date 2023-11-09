@@ -37,7 +37,7 @@ class ImapTest extends Base
     /**
      * @psalm-return Generator<'CI ENV with invalid password'|'empty mailbox/username/password', array{0: ConnectionException::class, 1: '/^[AUTHENTICATIONFAILED]/'|'Can't open mailbox : no such mailbox', 2: array{0: HiddenString, 1: HiddenString, 2: HiddenString, 3: 0, 4: 0, 5: array<empty, empty>}, 3?: true}, mixed, void>
      */
-    public function OpenFailure(): Generator
+    public static function OpenFailure(): Generator
     {
         yield 'empty mailbox/username/password' => [
             ConnectionException::class,

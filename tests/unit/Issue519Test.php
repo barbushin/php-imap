@@ -107,7 +107,7 @@ class Issue519Test extends TestCase
      *
      * @return string[][]
      */
-    public function provider(): array
+    public static function provider(): array
     {
         $out = [];
 

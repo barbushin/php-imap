@@ -30,7 +30,7 @@ trait LiveMailboxTestingTrait
      *
      * @return (\ParagonIE\HiddenString\HiddenString|string)[][]
      */
-    public function MailBoxProvider(): array
+    public static function MailBoxProvider(): array
     {
         $sets = [];
 
