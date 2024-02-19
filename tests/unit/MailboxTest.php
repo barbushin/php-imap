@@ -96,7 +96,7 @@ final class MailboxTest extends TestCase
      *
      * @return string[][]
      */
-    public function SetAndGetServerEncodingProvider(): array
+    public static function SetAndGetServerEncodingProvider(): array
     {
         $data = [
             ['UTF-8'],
@@ -168,7 +168,7 @@ final class MailboxTest extends TestCase
      *
      * @psalm-return array{UTF-7: array{0: true, 1: 'UTF-7'}, UTF7-IMAP: array{0: true, 1: 'UTF7-IMAP'}, UTF-8: array{0: true, 1: 'UTF-8'}, ASCII: array{0: true, 1: 'ASCII'}, US-ASCII: array{0: true, 1: 'US-ASCII'}, ISO-8859-1: array{0: true, 1: 'ISO-8859-1'}, UTF7: array{0: false, 1: 'UTF7'}, UTF-7-IMAP: array{0: false, 1: 'UTF-7-IMAP'}, UTF-7IMAP: array{0: false, 1: 'UTF-7IMAP'}, UTF8: array{0: false, 1: 'UTF8'}, USASCII: array{0: false, 1: 'USASCII'}, ASC11: array{0: false, 1: 'ASC11'}, ISO-8859-0: array{0: false, 1: 'ISO-8859-0'}, ISO-8855-1: array{0: false, 1: 'ISO-8855-1'}, ISO-8859: array{0: false, 1: 'ISO-8859'}}
      */
-    public function serverEncodingProvider(): array
+    public static function serverEncodingProvider(): array
     {
         return [
             // Supported encodings
@@ -262,7 +262,7 @@ final class MailboxTest extends TestCase
      *
      * @return string[][]
      */
-    public function pathDelimiterProvider(): array
+    public static function pathDelimiterProvider(): array
     {
         return [
             '0' => ['0'],
@@ -372,7 +372,7 @@ final class MailboxTest extends TestCase
      *
      * @psalm-return array<string, array{0:bool}>
      */
-    public function attachmentsIgnoreProvider(): array
+    public static function attachmentsIgnoreProvider(): array
     {
         /** @psalm-var array<string, array{0:bool}> */
         return [
@@ -400,7 +400,7 @@ final class MailboxTest extends TestCase
      *
      * @return string[][]
      */
-    public function encodingTestStringsProvider(): array
+    public static function encodingTestStringsProvider(): array
     {
         return [
             'Avañe’ẽ' => ['Avañe’ẽ'], // Guaraní
@@ -468,7 +468,7 @@ final class MailboxTest extends TestCase
      *
      * @return (int|string)[][]
      */
-    public function datetimeProvider(): array
+    public static function datetimeProvider(): array
     {
         return [
             'Sun, 14 Aug 2005 16:13:03 +0000 (CEST)' => ['2005-08-14T16:13:03+00:00', 1124035983],
@@ -507,7 +507,7 @@ final class MailboxTest extends TestCase
      *
      * @return string[][]
      */
-    public function invalidDatetimeProvider(): array
+    public static function invalidDatetimeProvider(): array
     {
         return [
             'Sun, 14 Aug 2005 16:13:03 +9000 (CEST)' => ['Sun, 14 Aug 2005 16:13:03 +9000 (CEST)'],
@@ -543,7 +543,7 @@ final class MailboxTest extends TestCase
      *
      * @psalm-return array{0: array{0: '=?iso-8859-1?Q?Sebastian_Kr=E4tzig?= <sebastian.kraetzig@example.com>', 1: 'Sebastian Krätzig <sebastian.kraetzig@example.com>'}, 1: array{0: '=?iso-8859-1?Q?Sebastian_Kr=E4tzig?=', 1: 'Sebastian Krätzig'}, 2: array{0: 'sebastian.kraetzig', 1: 'sebastian.kraetzig'}, 3: array{0: '=?US-ASCII?Q?Keith_Moore?= <km@ab.example.edu>', 1: 'Keith Moore <km@ab.example.edu>'}, 4: array{0: '   ', 1: '   '}, 5: array{0: '=?ISO-8859-1?Q?Max_J=F8rn_Simsen?= <max.joern.s@example.dk>', 1: 'Max Jørn Simsen <max.joern.s@example.dk>'}, 6: array{0: '=?ISO-8859-1?Q?Andr=E9?= Muster <andre.muster@vm1.ulg.ac.be>', 1: 'André Muster <andre.muster@vm1.ulg.ac.be>'}, 7: array{0: '=?ISO-8859-1?B?SWYgeW91IGNhbiByZWFkIHRoaXMgeW8=?= =?ISO-8859-2?B?dSB1bmRlcnN0YW5kIHRoZSBleGFtcGxlLg==?=', 1: 'If you can read this you understand the example.'}, 8: array{0: '', 1: ''}}
      */
-    public function mimeEncodingProvider(): array
+    public static function mimeEncodingProvider(): array
     {
         return [
             ['=?iso-8859-1?Q?Sebastian_Kr=E4tzig?= <sebastian.kraetzig@example.com>', 'Sebastian Krätzig <sebastian.kraetzig@example.com>'],
@@ -575,7 +575,7 @@ final class MailboxTest extends TestCase
      *
      * @psalm-return array<string, array{0:'assertNull'|'expectException', 1:int, 2:list<1|2|3|4>}>
      */
-    public function timeoutsProvider(): array
+    public static function timeoutsProvider(): array
     {
         /** @psalm-var array<string, array{0:'assertNull'|'expectException', 1:int, 2:list<int>}> */
         return [
@@ -614,7 +614,7 @@ final class MailboxTest extends TestCase
      *
      * @psalm-return Generator<string, array{0: 'assertNull'|'expectException', 1: int, 2: 0, 3: array<empty, empty>}, mixed, void>
      */
-    public function connectionArgsProvider(): Generator
+    public static function connectionArgsProvider(): Generator
     {
         yield from [
             'readonly, disable gssapi' => ['assertNull', OP_READONLY, 0, ['DISABLE_AUTHENTICATOR' => 'GSSAPI']],
@@ -700,7 +700,7 @@ final class MailboxTest extends TestCase
      *
      * @return string[][]
      */
-    public function mimeStrDecodingProvider(): array
+    public static function mimeStrDecodingProvider(): array
     {
         return [
             '<bde36ec8-9710-47bc-9ea3-bf0425078e33@php.imap>' => ['<bde36ec8-9710-47bc-9ea3-bf0425078e33@php.imap>', '<bde36ec8-9710-47bc-9ea3-bf0425078e33@php.imap>'],
@@ -737,7 +737,7 @@ final class MailboxTest extends TestCase
      *
      * @return string[][]
      */
-    public function Base64DecodeProvider(): array
+    public static function Base64DecodeProvider(): array
     {
         return [
             ['bm8tcmVwbHlAZXhhbXBsZS5jb20=', 'no-reply@example.com'],
@@ -764,7 +764,7 @@ final class MailboxTest extends TestCase
      *
      * @return string[][]
      */
-    public function attachmentDirFailureProvider(): array
+    public static function attachmentDirFailureProvider(): array
     {
         return [
             [

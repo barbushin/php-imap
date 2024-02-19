@@ -2,26 +2,19 @@
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     bootstrap="vendor/autoload.php"
-    verbose="true"
-    stopOnError="false"
-    stopOnFailure="false"
-    stopOnIncomplete="false"
-    stopOnSkipped="false"
-    convertErrorsToExceptions="true"
-    convertNoticesToExceptions="true"
-    convertWarningsToExceptions="true"
     colors="true"
-    forceCoversAnnotation="false"
-    processIsolation="false"
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
-  <coverage>
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd">
+
+  <source>
     <include>
       <directory>src</directory>
     </include>
-  </coverage>
+  </source>
+
   <testsuites>
     <testsuite name="php-imap Tests">
       <directory>tests</directory>
     </testsuite>
   </testsuites>
+
 </phpunit>
