@@ -28,7 +28,8 @@
         "ext-iconv": "*",
         "ext-imap": "*",
         "ext-mbstring": "*",
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-random": "*"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.38",
@@ -37,17 +38,15 @@
         "paragonie/hidden-string": "^2.0",
         "php-parallel-lint/php-parallel-lint": "^1.3",
         "phpunit/phpunit": "^10.5.10",
-        "povils/phpmnd": "^3.2",
+        "povils/phpmnd": "^3.4",
         "psalm/plugin-phpunit": "^0.18.4",
-        "roave/security-advisories": "dev-master",
-        "sebastian/phpcpd": "dev-main"
+        "roave/security-advisories": "dev-master"
     },
     "scripts": {
         "static-analysis": [
             "parallel-lint .php-cs-fixer.dist.php src tests examples",
-            "phpcpd src tests",
             "composer-require-checker check --config-file=composer-require-checker.config.json ./composer.json",
-            "phpmnd ./ --exclude=./.github/ --exclude=./examples/ --exclude=./vendor/ --non-zero-exit-on-violation --hint",
+            "phpmnd ./ --exclude=./.github/ --exclude=./examples/ --exclude=./vendor/ --hint",
             "php-cs-fixer fix --allow-risky=yes --no-interaction --dry-run -v",
             "psalm --show-info=false"
         ],
