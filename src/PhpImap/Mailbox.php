@@ -165,7 +165,7 @@ class Mailbox
     /**
      * @throws InvalidParameterException
      */
-    public function __construct(string $imapPath, string $login, string $password, string $attachmentsDir = null, string $serverEncoding = 'UTF-8', bool $trimImapPath = true, bool $attachmentFilenameMode = false)
+    public function __construct(string $imapPath, string $login, string $password, ?string $attachmentsDir = null, string $serverEncoding = 'UTF-8', bool $trimImapPath = true, bool $attachmentFilenameMode = false)
     {
         $this->imapPath = (true == $trimImapPath) ? \trim($imapPath) : $imapPath;
         $this->imapLogin = \trim($login);
@@ -380,7 +380,7 @@ class Mailbox
      *
      * @throws InvalidParameterException
      */
-    public function setConnectionArgs(int $options = 0, int $retriesNum = 0, array $params = null): void
+    public function setConnectionArgs(int $options = 0, int $retriesNum = 0, ?array $params = null): void
     {
         if (0 !== $options) {
             if (($options & self::IMAP_OPTIONS_SUPPORTED_VALUES) !== $options) {
@@ -1020,7 +1020,7 @@ class Mailbox
         int $criteria = SORTARRIVAL,
         bool $reverse = true,
         ?string $searchCriteria = 'ALL',
-        string $charset = null
+        ?string $charset = null
     ): array {
         return Imap::sort(
             $this->getImapStream(),
@@ -1634,8 +1634,8 @@ class Mailbox
     public function appendMessageToMailbox(
         $message,
         string $mailbox = '',
-        string $options = null,
-        string $internal_date = null
+        ?string $options = null,
+        ?string $internal_date = null
     ): bool {
         if (
             \is_array($message) &&

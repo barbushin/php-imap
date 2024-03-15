@@ -678,7 +678,7 @@ final class MailboxTest extends TestCase
      *
      * @psalm-param array{DISABLE_AUTHENTICATOR?:string}|array<empty, empty> $param
      */
-    public function testSetConnectionArgs(string $assertMethod, int $option, int $retriesNum, array $param = null): void
+    public function testSetConnectionArgs(string $assertMethod, int $option, int $retriesNum, ?array $param = null): void
     {
         $mailbox = $this->getMailbox();
 
