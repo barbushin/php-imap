@@ -755,7 +755,7 @@ final class MailboxTest extends TestCase
      */
     public function testBase64Decode(string $input, string $expected): void
     {
-        $this->assertSame($expected, \imap_base64(\preg_replace('~[^a-zA-Z0-9+=/]+~s', '', $input)));
+        $this->assertSame($expected, \imap2_base64(\preg_replace('~[^a-zA-Z0-9+=/]+~s', '', $input)));
         $this->assertSame($expected, \base64_decode($input, false));
     }
 

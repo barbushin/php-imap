@@ -83,7 +83,7 @@ By default, this library uses random filenames for attachments as identical file
 $mailbox = new PhpImap\Mailbox(
 	'{imap.gmail.com:993/imap/ssl}INBOX', // IMAP server and mailbox folder
 	'some@gmail.com', // Username for the before configured mailbox
-	'*********', // Password for the before configured username
+	'*********', // Password or token for the before configured username
 	__DIR__, // Directory, where attachments will be saved (optional)
 	'UTF-8', // Server encoding (optional)
     true, // Trim leading/ending whitespaces of IMAP path (optional)
@@ -94,13 +94,8 @@ $mailbox = new PhpImap\Mailbox(
 $mailbox->setConnectionArgs(
     CL_EXPUNGE // expunge deleted mails upon mailbox close
     | OP_SECURE // don't do non-secure authentication
+    | OP_XOAUTH2 // set OP_XOAUTH2 connection argument if supplied password is a OAuth token.
 );
-
-try {
-    $mailbox->setOAuthToken('TheOAuthAccessToken');
-} catch (Exception $ex) {
-    die('Authentication using OAuth failed! Error: '.$ex->getMessage());
-}
 
 try {
 	// Get all emails (messages)

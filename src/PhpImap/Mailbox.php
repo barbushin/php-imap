@@ -99,6 +99,7 @@ class Mailbox
             | OP_SILENT // 16
             | OP_PROTOTYPE // 32
             | OP_SECURE // 256
+            | OP_XOAUTH2 // 512, constant from Javaline\php-imap2
     ;
 
     /** @var string */
@@ -112,9 +113,6 @@ class Mailbox
 
     /** @var string */
     protected $imapPassword;
-
-    /** @var string|null */
-    protected $imapOAuthAccessToken = null;
 
     /** @var int */
     protected $imapSearchOption = SE_UID;
@@ -188,41 +186,6 @@ class Mailbox
     public function __destruct()
     {
         $this->disconnect();
-    }
-
-    /**
-     * Sets / Changes the OAuth Token for the authentication.
-     *
-     * @param string $access_token OAuth token from your application (eg. Google Mail)
-     *
-     * @return void
-     *
-     * @throws InvalidArgumentException If no access token is provided
-     * @throws Exception                If OAuth authentication was unsuccessful
-     */
-    public function setOAuthToken($access_token)
-    {
-        if (empty(\trim($access_token))) {
-            throw new InvalidParameterException('setOAuthToken() requires an access token as parameter!');
-        }
-
-        $this->imapOAuthAccessToken = \trim($access_token);
-
-        try {
-            $this->_oauthAuthentication();
-        } catch (Exception $ex) {
-            throw new Exception('Invalid OAuth token provided. Error: '.$ex->getMessage());
-        }
-    }
-
-    /**
-     * Gets the OAuth Token for the authentication.
-     *
-     * @return string|null $access_token OAuth Access Token
-     */
-    public function getOAuthToken()
-    {
-        return $this->imapOAuthAccessToken;
     }
 
     /**
@@ -515,7 +478,7 @@ class Mailbox
     public function hasImapStream(): bool
     {
         try {
-            return (\is_resource($this->imapStream) || $this->imapStream instanceof \IMAP\Connection) && \imap_ping($this->imapStream);
+            return (\is_object($this->imapStream) || $this->imapStream instanceof \Javanile\IMAP2\Connection) && \imap2_ping($this->imapStream);
         } catch (\Error $exception) {
             // From PHP 8.1.10 imap_ping() on a closed stream throws a ValueError. See #680.
             $valueError = '\ValueError';
@@ -536,7 +499,7 @@ class Mailbox
      */
     public function encodeStringToUtf7Imap(string $str): string
     {
-        return imap_utf7_encode($str);
+        return imap2_utf7_encode($str);
     }
 
     /**
@@ -548,7 +511,7 @@ class Mailbox
      */
     public function decodeStringFromUtf7ImapToUtf8(string $str): string
     {
-        $out = imap_utf7_decode($str);
+        $out = imap2_utf7_decode($str);
 
         if (!\is_string($out)) {
             throw new UnexpectedValueException('mb_convert_encoding($str, \'UTF-8\', \'UTF7-IMAP\') could not convert $str');
@@ -1176,7 +1139,7 @@ class Mailbox
          * sender?:HOSTNAMEANDADDRESS
          * }
          */
-        $head = \imap_rfc822_parse_headers($headersRaw);
+        $head = \imap2_rfc822_parse_headers($headersRaw);
 
         if (isset($head->date) && !\is_string($head->date)) {
             throw new UnexpectedValueException('date property of parsed headers corresponding to argument 1 passed to '.__METHOD__.'() was present but not a string!');
@@ -1527,7 +1490,7 @@ class Mailbox
     {
         $newString = '';
         /** @var list<object{charset?:string, text?:string}>|false */
-        $elements = \imap_mime_header_decode($string);
+        $elements = \imap2_mime_header_decode($string);
 
         if (false === $elements) {
             return $string;
@@ -1712,41 +1675,6 @@ class Mailbox
         }
 
         return $lowercase_encodings;
-    }
-
-
-        /**
-     * Builds an OAuth2 authentication string for the given email address and access token.
-     *
-     * @return string $access_token Formatted OAuth access token
-     */
-    protected function _constructAuthString()
-    {
-        return \base64_encode("user=$this->imapLogin\1auth=Bearer $this->imapOAuthAccessToken\1\1");
-    }
-
-    /**
-     * Authenticates the IMAP client with the OAuth access token.
-     *
-     * @return void
-     *
-     * @throws Exception If any error occured
-     */
-    protected function _oauthAuthentication()
-    {
-        $oauth_command = 'A AUTHENTICATE XOAUTH2 '.$this->_constructAuthString();
-
-        $oauth_result = \fwrite($this->getImapStream(), $oauth_command);
-
-        if (false === $oauth_result) {
-            throw new Exception('Could not authenticate using OAuth!');
-        }
-
-        try {
-            $this->checkMailbox();
-        } catch (\Throwable $ex) {
-            throw new Exception('OAuth authentication failed! IMAP Error: '.$ex->getMessage());
-        }
     }
 
     /** @return resource */

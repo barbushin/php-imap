@@ -92,10 +92,10 @@ class DataPartInfo
     {
         switch ($this->encoding) {
             case ENC8BIT:
-                $this->data = \imap_utf8((string) $data);
+                $this->data = \imap2_utf8((string) $data);
                 break;
             case ENCBINARY:
-                $this->data = \imap_binary((string) $data);
+                $this->data = \imap2_binary((string) $data);
                 break;
             case ENCBASE64:
                 $this->data = \base64_decode((string) $data, false);

@@ -24,6 +24,7 @@
     },
     "require": {
         "php": "^7.4 || ^8.0",
+        "javanile/php-imap2": "^0.1.10",
         "ext-fileinfo": "*",
         "ext-iconv": "*",
         "ext-imap": "*",

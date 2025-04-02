@@ -31,7 +31,7 @@ class LiveMailboxIssue501Test extends AbstractLiveMailboxTest
      */
     public function testDecodeMimeStrEmpty(): void
     {
-        $this->assertSame([], \imap_mime_header_decode(''));
+        $this->assertSame([], \imap2_mime_header_decode(''));
 
         // example credentials nabbed from MailboxTest::testConstructorTrimsPossibleVariables()
         $imapPath = ' {imap.example.com:993/imap/ssl}INBOX     ';
