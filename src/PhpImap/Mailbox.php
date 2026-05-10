@@ -2027,7 +2027,7 @@ class Mailbox
             }
 
             if ('' !== \trim($recipientMailbox) && '' !== \trim($recipientHost)) {
-                $recipientEmail = \strtolower($recipientMailbox.'@'.$recipientHost);
+                $recipientEmail = \mb_strtolower($recipientMailbox.'@'.$recipientHost, 'UTF-8');
                 $recipientName = (\is_string($recipientPersonal) && '' !== \trim($recipientPersonal)) ? $this->decodeMimeStr($recipientPersonal) : null;
 
                 return [
@@ -2105,7 +2105,7 @@ class Mailbox
         }
 
         /** @var string */
-        $out[] = \strtolower($t[0]->mailbox.'@'.(string) $out[0]);
+        $out[] = \mb_strtolower($t[0]->mailbox.'@'.(string) $out[0], 'UTF-8');
 
         /** @var array{0:string|null, 1:string|null, 2:string} */
         return $out;
@@ -2142,7 +2142,7 @@ class Mailbox
              * @return string
              */
             static function ($sender) use ($criteria): string {
-                return $criteria.' FROM '.\mb_strtolower($sender);
+                return $criteria.' FROM '.\mb_strtolower($sender, 'UTF-8');
             },
             $senders
         )));
