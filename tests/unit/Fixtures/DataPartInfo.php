@@ -16,7 +16,7 @@ class DataPartInfo extends Base
         return $this->decodeAfterFetch($this->data);
     }
 
-    public function setData(string $data = null): void
+    public function setData(?string $data = null): void
     {
         $this->data = $data;
     }
