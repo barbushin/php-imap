@@ -1171,15 +1171,48 @@ class Mailbox
      */
     public function getMailHeaderFieldValue(string $headersRaw, string $header_field_name): string
     {
-        $header_field_value = '';
+        $pattern = '/^'.\preg_quote($header_field_name, '/').':([^\r\n]*(?:\r?\n[ \t][^\r\n]*)*)/im';
 
-        if (\preg_match("/$header_field_name\:(.*)/i", $headersRaw, $matches)) {
-            if (isset($matches[1])) {
-                return \trim($matches[1]);
-            }
+        if (\preg_match($pattern, $headersRaw, $matches) && isset($matches[1]) && \is_string($matches[1])) {
+            /** @var string */
+            $headerFieldValue = \preg_replace('/\r?\n[ \t]+/', ' ', $matches[1]) ?? $matches[1];
+
+            return \trim($headerFieldValue);
         }
 
-        return $header_field_value;
+        return '';
+    }
+
+    /**
+     * @psalm-return array{messageId:null|string, inReplyTo:null|string, references:null|string}
+     */
+    protected function getThreadingHeaders(object $head, string $headersRaw): array
+    {
+        /** @var scalar|array|object|resource|null */
+        $parsedMessageId = $head->message_id ?? null;
+
+        if (null !== $parsedMessageId && !\is_string($parsedMessageId)) {
+            throw new UnexpectedValueException('Message ID was expected to be a string, '.\gettype($parsedMessageId).' found!');
+        }
+
+        $messageId = (\is_string($parsedMessageId) && '' !== \trim($parsedMessageId)) ? \trim($parsedMessageId) : $this->getOptionalMailHeaderFieldValue($headersRaw, 'Message-ID');
+
+        return [
+            'messageId' => $messageId,
+            'inReplyTo' => $this->getOptionalMailHeaderFieldValue($headersRaw, 'In-Reply-To'),
+            'references' => $this->getOptionalMailHeaderFieldValue($headersRaw, 'References'),
+        ];
+    }
+
+    protected function getOptionalMailHeaderFieldValue(string $headersRaw, string $headerFieldName): ?string
+    {
+        $headerFieldValue = $this->getMailHeaderFieldValue($headersRaw, $headerFieldName);
+
+        if ('' === $headerFieldValue) {
+            return null;
+        }
+
+        return $headerFieldValue;
     }
 
     /**
@@ -1203,6 +1236,7 @@ class Mailbox
          * date?:scalar,
          * Date?:scalar,
          * subject?:scalar,
+         * message_id?:scalar,
          * from?:HOSTNAMEANDADDRESS,
          * to?:HOSTNAMEANDADDRESS,
          * cc?:HOSTNAMEANDADDRESS,
@@ -1330,12 +1364,10 @@ class Mailbox
             }
         }
 
-        if (isset($head->message_id)) {
-            if (!\is_string($head->message_id)) {
-                throw new UnexpectedValueException('Message ID was expected to be a string, '.\gettype($head->message_id).' found!');
-            }
-            $header->messageId = $head->message_id;
-        }
+        $threadingHeaders = $this->getThreadingHeaders($head, $headersRaw);
+        $header->messageId = $threadingHeaders['messageId'];
+        $header->inReplyTo = $threadingHeaders['inReplyTo'];
+        $header->references = $threadingHeaders['references'];
 
         return $header;
     }
