@@ -93,6 +93,46 @@ class Mailbox
 
     public const AUTHENTICATION_TYPE_OAUTH = 'oauth';
 
+    /** @var string[] */
+    private const SIMPLE_SEARCH_CRITERIA_WITHOUT_ARGUMENTS = [
+        'ALL',
+        'ANSWERED',
+        'DELETED',
+        'DRAFT',
+        'FLAGGED',
+        'NEW',
+        'OLD',
+        'RECENT',
+        'SEEN',
+        'UNANSWERED',
+        'UNDELETED',
+        'UNDRAFT',
+        'UNFLAGGED',
+        'UNSEEN',
+    ];
+
+    /** @var string[] */
+    private const SIMPLE_SEARCH_CRITERIA_WITH_ONE_ARGUMENT = [
+        'BCC',
+        'BEFORE',
+        'BODY',
+        'CC',
+        'FROM',
+        'KEYWORD',
+        'LARGER',
+        'ON',
+        'SENTBEFORE',
+        'SENTON',
+        'SENTSINCE',
+        'SINCE',
+        'SMALLER',
+        'SUBJECT',
+        'TEXT',
+        'TO',
+        'UID',
+        'UNKEYWORD',
+    ];
+
     public const IMAP_OPTIONS_SUPPORTED_VALUES =
         OP_READONLY // 2
             | OP_ANONYMOUS // 4
@@ -688,13 +728,13 @@ class Mailbox
      */
     public function searchMailbox(string $criteria = 'ALL', bool $disableServerEncoding = false): array
     {
-        if ($disableServerEncoding) {
-            /** @psalm-var list<int> */
-            return Imap::search($this->getImapStream(), $criteria, $this->imapSearchOption);
+        $searchResult = $this->searchMailboxUsingImapSearch($criteria, $disableServerEncoding);
+
+        if ([] !== $searchResult || !$this->shouldApplySeenSinceSearchFallback($criteria)) {
+            return $searchResult;
         }
 
-        /** @psalm-var list<int> */
-        return Imap::search($this->getImapStream(), $criteria, $this->imapSearchOption, $this->getServerEncoding());
+        return $this->searchMailboxUsingSeenSinceFallback($criteria, $disableServerEncoding);
     }
 
     /**
@@ -2151,6 +2191,190 @@ class Mailbox
             $disableServerEncoding,
             ...$senders
         );
+    }
+
+    /**
+     * @return int[]
+     *
+     * @psalm-return list<int>
+     */
+    protected function searchMailboxUsingImapSearch(string $criteria, bool $disableServerEncoding): array
+    {
+        if ($disableServerEncoding) {
+            /** @psalm-var list<int> */
+            return Imap::search($this->getImapStream(), $criteria, $this->imapSearchOption);
+        }
+
+        /** @psalm-var list<int> */
+        return Imap::search($this->getImapStream(), $criteria, $this->imapSearchOption, $this->getServerEncoding());
+    }
+
+    protected function shouldApplySeenSinceSearchFallback(string $criteria): bool
+    {
+        $parsedCriteria = $this->parseSimpleSearchCriteria($criteria);
+
+        if (null === $parsedCriteria) {
+            return false;
+        }
+
+        $keywords = [];
+
+        foreach ($parsedCriteria as $parsedCriterion) {
+            $keywords[] = $parsedCriterion['keyword'];
+        }
+
+        return \in_array('SEEN', $keywords, true)
+            && \in_array('SINCE', $keywords, true)
+            && !\in_array('UNSEEN', $keywords, true);
+    }
+
+    /**
+     * Work around ext-imap / server combinations that do not immediately match
+     * same-day messages for simple `SEEN ... SINCE ...` searches.
+     *
+     * @return int[]
+     *
+     * @psalm-return list<int>
+     */
+    protected function searchMailboxUsingSeenSinceFallback(string $criteria, bool $disableServerEncoding): array
+    {
+        $criteriaWithoutSeen = $this->removeSimpleSearchCriteriaKeyword($criteria, 'SEEN');
+
+        if (null === $criteriaWithoutSeen) {
+            return [];
+        }
+
+        if ('' === $criteriaWithoutSeen) {
+            $criteriaWithoutSeen = 'ALL';
+        }
+
+        $searchResult = $this->searchMailboxUsingImapSearch($criteriaWithoutSeen, $disableServerEncoding);
+
+        return \array_values(\array_filter(
+            $searchResult,
+            function (int $mailId): bool {
+                return $this->flagIsSet($mailId, '\Seen');
+            }
+        ));
+    }
+
+    /**
+     * @return (string|string[])[]|null
+     *
+     * @psalm-return list<array{keyword:string, tokens:list<string>}>|null
+     */
+    protected function parseSimpleSearchCriteria(string $criteria): ?array
+    {
+        $tokens = $this->tokenizeSearchCriteria($criteria);
+
+        if ([] === $tokens) {
+            return [];
+        }
+
+        $parsedCriteria = [];
+
+        for ($index = 0; $index < \count($tokens); ++$index) {
+            $token = $tokens[$index];
+
+            if ($this->searchCriteriaTokenIsQuoted($token)) {
+                return null;
+            }
+
+            $keyword = \strtoupper($token);
+
+            if (\in_array($keyword, ['NOT', 'OR'], true)) {
+                return null;
+            }
+
+            if (\in_array($keyword, self::SIMPLE_SEARCH_CRITERIA_WITHOUT_ARGUMENTS, true)) {
+                $parsedCriteria[] = [
+                    'keyword' => $keyword,
+                    'tokens' => [$token],
+                ];
+
+                continue;
+            }
+
+            if ('HEADER' === $keyword) {
+                if (!isset($tokens[$index + 1], $tokens[$index + 2])) {
+                    return null;
+                }
+
+                $parsedCriteria[] = [
+                    'keyword' => $keyword,
+                    'tokens' => [$token, $tokens[$index + 1], $tokens[$index + 2]],
+                ];
+
+                $index += 2;
+
+                continue;
+            }
+
+            if (\in_array($keyword, self::SIMPLE_SEARCH_CRITERIA_WITH_ONE_ARGUMENT, true)) {
+                if (!isset($tokens[$index + 1])) {
+                    return null;
+                }
+
+                $parsedCriteria[] = [
+                    'keyword' => $keyword,
+                    'tokens' => [$token, $tokens[$index + 1]],
+                ];
+
+                ++$index;
+
+                continue;
+            }
+
+            return null;
+        }
+
+        /** @var list<array{keyword:string, tokens:list<string>}> */
+        return $parsedCriteria;
+    }
+
+    protected function removeSimpleSearchCriteriaKeyword(string $criteria, string $keywordToRemove): ?string
+    {
+        $parsedCriteria = $this->parseSimpleSearchCriteria($criteria);
+
+        if (null === $parsedCriteria) {
+            return null;
+        }
+
+        $criteriaTokens = [];
+
+        foreach ($parsedCriteria as $parsedCriterion) {
+            if ($keywordToRemove === $parsedCriterion['keyword']) {
+                continue;
+            }
+
+            foreach ($parsedCriterion['tokens'] as $token) {
+                $criteriaTokens[] = $token;
+            }
+        }
+
+        return \implode(' ', $criteriaTokens);
+    }
+
+    /**
+     * @return string[]
+     *
+     * @psalm-return list<string>
+     */
+    protected function tokenizeSearchCriteria(string $criteria): array
+    {
+        if ('' === \trim($criteria)) {
+            return [];
+        }
+
+        \preg_match_all('/"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"|[^\\s]+/', $criteria, $matches);
+
+        /** @var list<string> */
+        return $matches[0];
+    }
+
+    protected function searchCriteriaTokenIsQuoted(string $token): bool
+    {
+        return \strlen($token) >= 2 && '"' === $token[0] && '"' === $token[\strlen($token) - 1];
     }
 
     /**
