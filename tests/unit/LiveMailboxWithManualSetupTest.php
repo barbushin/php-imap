@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Live Mailbox - PHPUnit tests.
  *
@@ -59,7 +60,7 @@ class LiveMailboxWithManualSetupTest extends AbstractLiveMailboxTest
      * @psalm-param MAILBOX_ARGS $mailbox_args
      */
     public function testAbsolutePathStatusFromConstruction(
-        array $mailbox_args
+        array $mailbox_args,
     ): void {
         [$mailbox] = $this->getMailboxFromArgs($mailbox_args);
 

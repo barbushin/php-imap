@@ -5,12 +5,18 @@ declare(strict_types=1);
 namespace PhpImap;
 
 use const CL_EXPUNGE;
+
 use function count;
+
 use const CP_UID;
 use const DATE_RFC3339;
+
 use DateTime;
+
 use const DIRECTORY_SEPARATOR;
+
 use Exception;
+
 use const FILEINFO_EXTENSION;
 use const FILEINFO_MIME;
 use const FILEINFO_MIME_ENCODING;
@@ -24,7 +30,9 @@ use const IMAP_CLOSETIMEOUT;
 use const IMAP_OPENTIMEOUT;
 use const IMAP_READTIMEOUT;
 use const IMAP_WRITETIMEOUT;
+
 use InvalidArgumentException;
+
 use const OP_ANONYMOUS;
 use const OP_DEBUG;
 use const OP_HALFOPEN;
@@ -33,19 +41,22 @@ use const OP_READONLY;
 use const OP_SECURE;
 use const OP_SHORTCACHE;
 use const OP_SILENT;
-use const PATHINFO_EXTENSION;
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
+
 use const SA_ALL;
 use const SE_FREE;
 use const SE_UID;
 use const SORT_NUMERIC;
 use const SORTARRIVAL;
 use const ST_UID;
+
 use stdClass;
+
 use const TYPEMESSAGE;
 use const TYPEMULTIPART;
 use const TYPETEXT;
+
 use UnexpectedValueException;
 
 /**
@@ -54,7 +65,6 @@ use UnexpectedValueException;
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
  *
  * @psalm-type PARTSTRUCTURE_PARAM = object{attribute:string, value?:string}
- *
  * @psalm-type PARTSTRUCTURE = object{
  *  id?:string,
  *  encoding:int|mixed,
@@ -93,17 +103,61 @@ class Mailbox
 
     public const AUTHENTICATION_TYPE_OAUTH = 'oauth';
 
+    public const ATTACHMENT_FILENAME_COLLISION_OVERWRITE = 1;
+
+    public const ATTACHMENT_FILENAME_COLLISION_SUFFIX = 2;
+
     public const IMAP_OPTIONS_SUPPORTED_VALUES =
         OP_READONLY // 2
-            | OP_ANONYMOUS // 4
-            | OP_HALFOPEN // 64
-            | CL_EXPUNGE // 32768
-            | OP_DEBUG // 1
-            | OP_SHORTCACHE // 8
-            | OP_SILENT // 16
-            | OP_PROTOTYPE // 32
-            | OP_SECURE // 256
+        | OP_ANONYMOUS // 4
+        | OP_HALFOPEN // 64
+        | CL_EXPUNGE // 32768
+        | OP_DEBUG // 1
+        | OP_SHORTCACHE // 8
+        | OP_SILENT // 16
+        | OP_PROTOTYPE // 32
+        | OP_SECURE // 256
     ;
+
+    /** @var string[] */
+    private const SIMPLE_SEARCH_CRITERIA_WITHOUT_ARGUMENTS = [
+        'ALL',
+        'ANSWERED',
+        'DELETED',
+        'DRAFT',
+        'FLAGGED',
+        'NEW',
+        'OLD',
+        'RECENT',
+        'SEEN',
+        'UNANSWERED',
+        'UNDELETED',
+        'UNDRAFT',
+        'UNFLAGGED',
+        'UNSEEN',
+    ];
+
+    /** @var string[] */
+    private const SIMPLE_SEARCH_CRITERIA_WITH_ONE_ARGUMENT = [
+        'BCC',
+        'BEFORE',
+        'BODY',
+        'CC',
+        'FROM',
+        'KEYWORD',
+        'LARGER',
+        'ON',
+        'SENTBEFORE',
+        'SENTON',
+        'SENTSINCE',
+        'SINCE',
+        'SMALLER',
+        'SUBJECT',
+        'TEXT',
+        'TO',
+        'UID',
+        'UNKEYWORD',
+    ];
 
     /** @var string */
     public $decodeMimeStrDefaultCharset = 'default';
@@ -121,7 +175,7 @@ class Mailbox
     protected $authenticationType = self::AUTHENTICATION_TYPE_PASSWORD;
 
     /** @var string|null */
-    protected $imapOAuthToken = null;
+    protected $imapOAuthToken;
 
     /** @var int */
     protected $imapSearchOption = SE_UID;
@@ -145,7 +199,7 @@ class Mailbox
     protected $serverEncoding = 'UTF-8';
 
     /** @var string|null */
-    protected $attachmentsDir = null;
+    protected $attachmentsDir;
 
     /** @var bool */
     protected $expungeOnDisconnect = true;
@@ -166,8 +220,11 @@ class Mailbox
     /** @var string */
     protected $mailboxFolder;
 
-    /** @var bool|false */
+    /** @var bool */
     protected $attachmentFilenameMode = false;
+
+    /** @var int */
+    protected $attachmentFilenameCollisionMode = self::ATTACHMENT_FILENAME_COLLISION_OVERWRITE;
 
     /** @var resource|null */
     private $imapStream;
@@ -175,7 +232,7 @@ class Mailbox
     /**
      * @throws InvalidParameterException
      */
-    public function __construct(string $imapPath, string $login, string $password, string $attachmentsDir = null, string $serverEncoding = 'UTF-8', bool $trimImapPath = true, bool $attachmentFilenameMode = false)
+    public function __construct(string $imapPath, string $login, string $password, ?string $attachmentsDir = null, string $serverEncoding = 'UTF-8', bool $trimImapPath = true, bool $attachmentFilenameMode = false)
     {
         $this->imapPath = (true == $trimImapPath) ? \trim($imapPath) : $imapPath;
         $this->imapLogin = \trim($login);
@@ -297,6 +354,41 @@ class Mailbox
         }
 
         $this->attachmentFilenameMode = $attachmentFilenameMode;
+    }
+
+    /**
+     * Returns the current collision handling mode for original attachment filenames.
+     *
+     * @return int Attachment filename collision mode
+     *
+     * @psalm-return 1|2
+     */
+    public function getAttachmentFilenameCollisionMode(): int
+    {
+        return $this->attachmentFilenameCollisionMode;
+    }
+
+    /**
+     * Sets / Changes the collision handling mode for original attachment filenames.
+     *
+     * @param int $attachmentFilenameCollisionMode Attachment filename collision mode
+     *
+     * @psalm-param 1|2 $attachmentFilenameCollisionMode
+     *
+     * @throws InvalidParameterException
+     */
+    public function setAttachmentFilenameCollisionMode(int $attachmentFilenameCollisionMode): void
+    {
+        $supported_modes = [
+            self::ATTACHMENT_FILENAME_COLLISION_OVERWRITE,
+            self::ATTACHMENT_FILENAME_COLLISION_SUFFIX,
+        ];
+
+        if (!\in_array($attachmentFilenameCollisionMode, $supported_modes, true)) {
+            throw new InvalidParameterException('"'.$attachmentFilenameCollisionMode.'" is not supported by setAttachmentFilenameCollisionMode(). Supported modes are ATTACHMENT_FILENAME_COLLISION_OVERWRITE and ATTACHMENT_FILENAME_COLLISION_SUFFIX.');
+        }
+
+        $this->attachmentFilenameCollisionMode = $attachmentFilenameCollisionMode;
     }
 
     /**
@@ -423,7 +515,7 @@ class Mailbox
      *
      * @throws InvalidParameterException
      */
-    public function setConnectionArgs(int $options = 0, int $retriesNum = 0, array $params = null): void
+    public function setConnectionArgs(int $options = 0, int $retriesNum = 0, ?array $params = null): void
     {
         if (0 !== $options) {
             if (($options & $this->getSupportedImapOptions()) !== $options) {
@@ -541,7 +633,7 @@ class Mailbox
      */
     public function encodeStringToUtf7Imap(string $str): string
     {
-        return imap_utf7_encode($str);
+        return Imap::encodeStringToUtf7Imap($str);
     }
 
     /**
@@ -553,13 +645,7 @@ class Mailbox
      */
     public function decodeStringFromUtf7ImapToUtf8(string $str): string
     {
-        $out = imap_utf7_decode($str);
-
-        if (!\is_string($out)) {
-            throw new UnexpectedValueException('mb_convert_encoding($str, \'UTF-8\', \'UTF7-IMAP\') could not convert $str');
-        }
-
-        return $out;
+        return Imap::decodeStringFromUtf7ImapToUtf8($str);
     }
 
     /**
@@ -698,13 +784,13 @@ class Mailbox
      */
     public function searchMailbox(string $criteria = 'ALL', bool $disableServerEncoding = false): array
     {
-        if ($disableServerEncoding) {
-            /** @psalm-var list<int> */
-            return Imap::search($this->getImapStream(), $criteria, $this->imapSearchOption);
+        $searchResult = $this->searchMailboxUsingImapSearch($criteria, $disableServerEncoding);
+
+        if ([] !== $searchResult || !$this->shouldApplySeenSinceSearchFallback($criteria)) {
+            return $searchResult;
         }
 
-        /** @psalm-var list<int> */
-        return Imap::search($this->getImapStream(), $criteria, $this->imapSearchOption, $this->getServerEncoding());
+        return $this->searchMailboxUsingSeenSinceFallback($criteria, $disableServerEncoding);
     }
 
     /**
@@ -893,9 +979,9 @@ class Mailbox
      * @param int    $mailId A single mail ID
      * @param string $flag   Which you can get are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060
      *
-     * @return bool True, when the flag is set, false when not
-     *
      * @psalm-param int $mailId
+     *
+     * @return bool True, when the flag is set, false when not
      */
     public function flagIsSet(int $mailId, string $flag): bool
     {
@@ -1063,7 +1149,7 @@ class Mailbox
         int $criteria = SORTARRIVAL,
         bool $reverse = true,
         ?string $searchCriteria = 'ALL',
-        string $charset = null
+        ?string $charset = null,
     ): array {
         return Imap::sort(
             $this->getImapStream(),
@@ -1141,15 +1227,16 @@ class Mailbox
      */
     public function getMailHeaderFieldValue(string $headersRaw, string $header_field_name): string
     {
-        $header_field_value = '';
+        $pattern = '/^'.\preg_quote($header_field_name, '/').':([^\r\n]*(?:\r?\n[ \t][^\r\n]*)*)/im';
 
-        if (\preg_match("/$header_field_name\:(.*)/i", $headersRaw, $matches)) {
-            if (isset($matches[1])) {
-                return \trim($matches[1]);
-            }
+        if (\preg_match($pattern, $headersRaw, $matches) && isset($matches[1]) && \is_string($matches[1])) {
+            /** @var string */
+            $headerFieldValue = \preg_replace('/\r?\n[ \t]+/', ' ', $matches[1]) ?? $matches[1];
+
+            return \trim($headerFieldValue);
         }
 
-        return $header_field_value;
+        return '';
     }
 
     /**
@@ -1173,6 +1260,7 @@ class Mailbox
          * date?:scalar,
          * Date?:scalar,
          * subject?:scalar,
+         * message_id?:scalar,
          * from?:HOSTNAMEANDADDRESS,
          * to?:HOSTNAMEANDADDRESS,
          * cc?:HOSTNAMEANDADDRESS,
@@ -1212,7 +1300,7 @@ class Mailbox
         }
 
         $header = new IncomingMailHeader();
-        $header->headersRaw = $headersRaw;
+        $header->setHeadersRaw($headersRaw);
         $header->headers = $head;
         $header->id = $mailId;
         $header->imapPath = $this->imapPath;
@@ -1300,12 +1388,10 @@ class Mailbox
             }
         }
 
-        if (isset($head->message_id)) {
-            if (!\is_string($head->message_id)) {
-                throw new UnexpectedValueException('Message ID was expected to be a string, '.\gettype($head->message_id).' found!');
-            }
-            $header->messageId = $head->message_id;
-        }
+        $threadingHeaders = $this->getThreadingHeaders($head, $headersRaw);
+        $header->messageId = $threadingHeaders['messageId'];
+        $header->inReplyTo = $threadingHeaders['inReplyTo'];
+        $header->references = $threadingHeaders['references'];
 
         return $header;
     }
@@ -1331,7 +1417,7 @@ class Mailbox
                 $part_parts = $part->parts;
 
                 if (self::PART_TYPE_TWO == $part->type) {
-                    $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix.$index.'.', 0, false);
+                    $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix.$index.'.', 1, false);
                 } elseif ($fullPrefix) {
                     $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix.$index.'.');
                 } else {
@@ -1390,7 +1476,7 @@ class Mailbox
      */
     public function downloadAttachment(DataPartInfo $dataInfo, array $params, object $partStructure, bool $emlOrigin = false): IncomingMailAttachment
     {
-        if ('RFC822' == $partStructure->subtype && isset($partStructure->disposition) && 'attachment' == $partStructure->disposition) {
+        if ('RFC822' == $partStructure->subtype && $this->hasAttachmentDisposition($partStructure)) {
             $fileName = \strtolower($partStructure->subtype).'.eml';
         } elseif ('ALTERNATIVE' == $partStructure->subtype) {
             $fileName = \strtolower($partStructure->subtype).'.eml';
@@ -1455,17 +1541,15 @@ class Mailbox
 
         if (null != $attachmentsDir) {
             if (true == $this->getAttachmentFilenameMode()) {
-                $fileSysName = $attachment->name;
+                $fileSysName = $this->resolveAttachmentFileSystemName(
+                    $attachmentsDir,
+                    $this->sanitizeAttachmentFileSystemName($attachment->name)
+                );
             } else {
                 $fileSysName = \bin2hex(\random_bytes(16)).'.bin';
             }
 
             $filePath = $attachmentsDir.DIRECTORY_SEPARATOR.$fileSysName;
-
-            if (\strlen($filePath) > self::MAX_LENGTH_FILEPATH) {
-                $ext = \pathinfo($filePath, PATHINFO_EXTENSION);
-                $filePath = \substr($filePath, 0, self::MAX_LENGTH_FILEPATH - 1 - \strlen($ext)).'.'.$ext;
-            }
 
             $attachment->setFilePath($filePath);
             $attachment->saveToDisk();
@@ -1550,10 +1634,11 @@ class Mailbox
      */
     public function isUrlEncoded(string $string): bool
     {
-        $hasInvalidChars = \preg_match('#[^%a-zA-Z0-9\-_\.\+]#', $string);
-        $hasEscapedChars = \preg_match('#%[a-zA-Z0-9]{2}#', $string);
+        $hasInvalidChars = 1 === \preg_match('#[^%a-zA-Z0-9\-_\.\+]#', $string);
+        $hasEscapedChars = 1 === \preg_match('#%[A-Fa-f0-9]{2}#', $string);
+        $hasInvalidEscapes = 1 === \preg_match('#%(?![A-Fa-f0-9]{2})#', $string);
 
-        return !$hasInvalidChars && $hasEscapedChars;
+        return !$hasInvalidChars && $hasEscapedChars && !$hasInvalidEscapes;
     }
 
     /**
@@ -1677,13 +1762,13 @@ class Mailbox
     public function appendMessageToMailbox(
         $message,
         string $mailbox = '',
-        string $options = null,
-        string $internal_date = null
+        ?string $options = null,
+        ?string $internal_date = null,
     ): bool {
         if (
-            \is_array($message) &&
-            self::EXPECTED_SIZE_OF_MESSAGE_AS_ARRAY === \count($message) &&
-            isset($message[0], $message[1])
+            \is_array($message)
+            && self::EXPECTED_SIZE_OF_MESSAGE_AS_ARRAY === \count($message)
+            && isset($message[0], $message[1])
         ) {
             $message = Imap::mail_compose($message[0], $message[1]);
         }
@@ -1699,6 +1784,104 @@ class Mailbox
             $options,
             $internal_date
         );
+    }
+
+    /**
+     * @psalm-return array{messageId:null|string, inReplyTo:null|string, references:null|string}
+     */
+    protected function getThreadingHeaders(object $head, string $headersRaw): array
+    {
+        /** @var scalar|array|object|resource|null */
+        $parsedMessageId = $head->message_id ?? null;
+
+        if (null !== $parsedMessageId && !\is_string($parsedMessageId)) {
+            throw new UnexpectedValueException('Message ID was expected to be a string, '.\gettype($parsedMessageId).' found!');
+        }
+
+        $messageId = (\is_string($parsedMessageId) && '' !== \trim($parsedMessageId)) ? \trim($parsedMessageId) : $this->getOptionalMailHeaderFieldValue($headersRaw, 'Message-ID');
+
+        return [
+            'messageId' => $messageId,
+            'inReplyTo' => $this->getOptionalMailHeaderFieldValue($headersRaw, 'In-Reply-To'),
+            'references' => $this->getOptionalMailHeaderFieldValue($headersRaw, 'References'),
+        ];
+    }
+
+    protected function getOptionalMailHeaderFieldValue(string $headersRaw, string $headerFieldName): ?string
+    {
+        $headerFieldValue = $this->getMailHeaderFieldValue($headersRaw, $headerFieldName);
+
+        if ('' === $headerFieldValue) {
+            return null;
+        }
+
+        return $headerFieldValue;
+    }
+
+    protected function hasAttachmentDisposition(object $partStructure): bool
+    {
+        /** @var scalar|array|object|resource|null */
+        $disposition = $partStructure->disposition ?? null;
+
+        return \is_string($disposition) && 'attachment' === \mb_strtolower($disposition);
+    }
+
+    protected function sanitizeAttachmentFileSystemName(string $fileName): string
+    {
+        return \strtr($fileName, [
+            '\\' => '_',
+            '/' => '_',
+        ]);
+    }
+
+    protected function resolveAttachmentFileSystemName(string $attachmentsDir, string $fileSystemName): string
+    {
+        if (self::ATTACHMENT_FILENAME_COLLISION_SUFFIX !== $this->getAttachmentFilenameCollisionMode()) {
+            return $this->fitAttachmentFileSystemNameToPathLimit($attachmentsDir, $fileSystemName);
+        }
+
+        $collisionIndex = 0;
+
+        do {
+            $suffix = 0 === $collisionIndex ? '' : ' ('.$collisionIndex.')';
+            $candidate = $this->fitAttachmentFileSystemNameToPathLimit($attachmentsDir, $fileSystemName, $suffix);
+            ++$collisionIndex;
+        } while (\file_exists($attachmentsDir.DIRECTORY_SEPARATOR.$candidate));
+
+        return $candidate;
+    }
+
+    protected function fitAttachmentFileSystemNameToPathLimit(string $attachmentsDir, string $fileSystemName, string $suffix = ''): string
+    {
+        [$fileName, $fileExtension] = $this->splitAttachmentFileSystemName($fileSystemName);
+
+        $maxFileNameLength = self::MAX_LENGTH_FILEPATH
+            - \strlen($attachmentsDir.DIRECTORY_SEPARATOR)
+            - \strlen($suffix)
+            - \strlen($fileExtension);
+
+        if (\strlen($fileName) > $maxFileNameLength) {
+            $fileName = \substr($fileName, 0, \max(1, $maxFileNameLength));
+        }
+
+        return $fileName.$suffix.$fileExtension;
+    }
+
+    /**
+     * @return array{0:string, 1:string}
+     */
+    protected function splitAttachmentFileSystemName(string $fileSystemName): array
+    {
+        $lastDotPosition = \strrpos($fileSystemName, '.');
+
+        if (false === $lastDotPosition || 0 === $lastDotPosition) {
+            return [$fileSystemName, ''];
+        }
+
+        return [
+            \substr($fileSystemName, 0, $lastDotPosition),
+            \substr($fileSystemName, $lastDotPosition),
+        ];
     }
 
     /**
@@ -1749,9 +1932,9 @@ class Mailbox
     /**
      * Open an IMAP stream to a mailbox.
      *
-     * @throws Exception if an error occured
-     *
      * @return resource IMAP stream on success
+     *
+     * @throws Exception if an error occured
      */
     protected function initImapStream()
     {
@@ -1846,6 +2029,7 @@ class Mailbox
      * @param string|0 $partNum
      *
      * @psalm-param PARTSTRUCTURE $partStructure
+     *
      * @psalm-suppress InvalidArgument
      *
      * @todo refactor type checking pending resolution of https://github.com/vimeo/psalm/issues/2619
@@ -1887,15 +2071,13 @@ class Mailbox
 
         $isAttachment = isset($params['filename']) || isset($params['name']) || isset($partStructure->id);
 
-        $dispositionAttachment = (isset($partStructure->disposition) &&
-            \is_string($partStructure->disposition) &&
-            'attachment' === \mb_strtolower($partStructure->disposition));
+        $dispositionAttachment = $this->hasAttachmentDisposition($partStructure);
 
         // ignore contentId on body when mail isn't multipart (https://github.com/barbushin/php-imap/issues/71)
         if (
-            !$partNum &&
-            TYPETEXT === $partStructure->type &&
-            !$dispositionAttachment
+            !$partNum
+            && TYPETEXT === $partStructure->type
+            && !$dispositionAttachment
         ) {
             $isAttachment = false;
         }
@@ -1905,9 +2087,9 @@ class Mailbox
         }
 
         // check if the part is a subpart of another attachment part (RFC822)
-        if ('RFC822' === $partStructure->subtype && isset($partStructure->disposition) && 'attachment' === $partStructure->disposition) {
+        if ('RFC822' === $partStructure->subtype && $dispositionAttachment) {
             // Although we are downloading each part separately, we are going to download the EML to a single file
-            //incase someone wants to process or parse in another process
+            // incase someone wants to process or parse in another process
             $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, false);
             $mail->addAttachment($attachment);
         }
@@ -1937,15 +2119,15 @@ class Mailbox
 
         if (!empty($partStructure->parts)) {
             foreach ($partStructure->parts as $subPartNum => $subPartStructure) {
-                $not_attachment = (!isset($partStructure->disposition) || 'attachment' !== $partStructure->disposition);
+                $not_attachment = !$dispositionAttachment;
 
                 if (TYPEMESSAGE === $partStructure->type && 'RFC822' === $partStructure->subtype && $not_attachment) {
                     $this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
                 } elseif (TYPEMULTIPART === $partStructure->type && 'ALTERNATIVE' === $partStructure->subtype && $not_attachment) {
                     // https://github.com/barbushin/php-imap/issues/198
                     $this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
-                } elseif ('RFC822' === $partStructure->subtype && isset($partStructure->disposition) && 'attachment' === $partStructure->disposition) {
-                    //If it comes from am EML attachment, download each part separately as a file
+                } elseif ('RFC822' === $partStructure->subtype && $dispositionAttachment) {
+                    // If it comes from am EML attachment, download each part separately as a file
                     $this->initMailPart($mail, $subPartStructure, $partNum.'.'.($subPartNum + 1), $markAsSeen, true);
                 } else {
                     $this->initMailPart($mail, $subPartStructure, $partNum.'.'.($subPartNum + 1), $markAsSeen);
@@ -1976,9 +2158,8 @@ class Mailbox
     {
         if (\preg_match("/^(.*?)'.*?'(.*?)$/", $string, $matches)) {
             $data = $matches[2] ?? '';
-            if ($this->isUrlEncoded($data)) {
-                $string = $this->decodeMimeStr(\urldecode($data));
-            }
+            $decodedData = $this->isUrlEncoded($data) ? \urldecode($data) : $data;
+            $string = $this->decodeMimeStr($decodedData);
         }
 
         return $string;
@@ -2015,9 +2196,9 @@ class Mailbox
     }
 
     /**
-     * @psalm-return array{0: string, 1: null|string}|null
+     * @return (string|null)[]|null
      *
-     * @return (null|string)[]|null
+     * @psalm-return array{0: string, 1: null|string}|null
      */
     protected function possiblyGetEmailAndNameFromRecipient(object $recipient): ?array
     {
@@ -2038,7 +2219,7 @@ class Mailbox
             }
 
             if ('' !== \trim($recipientMailbox) && '' !== \trim($recipientHost)) {
-                $recipientEmail = \strtolower($recipientMailbox.'@'.$recipientHost);
+                $recipientEmail = \mb_strtolower($recipientMailbox.'@'.$recipientHost, 'UTF-8');
                 $recipientName = (\is_string($recipientPersonal) && '' !== \trim($recipientPersonal)) ? $this->decodeMimeStr($recipientPersonal) : null;
 
                 return [
@@ -2116,7 +2297,7 @@ class Mailbox
         }
 
         /** @var string */
-        $out[] = \strtolower($t[0]->mailbox.'@'.(string) $out[0]);
+        $out[] = \mb_strtolower($t[0]->mailbox.'@'.(string) $out[0], 'UTF-8');
 
         /** @var array{0:string|null, 1:string|null, 2:string} */
         return $out;
@@ -2153,7 +2334,7 @@ class Mailbox
              * @return string
              */
             static function ($sender) use ($criteria): string {
-                return $criteria.' FROM '.\mb_strtolower($sender);
+                return $criteria.' FROM '.\mb_strtolower($sender, 'UTF-8');
             },
             $senders
         )));
@@ -2162,6 +2343,190 @@ class Mailbox
             $disableServerEncoding,
             ...$senders
         );
+    }
+
+    /**
+     * @return int[]
+     *
+     * @psalm-return list<int>
+     */
+    protected function searchMailboxUsingImapSearch(string $criteria, bool $disableServerEncoding): array
+    {
+        if ($disableServerEncoding) {
+            /** @psalm-var list<int> */
+            return Imap::search($this->getImapStream(), $criteria, $this->imapSearchOption);
+        }
+
+        /** @psalm-var list<int> */
+        return Imap::search($this->getImapStream(), $criteria, $this->imapSearchOption, $this->getServerEncoding());
+    }
+
+    protected function shouldApplySeenSinceSearchFallback(string $criteria): bool
+    {
+        $parsedCriteria = $this->parseSimpleSearchCriteria($criteria);
+
+        if (null === $parsedCriteria) {
+            return false;
+        }
+
+        $keywords = [];
+
+        foreach ($parsedCriteria as $parsedCriterion) {
+            $keywords[] = $parsedCriterion['keyword'];
+        }
+
+        return \in_array('SEEN', $keywords, true)
+            && \in_array('SINCE', $keywords, true)
+            && !\in_array('UNSEEN', $keywords, true);
+    }
+
+    /**
+     * Work around ext-imap / server combinations that do not immediately match
+     * same-day messages for simple `SEEN ... SINCE ...` searches.
+     *
+     * @return int[]
+     *
+     * @psalm-return list<int>
+     */
+    protected function searchMailboxUsingSeenSinceFallback(string $criteria, bool $disableServerEncoding): array
+    {
+        $criteriaWithoutSeen = $this->removeSimpleSearchCriteriaKeyword($criteria, 'SEEN');
+
+        if (null === $criteriaWithoutSeen) {
+            return [];
+        }
+
+        if ('' === $criteriaWithoutSeen) {
+            $criteriaWithoutSeen = 'ALL';
+        }
+
+        $searchResult = $this->searchMailboxUsingImapSearch($criteriaWithoutSeen, $disableServerEncoding);
+
+        return \array_values(\array_filter(
+            $searchResult,
+            function (int $mailId): bool {
+                return $this->flagIsSet($mailId, '\Seen');
+            }
+        ));
+    }
+
+    /**
+     * @return (string|string[])[]|null
+     *
+     * @psalm-return list<array{keyword:string, tokens:list<string>}>|null
+     */
+    protected function parseSimpleSearchCriteria(string $criteria): ?array
+    {
+        $tokens = $this->tokenizeSearchCriteria($criteria);
+
+        if ([] === $tokens) {
+            return [];
+        }
+
+        $parsedCriteria = [];
+
+        for ($index = 0; $index < \count($tokens); ++$index) {
+            $token = $tokens[$index];
+
+            if ($this->searchCriteriaTokenIsQuoted($token)) {
+                return null;
+            }
+
+            $keyword = \strtoupper($token);
+
+            if (\in_array($keyword, ['NOT', 'OR'], true)) {
+                return null;
+            }
+
+            if (\in_array($keyword, self::SIMPLE_SEARCH_CRITERIA_WITHOUT_ARGUMENTS, true)) {
+                $parsedCriteria[] = [
+                    'keyword' => $keyword,
+                    'tokens' => [$token],
+                ];
+
+                continue;
+            }
+
+            if ('HEADER' === $keyword) {
+                if (!isset($tokens[$index + 1], $tokens[$index + 2])) {
+                    return null;
+                }
+
+                $parsedCriteria[] = [
+                    'keyword' => $keyword,
+                    'tokens' => [$token, $tokens[$index + 1], $tokens[$index + 2]],
+                ];
+
+                $index += 2;
+
+                continue;
+            }
+
+            if (\in_array($keyword, self::SIMPLE_SEARCH_CRITERIA_WITH_ONE_ARGUMENT, true)) {
+                if (!isset($tokens[$index + 1])) {
+                    return null;
+                }
+
+                $parsedCriteria[] = [
+                    'keyword' => $keyword,
+                    'tokens' => [$token, $tokens[$index + 1]],
+                ];
+
+                ++$index;
+
+                continue;
+            }
+
+            return null;
+        }
+
+        /** @var list<array{keyword:string, tokens:list<string>}> */
+        return $parsedCriteria;
+    }
+
+    protected function removeSimpleSearchCriteriaKeyword(string $criteria, string $keywordToRemove): ?string
+    {
+        $parsedCriteria = $this->parseSimpleSearchCriteria($criteria);
+
+        if (null === $parsedCriteria) {
+            return null;
+        }
+
+        $criteriaTokens = [];
+
+        foreach ($parsedCriteria as $parsedCriterion) {
+            if ($keywordToRemove === $parsedCriterion['keyword']) {
+                continue;
+            }
+
+            foreach ($parsedCriterion['tokens'] as $token) {
+                $criteriaTokens[] = $token;
+            }
+        }
+
+        return \implode(' ', $criteriaTokens);
+    }
+
+    /**
+     * @return string[]
+     *
+     * @psalm-return list<string>
+     */
+    protected function tokenizeSearchCriteria(string $criteria): array
+    {
+        if ('' === \trim($criteria)) {
+            return [];
+        }
+
+        \preg_match_all('/"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"|[^\\s]+/', $criteria, $matches);
+
+        /** @var list<string> */
+        return $matches[0];
+    }
+
+    protected function searchCriteriaTokenIsQuoted(string $token): bool
+    {
+        return \strlen($token) >= 2 && '"' === $token[0] && '"' === $token[\strlen($token) - 1];
     }
 
     /**

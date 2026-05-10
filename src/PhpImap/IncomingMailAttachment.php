@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpImap;
 
 use const FILEINFO_NONE;
+
 use finfo;
 use UnexpectedValueException;
 
@@ -130,9 +131,23 @@ class IncomingMailAttachment
      */
     public function getFileInfo(int $fileinfo_const = FILEINFO_NONE): string
     {
+        $fileInfo = $this->detectFileInfo($fileinfo_const, $this->getContents());
+
+        if (false === $fileInfo) {
+            return '';
+        }
+
+        return $fileInfo;
+    }
+
+    /**
+     * @return false|string
+     */
+    protected function detectFileInfo(int $fileinfo_const, string $contents)
+    {
         $finfo = new finfo($fileinfo_const);
 
-        return $finfo->buffer($this->getContents());
+        return $finfo->buffer($contents);
     }
 
     /**

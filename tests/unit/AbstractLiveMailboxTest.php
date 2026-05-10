@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Live Mailbox - PHPUnit tests.
  *
@@ -94,7 +95,7 @@ abstract class AbstractLiveMailboxTest extends TestCase
         array $envelope,
         array $body,
         string $_expected_compose_result,
-        bool $pre_compose
+        bool $pre_compose,
     ): void {
         if ($this->MaybeSkipAppendTest($envelope)) {
             return;
@@ -117,11 +118,10 @@ abstract class AbstractLiveMailboxTest extends TestCase
             $this->assertCount(
                 0,
                 $search,
-                (
-                    'If a subject was found,'.
-                    ' then the message is insufficiently unique to assert that'.
-                    ' a newly-appended message was actually created.'
-                )
+
+                'If a subject was found,'.
+                ' then the message is insufficiently unique to assert that'.
+                ' a newly-appended message was actually created.'
             );
 
             $message = [$envelope, $body];
@@ -137,11 +137,10 @@ abstract class AbstractLiveMailboxTest extends TestCase
             $this->assertCount(
                 1,
                 $search,
-                (
-                    'If a subject was not found, '.
-                    ' then Mailbox::appendMessageToMailbox() failed'.
-                    ' despite not throwing an exception.'
-                )
+
+                'If a subject was not found, '.
+                ' then Mailbox::appendMessageToMailbox() failed'.
+                ' despite not throwing an exception.'
             );
 
             $mailbox->deleteMail($search[0]);
@@ -155,10 +154,9 @@ abstract class AbstractLiveMailboxTest extends TestCase
             $this->assertCount(
                 0,
                 $mailbox->searchMailbox($search_criteria),
-                (
-                    'If a subject was found,'.
-                    ' then the message is was not expunged as requested.'
-                )
+
+                'If a subject was found,'.
+                ' then the message is was not expunged as requested.'
             );
         } catch (Throwable $ex) {
             $exception = $ex;

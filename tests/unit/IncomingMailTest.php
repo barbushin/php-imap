@@ -1,13 +1,15 @@
 <?php
+
 /**
-* @author BAPCLTD-Marv
-*/
+ * @author BAPCLTD-Marv
+ */
 declare(strict_types=1);
 
 namespace PhpImap;
 
 use const DATE_RFC3339;
 use const ENCOTHER;
+
 use PHPUnit\Framework\TestCase;
 
 class IncomingMailTest extends TestCase

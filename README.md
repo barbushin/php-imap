@@ -13,11 +13,11 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/02f72a4fd695cb7e2976/test_coverage)](https://codeclimate.com/github/barbushin/php-imap/test_coverage)
 [![Type Coverage](https://shepherd.dev/github/barbushin/php-imap/coverage.svg)](https://shepherd.dev/github/barbushin/php-imap)
 
-Initially released in December 2012, the PHP IMAP Mailbox is a powerful and open source library to connect to a mailbox by POP3, IMAP and NNTP using the PHP IMAP extension. This library allows you to fetch emails from your email server. Extend the functionality or create powerful web applications to handle your incoming emails.
+Initially released in December 2012, the PHP IMAP Mailbox is a powerful and open source library to connect to a mailbox by POP3, IMAP and NNTP using the PHP IMAP extension (`ext-imap`). This library allows you to fetch emails from your email server. Extend the functionality or create powerful web applications to handle your incoming emails.
 
 ### Features
 
-* Connect to mailbox by POP3/IMAP/NNTP, using [PHP IMAP extension](http://php.net/manual/book.imap.php)
+* Connect to mailbox by POP3/IMAP/NNTP, using [PHP IMAP extension](https://www.php.net/manual/book.imap.php)
 * Get emails with attachments and inline images
 * Get emails filtered or sorted by custom criteria
 * Mark emails as seen/unseen
@@ -43,13 +43,16 @@ Initially released in December 2012, the PHP IMAP Mailbox is a powerful and open
 
 The next major release raises the minimum supported PHP version to PHP 8.2 and is tested on PHP 8.2 through PHP 8.5.
 
-* PHP `fileinfo` extension must be present; so make sure this line is active in your php.ini: `extension=php_fileinfo.dll`
-* PHP `iconv` extension must be present; so make sure this line is active in your php.ini: `extension=php_iconv.dll`
-* PHP `imap` extension must be present; so make sure this line is active in your php.ini: `extension=php_imap.dll`
-* PHP `mbstring` extension must be present; so make sure this line is active in your php.ini: `extension=php_mbstring.dll`
-* PHP `json` extension must be present; so make sure this line is active in your php.ini: `extension=json.dll`
+* PHP `fileinfo`, `iconv`, `mbstring`, and `json` extensions must be present.
+* PHP `ext-imap` must be present.
+* On PHP `8.2` and `8.3`, install or enable the IMAP extension provided by your PHP distribution. On Windows, this can still mean enabling `extension=php_imap.dll` in `php.ini`.
+* On PHP `8.4` and newer, install IMAP from PECL and enable it for your CLI and web SAPIs.
+* When building IMAP from source, you may also need `c-client`, OpenSSL, and Kerberos development libraries.
+* `ext-imap` is not thread-safe and should not be used with ZTS builds.
 
 ### Installation by Composer
+
+Before running `composer require` or `composer install`, make sure `ext-imap` is installed for the PHP version you are using.
 
 Install the [latest available release](https://github.com/barbushin/php-imap/releases):
 
@@ -61,7 +64,7 @@ Install the latest available and stable source code from `master`, which is may 
 
 ### Run Tests
 
-Before you can run the any tests you may need to run `composer install` to install all (development) dependencies.
+Before you can run any tests you need a working `ext-imap` installation and you may need to run `composer install` to install all development dependencies.
 
 #### Run all tests
 
@@ -79,7 +82,7 @@ You can run all PHPUnit tests by running the following command (inside of the in
 
 Below, you'll find an example code how you can use this library. For further information and other examples, you may take a look at the [wiki](https://github.com/barbushin/php-imap/wiki).
 
-By default, this library uses random filenames for attachments as identical file names from other emails would overwrite other attachments. If you want to keep the original file name, you can set the attachment filename mode to ``true``, but then you also need to ensure, that those files don't get overwritten by other emails for example.
+By default, this library uses random filenames for attachments as identical file names from other emails would overwrite other attachments. If you want to keep the original file name, you can set the attachment filename mode to `true`. For backward compatibility, this still overwrites an existing file with the same name. If you want to keep the original file name and automatically suffix duplicates with ` (1)`, ` (2)`, and so on, set the attachment filename collision mode to `PhpImap\Mailbox::ATTACHMENT_FILENAME_COLLISION_SUFFIX`.
 
 ```php
 // Create PhpImap\Mailbox instance for all further actions
@@ -91,6 +94,10 @@ $mailbox = new PhpImap\Mailbox(
 	'UTF-8', // Server encoding (optional)
     true, // Trim leading/ending whitespaces of IMAP path (optional)
     false // Attachment filename mode (optional; false = random filename; true = original filename)
+);
+
+$mailbox->setAttachmentFilenameCollisionMode(
+    PhpImap\Mailbox::ATTACHMENT_FILENAME_COLLISION_SUFFIX
 );
 
 // set some connection arguments (if appropriate)
@@ -118,6 +125,9 @@ if(!$mailsIds) {
 	die('Mailbox is empty');
 }
 
+// If you want to inspect a message without changing its seen state,
+// use getMail($id, false) or getRawMail($id, false).
+
 // Get the first message
 // If '__DIR__' was defined in the first line, it will automatically
 // save all attachments to the specified directory
@@ -134,10 +144,16 @@ if($mail->hasAttachments()) {
 // Print all information of $mail
 print_r($mail);
 
+// Access arbitrary headers without adding custom properties to the library
+$originMessageId = $mail->getHeader('Origin-MessageID');
+$receivedHeaders = $mail->getHeaders('Received');
+
 // Print all attachements of $mail
 echo "\n\nAttachments:\n";
 print_r($mail->getAttachments());
 ```
+
+`searchMailbox()` delegates criteria evaluation to PHP's IMAP extension and the IMAP server behind it. This library includes a fallback for simple `SEEN ... SINCE ...` searches because some `ext-imap` / server combinations do not immediately return messages marked as seen earlier on the same day. More complex `imap_search()` behavior still depends on the underlying IMAP implementation.
 
 Method `imap()` allows to call any [PHP IMAP function](https://www.php.net/manual/ref.imap.php) in a context of the instance. Example:
 
