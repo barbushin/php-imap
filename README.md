@@ -121,6 +121,9 @@ if(!$mailsIds) {
 	die('Mailbox is empty');
 }
 
+// If you want to inspect a message without changing its seen state,
+// use getMail($id, false) or getRawMail($id, false).
+
 // Get the first message
 // If '__DIR__' was defined in the first line, it will automatically
 // save all attachments to the specified directory
@@ -141,6 +144,8 @@ print_r($mail);
 echo "\n\nAttachments:\n";
 print_r($mail->getAttachments());
 ```
+
+`searchMailbox()` delegates criteria evaluation to PHP's IMAP extension and the IMAP server behind it. This library includes a fallback for simple `SEEN ... SINCE ...` searches because some `ext-imap` / server combinations do not immediately return messages marked as seen earlier on the same day. More complex `imap_search()` behavior still depends on the underlying IMAP implementation.
 
 Method `imap()` allows to call any [PHP IMAP function](https://www.php.net/manual/ref.imap.php) in a context of the instance. Example:
 
