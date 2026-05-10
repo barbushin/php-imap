@@ -68,4 +68,9 @@ class Mailbox extends Base
     {
         return $this->getImapOpenOptions();
     }
+
+    public function hasAttachmentDispositionForTests(object $partStructure): bool
+    {
+        return $this->hasAttachmentDisposition($partStructure);
+    }
 }
