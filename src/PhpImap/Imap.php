@@ -1060,7 +1060,12 @@ final class Imap
      */
     public static function encodeStringToUtf7Imap(string $str): string
     {
-        $out = \mb_convert_encoding($str, 'UTF7-IMAP', \mb_detect_encoding($str, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
+        // mb_detect_encoding() can misclassify valid UTF-8 strings as ISO-8859-1/15.
+        $sourceEncoding = \mb_check_encoding($str, 'UTF-8')
+            ? 'UTF-8'
+            : (\mb_detect_encoding($str, ['ISO-8859-1', 'ISO-8859-15'], true) ?: 'UTF-8');
+
+        $out = \mb_convert_encoding($str, 'UTF7-IMAP', $sourceEncoding);
 
         if (!\is_string($out)) {
             throw new UnexpectedValueException('mb_convert_encoding($str, \'UTF-8\', {detected}) could not convert $str');

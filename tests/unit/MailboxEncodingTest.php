@@ -54,9 +54,12 @@ final class MailboxEncodingTest extends TestCase
     {
         return [
             'RFC2231 encoded segment' => ['%E2%82%AC%20rates.txt', true],
+            'lowercase hex escapes' => ['%e2%82%ac%20rates.txt', true],
             'encoded mime-word' => ['%3D%3FUTF-8%3FQ%3Fmountainguan%3DE6%3DB5%3D8B%3DE8%3DAF%3D95%3F%3D', true],
             'plain ascii' => ['plain-file.txt', false],
             'invalid percent escape' => ['%ZZrates.txt', false],
+            'mixed valid and invalid percent escapes' => ['%E2%82%ZZrates.txt', false],
+            'lone percent sign' => ['rates%.txt', false],
         ];
     }
 

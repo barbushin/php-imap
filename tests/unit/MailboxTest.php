@@ -241,7 +241,10 @@ final class MailboxTest extends TestCase
 
         $flattenedParts = $this->getMailbox()->flattenParts([$rfc822Part]);
 
-        $this->assertSame(['1', '1.1', '1.2'], \array_keys($flattenedParts));
+        $this->assertSame(
+            ['1', '1.1', '1.2'],
+            \array_map('strval', \array_keys($flattenedParts))
+        );
         $this->assertArrayNotHasKey('1.0', $flattenedParts);
     }
 
@@ -478,6 +481,8 @@ final class MailboxTest extends TestCase
     public function testDownloadAttachmentSanitizesFilePathWhenUsingOriginalFilenameMode(string $unsafeName, string $expectedFileName): void
     {
         $attachmentsDir = \sys_get_temp_dir().DIRECTORY_SEPARATOR.'php-imap-attachment-name-'.\bin2hex(\random_bytes(8));
+        \mkdir($attachmentsDir);
+
         $mailbox = new class($this->imapPath, $this->login, $this->password, $attachmentsDir, $this->serverEncoding, true, true) extends Fixtures\Mailbox {
             public function decodeMimeStr(string $string): string
             {
@@ -496,8 +501,6 @@ final class MailboxTest extends TestCase
             'ifdescription' => 0,
         ];
         $attachmentPath = null;
-
-        \mkdir($attachmentsDir);
 
         try {
             $attachment = $mailbox->downloadAttachment($dataInfo, ['filename' => $unsafeName], $partStructure);

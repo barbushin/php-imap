@@ -583,7 +583,7 @@ class Mailbox
      */
     public function encodeStringToUtf7Imap(string $str): string
     {
-        return imap_utf7_encode($str);
+        return Imap::encodeStringToUtf7Imap($str);
     }
 
     /**
@@ -1586,10 +1586,11 @@ class Mailbox
      */
     public function isUrlEncoded(string $string): bool
     {
-        $hasInvalidChars = \preg_match('#[^%a-zA-Z0-9\-_\.\+]#', $string);
-        $hasEscapedChars = \preg_match('#%[a-zA-Z0-9]{2}#', $string);
+        $hasInvalidChars = 1 === \preg_match('#[^%a-zA-Z0-9\-_\.\+]#', $string);
+        $hasEscapedChars = 1 === \preg_match('#%[A-Fa-f0-9]{2}#', $string);
+        $hasInvalidEscapes = 1 === \preg_match('#%(?![A-Fa-f0-9]{2})#', $string);
 
-        return !$hasInvalidChars && $hasEscapedChars;
+        return !$hasInvalidChars && $hasEscapedChars && !$hasInvalidEscapes;
     }
 
     /**
