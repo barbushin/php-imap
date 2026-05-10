@@ -93,6 +93,11 @@ $mailbox->setConnectionArgs(
     | OP_SECURE // don't do non-secure authentication
 );
 
+// Some providers require OAuth instead of a password.
+// Obtain and refresh the access token outside of this library, then enable OAuth explicitly.
+// Your ext-imap build must expose OP_XOAUTH2 for this to work.
+$mailbox->enableOAuth($accessToken);
+
 try {
 	// Get all emails (messages)
 	// PHP.net imap_search criteria: http://php.net/manual/en/function.imap-search.php

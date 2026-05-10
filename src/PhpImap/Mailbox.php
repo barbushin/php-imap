@@ -89,6 +89,10 @@ class Mailbox
 
     public const PART_TYPE_TWO = 2;
 
+    public const AUTHENTICATION_TYPE_PASSWORD = 'password';
+
+    public const AUTHENTICATION_TYPE_OAUTH = 'oauth';
+
     public const IMAP_OPTIONS_SUPPORTED_VALUES =
         OP_READONLY // 2
             | OP_ANONYMOUS // 4
@@ -112,6 +116,12 @@ class Mailbox
 
     /** @var string */
     protected $imapPassword;
+
+    /** @var string */
+    protected $authenticationType = self::AUTHENTICATION_TYPE_PASSWORD;
+
+    /** @var string|null */
+    protected $imapOAuthToken = null;
 
     /** @var int */
     protected $imapSearchOption = SE_UID;
@@ -372,6 +382,39 @@ class Mailbox
     }
 
     /**
+     * Enables OAuth-based authentication for the IMAP connection.
+     *
+     * The provided access token will be passed to imap_open() instead of the password.
+     *
+     * @throws InvalidParameterException
+     */
+    public function enableOAuth(string $accessToken): void
+    {
+        if ('' === \trim($accessToken)) {
+            throw new InvalidParameterException('enableOAuth() expects a non-empty OAuth access token.');
+        }
+
+        $this->imapOAuthToken = $accessToken;
+        $this->authenticationType = self::AUTHENTICATION_TYPE_OAUTH;
+    }
+
+    /**
+     * Disables OAuth-based authentication and switches back to password-based authentication.
+     */
+    public function disableOAuth(): void
+    {
+        $this->authenticationType = self::AUTHENTICATION_TYPE_PASSWORD;
+    }
+
+    /**
+     * Returns whether OAuth-based authentication is enabled for the IMAP connection.
+     */
+    public function isOAuthEnabled(): bool
+    {
+        return self::AUTHENTICATION_TYPE_OAUTH === $this->authenticationType;
+    }
+
+    /**
      * Set custom connection arguments of imap_open method. See http://php.net/imap_open.
      *
      * @param string[]|null $params
@@ -383,7 +426,7 @@ class Mailbox
     public function setConnectionArgs(int $options = 0, int $retriesNum = 0, array $params = null): void
     {
         if (0 !== $options) {
-            if (($options & self::IMAP_OPTIONS_SUPPORTED_VALUES) !== $options) {
+            if (($options & $this->getSupportedImapOptions()) !== $options) {
                 throw new InvalidParameterException('Please check your option for setConnectionArgs()! Unsupported option "'.$options.'". Available options: https://www.php.net/manual/de/function.imap-open.php');
             }
             $this->imapOptions = $options;
@@ -1709,13 +1752,84 @@ class Mailbox
         $imapStream = Imap::open(
             $this->imapPath,
             $this->imapLogin,
-            $this->imapPassword,
-            $this->imapOptions,
+            $this->getImapOpenSecret(),
+            $this->getImapOpenOptions(),
             $this->imapRetriesNum,
             $this->imapParams
         );
 
         return $imapStream;
+    }
+
+    /**
+     * Returns the supported imap_open() option bitmask for the current runtime.
+     */
+    protected function getSupportedImapOptions(): int
+    {
+        $supportedOptions = self::IMAP_OPTIONS_SUPPORTED_VALUES;
+
+        if (\defined('OP_XOAUTH2')) {
+            $oauthOption = \constant('OP_XOAUTH2');
+            if (\is_int($oauthOption)) {
+                $supportedOptions |= $oauthOption;
+            }
+        }
+
+        return $supportedOptions;
+    }
+
+    /**
+     * Returns the credential that should be passed to imap_open().
+     *
+     * @throws ConnectionException
+     */
+    protected function getImapOpenSecret(): string
+    {
+        if (!$this->isOAuthEnabled()) {
+            return $this->imapPassword;
+        }
+
+        if (!\is_string($this->imapOAuthToken) || '' === \trim($this->imapOAuthToken)) {
+            throw new ConnectionException(['OAuth authentication requires a non-empty access token.']);
+        }
+
+        return $this->imapOAuthToken;
+    }
+
+    /**
+     * Returns the option bitmask that should be passed to imap_open().
+     *
+     * @throws ConnectionException
+     */
+    protected function getImapOpenOptions(): int
+    {
+        $options = $this->imapOptions;
+
+        if ($this->isOAuthEnabled()) {
+            $options |= $this->getOAuthImapOption();
+        }
+
+        return $options;
+    }
+
+    /**
+     * Returns the runtime-specific OP_XOAUTH2 flag.
+     *
+     * @throws ConnectionException
+     */
+    protected function getOAuthImapOption(): int
+    {
+        if (!\defined('OP_XOAUTH2')) {
+            throw new ConnectionException(['OAuth authentication requires an ext-imap build with OP_XOAUTH2 support.']);
+        }
+
+        $oauthOption = \constant('OP_XOAUTH2');
+
+        if (!\is_int($oauthOption)) {
+            throw new ConnectionException(['OAuth authentication requires a valid OP_XOAUTH2 ext-imap constant.']);
+        }
+
+        return $oauthOption;
     }
 
     /**
