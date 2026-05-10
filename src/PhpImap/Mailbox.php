@@ -41,8 +41,6 @@ use const OP_READONLY;
 use const OP_SECURE;
 use const OP_SHORTCACHE;
 use const OP_SILENT;
-use const PATHINFO_EXTENSION;
-
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
 
@@ -104,6 +102,10 @@ class Mailbox
     public const AUTHENTICATION_TYPE_PASSWORD = 'password';
 
     public const AUTHENTICATION_TYPE_OAUTH = 'oauth';
+
+    public const ATTACHMENT_FILENAME_COLLISION_OVERWRITE = 1;
+
+    public const ATTACHMENT_FILENAME_COLLISION_SUFFIX = 2;
 
     public const IMAP_OPTIONS_SUPPORTED_VALUES =
         OP_READONLY // 2
@@ -218,8 +220,11 @@ class Mailbox
     /** @var string */
     protected $mailboxFolder;
 
-    /** @var bool|false */
+    /** @var bool */
     protected $attachmentFilenameMode = false;
+
+    /** @var int */
+    protected $attachmentFilenameCollisionMode = self::ATTACHMENT_FILENAME_COLLISION_OVERWRITE;
 
     /** @var resource|null */
     private $imapStream;
@@ -349,6 +354,41 @@ class Mailbox
         }
 
         $this->attachmentFilenameMode = $attachmentFilenameMode;
+    }
+
+    /**
+     * Returns the current collision handling mode for original attachment filenames.
+     *
+     * @return int Attachment filename collision mode
+     *
+     * @psalm-return 1|2
+     */
+    public function getAttachmentFilenameCollisionMode(): int
+    {
+        return $this->attachmentFilenameCollisionMode;
+    }
+
+    /**
+     * Sets / Changes the collision handling mode for original attachment filenames.
+     *
+     * @param int $attachmentFilenameCollisionMode Attachment filename collision mode
+     *
+     * @psalm-param 1|2 $attachmentFilenameCollisionMode
+     *
+     * @throws InvalidParameterException
+     */
+    public function setAttachmentFilenameCollisionMode(int $attachmentFilenameCollisionMode): void
+    {
+        $supported_modes = [
+            self::ATTACHMENT_FILENAME_COLLISION_OVERWRITE,
+            self::ATTACHMENT_FILENAME_COLLISION_SUFFIX,
+        ];
+
+        if (!\in_array($attachmentFilenameCollisionMode, $supported_modes, true)) {
+            throw new InvalidParameterException('"'.$attachmentFilenameCollisionMode.'" is not supported by setAttachmentFilenameCollisionMode(). Supported modes are ATTACHMENT_FILENAME_COLLISION_OVERWRITE and ATTACHMENT_FILENAME_COLLISION_SUFFIX.');
+        }
+
+        $this->attachmentFilenameCollisionMode = $attachmentFilenameCollisionMode;
     }
 
     /**
@@ -1491,17 +1531,15 @@ class Mailbox
 
         if (null != $attachmentsDir) {
             if (true == $this->getAttachmentFilenameMode()) {
-                $fileSysName = $this->sanitizeAttachmentFileSystemName($attachment->name);
+                $fileSysName = $this->resolveAttachmentFileSystemName(
+                    $attachmentsDir,
+                    $this->sanitizeAttachmentFileSystemName($attachment->name)
+                );
             } else {
                 $fileSysName = \bin2hex(\random_bytes(16)).'.bin';
             }
 
             $filePath = $attachmentsDir.DIRECTORY_SEPARATOR.$fileSysName;
-
-            if (\strlen($filePath) > self::MAX_LENGTH_FILEPATH) {
-                $ext = \pathinfo($filePath, PATHINFO_EXTENSION);
-                $filePath = \substr($filePath, 0, self::MAX_LENGTH_FILEPATH - 1 - \strlen($ext)).'.'.$ext;
-            }
 
             $attachment->setFilePath($filePath);
             $attachment->saveToDisk();
@@ -1784,6 +1822,56 @@ class Mailbox
             '\\' => '_',
             '/' => '_',
         ]);
+    }
+
+    protected function resolveAttachmentFileSystemName(string $attachmentsDir, string $fileSystemName): string
+    {
+        if (self::ATTACHMENT_FILENAME_COLLISION_SUFFIX !== $this->getAttachmentFilenameCollisionMode()) {
+            return $this->fitAttachmentFileSystemNameToPathLimit($attachmentsDir, $fileSystemName);
+        }
+
+        $collisionIndex = 0;
+
+        do {
+            $suffix = 0 === $collisionIndex ? '' : ' ('.$collisionIndex.')';
+            $candidate = $this->fitAttachmentFileSystemNameToPathLimit($attachmentsDir, $fileSystemName, $suffix);
+            ++$collisionIndex;
+        } while (\file_exists($attachmentsDir.DIRECTORY_SEPARATOR.$candidate));
+
+        return $candidate;
+    }
+
+    protected function fitAttachmentFileSystemNameToPathLimit(string $attachmentsDir, string $fileSystemName, string $suffix = ''): string
+    {
+        [$fileName, $fileExtension] = $this->splitAttachmentFileSystemName($fileSystemName);
+
+        $maxFileNameLength = self::MAX_LENGTH_FILEPATH
+            - \strlen($attachmentsDir.DIRECTORY_SEPARATOR)
+            - \strlen($suffix)
+            - \strlen($fileExtension);
+
+        if (\strlen($fileName) > $maxFileNameLength) {
+            $fileName = \substr($fileName, 0, \max(1, $maxFileNameLength));
+        }
+
+        return $fileName.$suffix.$fileExtension;
+    }
+
+    /**
+     * @return array{0:string, 1:string}
+     */
+    protected function splitAttachmentFileSystemName(string $fileSystemName): array
+    {
+        $lastDotPosition = \strrpos($fileSystemName, '.');
+
+        if (false === $lastDotPosition || 0 === $lastDotPosition) {
+            return [$fileSystemName, ''];
+        }
+
+        return [
+            \substr($fileSystemName, 0, $lastDotPosition),
+            \substr($fileSystemName, $lastDotPosition),
+        ];
     }
 
     /**
