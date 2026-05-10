@@ -33,9 +33,15 @@ Initially released in December 2012, the PHP IMAP Mailbox is a powerful and open
 | 7.1  | 3.x  | End of life |
 | 7.2  | 3.x, 4.x | End of life |
 | 7.3  | 3.x, 4.x | End of life |
-| 7.4  | >3.0.33, 4.x, 5.x | Active support |
-| 8.0  | >3.0.33, 4.x, 5.x | Active support |
-| 8.1  | >4.3.0, 5.x | Active support |
+| 7.4  | >3.0.33, 4.x, 5.x | End of life |
+| 8.0  | >3.0.33, 4.x, 5.x | End of life |
+| 8.1  | >4.3.0, 5.x | End of life |
+| 8.2  | 6.x | Active support |
+| 8.3  | 6.x | Active support |
+| 8.4  | 6.x | Active support |
+| 8.5  | 6.x | Active support |
+
+The next major release raises the minimum supported PHP version to PHP 8.2 and is tested on PHP 8.2 through PHP 8.5.
 
 * PHP `fileinfo` extension must be present; so make sure this line is active in your php.ini: `extension=php_fileinfo.dll`
 * PHP `iconv` extension must be present; so make sure this line is active in your php.ini: `extension=php_iconv.dll`
