@@ -61,6 +61,22 @@ class LiveMailboxStringDecodingConvertingTest extends TestCase
             'a05e42c7e14de716cd501e135f3f5e49545f71069de316a1e9f7bb153f9a7356',
         ];
 
+        yield 'Windows-1251 quoted-printable' => [
+            ENCQUOTEDPRINTABLE,
+            'windows-1251',
+            '=CF=F0=E8=E2=E5=F2 =EC=E8=F0',
+            'Привет мир',
+            '830d1964dc8673182a40f9adebf598960d37fbe200405b249774ecfa5b465748',
+        ];
+
+        yield 'CP1252 quoted-printable via iconv alias fallback' => [
+            ENCQUOTEDPRINTABLE,
+            'cp1252',
+            'Price =8010',
+            'Price €10',
+            'eeccbb8eb0acf81c5750271d1a9fd7e0bfb4f3309eae8b4ff07e4acf33e947b9',
+        ];
+
         yield 'Emoji utf-8' => [
             ENCQUOTEDPRINTABLE,
             'utf-8',
