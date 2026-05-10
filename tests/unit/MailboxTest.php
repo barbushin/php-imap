@@ -210,6 +210,33 @@ final class MailboxTest extends TestCase
         }
     }
 
+    public function testFlattenPartsStartsRfc822SubPartsWithOne(): void
+    {
+        $plainTextPart = (object) [
+            'type' => TYPETEXT,
+            'subtype' => 'PLAIN',
+        ];
+        $htmlPart = (object) [
+            'type' => TYPETEXT,
+            'subtype' => 'HTML',
+        ];
+        $multipartAlternative = (object) [
+            'type' => TYPEMULTIPART,
+            'subtype' => 'ALTERNATIVE',
+            'parts' => [$plainTextPart, $htmlPart],
+        ];
+        $rfc822Part = (object) [
+            'type' => Mailbox::PART_TYPE_TWO,
+            'subtype' => 'RFC822',
+            'parts' => [$multipartAlternative],
+        ];
+
+        $flattenedParts = $this->getMailbox()->flattenParts([$rfc822Part]);
+
+        $this->assertSame(['1', '1.1', '1.2'], \array_keys($flattenedParts));
+        $this->assertArrayNotHasKey('1.0', $flattenedParts);
+    }
+
     /**
      * Test, that the IMAP search option has a default value
      * 1 => SE_UID

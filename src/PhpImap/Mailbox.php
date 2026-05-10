@@ -1387,7 +1387,7 @@ class Mailbox
                 $part_parts = $part->parts;
 
                 if (self::PART_TYPE_TWO == $part->type) {
-                    $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix.$index.'.', 0, false);
+                    $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix.$index.'.', 1, false);
                 } elseif ($fullPrefix) {
                     $flattenedParts = $this->flattenParts($part_parts, $flattenedParts, $prefix.$index.'.');
                 } else {
