@@ -13,8 +13,23 @@ class Mailbox extends Base
         return $this->imapPassword;
     }
 
+    public function getImapOAuthToken(): ?string
+    {
+        return $this->imapOAuthToken;
+    }
+
     public function getImapOptions(): int
     {
         return $this->imapOptions;
+    }
+
+    public function getImapOpenSecretForTests(): string
+    {
+        return $this->getImapOpenSecret();
+    }
+
+    public function getImapOpenOptionsForTests(): int
+    {
+        return $this->getImapOpenOptions();
     }
 }
