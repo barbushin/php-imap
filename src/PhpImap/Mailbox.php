@@ -1290,7 +1290,7 @@ class Mailbox
         }
 
         $header = new IncomingMailHeader();
-        $header->headersRaw = $headersRaw;
+        $header->setHeadersRaw($headersRaw);
         $header->headers = $head;
         $header->id = $mailId;
         $header->imapPath = $this->imapPath;
