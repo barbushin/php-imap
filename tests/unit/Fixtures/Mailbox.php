@@ -13,6 +13,24 @@ class Mailbox extends Base
         return $this->decodeRFC2231($string);
     }
 
+    /**
+     * @return (null|string)[]|null
+     */
+    public function possiblyGetEmailAndNameFromRecipientForTests(object $recipient): ?array
+    {
+        return $this->possiblyGetEmailAndNameFromRecipient($recipient);
+    }
+
+    /**
+     * @param array<int, object> $t
+     *
+     * @return array{0:string|null, 1:string|null, 2:string}
+     */
+    public function possiblyGetHostNameAndAddressForTests(array $t): array
+    {
+        return $this->possiblyGetHostNameAndAddress($t);
+    }
+
     public function getImapPassword(): string
     {
         return $this->imapPassword;
