@@ -465,6 +465,39 @@ final class MailboxTest extends TestCase
     }
 
     /**
+     * @return array<string, array{0:int}>
+     */
+    public function attachmentFilenameCollisionModeProvider(): array
+    {
+        return [
+            'overwrite' => [Mailbox::ATTACHMENT_FILENAME_COLLISION_OVERWRITE],
+            'suffix' => [Mailbox::ATTACHMENT_FILENAME_COLLISION_SUFFIX],
+        ];
+    }
+
+    /**
+     * @dataProvider attachmentFilenameCollisionModeProvider
+     */
+    public function testSetAndGetAttachmentFilenameCollisionMode(int $attachmentFilenameCollisionMode): void
+    {
+        $mailbox = $this->getMailbox();
+
+        $mailbox->setAttachmentFilenameCollisionMode($attachmentFilenameCollisionMode);
+
+        $this->assertSame($attachmentFilenameCollisionMode, $mailbox->getAttachmentFilenameCollisionMode());
+    }
+
+    public function testSetAttachmentFilenameCollisionModeRejectsUnsupportedValue(): void
+    {
+        $mailbox = $this->getMailbox();
+
+        $this->expectException(InvalidParameterException::class);
+        $this->expectExceptionMessage('"3" is not supported by setAttachmentFilenameCollisionMode(). Supported modes are ATTACHMENT_FILENAME_COLLISION_OVERWRITE and ATTACHMENT_FILENAME_COLLISION_SUFFIX.');
+
+        $mailbox->setAttachmentFilenameCollisionMode(3);
+    }
+
+    /**
      * @return array<string, array{0:string, 1:string}>
      */
     public function unsafeAttachmentFilenameProvider(): array
@@ -483,23 +516,9 @@ final class MailboxTest extends TestCase
         $attachmentsDir = \sys_get_temp_dir().DIRECTORY_SEPARATOR.'php-imap-attachment-name-'.\bin2hex(\random_bytes(8));
         \mkdir($attachmentsDir);
 
-        $mailbox = new class($this->imapPath, $this->login, $this->password, $attachmentsDir, $this->serverEncoding, true, true) extends Fixtures\Mailbox {
-            public function decodeMimeStr(string $string): string
-            {
-                return $string;
-            }
-        };
-        $dataInfo = new Fixtures\DataPartInfo($mailbox, 1, '2', 0, 0);
-        $dataInfo->setData('attachment body');
-        $partStructure = (object) [
-            'type' => 3,
-            'subtype' => 'OCTET-STREAM',
-            'bytes' => 15,
-            'encoding' => 0,
-            'ifid' => 0,
-            'ifsubtype' => 1,
-            'ifdescription' => 0,
-        ];
+        $mailbox = $this->getAttachmentDownloadMailbox($attachmentsDir);
+        $dataInfo = $this->getAttachmentDownloadDataInfo($mailbox);
+        $partStructure = $this->getAttachmentDownloadPartStructure();
         $attachmentPath = null;
 
         try {
@@ -512,6 +531,70 @@ final class MailboxTest extends TestCase
         } finally {
             if (\is_string($attachmentPath) && \file_exists($attachmentPath)) {
                 \unlink($attachmentPath);
+            }
+
+            if (\is_dir($attachmentsDir)) {
+                \rmdir($attachmentsDir);
+            }
+        }
+    }
+
+    public function testDownloadAttachmentOverwritesExistingFileByDefaultWhenUsingOriginalFilenameMode(): void
+    {
+        $attachmentsDir = \sys_get_temp_dir().DIRECTORY_SEPARATOR.'php-imap-attachment-name-'.\bin2hex(\random_bytes(8));
+        \mkdir($attachmentsDir);
+
+        $mailbox = $this->getAttachmentDownloadMailbox($attachmentsDir);
+        $dataInfo = $this->getAttachmentDownloadDataInfo($mailbox);
+        $partStructure = $this->getAttachmentDownloadPartStructure();
+        $existingPath = $attachmentsDir.DIRECTORY_SEPARATOR.'report.txt';
+
+        \file_put_contents($existingPath, 'existing body');
+
+        try {
+            $attachment = $mailbox->downloadAttachment($dataInfo, ['filename' => 'report.txt'], $partStructure);
+
+            $this->assertSame($existingPath, $attachment->filePath);
+            $this->assertSame('attachment body', \file_get_contents($existingPath));
+        } finally {
+            if (\file_exists($existingPath)) {
+                \unlink($existingPath);
+            }
+
+            if (\is_dir($attachmentsDir)) {
+                \rmdir($attachmentsDir);
+            }
+        }
+    }
+
+    public function testDownloadAttachmentAddsSuffixWhenConfiguredToAvoidFilenameCollisions(): void
+    {
+        $attachmentsDir = \sys_get_temp_dir().DIRECTORY_SEPARATOR.'php-imap-attachment-name-'.\bin2hex(\random_bytes(8));
+        \mkdir($attachmentsDir);
+
+        $mailbox = $this->getAttachmentDownloadMailbox($attachmentsDir);
+        $mailbox->setAttachmentFilenameCollisionMode(Mailbox::ATTACHMENT_FILENAME_COLLISION_SUFFIX);
+
+        $dataInfo = $this->getAttachmentDownloadDataInfo($mailbox);
+        $partStructure = $this->getAttachmentDownloadPartStructure();
+        $existingPath = $attachmentsDir.DIRECTORY_SEPARATOR.'foo_bar.txt';
+        $expectedPath = $attachmentsDir.DIRECTORY_SEPARATOR.'foo_bar (1).txt';
+
+        \file_put_contents($existingPath, 'existing body');
+
+        try {
+            $attachment = $mailbox->downloadAttachment($dataInfo, ['filename' => 'foo/bar.txt'], $partStructure);
+
+            $this->assertSame($expectedPath, $attachment->filePath);
+            $this->assertSame('existing body', \file_get_contents($existingPath));
+            $this->assertSame('attachment body', \file_get_contents($expectedPath));
+        } finally {
+            if (\file_exists($expectedPath)) {
+                \unlink($expectedPath);
+            }
+
+            if (\file_exists($existingPath)) {
+                \unlink($existingPath);
             }
 
             if (\is_dir($attachmentsDir)) {
@@ -937,5 +1020,36 @@ final class MailboxTest extends TestCase
     protected function getMailbox(): Fixtures\Mailbox
     {
         return new Fixtures\Mailbox($this->imapPath, $this->login, $this->password, $this->attachmentsDir, $this->serverEncoding);
+    }
+
+    protected function getAttachmentDownloadMailbox(string $attachmentsDir): Fixtures\Mailbox
+    {
+        return new class($this->imapPath, $this->login, $this->password, $attachmentsDir, $this->serverEncoding, true, true) extends Fixtures\Mailbox {
+            public function decodeMimeStr(string $string): string
+            {
+                return $string;
+            }
+        };
+    }
+
+    protected function getAttachmentDownloadDataInfo(Fixtures\Mailbox $mailbox): Fixtures\DataPartInfo
+    {
+        $dataInfo = new Fixtures\DataPartInfo($mailbox, 1, '2', 0, 0);
+        $dataInfo->setData('attachment body');
+
+        return $dataInfo;
+    }
+
+    protected function getAttachmentDownloadPartStructure(): object
+    {
+        return (object) [
+            'type' => 3,
+            'subtype' => 'OCTET-STREAM',
+            'bytes' => 15,
+            'encoding' => 0,
+            'ifid' => 0,
+            'ifsubtype' => 1,
+            'ifdescription' => 0,
+        ];
     }
 }
