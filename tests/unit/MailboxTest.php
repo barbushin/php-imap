@@ -454,6 +454,62 @@ final class MailboxTest extends TestCase
     }
 
     /**
+     * @return array<string, array{0:string, 1:string}>
+     */
+    public function unsafeAttachmentFilenameProvider(): array
+    {
+        return [
+            'forward slash' => ['foo/bar.txt', 'foo_bar.txt'],
+            'backslash' => ['foo\\bar.txt', 'foo_bar.txt'],
+        ];
+    }
+
+    /**
+     * @dataProvider unsafeAttachmentFilenameProvider
+     */
+    public function testDownloadAttachmentSanitizesFilePathWhenUsingOriginalFilenameMode(string $unsafeName, string $expectedFileName): void
+    {
+        $attachmentsDir = \sys_get_temp_dir().DIRECTORY_SEPARATOR.'php-imap-attachment-name-'.\bin2hex(\random_bytes(8));
+        $mailbox = new class ($this->imapPath, $this->login, $this->password, $attachmentsDir, $this->serverEncoding, true, true) extends Fixtures\Mailbox {
+            public function decodeMimeStr(string $string): string
+            {
+                return $string;
+            }
+        };
+        $dataInfo = new Fixtures\DataPartInfo($mailbox, 1, '2', 0, 0);
+        $dataInfo->setData('attachment body');
+        $partStructure = (object) [
+            'type' => 3,
+            'subtype' => 'OCTET-STREAM',
+            'bytes' => 15,
+            'encoding' => 0,
+            'ifid' => 0,
+            'ifsubtype' => 1,
+            'ifdescription' => 0,
+        ];
+        $attachmentPath = null;
+
+        \mkdir($attachmentsDir);
+
+        try {
+            $attachment = $mailbox->downloadAttachment($dataInfo, ['filename' => $unsafeName], $partStructure);
+            $attachmentPath = $attachment->filePath;
+
+            $this->assertSame($unsafeName, $attachment->name);
+            $this->assertSame($attachmentsDir.DIRECTORY_SEPARATOR.$expectedFileName, $attachmentPath);
+            $this->assertFileExists($attachmentPath);
+        } finally {
+            if (\is_string($attachmentPath) && \file_exists($attachmentPath)) {
+                \unlink($attachmentPath);
+            }
+
+            if (\is_dir($attachmentsDir)) {
+                \rmdir($attachmentsDir);
+            }
+        }
+    }
+
+    /**
      * Provides test data for testing encoding.
      *
      * @psalm-return array{Avañe’ẽ: array{0: 'Avañe’ẽ'}, azərbaycanca: array{0: 'azərbaycanca'}, Bokmål: array{0: 'Bokmål'}, chiCheŵa: array{0: 'chiCheŵa'}, Deutsch: array{0: 'Deutsch'}, 'U.S. English': array{0: 'U.S. English'}, français: array{0: 'français'}, 'Éléments envoyés': array{0: 'Éléments envoyés'}, føroyskt: array{0: 'føroyskt'}, Kĩmĩrũ: array{0: 'Kĩmĩrũ'}, Kɨlaangi: array{0: 'Kɨlaangi'}, oʼzbekcha: array{0: 'oʼzbekcha'}, Plattdüütsch: array{0: 'Plattdüütsch'}, română: array{0: 'română'}, Sängö: array{0: 'Sängö'}, 'Tiếng Việt': array{0: 'Tiếng Việt'}, ɔl-Maa: array{0: 'ɔl-Maa'}, Ελληνικά: array{0: 'Ελληνικά'}, Ўзбек: array{0: 'Ўзбек'}, Азәрбајҹан: array{0: 'Азәрбајҹан'}, Српски: array{0: 'Српски'}, русский: array{0: 'русский'}, 'ѩзыкъ словѣньскъ': array{0: 'ѩзыкъ словѣньскъ'}, العربية: array{0: 'العربية'}, नेपाली: array{0: 'नेपाली'}, 日本語: array{0: '日本語'}, 简体中文: array{0: '简体中文'}, 繁體中文: array{0: '繁體中文'}, 한국어: array{0: '한국어'}, ąčęėįšųūžĄČĘĖĮŠŲŪŽ: array{0: 'ąčęėįšųūžĄČĘĖĮŠŲŪŽ'}}
