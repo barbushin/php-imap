@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Live Mailbox - PHPUnit tests.
  *
@@ -12,6 +13,7 @@ namespace PhpImap;
 
 use Exception;
 use ParagonIE\HiddenString\HiddenString;
+
 use const TYPETEXT;
 
 /**
@@ -57,7 +59,7 @@ class LiveMailboxIssue501Test extends AbstractLiveMailboxTest
         HiddenString $login,
         HiddenString $password,
         string $attachmentsDir,
-        string $serverEncoding = 'UTF-8'
+        string $serverEncoding = 'UTF-8',
     ): void {
         [$mailbox, $remove_mailbox] = $this->getMailbox(
             $imapPath,
@@ -83,11 +85,10 @@ class LiveMailboxIssue501Test extends AbstractLiveMailboxTest
             $this->assertCount(
                 0,
                 $search,
-                (
-                    'If a subject was found,'.
-                    ' then the message is insufficiently unique to assert that'.
-                    ' a newly-appended message was actually created.'
-                )
+
+                'If a subject was found,'.
+                ' then the message is insufficiently unique to assert that'.
+                ' a newly-appended message was actually created.'
             );
 
             $mailbox->appendMessageToMailbox(Imap::mail_compose(
@@ -105,11 +106,10 @@ class LiveMailboxIssue501Test extends AbstractLiveMailboxTest
             $this->assertCount(
                 1,
                 $search,
-                (
-                    'If a subject was not found, '.
-                    ' then Mailbox::appendMessageToMailbox() failed'.
-                    ' despite not throwing an exception.'
-                )
+
+                'If a subject was not found, '.
+                ' then Mailbox::appendMessageToMailbox() failed'.
+                ' despite not throwing an exception.'
             );
 
             $mail = $mailbox->getMail($search[0], false);

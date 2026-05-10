@@ -89,9 +89,9 @@ final class MailboxOAuthTest extends TestCase
             $this->markTestSkipped('OP_XOAUTH2 is not available in this runtime.');
         }
 
-        /** @var int $readonlyOption */
+        /** @var int */
         $readonlyOption = \constant('OP_READONLY');
-        /** @var int $oauthOption */
+        /** @var int */
         $oauthOption = \constant('OP_XOAUTH2');
 
         $mailbox = $this->getMailbox();
@@ -107,7 +107,7 @@ final class MailboxOAuthTest extends TestCase
             $this->markTestSkipped('OP_XOAUTH2 is not available in this runtime.');
         }
 
-        /** @var int $oauthOption */
+        /** @var int */
         $oauthOption = \constant('OP_XOAUTH2');
 
         $mailbox = $this->getMailbox();

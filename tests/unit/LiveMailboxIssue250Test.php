@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Live Mailbox - PHPUnit tests.
  *
@@ -12,6 +13,7 @@ namespace PhpImap;
 
 use Generator;
 use ParagonIE\HiddenString\HiddenString;
+
 use const TYPETEXT;
 
 /**
@@ -51,13 +53,12 @@ class LiveMailboxIssue250Test extends AbstractLiveMailboxTest
                     'contents.data' => 'test',
                 ],
             ],
-            (
-                'Subject: '.$random_subject."\r\n".
-                'MIME-Version: 1.0'."\r\n".
-                'Content-Type: TEXT/PLAIN; CHARSET=US-ASCII'."\r\n".
-                "\r\n".
-                'test'."\r\n"
-            ),
+
+            'Subject: '.$random_subject."\r\n".
+            'MIME-Version: 1.0'."\r\n".
+            'Content-Type: TEXT/PLAIN; CHARSET=US-ASCII'."\r\n".
+            "\r\n".
+            'test'."\r\n",
         ];
     }
 
@@ -76,7 +77,7 @@ class LiveMailboxIssue250Test extends AbstractLiveMailboxTest
         array $envelope,
         array $body,
         string $expected_compose_result,
-        bool $pre_compose
+        bool $pre_compose,
     ): void {
         parent::testAppend(
             $mailbox_args,

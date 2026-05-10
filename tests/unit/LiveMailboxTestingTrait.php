@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Live Mailbox - PHPUnit tests.
  *
@@ -26,9 +27,9 @@ trait LiveMailboxTestingTrait
     /**
      * Provides constructor arguments for a live mailbox.
      *
-     * @psalm-return array{'CI ENV'?: array{0: \ParagonIE\HiddenString\HiddenString, 1: \ParagonIE\HiddenString\HiddenString, 2: \ParagonIE\HiddenString\HiddenString, 3: string}}
+     * @return (HiddenString|string)[][]
      *
-     * @return (\ParagonIE\HiddenString\HiddenString|string)[][]
+     * @psalm-return array{'CI ENV'?: array{0: HiddenString, 1: HiddenString, 2: HiddenString, 3: string}}
      */
     public function MailBoxProvider(): array
     {
@@ -51,9 +52,9 @@ trait LiveMailboxTestingTrait
      * @param string $attachmentsDir
      * @param string $serverEncoding
      *
-     * @return (Mailbox|\ParagonIE\HiddenString\HiddenString|string)[]
+     * @return (Mailbox|HiddenString|string)[]
      *
-     * @psalm-return array{0: Mailbox, 1: string, 2: \ParagonIE\HiddenString\HiddenString}
+     * @psalm-return array{0: Mailbox, 1: string, 2: HiddenString}
      */
     protected function getMailbox(HiddenString $imapPath, HiddenString $login, HiddenString $password, $attachmentsDir, $serverEncoding = 'UTF-8'): array
     {

@@ -19,7 +19,7 @@ class Mailbox extends Base
     }
 
     /**
-     * @return (null|string)[]|null
+     * @return (string|null)[]|null
      */
     public function possiblyGetEmailAndNameFromRecipientForTests(object $recipient): ?array
     {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mailbox encoding focused unit tests.
  */

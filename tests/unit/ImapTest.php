@@ -1,7 +1,8 @@
 <?php
+
 /**
-* @author BAPCLTD-Marv
-*/
+ * @author BAPCLTD-Marv
+ */
 declare(strict_types=1);
 
 namespace PhpImap;
@@ -10,7 +11,9 @@ use Generator;
 use ParagonIE\HiddenString\HiddenString;
 use PhpImap\Exceptions\ConnectionException;
 use PHPUnit\Framework\TestCase as Base;
+
 use const SORTARRIVAL;
+
 use Throwable;
 
 /**
@@ -83,7 +86,7 @@ class ImapTest extends Base
         string $exception,
         string $message,
         array $args,
-        bool $message_as_regex = false
+        bool $message_as_regex = false,
     ): void {
         $this->expectException($exception);
 
@@ -111,7 +114,7 @@ class ImapTest extends Base
     public function testSortEmpty(
         HiddenString $path,
         HiddenString $login,
-        HiddenString $password
+        HiddenString $password,
     ): void {
         [$mailbox, $remove_mailbox, $path] = $this->getMailboxFromArgs([
             $path,

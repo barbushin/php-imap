@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpImap;
 
 use const FILEINFO_NONE;
+
 use finfo;
 use UnexpectedValueException;
 

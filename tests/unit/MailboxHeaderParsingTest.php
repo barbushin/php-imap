@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mailbox header parsing focused unit tests.
  */

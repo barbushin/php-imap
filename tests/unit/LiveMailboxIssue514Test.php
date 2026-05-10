@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Live Mailbox - PHPUnit tests.
  *
@@ -11,8 +12,10 @@ declare(strict_types=1);
 namespace PhpImap;
 
 use const ENCBASE64;
+
 use ParagonIE\HiddenString\HiddenString;
 use Throwable;
+
 use const TYPEIMAGE;
 use const TYPEMULTIPART;
 use const TYPETEXT;
@@ -33,7 +36,7 @@ class LiveMailboxIssue514Test extends AbstractLiveMailboxTest
         HiddenString $login,
         HiddenString $password,
         string $attachmentsDir,
-        string $serverEncoding = 'UTF-8'
+        string $serverEncoding = 'UTF-8',
     ): void {
         /** @var Throwable|null */
         $exception = null;
@@ -113,11 +116,10 @@ class LiveMailboxIssue514Test extends AbstractLiveMailboxTest
             $this->assertCount(
                 0,
                 $search,
-                (
-                    'If a subject was found,'.
-                    ' then the message is insufficiently unique to assert that'.
-                    ' a newly-appended message was actually created.'
-                )
+
+                'If a subject was found,'.
+                ' then the message is insufficiently unique to assert that'.
+                ' a newly-appended message was actually created.'
             );
 
             $mailbox->appendMessageToMailbox($message);
@@ -127,11 +129,10 @@ class LiveMailboxIssue514Test extends AbstractLiveMailboxTest
             $this->assertCount(
                 1,
                 $search,
-                (
-                    'If a subject was not found, '.
-                    ' then Mailbox::appendMessageToMailbox() failed'.
-                    ' despite not throwing an exception.'
-                )
+
+                'If a subject was not found, '.
+                ' then Mailbox::appendMessageToMailbox() failed'.
+                ' despite not throwing an exception.'
             );
 
             $result = $mailbox->getMail($search[0], false);
@@ -150,12 +151,11 @@ class LiveMailboxIssue514Test extends AbstractLiveMailboxTest
             $this->assertCount(
                 2,
                 $counts,
-                (
-                    'counts should only contain foo.png and foo.webp, found: '.
-                    \implode(
-                        ', ',
-                        \array_keys($counts)
-                    )
+
+                'counts should only contain foo.png and foo.webp, found: '.
+                \implode(
+                    ', ',
+                    \array_keys($counts)
                 )
             );
 

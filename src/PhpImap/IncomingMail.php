@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpImap;
 
 use const FILEINFO_MIME_TYPE;
+
 use InvalidArgumentException;
 
 /**
