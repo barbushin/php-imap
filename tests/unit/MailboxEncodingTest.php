@@ -101,4 +101,15 @@ final class MailboxEncodingTest extends TestCase
 
         $this->assertSame($expected, $mailbox->decodeRFC2231ForTests($input));
     }
+
+    public function testDecodeStringFromUtf7ImapToUtf8DecodesMailboxNamesToUtf8(): void
+    {
+        $mailbox = new Fixtures\Mailbox('', '', '');
+        $encodedMailboxName = '{imap.example.com:993/imap/ssl}INBOX.&bUuL1Q-';
+
+        $this->assertSame(
+            '{imap.example.com:993/imap/ssl}INBOX.测试',
+            $mailbox->decodeStringFromUtf7ImapToUtf8($encodedMailboxName)
+        );
+    }
 }

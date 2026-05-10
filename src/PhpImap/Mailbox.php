@@ -583,13 +583,7 @@ class Mailbox
      */
     public function decodeStringFromUtf7ImapToUtf8(string $str): string
     {
-        $out = imap_utf7_decode($str);
-
-        if (!\is_string($out)) {
-            throw new UnexpectedValueException('mb_convert_encoding($str, \'UTF-8\', \'UTF7-IMAP\') could not convert $str');
-        }
-
-        return $out;
+        return Imap::decodeStringFromUtf7ImapToUtf8($str);
     }
 
     /**
