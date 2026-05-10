@@ -13,12 +13,25 @@ class Mailbox extends Base
         return $this->decodeRFC2231($string);
     }
 
+    public function getMailHeaderFieldValueForTests(string $headersRaw, string $headerFieldName): string
+    {
+        return $this->getMailHeaderFieldValue($headersRaw, $headerFieldName);
+    }
+
     /**
      * @return (null|string)[]|null
      */
     public function possiblyGetEmailAndNameFromRecipientForTests(object $recipient): ?array
     {
         return $this->possiblyGetEmailAndNameFromRecipient($recipient);
+    }
+
+    /**
+     * @psalm-return array{messageId:null|string, inReplyTo:null|string, references:null|string}
+     */
+    public function getThreadingHeadersForTests(object $head, string $headersRaw): array
+    {
+        return $this->getThreadingHeaders($head, $headersRaw);
     }
 
     /**

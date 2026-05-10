@@ -146,4 +146,10 @@ class IncomingMailHeader
 
     /** @var string|null */
     public $messageId;
+
+    /** @var string|null */
+    public $inReplyTo;
+
+    /** @var string|null */
+    public $references;
 }
