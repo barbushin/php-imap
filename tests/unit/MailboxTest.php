@@ -420,6 +420,39 @@ final class MailboxTest extends TestCase
         $this->assertEquals($mailbox->getAttachmentsIgnore(), $paramValue);
     }
 
+    public function testHasAttachmentDispositionRecognizesMixedCaseAttachment(): void
+    {
+        $partStructure = (object) [
+            'disposition' => 'Attachment',
+        ];
+
+        $this->assertTrue($this->getMailbox()->hasAttachmentDispositionForTests($partStructure));
+    }
+
+    public function testDownloadAttachmentTreatsMixedCaseRfc822DispositionAsEmlAttachment(): void
+    {
+        $mailbox = new Fixtures\Mailbox($this->imapPath, $this->login, $this->password, null, $this->serverEncoding);
+        $dataInfo = new Fixtures\DataPartInfo($mailbox, 1, '2', 0, 0);
+        $dataInfo->setData("From: sender@example.com\r\n\r\nAttachment body");
+
+        $partStructure = (object) [
+            'type' => Mailbox::PART_TYPE_TWO,
+            'subtype' => 'RFC822',
+            'disposition' => 'Attachment',
+            'bytes' => 42,
+            'encoding' => 0,
+            'ifid' => 0,
+            'ifsubtype' => 1,
+            'ifdescription' => 0,
+        ];
+
+        $attachment = $mailbox->downloadAttachment($dataInfo, [], $partStructure);
+
+        $this->assertSame('rfc822.eml', $attachment->name);
+        $this->assertSame('Attachment', $attachment->disposition);
+        $this->assertFalse($attachment->emlOrigin);
+    }
+
     /**
      * Provides test data for testing encoding.
      *
