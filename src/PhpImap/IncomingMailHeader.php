@@ -44,6 +44,13 @@ class IncomingMailHeader
     /** @var string|null */
     public $headersRaw;
 
+    /**
+     * @var string[][]
+     *
+     * @psalm-var array<string, list<string>>
+     */
+    public $headersByName = [];
+
     /** @var object|null */
     public $headers;
 
@@ -152,4 +159,134 @@ class IncomingMailHeader
 
     /** @var string|null */
     public $references;
+
+    public function setHeadersRaw(string $headersRaw): void
+    {
+        $this->headersRaw = $headersRaw;
+        $this->headersByName = $this->parseHeadersRaw($headersRaw);
+    }
+
+    public function getHeader(string $headerName): ?string
+    {
+        $headers = $this->getHeaders($headerName);
+
+        if ([] === $headers) {
+            return null;
+        }
+
+        return $headers[0];
+    }
+
+    /**
+     * @return string[]
+     *
+     * @psalm-return list<string>
+     */
+    public function getHeaders(string $headerName): array
+    {
+        $this->ensureParsedHeadersByName();
+
+        return $this->headersByName[$this->normalizeHeaderName($headerName)] ?? [];
+    }
+
+    /**
+     * @return string[][]
+     *
+     * @psalm-return array<string, list<string>>
+     */
+    public function getAllHeaders(): array
+    {
+        $this->ensureParsedHeadersByName();
+
+        return $this->headersByName;
+    }
+
+    protected function ensureParsedHeadersByName(): void
+    {
+        if ([] !== $this->headersByName || null === $this->headersRaw) {
+            return;
+        }
+
+        $this->headersByName = $this->parseHeadersRaw($this->headersRaw);
+    }
+
+    /**
+     * @return string[][]
+     *
+     * @psalm-return array<string, list<string>>
+     */
+    protected function parseHeadersRaw(string $headersRaw): array
+    {
+        $parsedHeaders = [];
+        $currentHeaderName = null;
+        $currentHeaderValue = '';
+
+        foreach ($this->splitHeaderLines($headersRaw) as $line) {
+            if ('' === $line) {
+                $this->storeParsedHeader($parsedHeaders, $currentHeaderName, $currentHeaderValue);
+                $currentHeaderName = null;
+                $currentHeaderValue = '';
+
+                continue;
+            }
+
+            if (null !== $currentHeaderName && 1 === \preg_match('/^[ \t]/', $line)) {
+                $currentHeaderValue .= ' '.\ltrim($line);
+
+                continue;
+            }
+
+            $this->storeParsedHeader($parsedHeaders, $currentHeaderName, $currentHeaderValue);
+
+            $separatorPosition = \strpos($line, ':');
+
+            if (false === $separatorPosition) {
+                $currentHeaderName = null;
+                $currentHeaderValue = '';
+
+                continue;
+            }
+
+            $currentHeaderName = \substr($line, 0, $separatorPosition);
+            $currentHeaderValue = \trim(\substr($line, $separatorPosition + 1));
+        }
+
+        $this->storeParsedHeader($parsedHeaders, $currentHeaderName, $currentHeaderValue);
+
+        return $parsedHeaders;
+    }
+
+    /**
+     * @return string[]
+     *
+     * @psalm-return list<string>
+     */
+    protected function splitHeaderLines(string $headersRaw): array
+    {
+        /** @var list<string> */
+        return \explode("\n", \str_replace(["\r\n", "\r"], "\n", $headersRaw));
+    }
+
+    /**
+     * @param string[][]  $parsedHeaders
+     * @param string|null $headerName
+     *
+     * @psalm-param array<string, list<string>> $parsedHeaders
+     */
+    protected function storeParsedHeader(array &$parsedHeaders, ?string $headerName, string $headerValue): void
+    {
+        if (null === $headerName || '' === \trim($headerName)) {
+            return;
+        }
+
+        $headerName = $this->normalizeHeaderName($headerName);
+
+        $parsedHeaders[$headerName] ??= [];
+        $parsedHeaders[$headerName][] = \trim($headerValue);
+    }
+
+    protected function normalizeHeaderName(string $headerName): string
+    {
+        return \strtolower(\trim($headerName));
+    }
 }

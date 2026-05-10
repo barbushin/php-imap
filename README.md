@@ -144,6 +144,10 @@ if($mail->hasAttachments()) {
 // Print all information of $mail
 print_r($mail);
 
+// Access arbitrary headers without adding custom properties to the library
+$originMessageId = $mail->getHeader('Origin-MessageID');
+$receivedHeaders = $mail->getHeaders('Received');
+
 // Print all attachements of $mail
 echo "\n\nAttachments:\n";
 print_r($mail->getAttachments());
