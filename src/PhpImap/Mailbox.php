@@ -1440,6 +1440,14 @@ class Mailbox
         return \is_string($disposition) && 'attachment' === \mb_strtolower($disposition);
     }
 
+    protected function sanitizeAttachmentFileSystemName(string $fileName): string
+    {
+        return \strtr($fileName, [
+            '\\' => '_',
+            '/' => '_',
+        ]);
+    }
+
     /**
      * Download attachment.
      *
@@ -1519,7 +1527,7 @@ class Mailbox
 
         if (null != $attachmentsDir) {
             if (true == $this->getAttachmentFilenameMode()) {
-                $fileSysName = $attachment->name;
+                $fileSysName = $this->sanitizeAttachmentFileSystemName($attachment->name);
             } else {
                 $fileSysName = \bin2hex(\random_bytes(16)).'.bin';
             }
