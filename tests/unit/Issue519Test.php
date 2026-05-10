@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Live Mailbox - PHPUnit tests.
  *
@@ -12,7 +13,9 @@ namespace PhpImap;
 
 use const ENC8BIT;
 use const ENCBASE64;
+
 use PHPUnit\Framework\TestCase;
+
 use const TYPEIMAGE;
 
 class Issue519Test extends TestCase
@@ -103,9 +106,9 @@ class Issue519Test extends TestCase
     public const EXPECTED_ATTACHMENT_COUNT_AFTER_EMBED = 0;
 
     /**
-     * @psalm-return array<string, array{0: string}>
-     *
      * @return string[][]
+     *
+     * @psalm-return array<string, array{0: string}>
      */
     public function provider(): array
     {

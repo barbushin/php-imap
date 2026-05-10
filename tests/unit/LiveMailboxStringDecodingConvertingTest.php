@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Live Mailbox - PHPUnit tests.
  *
@@ -11,6 +12,7 @@ declare(strict_types=1);
 namespace PhpImap;
 
 use const ENCQUOTEDPRINTABLE;
+
 use Generator;
 use PHPUnit\Framework\TestCase;
 

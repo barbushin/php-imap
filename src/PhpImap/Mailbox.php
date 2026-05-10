@@ -5,12 +5,18 @@ declare(strict_types=1);
 namespace PhpImap;
 
 use const CL_EXPUNGE;
+
 use function count;
+
 use const CP_UID;
 use const DATE_RFC3339;
+
 use DateTime;
+
 use const DIRECTORY_SEPARATOR;
+
 use Exception;
+
 use const FILEINFO_EXTENSION;
 use const FILEINFO_MIME;
 use const FILEINFO_MIME_ENCODING;
@@ -24,7 +30,9 @@ use const IMAP_CLOSETIMEOUT;
 use const IMAP_OPENTIMEOUT;
 use const IMAP_READTIMEOUT;
 use const IMAP_WRITETIMEOUT;
+
 use InvalidArgumentException;
+
 use const OP_ANONYMOUS;
 use const OP_DEBUG;
 use const OP_HALFOPEN;
@@ -34,18 +42,23 @@ use const OP_SECURE;
 use const OP_SHORTCACHE;
 use const OP_SILENT;
 use const PATHINFO_EXTENSION;
+
 use PhpImap\Exceptions\ConnectionException;
 use PhpImap\Exceptions\InvalidParameterException;
+
 use const SA_ALL;
 use const SE_FREE;
 use const SE_UID;
 use const SORT_NUMERIC;
 use const SORTARRIVAL;
 use const ST_UID;
+
 use stdClass;
+
 use const TYPEMESSAGE;
 use const TYPEMULTIPART;
 use const TYPETEXT;
+
 use UnexpectedValueException;
 
 /**
@@ -54,7 +67,6 @@ use UnexpectedValueException;
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
  *
  * @psalm-type PARTSTRUCTURE_PARAM = object{attribute:string, value?:string}
- *
  * @psalm-type PARTSTRUCTURE = object{
  *  id?:string,
  *  encoding:int|mixed,
@@ -92,6 +104,18 @@ class Mailbox
     public const AUTHENTICATION_TYPE_PASSWORD = 'password';
 
     public const AUTHENTICATION_TYPE_OAUTH = 'oauth';
+
+    public const IMAP_OPTIONS_SUPPORTED_VALUES =
+        OP_READONLY // 2
+        | OP_ANONYMOUS // 4
+        | OP_HALFOPEN // 64
+        | CL_EXPUNGE // 32768
+        | OP_DEBUG // 1
+        | OP_SHORTCACHE // 8
+        | OP_SILENT // 16
+        | OP_PROTOTYPE // 32
+        | OP_SECURE // 256
+    ;
 
     /** @var string[] */
     private const SIMPLE_SEARCH_CRITERIA_WITHOUT_ARGUMENTS = [
@@ -133,18 +157,6 @@ class Mailbox
         'UNKEYWORD',
     ];
 
-    public const IMAP_OPTIONS_SUPPORTED_VALUES =
-        OP_READONLY // 2
-            | OP_ANONYMOUS // 4
-            | OP_HALFOPEN // 64
-            | CL_EXPUNGE // 32768
-            | OP_DEBUG // 1
-            | OP_SHORTCACHE // 8
-            | OP_SILENT // 16
-            | OP_PROTOTYPE // 32
-            | OP_SECURE // 256
-    ;
-
     /** @var string */
     public $decodeMimeStrDefaultCharset = 'default';
 
@@ -161,7 +173,7 @@ class Mailbox
     protected $authenticationType = self::AUTHENTICATION_TYPE_PASSWORD;
 
     /** @var string|null */
-    protected $imapOAuthToken = null;
+    protected $imapOAuthToken;
 
     /** @var int */
     protected $imapSearchOption = SE_UID;
@@ -185,7 +197,7 @@ class Mailbox
     protected $serverEncoding = 'UTF-8';
 
     /** @var string|null */
-    protected $attachmentsDir = null;
+    protected $attachmentsDir;
 
     /** @var bool */
     protected $expungeOnDisconnect = true;
@@ -571,7 +583,7 @@ class Mailbox
      */
     public function encodeStringToUtf7Imap(string $str): string
     {
-        return imap_utf7_encode($str);
+        return Imap::encodeStringToUtf7Imap($str);
     }
 
     /**
@@ -917,9 +929,9 @@ class Mailbox
      * @param int    $mailId A single mail ID
      * @param string $flag   Which you can get are \Seen, \Answered, \Flagged, \Deleted, and \Draft as defined by RFC2060
      *
-     * @return bool True, when the flag is set, false when not
-     *
      * @psalm-param int $mailId
+     *
+     * @return bool True, when the flag is set, false when not
      */
     public function flagIsSet(int $mailId, string $flag): bool
     {
@@ -1087,7 +1099,7 @@ class Mailbox
         int $criteria = SORTARRIVAL,
         bool $reverse = true,
         ?string $searchCriteria = 'ALL',
-        ?string $charset = null
+        ?string $charset = null,
     ): array {
         return Imap::sort(
             $this->getImapStream(),
@@ -1175,38 +1187,6 @@ class Mailbox
         }
 
         return '';
-    }
-
-    /**
-     * @psalm-return array{messageId:null|string, inReplyTo:null|string, references:null|string}
-     */
-    protected function getThreadingHeaders(object $head, string $headersRaw): array
-    {
-        /** @var scalar|array|object|resource|null */
-        $parsedMessageId = $head->message_id ?? null;
-
-        if (null !== $parsedMessageId && !\is_string($parsedMessageId)) {
-            throw new UnexpectedValueException('Message ID was expected to be a string, '.\gettype($parsedMessageId).' found!');
-        }
-
-        $messageId = (\is_string($parsedMessageId) && '' !== \trim($parsedMessageId)) ? \trim($parsedMessageId) : $this->getOptionalMailHeaderFieldValue($headersRaw, 'Message-ID');
-
-        return [
-            'messageId' => $messageId,
-            'inReplyTo' => $this->getOptionalMailHeaderFieldValue($headersRaw, 'In-Reply-To'),
-            'references' => $this->getOptionalMailHeaderFieldValue($headersRaw, 'References'),
-        ];
-    }
-
-    protected function getOptionalMailHeaderFieldValue(string $headersRaw, string $headerFieldName): ?string
-    {
-        $headerFieldValue = $this->getMailHeaderFieldValue($headersRaw, $headerFieldName);
-
-        if ('' === $headerFieldValue) {
-            return null;
-        }
-
-        return $headerFieldValue;
     }
 
     /**
@@ -1432,22 +1412,6 @@ class Mailbox
         return $mail;
     }
 
-    protected function hasAttachmentDisposition(object $partStructure): bool
-    {
-        /** @var scalar|array|object|resource|null */
-        $disposition = $partStructure->disposition ?? null;
-
-        return \is_string($disposition) && 'attachment' === \mb_strtolower($disposition);
-    }
-
-    protected function sanitizeAttachmentFileSystemName(string $fileName): string
-    {
-        return \strtr($fileName, [
-            '\\' => '_',
-            '/' => '_',
-        ]);
-    }
-
     /**
      * Download attachment.
      *
@@ -1622,10 +1586,11 @@ class Mailbox
      */
     public function isUrlEncoded(string $string): bool
     {
-        $hasInvalidChars = \preg_match('#[^%a-zA-Z0-9\-_\.\+]#', $string);
-        $hasEscapedChars = \preg_match('#%[a-zA-Z0-9]{2}#', $string);
+        $hasInvalidChars = 1 === \preg_match('#[^%a-zA-Z0-9\-_\.\+]#', $string);
+        $hasEscapedChars = 1 === \preg_match('#%[A-Fa-f0-9]{2}#', $string);
+        $hasInvalidEscapes = 1 === \preg_match('#%(?![A-Fa-f0-9]{2})#', $string);
 
-        return !$hasInvalidChars && $hasEscapedChars;
+        return !$hasInvalidChars && $hasEscapedChars && !$hasInvalidEscapes;
     }
 
     /**
@@ -1750,12 +1715,12 @@ class Mailbox
         $message,
         string $mailbox = '',
         ?string $options = null,
-        ?string $internal_date = null
+        ?string $internal_date = null,
     ): bool {
         if (
-            \is_array($message) &&
-            self::EXPECTED_SIZE_OF_MESSAGE_AS_ARRAY === \count($message) &&
-            isset($message[0], $message[1])
+            \is_array($message)
+            && self::EXPECTED_SIZE_OF_MESSAGE_AS_ARRAY === \count($message)
+            && isset($message[0], $message[1])
         ) {
             $message = Imap::mail_compose($message[0], $message[1]);
         }
@@ -1771,6 +1736,54 @@ class Mailbox
             $options,
             $internal_date
         );
+    }
+
+    /**
+     * @psalm-return array{messageId:null|string, inReplyTo:null|string, references:null|string}
+     */
+    protected function getThreadingHeaders(object $head, string $headersRaw): array
+    {
+        /** @var scalar|array|object|resource|null */
+        $parsedMessageId = $head->message_id ?? null;
+
+        if (null !== $parsedMessageId && !\is_string($parsedMessageId)) {
+            throw new UnexpectedValueException('Message ID was expected to be a string, '.\gettype($parsedMessageId).' found!');
+        }
+
+        $messageId = (\is_string($parsedMessageId) && '' !== \trim($parsedMessageId)) ? \trim($parsedMessageId) : $this->getOptionalMailHeaderFieldValue($headersRaw, 'Message-ID');
+
+        return [
+            'messageId' => $messageId,
+            'inReplyTo' => $this->getOptionalMailHeaderFieldValue($headersRaw, 'In-Reply-To'),
+            'references' => $this->getOptionalMailHeaderFieldValue($headersRaw, 'References'),
+        ];
+    }
+
+    protected function getOptionalMailHeaderFieldValue(string $headersRaw, string $headerFieldName): ?string
+    {
+        $headerFieldValue = $this->getMailHeaderFieldValue($headersRaw, $headerFieldName);
+
+        if ('' === $headerFieldValue) {
+            return null;
+        }
+
+        return $headerFieldValue;
+    }
+
+    protected function hasAttachmentDisposition(object $partStructure): bool
+    {
+        /** @var scalar|array|object|resource|null */
+        $disposition = $partStructure->disposition ?? null;
+
+        return \is_string($disposition) && 'attachment' === \mb_strtolower($disposition);
+    }
+
+    protected function sanitizeAttachmentFileSystemName(string $fileName): string
+    {
+        return \strtr($fileName, [
+            '\\' => '_',
+            '/' => '_',
+        ]);
     }
 
     /**
@@ -1821,9 +1834,9 @@ class Mailbox
     /**
      * Open an IMAP stream to a mailbox.
      *
-     * @throws Exception if an error occured
-     *
      * @return resource IMAP stream on success
+     *
+     * @throws Exception if an error occured
      */
     protected function initImapStream()
     {
@@ -1918,6 +1931,7 @@ class Mailbox
      * @param string|0 $partNum
      *
      * @psalm-param PARTSTRUCTURE $partStructure
+     *
      * @psalm-suppress InvalidArgument
      *
      * @todo refactor type checking pending resolution of https://github.com/vimeo/psalm/issues/2619
@@ -1963,9 +1977,9 @@ class Mailbox
 
         // ignore contentId on body when mail isn't multipart (https://github.com/barbushin/php-imap/issues/71)
         if (
-            !$partNum &&
-            TYPETEXT === $partStructure->type &&
-            !$dispositionAttachment
+            !$partNum
+            && TYPETEXT === $partStructure->type
+            && !$dispositionAttachment
         ) {
             $isAttachment = false;
         }
@@ -1977,7 +1991,7 @@ class Mailbox
         // check if the part is a subpart of another attachment part (RFC822)
         if ('RFC822' === $partStructure->subtype && $dispositionAttachment) {
             // Although we are downloading each part separately, we are going to download the EML to a single file
-            //incase someone wants to process or parse in another process
+            // incase someone wants to process or parse in another process
             $attachment = self::downloadAttachment($dataInfo, $params, $partStructure, false);
             $mail->addAttachment($attachment);
         }
@@ -2015,7 +2029,7 @@ class Mailbox
                     // https://github.com/barbushin/php-imap/issues/198
                     $this->initMailPart($mail, $subPartStructure, $partNum, $markAsSeen);
                 } elseif ('RFC822' === $partStructure->subtype && $dispositionAttachment) {
-                    //If it comes from am EML attachment, download each part separately as a file
+                    // If it comes from am EML attachment, download each part separately as a file
                     $this->initMailPart($mail, $subPartStructure, $partNum.'.'.($subPartNum + 1), $markAsSeen, true);
                 } else {
                     $this->initMailPart($mail, $subPartStructure, $partNum.'.'.($subPartNum + 1), $markAsSeen);
@@ -2084,9 +2098,9 @@ class Mailbox
     }
 
     /**
-     * @psalm-return array{0: string, 1: null|string}|null
+     * @return (string|null)[]|null
      *
-     * @return (null|string)[]|null
+     * @psalm-return array{0: string, 1: null|string}|null
      */
     protected function possiblyGetEmailAndNameFromRecipient(object $recipient): ?array
     {

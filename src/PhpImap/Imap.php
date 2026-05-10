@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
  * @author BAPCLTD-Marv
@@ -12,10 +13,14 @@ use const IMAP_CLOSETIMEOUT;
 use const IMAP_OPENTIMEOUT;
 use const IMAP_READTIMEOUT;
 use const IMAP_WRITETIMEOUT;
+
 use InvalidArgumentException;
+
 use const NIL;
 use const PHP_MAJOR_VERSION;
+
 use PhpImap\Exceptions\ConnectionException;
+
 use const SE_FREE;
 use const SORTARRIVAL;
 use const SORTCC;
@@ -24,6 +29,7 @@ use const SORTFROM;
 use const SORTSIZE;
 use const SORTSUBJECT;
 use const SORTTO;
+
 use stdClass;
 use Throwable;
 use UnexpectedValueException;
@@ -80,7 +86,7 @@ final class Imap
         string $mailbox,
         string $message,
         ?string $options = null,
-        ?string $internal_date = null
+        ?string $internal_date = null,
     ): bool {
         \imap_errors(); // flush errors
 
@@ -113,7 +119,7 @@ final class Imap
     public static function body(
         $imap_stream,
         int $msg_number,
-        int $options = 0
+        int $options = 0,
     ): string {
         \imap_errors(); // flush errors
 
@@ -157,7 +163,7 @@ final class Imap
         $imap_stream,
         $sequence,
         string $flag,
-        int $options = 0
+        int $options = 0,
     ): bool {
         \imap_errors(); // flush errors
 
@@ -240,7 +246,7 @@ final class Imap
     public static function delete(
         $imap_stream,
         $msg_number,
-        int $options = 0
+        int $options = 0,
     ): bool {
         /**
          * @var int
@@ -320,7 +326,7 @@ final class Imap
     public static function fetch_overview(
         $imap_stream,
         $sequence,
-        int $options = 0
+        int $options = 0,
     ): array {
         \imap_errors(); // flush errors
 
@@ -351,7 +357,7 @@ final class Imap
         $imap_stream,
         int $msg_number,
         $section,
-        int $options = 0
+        int $options = 0,
     ): string {
         if (!\is_string($section) && !\is_int($section)) {
             throw new InvalidArgumentException('Argument 3 passed to '.__METHOD__.'() must be a string or integer, '.\gettype($section).' given!');
@@ -379,7 +385,7 @@ final class Imap
     public static function fetchheader(
         $imap_stream,
         int $msg_number,
-        int $options = 0
+        int $options = 0,
     ): string {
         \imap_errors(); // flush errors
 
@@ -404,7 +410,7 @@ final class Imap
     public static function fetchstructure(
         $imap_stream,
         int $msg_number,
-        int $options = 0
+        int $options = 0,
     ): object {
         \imap_errors(); // flush errors
 
@@ -429,7 +435,7 @@ final class Imap
      */
     public static function get_quotaroot(
         $imap_stream,
-        string $quota_root
+        string $quota_root,
     ): array {
         \imap_errors(); // flush errors
 
@@ -455,7 +461,7 @@ final class Imap
     public static function getmailboxes(
         $imap_stream,
         string $ref,
-        string $pattern
+        string $pattern,
     ): array {
         \imap_errors(); // flush errors
 
@@ -493,7 +499,7 @@ final class Imap
     public static function getsubscribed(
         $imap_stream,
         string $ref,
-        string $pattern
+        string $pattern,
     ): array {
         \imap_errors(); // flush errors
 
@@ -593,7 +599,7 @@ final class Imap
         $imap_stream,
         $msglist,
         string $mailbox,
-        int $options = 0
+        int $options = 0,
     ): bool {
         \imap_errors(); // flush errors
 
@@ -626,7 +632,7 @@ final class Imap
         $imap_stream,
         $msglist,
         string $mailbox,
-        int $options = 0
+        int $options = 0,
     ): bool {
         \imap_errors(); // flush errors
 
@@ -694,7 +700,7 @@ final class Imap
         string $password,
         int $options = 0,
         int $n_retries = 0,
-        array $params = []
+        array $params = [],
     ) {
         if (\preg_match("/^\{.*\}(.*)$/", $mailbox, $matches)) {
             $mailbox_name = $matches[1] ?? '';
@@ -733,7 +739,7 @@ final class Imap
     public static function renamemailbox(
         $imap_stream,
         string $old_mbox,
-        string $new_mbox
+        string $new_mbox,
     ): bool {
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
 
@@ -760,7 +766,7 @@ final class Imap
         $imap_stream,
         string $mailbox,
         int $options = 0,
-        int $n_retries = 0
+        int $n_retries = 0,
     ): bool {
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
 
@@ -788,7 +794,7 @@ final class Imap
         $file,
         int $msg_number,
         string $part_number = '',
-        int $options = 0
+        int $options = 0,
     ): bool {
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
         $file = \is_string($file) ? $file : self::EnsureResource($file, __METHOD__, 2);
@@ -817,7 +823,7 @@ final class Imap
         string $criteria,
         int $options = SE_FREE,
         ?string $charset = null,
-        bool $encodeCriteriaAsUtf7Imap = false
+        bool $encodeCriteriaAsUtf7Imap = false,
     ): array {
         \imap_errors(); // flush errors
 
@@ -866,7 +872,7 @@ final class Imap
         $imap_stream,
         $sequence,
         string $flag,
-        int $options = NIL
+        int $options = NIL,
     ): bool {
         \imap_errors(); // flush errors
 
@@ -893,6 +899,7 @@ final class Imap
      * @param false|resource $imap_stream
      *
      * @psalm-param value-of<self::SORT_CRITERIA> $criteria
+     *
      * @psalm-suppress InvalidArgument
      *
      * @todo InvalidArgument, although it's correct: Argument 3 of imap_sort expects int, bool provided https://www.php.net/manual/de/function.imap-sort.php
@@ -907,7 +914,7 @@ final class Imap
         bool $reverse,
         int $options,
         ?string $search_criteria = null,
-        ?string $charset = null
+        ?string $charset = null,
     ): array {
         \imap_errors(); // flush errors
 
@@ -1005,7 +1012,7 @@ final class Imap
      */
     public static function timeout(
         int $timeout_type,
-        int $timeout = -1
+        int $timeout = -1,
     ) {
         \imap_errors(); // flush errors
 
@@ -1029,7 +1036,7 @@ final class Imap
      */
     public static function unsubscribe(
         $imap_stream,
-        string $mailbox
+        string $mailbox,
     ): void {
         $imap_stream = self::EnsureConnection($imap_stream, __METHOD__, 1);
 
@@ -1053,7 +1060,12 @@ final class Imap
      */
     public static function encodeStringToUtf7Imap(string $str): string
     {
-        $out = \mb_convert_encoding($str, 'UTF7-IMAP', \mb_detect_encoding($str, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
+        // mb_detect_encoding() can misclassify valid UTF-8 strings as ISO-8859-1/15.
+        $sourceEncoding = \mb_check_encoding($str, 'UTF-8')
+            ? 'UTF-8'
+            : (\mb_detect_encoding($str, ['ISO-8859-1', 'ISO-8859-15'], true) ?: 'UTF-8');
+
+        $out = \mb_convert_encoding($str, 'UTF7-IMAP', $sourceEncoding);
 
         if (!\is_string($out)) {
             throw new UnexpectedValueException('mb_convert_encoding($str, \'UTF-8\', {detected}) could not convert $str');
@@ -1083,9 +1095,9 @@ final class Imap
     /**
      * @param false|resource $maybe
      *
-     * @throws InvalidArgumentException if $maybe is not a valid resource
-     *
      * @return resource
+     *
+     * @throws InvalidArgumentException if $maybe is not a valid resource
      *
      * @psalm-pure
      */
@@ -1102,16 +1114,16 @@ final class Imap
     /**
      * @param false|resource $maybe
      *
-     * @throws Exceptions\ConnectionException if $maybe is not a valid resource
-     *
      * @return resource
+     *
+     * @throws ConnectionException if $maybe is not a valid resource
      */
     private static function EnsureConnection($maybe, string $method, int $argument)
     {
         try {
             return self::EnsureResource($maybe, $method, $argument);
         } catch (Throwable $e) {
-            throw new Exceptions\ConnectionException('Argument '.(string) $argument.' passed to '.$method.' must be valid resource!', 0, $e);
+            throw new ConnectionException('Argument '.(string) $argument.' passed to '.$method.' must be valid resource!', 0, $e);
         }
     }
 
@@ -1138,7 +1150,7 @@ final class Imap
         $msg_number,
         string $method,
         int $argument,
-        bool $allow_sequence = false
+        bool $allow_sequence = false,
     ): string {
         if (!\is_int($msg_number) && !\is_string($msg_number)) {
             throw new InvalidArgumentException('Argument 1 passed to '.__METHOD__.'() must be an integer or a string!');

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mailbox - PHPUnit tests.
  *
@@ -9,8 +10,13 @@ declare(strict_types=1);
 namespace PhpImap;
 
 use const CL_EXPUNGE;
+
 use DateTime;
+
+use const DIRECTORY_SEPARATOR;
+
 use Generator;
+
 use const IMAP_CLOSETIMEOUT;
 use const IMAP_OPENTIMEOUT;
 use const IMAP_READTIMEOUT;
@@ -23,8 +29,10 @@ use const OP_READONLY;
 use const OP_SECURE;
 use const OP_SHORTCACHE;
 use const OP_SILENT;
+
 use PhpImap\Exceptions\InvalidParameterException;
 use PHPUnit\Framework\TestCase;
+
 use const SE_FREE;
 use const SE_UID;
 
@@ -92,9 +100,9 @@ final class MailboxTest extends TestCase
     }
 
     /**
-     * @psalm-return non-empty-list<array{0: 'UTF-8'|'Windows-1251'|'Windows-1252'}>
-     *
      * @return string[][]
+     *
+     * @psalm-return non-empty-list<array{0: 'UTF-8'|'Windows-1251'|'Windows-1252'}>
      */
     public function SetAndGetServerEncodingProvider(): array
     {
@@ -111,8 +119,8 @@ final class MailboxTest extends TestCase
             ] as $perhaps
         ) {
             if (
-                \in_array(\trim($perhaps), $supported, true) ||
-                \in_array(\strtoupper(\trim($perhaps)), $supported, true)
+                \in_array(\trim($perhaps), $supported, true)
+                || \in_array(\strtoupper(\trim($perhaps)), $supported, true)
             ) {
                 $data[] = [$perhaps];
             }
@@ -233,7 +241,10 @@ final class MailboxTest extends TestCase
 
         $flattenedParts = $this->getMailbox()->flattenParts([$rfc822Part]);
 
-        $this->assertSame(['1', '1.1', '1.2'], \array_keys($flattenedParts));
+        $this->assertSame(
+            ['1', '1.1', '1.2'],
+            \array_map('strval', \array_keys($flattenedParts))
+        );
         $this->assertArrayNotHasKey('1.0', $flattenedParts);
     }
 
@@ -285,9 +296,9 @@ final class MailboxTest extends TestCase
     /**
      * Provides test data for testing path delimiter.
      *
-     * @psalm-return array{0: array{0: '0'}, 1: array{0: '1'}, 2: array{0: '2'}, 3: array{0: '3'}, 4: array{0: '4'}, 5: array{0: '5'}, 6: array{0: '6'}, 7: array{0: '7'}, 8: array{0: '8'}, 9: array{0: '9'}, a: array{0: 'a'}, b: array{0: 'b'}, c: array{0: 'c'}, d: array{0: 'd'}, e: array{0: 'e'}, f: array{0: 'f'}, g: array{0: 'g'}, h: array{0: 'h'}, i: array{0: 'i'}, j: array{0: 'j'}, k: array{0: 'k'}, l: array{0: 'l'}, m: array{0: 'm'}, n: array{0: 'n'}, o: array{0: 'o'}, p: array{0: 'p'}, q: array{0: 'q'}, r: array{0: 'r'}, s: array{0: 's'}, t: array{0: 't'}, u: array{0: 'u'}, v: array{0: 'v'}, w: array{0: 'w'}, x: array{0: 'x'}, y: array{0: 'y'}, z: array{0: 'z'}, !: array{0: '!'}, '\\': array{0: '\'}, $: array{0: '$'}, %: array{0: '%'}, §: array{0: '§'}, &: array{0: '&'}, /: array{0: '/'}, (: array{0: '('}, ): array{0: ')'}, =: array{0: '='}, #: array{0: '#'}, ~: array{0: '~'}, *: array{0: '*'}, +: array{0: '+'}, ,: array{0: ','}, ;: array{0: ';'}, '.': array{0: '.'}, ':': array{0: ':'}, <: array{0: '<'}, >: array{0: '>'}, |: array{0: '|'}, _: array{0: '_'}}
-     *
      * @return string[][]
+     *
+     * @psalm-return array{0: array{0: '0'}, 1: array{0: '1'}, 2: array{0: '2'}, 3: array{0: '3'}, 4: array{0: '4'}, 5: array{0: '5'}, 6: array{0: '6'}, 7: array{0: '7'}, 8: array{0: '8'}, 9: array{0: '9'}, a: array{0: 'a'}, b: array{0: 'b'}, c: array{0: 'c'}, d: array{0: 'd'}, e: array{0: 'e'}, f: array{0: 'f'}, g: array{0: 'g'}, h: array{0: 'h'}, i: array{0: 'i'}, j: array{0: 'j'}, k: array{0: 'k'}, l: array{0: 'l'}, m: array{0: 'm'}, n: array{0: 'n'}, o: array{0: 'o'}, p: array{0: 'p'}, q: array{0: 'q'}, r: array{0: 'r'}, s: array{0: 's'}, t: array{0: 't'}, u: array{0: 'u'}, v: array{0: 'v'}, w: array{0: 'w'}, x: array{0: 'x'}, y: array{0: 'y'}, z: array{0: 'z'}, !: array{0: '!'}, '\\': array{0: '\'}, $: array{0: '$'}, %: array{0: '%'}, §: array{0: '§'}, &: array{0: '&'}, /: array{0: '/'}, (: array{0: '('}, ): array{0: ')'}, =: array{0: '='}, #: array{0: '#'}, ~: array{0: '~'}, *: array{0: '*'}, +: array{0: '+'}, ,: array{0: ','}, ;: array{0: ';'}, '.': array{0: '.'}, ':': array{0: ':'}, <: array{0: '<'}, >: array{0: '>'}, |: array{0: '|'}, _: array{0: '_'}}
      */
     public function pathDelimiterProvider(): array
     {
@@ -470,7 +481,9 @@ final class MailboxTest extends TestCase
     public function testDownloadAttachmentSanitizesFilePathWhenUsingOriginalFilenameMode(string $unsafeName, string $expectedFileName): void
     {
         $attachmentsDir = \sys_get_temp_dir().DIRECTORY_SEPARATOR.'php-imap-attachment-name-'.\bin2hex(\random_bytes(8));
-        $mailbox = new class ($this->imapPath, $this->login, $this->password, $attachmentsDir, $this->serverEncoding, true, true) extends Fixtures\Mailbox {
+        \mkdir($attachmentsDir);
+
+        $mailbox = new class($this->imapPath, $this->login, $this->password, $attachmentsDir, $this->serverEncoding, true, true) extends Fixtures\Mailbox {
             public function decodeMimeStr(string $string): string
             {
                 return $string;
@@ -488,8 +501,6 @@ final class MailboxTest extends TestCase
             'ifdescription' => 0,
         ];
         $attachmentPath = null;
-
-        \mkdir($attachmentsDir);
 
         try {
             $attachment = $mailbox->downloadAttachment($dataInfo, ['filename' => $unsafeName], $partStructure);
@@ -512,9 +523,9 @@ final class MailboxTest extends TestCase
     /**
      * Provides test data for testing encoding.
      *
-     * @psalm-return array{Avañe’ẽ: array{0: 'Avañe’ẽ'}, azərbaycanca: array{0: 'azərbaycanca'}, Bokmål: array{0: 'Bokmål'}, chiCheŵa: array{0: 'chiCheŵa'}, Deutsch: array{0: 'Deutsch'}, 'U.S. English': array{0: 'U.S. English'}, français: array{0: 'français'}, 'Éléments envoyés': array{0: 'Éléments envoyés'}, føroyskt: array{0: 'føroyskt'}, Kĩmĩrũ: array{0: 'Kĩmĩrũ'}, Kɨlaangi: array{0: 'Kɨlaangi'}, oʼzbekcha: array{0: 'oʼzbekcha'}, Plattdüütsch: array{0: 'Plattdüütsch'}, română: array{0: 'română'}, Sängö: array{0: 'Sängö'}, 'Tiếng Việt': array{0: 'Tiếng Việt'}, ɔl-Maa: array{0: 'ɔl-Maa'}, Ελληνικά: array{0: 'Ελληνικά'}, Ўзбек: array{0: 'Ўзбек'}, Азәрбајҹан: array{0: 'Азәрбајҹан'}, Српски: array{0: 'Српски'}, русский: array{0: 'русский'}, 'ѩзыкъ словѣньскъ': array{0: 'ѩзыкъ словѣньскъ'}, العربية: array{0: 'العربية'}, नेपाली: array{0: 'नेपाली'}, 日本語: array{0: '日本語'}, 简体中文: array{0: '简体中文'}, 繁體中文: array{0: '繁體中文'}, 한국어: array{0: '한국어'}, ąčęėįšųūžĄČĘĖĮŠŲŪŽ: array{0: 'ąčęėįšųūžĄČĘĖĮŠŲŪŽ'}}
-     *
      * @return string[][]
+     *
+     * @psalm-return array{Avañe’ẽ: array{0: 'Avañe’ẽ'}, azərbaycanca: array{0: 'azərbaycanca'}, Bokmål: array{0: 'Bokmål'}, chiCheŵa: array{0: 'chiCheŵa'}, Deutsch: array{0: 'Deutsch'}, 'U.S. English': array{0: 'U.S. English'}, français: array{0: 'français'}, 'Éléments envoyés': array{0: 'Éléments envoyés'}, føroyskt: array{0: 'føroyskt'}, Kĩmĩrũ: array{0: 'Kĩmĩrũ'}, Kɨlaangi: array{0: 'Kɨlaangi'}, oʼzbekcha: array{0: 'oʼzbekcha'}, Plattdüütsch: array{0: 'Plattdüütsch'}, română: array{0: 'română'}, Sängö: array{0: 'Sängö'}, 'Tiếng Việt': array{0: 'Tiếng Việt'}, ɔl-Maa: array{0: 'ɔl-Maa'}, Ελληνικά: array{0: 'Ελληνικά'}, Ўзбек: array{0: 'Ўзбек'}, Азәрбајҹан: array{0: 'Азәрбајҹан'}, Српски: array{0: 'Српски'}, русский: array{0: 'русский'}, 'ѩзыкъ словѣньскъ': array{0: 'ѩзыкъ словѣньскъ'}, العربية: array{0: 'العربية'}, नेपाली: array{0: 'नेपाली'}, 日本語: array{0: '日本語'}, 简体中文: array{0: '简体中文'}, 繁體中文: array{0: '繁體中文'}, 한국어: array{0: '한국어'}, ąčęėįšųūžĄČĘĖĮŠŲŪŽ: array{0: 'ąčęėįšųūžĄČĘĖĮŠŲŪŽ'}}
      */
     public function encodingTestStringsProvider(): array
     {
@@ -580,9 +591,9 @@ final class MailboxTest extends TestCase
     /**
      * Provides test data for testing parsing datetimes.
      *
-     * @psalm-return array{'Sun, 14 Aug 2005 16:13:03 +0000 (CEST)': array{0: '2005-08-14T16:13:03+00:00', 1: 1124035983}, 'Sun, 14 Aug 2005 16:13:03 +0000': array{0: '2005-08-14T16:13:03+00:00', 1: 1124035983}, 'Sun, 14 Aug 2005 16:13:03 +1000 (CEST)': array{0: '2005-08-14T06:13:03+00:00', 1: 1123999983}, 'Sun, 14 Aug 2005 16:13:03 +1000': array{0: '2005-08-14T06:13:03+00:00', 1: 1123999983}, 'Sun, 14 Aug 2005 16:13:03 -1000': array{0: '2005-08-15T02:13:03+00:00', 1: 1124071983}, 'Sun, 14 Aug 2005 16:13:03 +1100 (CEST)': array{0: '2005-08-14T05:13:03+00:00', 1: 1123996383}, 'Sun, 14 Aug 2005 16:13:03 +1100': array{0: '2005-08-14T05:13:03+00:00', 1: 1123996383}, 'Sun, 14 Aug 2005 16:13:03 -1100': array{0: '2005-08-15T03:13:03+00:00', 1: 1124075583}, '14 Aug 2005 16:13:03 +1000 (CEST)': array{0: '2005-08-14T06:13:03+00:00', 1: 1123999983}, '14 Aug 2005 16:13:03 +1000': array{0: '2005-08-14T06:13:03+00:00', 1: 1123999983}, '14 Aug 2005 16:13:03 -1000': array{0: '2005-08-15T02:13:03+00:00', 1: 1124071983}}
-     *
      * @return (int|string)[][]
+     *
+     * @psalm-return array{'Sun, 14 Aug 2005 16:13:03 +0000 (CEST)': array{0: '2005-08-14T16:13:03+00:00', 1: 1124035983}, 'Sun, 14 Aug 2005 16:13:03 +0000': array{0: '2005-08-14T16:13:03+00:00', 1: 1124035983}, 'Sun, 14 Aug 2005 16:13:03 +1000 (CEST)': array{0: '2005-08-14T06:13:03+00:00', 1: 1123999983}, 'Sun, 14 Aug 2005 16:13:03 +1000': array{0: '2005-08-14T06:13:03+00:00', 1: 1123999983}, 'Sun, 14 Aug 2005 16:13:03 -1000': array{0: '2005-08-15T02:13:03+00:00', 1: 1124071983}, 'Sun, 14 Aug 2005 16:13:03 +1100 (CEST)': array{0: '2005-08-14T05:13:03+00:00', 1: 1123996383}, 'Sun, 14 Aug 2005 16:13:03 +1100': array{0: '2005-08-14T05:13:03+00:00', 1: 1123996383}, 'Sun, 14 Aug 2005 16:13:03 -1100': array{0: '2005-08-15T03:13:03+00:00', 1: 1124075583}, '14 Aug 2005 16:13:03 +1000 (CEST)': array{0: '2005-08-14T06:13:03+00:00', 1: 1123999983}, '14 Aug 2005 16:13:03 +1000': array{0: '2005-08-14T06:13:03+00:00', 1: 1123999983}, '14 Aug 2005 16:13:03 -1000': array{0: '2005-08-15T02:13:03+00:00', 1: 1124071983}}
      */
     public function datetimeProvider(): array
     {
@@ -619,9 +630,9 @@ final class MailboxTest extends TestCase
     /**
      * Provides test data for testing parsing invalid / unparseable datetimes.
      *
-     * @psalm-return array{'Sun, 14 Aug 2005 16:13:03 +9000 (CEST)': array{0: 'Sun, 14 Aug 2005 16:13:03 +9000 (CEST)'}, 'Sun, 14 Aug 2005 16:13:03 +9000': array{0: 'Sun, 14 Aug 2005 16:13:03 +9000'}, 'Sun, 14 Aug 2005 16:13:03 -9000': array{0: 'Sun, 14 Aug 2005 16:13:03 -9000'}}
-     *
      * @return string[][]
+     *
+     * @psalm-return array{'Sun, 14 Aug 2005 16:13:03 +9000 (CEST)': array{0: 'Sun, 14 Aug 2005 16:13:03 +9000 (CEST)'}, 'Sun, 14 Aug 2005 16:13:03 +9000': array{0: 'Sun, 14 Aug 2005 16:13:03 +9000'}, 'Sun, 14 Aug 2005 16:13:03 -9000': array{0: 'Sun, 14 Aug 2005 16:13:03 -9000'}}
      */
     public function invalidDatetimeProvider(): array
     {
@@ -812,9 +823,9 @@ final class MailboxTest extends TestCase
     /**
      * Provides test data for testing mime string decoding.
      *
-     * @psalm-return array{'<bde36ec8-9710-47bc-9ea3-bf0425078e33@php.imap>': array{0: '<bde36ec8-9710-47bc-9ea3-bf0425078e33@php.imap>', 1: '<bde36ec8-9710-47bc-9ea3-bf0425078e33@php.imap>'}, '<CAKBqNfyKo+ZXtkz6DUAHw6FjmsDjWDB-pvHkJy6kwO82jTbkNA@mail.gmail.com>': array{0: '<CAKBqNfyKo+ZXtkz6DUAHw6FjmsDjWDB-pvHkJy6kwO82jTbkNA@mail.gmail.com>', 1: '<CAKBqNfyKo+ZXtkz6DUAHw6FjmsDjWDB-pvHkJy6kwO82jTbkNA@mail.gmail.com>'}, '<CAE78dO7vwnd_rkozHLZ5xSUnFEQA9fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>': array{0: '<CAE78dO7vwnd_rkozHLZ5xSUnFEQA9fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>', 1: '<CAE78dO7vwnd_rkozHLZ5xSUnFEQA9fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>'}, '<CAE78dO7vwnd_rkozHLZ5xSU-=nFE_QA9+fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>': array{0: '<CAE78dO7vwnd_rkozHLZ5xSU-=nFE_QA9+fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>', 1: '<CAE78dO7vwnd_rkozHLZ5xSU-=nFE_QA9+fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>'}, 'Some subject here 😘': array{0: '=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 1: 'Some subject here 😘'}, mountainguan测试: array{0: '=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 1: 'mountainguan测试'}, 'This is the Euro symbol \'\'.': array{0: 'This is the Euro symbol ''.', 1: 'This is the Euro symbol ''.'}, 'Some subject here 😘 US-ASCII': array{0: '=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 1: 'Some subject here 😘', 2: 'US-ASCII'}, 'mountainguan测试 US-ASCII': array{0: '=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 1: 'mountainguan测试', 2: 'US-ASCII'}, 'مقتطفات من: صن تزو. \"فن الحرب\". كتب أبل. Something': array{0: 'مقتطفات من: صن تزو. "فن الحرب". كتب أبل. Something', 1: 'مقتطفات من: صن تزو. "فن الحرب". كتب أبل. Something'}, '(事件单编号:TESTA-111111)(通报)入口有陌生人': array{0: '=?utf-8?b?KOS6i+S7tuWNlee8luWPtzpURVNUQS0xMTExMTEpKOmAmuaKpSnl?= =?utf-8?b?haXlj6PmnInpmYznlJ/kuro=?=', 1: '(事件单编号:TESTA-111111)(通报)入口有陌生人'}}
-     *
      * @return string[][]
+     *
+     * @psalm-return array{'<bde36ec8-9710-47bc-9ea3-bf0425078e33@php.imap>': array{0: '<bde36ec8-9710-47bc-9ea3-bf0425078e33@php.imap>', 1: '<bde36ec8-9710-47bc-9ea3-bf0425078e33@php.imap>'}, '<CAKBqNfyKo+ZXtkz6DUAHw6FjmsDjWDB-pvHkJy6kwO82jTbkNA@mail.gmail.com>': array{0: '<CAKBqNfyKo+ZXtkz6DUAHw6FjmsDjWDB-pvHkJy6kwO82jTbkNA@mail.gmail.com>', 1: '<CAKBqNfyKo+ZXtkz6DUAHw6FjmsDjWDB-pvHkJy6kwO82jTbkNA@mail.gmail.com>'}, '<CAE78dO7vwnd_rkozHLZ5xSUnFEQA9fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>': array{0: '<CAE78dO7vwnd_rkozHLZ5xSUnFEQA9fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>', 1: '<CAE78dO7vwnd_rkozHLZ5xSUnFEQA9fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>'}, '<CAE78dO7vwnd_rkozHLZ5xSU-=nFE_QA9+fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>': array{0: '<CAE78dO7vwnd_rkozHLZ5xSU-=nFE_QA9+fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>', 1: '<CAE78dO7vwnd_rkozHLZ5xSU-=nFE_QA9+fymcYREW2cwQ8DA2v7BTA@mail.gmail.com>'}, 'Some subject here 😘': array{0: '=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 1: 'Some subject here 😘'}, mountainguan测试: array{0: '=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 1: 'mountainguan测试'}, 'This is the Euro symbol \'\'.': array{0: 'This is the Euro symbol ''.', 1: 'This is the Euro symbol ''.'}, 'Some subject here 😘 US-ASCII': array{0: '=?UTF-8?q?Some_subject_here_?= =?UTF-8?q?=F0=9F=98=98?=', 1: 'Some subject here 😘', 2: 'US-ASCII'}, 'mountainguan测试 US-ASCII': array{0: '=?UTF-8?Q?mountainguan=E6=B5=8B=E8=AF=95?=', 1: 'mountainguan测试', 2: 'US-ASCII'}, 'مقتطفات من: صن تزو. \"فن الحرب\". كتب أبل. Something': array{0: 'مقتطفات من: صن تزو. "فن الحرب". كتب أبل. Something', 1: 'مقتطفات من: صن تزو. "فن الحرب". كتب أبل. Something'}, '(事件单编号:TESTA-111111)(通报)入口有陌生人': array{0: '=?utf-8?b?KOS6i+S7tuWNlee8luWPtzpURVNUQS0xMTExMTEpKOmAmuaKpSnl?= =?utf-8?b?haXlj6PmnInpmYznlJ/kuro=?=', 1: '(事件单编号:TESTA-111111)(通报)入口有陌生人'}}
      */
     public function mimeStrDecodingProvider(): array
     {
@@ -849,9 +860,9 @@ final class MailboxTest extends TestCase
     /**
      * Provides test data for testing base64 string decoding.
      *
-     * @psalm-return array{0: array{0: 'bm8tcmVwbHlAZXhhbXBsZS5jb20=', 1: 'no-reply@example.com'}, 1: array{0: 'TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=', 1: 'Man is distinguished, not only by his reason, but by this singular passion from other animals, which is a lust of the mind, that by a perseverance of delight in the continued and indefatigable generation of knowledge, exceeds the short vehemence of any carnal pleasure.'}, 2: array{0: 'SSBjYW4gZWF0IGdsYXNzIGFuZCBpdCBkb2VzIG5vdCBodXJ0IG1lLg==', 1: 'I can eat glass and it does not hurt me.'}, 3: array{0: '77u/4KSV4KS+4KSa4KSCIOCktuCkleCljeCkqOCli+CkruCljeCkr+CkpOCljeCkpOClgeCkruCljSDgpaQg4KSo4KWL4KSq4KS54KS/4KSo4KS44KWN4KSk4KS/IOCkruCkvuCkruCljSDgpaU=', 1: '﻿काचं शक्नोम्यत्तुम् । नोपहिनस्ति माम् ॥'}, 4: array{0: 'SmUgcGV1eCBtYW5nZXIgZHUgdmVycmUsIMOnYSBuZSBtZSBmYWl0IHBhcyBtYWwu', 1: 'Je peux manger du verre, ça ne me fait pas mal.'}, 5: array{0: 'UG90IHPEgyBtxINuw6JuYyBzdGljbMSDIMiZaSBlYSBudSBtxIMgcsSDbmXImXRlLg==', 1: 'Pot să mănânc sticlă și ea nu mă rănește.'}, 6: array{0: '5oiR6IO95ZCe5LiL546755KD6ICM5LiN5YK36Lqr6auU44CC', 1: '我能吞下玻璃而不傷身體。'}}
-     *
      * @return string[][]
+     *
+     * @psalm-return array{0: array{0: 'bm8tcmVwbHlAZXhhbXBsZS5jb20=', 1: 'no-reply@example.com'}, 1: array{0: 'TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=', 1: 'Man is distinguished, not only by his reason, but by this singular passion from other animals, which is a lust of the mind, that by a perseverance of delight in the continued and indefatigable generation of knowledge, exceeds the short vehemence of any carnal pleasure.'}, 2: array{0: 'SSBjYW4gZWF0IGdsYXNzIGFuZCBpdCBkb2VzIG5vdCBodXJ0IG1lLg==', 1: 'I can eat glass and it does not hurt me.'}, 3: array{0: '77u/4KSV4KS+4KSa4KSCIOCktuCkleCljeCkqOCli+CkruCljeCkr+CkpOCljeCkpOClgeCkruCljSDgpaQg4KSo4KWL4KSq4KS54KS/4KSo4KS44KWN4KSk4KS/IOCkruCkvuCkruCljSDgpaU=', 1: '﻿काचं शक्नोम्यत्तुम् । नोपहिनस्ति माम् ॥'}, 4: array{0: 'SmUgcGV1eCBtYW5nZXIgZHUgdmVycmUsIMOnYSBuZSBtZSBmYWl0IHBhcyBtYWwu', 1: 'Je peux manger du verre, ça ne me fait pas mal.'}, 5: array{0: 'UG90IHPEgyBtxINuw6JuYyBzdGljbMSDIMiZaSBlYSBudSBtxIMgcsSDbmXImXRlLg==', 1: 'Pot să mănânc sticlă și ea nu mă rănește.'}, 6: array{0: '5oiR6IO95ZCe5LiL546755KD6ICM5LiN5YK36Lqr6auU44CC', 1: '我能吞下玻璃而不傷身體。'}}
      */
     public function Base64DecodeProvider(): array
     {
@@ -876,9 +887,9 @@ final class MailboxTest extends TestCase
     }
 
     /**
-     * @psalm-return array{0: array{0: string, 1: '', 2: Exceptions\InvalidParameterException::class, 3: 'setAttachmentsDir() expects a string as first parameter!'}, 1: array{0: string, 1: ' ', 2: Exceptions\InvalidParameterException::class, 3: 'setAttachmentsDir() expects a string as first parameter!'}, 2: array{0: string, 1: string, 2: Exceptions\InvalidParameterException::class, 3: string}}
-     *
      * @return string[][]
+     *
+     * @psalm-return array{0: array{0: string, 1: '', 2: InvalidParameterException::class, 3: 'setAttachmentsDir() expects a string as first parameter!'}, 1: array{0: string, 1: ' ', 2: InvalidParameterException::class, 3: 'setAttachmentsDir() expects a string as first parameter!'}, 2: array{0: string, 1: string, 2: InvalidParameterException::class, 3: string}}
      */
     public function attachmentDirFailureProvider(): array
     {

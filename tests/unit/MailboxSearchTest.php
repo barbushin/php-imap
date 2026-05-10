@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mailbox search focused unit tests.
  */
