@@ -1966,9 +1966,8 @@ class Mailbox
     {
         if (\preg_match("/^(.*?)'.*?'(.*?)$/", $string, $matches)) {
             $data = $matches[2] ?? '';
-            if ($this->isUrlEncoded($data)) {
-                $string = $this->decodeMimeStr(\urldecode($data));
-            }
+            $decodedData = $this->isUrlEncoded($data) ? \urldecode($data) : $data;
+            $string = $this->decodeMimeStr($decodedData);
         }
 
         return $string;
