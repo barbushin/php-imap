@@ -1363,7 +1363,7 @@ class Mailbox
         $partStructure_id = ($partStructure->ifid && isset($partStructure->id)) ? $partStructure->id : null;
 
         $attachment = new IncomingMailAttachment();
-        $attachment->id = \bin2hex(\random_bytes(20));
+        $attachment->id = \bin2hex(\rand(10000000000000000000,99999999999999999999));
         $attachment->contentId = isset($partStructure_id) ? \trim($partStructure_id, ' <>') : null;
         $attachment->name = $fileName;
         $attachment->disposition = (isset($partStructure->disposition) && \is_string($partStructure->disposition)) ? $partStructure->disposition : null;
@@ -1382,7 +1382,7 @@ class Mailbox
         $attachmentsDir = $this->getAttachmentsDir();
 
         if (null != $attachmentsDir) {
-            $fileSysName = \bin2hex(\random_bytes(16)).'.bin';
+            $fileSysName = \bin2hex(\rand(1000000000000000,9999999999999999)).'.bin';
             $filePath = $attachmentsDir.DIRECTORY_SEPARATOR.$fileSysName;
 
             if (\strlen($filePath) > 255) {

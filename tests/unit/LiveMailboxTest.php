@@ -178,7 +178,7 @@ class LiveMailboxTest extends TestCase
      */
     public function ComposeProvider()
     {
-        $random_subject = 'test: '.\bin2hex(\random_bytes(16));
+        $random_subject = 'test: '.\bin2hex(\rand(1000000000000000,9999999999999999));
 
         yield [
             ['subject' => $random_subject],
@@ -197,7 +197,7 @@ class LiveMailboxTest extends TestCase
             ),
         ];
 
-        $random_subject = 'barbushin/php-imap#448: dot first:'.\bin2hex(\random_bytes(16));
+        $random_subject = 'barbushin/php-imap#448: dot first:'.\bin2hex(\rand(1000000000000000,9999999999999999));
 
         yield [
             ['subject' => $random_subject],
@@ -229,7 +229,7 @@ class LiveMailboxTest extends TestCase
             ),
         ];
 
-        $random_subject = 'barbushin/php-imap#448: dot last: '.\bin2hex(\random_bytes(16));
+        $random_subject = 'barbushin/php-imap#448: dot last: '.\bin2hex(\rand(1000000000000000,9999999999999999));
 
         yield [
             ['subject' => $random_subject],
@@ -261,10 +261,10 @@ class LiveMailboxTest extends TestCase
             ),
         ];
 
-        $random_subject = 'barbushin/php-imap#391: '.\bin2hex(\random_bytes(16));
+        $random_subject = 'barbushin/php-imap#391: '.\bin2hex(\rand(1000000000000000,9999999999999999));
 
-        $random_attachment_a = \base64_encode(\random_bytes(16));
-        $random_attachment_b = \base64_encode(\random_bytes(16));
+        $random_attachment_a = \base64_encode(\rand(1000000000000000,9999999999999999));
+        $random_attachment_b = \base64_encode(\rand(1000000000000000,9999999999999999));
 
         yield [
             ['subject' => $random_subject],
